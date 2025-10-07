@@ -1,1 +1,7 @@
 project_id = "ryetajignnzczcybyggr"
+
+[functions.fetch-celebrities]
+verify_jwt = false
+
+[functions.generate-birthday-wish]
+verify_jwt = false

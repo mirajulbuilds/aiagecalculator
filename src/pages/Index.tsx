@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Users } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Users, Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ interface AgeResult {
 }
 
 const Index = () => {
+  const [name, setName] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -39,6 +41,8 @@ const Index = () => {
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
+  const [birthdayWishImage, setBirthdayWishImage] = useState<string | null>(null);
+  const [isGeneratingWish, setIsGeneratingWish] = useState(false);
 
   useEffect(() => {
     // Detect user's timezone
@@ -201,6 +205,74 @@ const Index = () => {
     });
 
     toast.success("Age calculated successfully!");
+    
+    // Generate birthday wish image
+    generateBirthdayWish(birthDate, years);
+  };
+
+  const generateBirthdayWish = async (birthDate: Date, age: number) => {
+    setIsGeneratingWish(true);
+    setBirthdayWishImage(null);
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-birthday-wish`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            name: name || undefined,
+            birthDate: birthDate.toISOString().split('T')[0],
+            age: age
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 429) {
+          toast.error("Rate limit exceeded. Please try again in a moment.");
+        } else if (response.status === 402) {
+          toast.error("Please add credits to your Lovable workspace to generate birthday wishes.");
+        } else {
+          throw new Error(errorData.error || 'Failed to generate birthday wish');
+        }
+        return;
+      }
+
+      const data = await response.json();
+      if (data.imageUrl) {
+        setBirthdayWishImage(data.imageUrl);
+        toast.success("Birthday wish generated! 🎉");
+      } else {
+        throw new Error('No image URL received');
+      }
+    } catch (error) {
+      console.error('Error generating birthday wish:', error);
+      toast.error("Failed to generate birthday wish. Please try again.");
+    } finally {
+      setIsGeneratingWish(false);
+    }
+  };
+
+  const downloadBirthdayWish = () => {
+    if (!birthdayWishImage) return;
+    
+    try {
+      const link = document.createElement('a');
+      link.href = birthdayWishImage;
+      link.download = `birthday-wish-${name || 'celebration'}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Birthday wish downloaded!");
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      toast.error("Failed to download image. Please try right-clicking and saving.");
+    }
   };
 
   return (
@@ -236,6 +308,20 @@ const Index = () => {
           <div className="flex items-center gap-2 mb-6">
             <CalendarIconComponent className="w-5 h-5 text-primary" />
             <h2 className="text-xl font-semibold text-foreground">Enter Your Details</h2>
+          </div>
+
+          {/* Name Input (Optional) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Your Name (Optional - for personalized birthday wish)
+            </label>
+            <Input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-12 bg-muted"
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -447,6 +533,69 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </section>
+        )}
+
+        {/* AI Birthday Wish Section */}
+        {result && (
+          <section 
+            className="bg-gradient-to-br from-card via-accent/10 to-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
+            aria-label="AI generated birthday wish"
+          >
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                Your Personalized Birthday Wish
+              </h2>
+            </div>
+
+            {isGeneratingWish ? (
+              <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                  <Sparkles className="w-8 h-8 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-muted-foreground text-center animate-pulse">
+                  Creating your magical birthday wish...
+                </p>
+              </div>
+            ) : birthdayWishImage ? (
+              <div className="space-y-6 animate-fade-in">
+                <div className="relative rounded-xl overflow-hidden shadow-lg border-2 border-primary/20">
+                  <img 
+                    src={birthdayWishImage} 
+                    alt="Personalized birthday wish"
+                    className="w-full h-auto"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    onClick={downloadBirthdayWish}
+                    className="gap-2 bg-gradient-primary hover:opacity-90"
+                    size="lg"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download Birthday Wish
+                  </Button>
+                  <Button
+                    onClick={() => generateBirthdayWish(
+                      new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay)),
+                      result.years
+                    )}
+                    variant="outline"
+                    className="gap-2"
+                    size="lg"
+                  >
+                    <Sparkles className="w-5 h-5" />
+                    Generate New Wish
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>Birthday wish will appear here after calculating your age</p>
+              </div>
+            )}
           </section>
         )}
 
