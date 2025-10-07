@@ -11,6 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { differenceInYears, differenceInDays, format } from "date-fns";
 
+import { AdSenseBanner } from "@/components/AdSenseBanner";
+
 interface Category {
   id: string;
   name: string;
@@ -151,6 +153,9 @@ const FamousPeople = () => {
           </div>
         </header>
 
+        {/* Top Ad Banner */}
+        <AdSenseBanner format="horizontal" className="mb-8" />
+
         {/* Search Bar */}
         <section className="mb-6 max-w-2xl mx-auto">
           <div className="relative">
@@ -192,6 +197,9 @@ const FamousPeople = () => {
             ))}
           </div>
         </section>
+
+        {/* Mid-Section Ad Banner */}
+        <AdSenseBanner format="square" className="mb-8" />
 
         {/* People Grid */}
         {loading ? (
@@ -275,6 +283,9 @@ const FamousPeople = () => {
             </p>
           </div>
         )}
+
+        {/* Bottom Ad Banner */}
+        <AdSenseBanner format="horizontal" className="mt-8" />
       </div>
     </main>
   );
