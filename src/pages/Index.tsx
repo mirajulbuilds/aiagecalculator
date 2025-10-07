@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { CalendarIcon, Globe, Calendar as CalendarIconComponent } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Globe, Calendar as CalendarIconComponent } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface AgeResult {
@@ -24,8 +23,15 @@ interface AgeResult {
 }
 
 const Index = () => {
-  const [birthDate, setBirthDate] = useState<Date>();
-  const [targetDate, setTargetDate] = useState<Date>(new Date());
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthYear, setBirthYear] = useState<string>("");
+  
+  const currentDate = new Date();
+  const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
+  const [targetMonth, setTargetMonth] = useState<string>((currentDate.getMonth() + 1).toString());
+  const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
+  
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
 
@@ -35,9 +41,42 @@ const Index = () => {
     setTimezone(userTimezone);
   }, []);
 
+  const months = [
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
+
   const calculateAge = () => {
-    if (!birthDate) {
-      toast.error("Please select your birth date");
+    if (!birthDay || !birthMonth || !birthYear) {
+      toast.error("Please enter your complete birth date");
+      return;
+    }
+
+    if (!targetDay || !targetMonth || !targetYear) {
+      toast.error("Please enter a valid target date");
+      return;
+    }
+
+    const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
+    const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
+
+    if (isNaN(birthDate.getTime()) || isNaN(targetDate.getTime())) {
+      toast.error("Please enter valid dates");
       return;
     }
 
@@ -116,30 +155,44 @@ const Index = () => {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Date of Birth
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-12 bg-muted hover:bg-muted/80",
-                      !birthDate && "text-muted-foreground"
-                    )}
-                  >
-                    {birthDate ? format(birthDate, "dd/MM/yyyy") : <span>DD/MM/YYYY</span>}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={birthDate}
-                    onSelect={setBirthDate}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                    disabled={(date) => date > new Date()}
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="grid grid-cols-3 gap-2">
+                <Select value={birthDay} onValueChange={setBirthDay}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={birthMonth} onValueChange={setBirthMonth}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={birthYear} onValueChange={setBirthYear}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Target Date Input */}
@@ -147,26 +200,44 @@ const Index = () => {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Calculate Age Until
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal h-12 bg-muted hover:bg-muted/80"
-                  >
-                    {format(targetDate, "dd/MM/yyyy")}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={targetDate}
-                    onSelect={(date) => date && setTargetDate(date)}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="grid grid-cols-3 gap-2">
+                <Select value={targetDay} onValueChange={setTargetDay}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetMonth} onValueChange={setTargetMonth}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetYear} onValueChange={setTargetYear}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
