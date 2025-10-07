@@ -32,33 +32,24 @@ export const AdSenseBanner = ({
   const getContainerClass = () => {
     switch (format) {
       case 'vertical':
-        return 'w-[300px] min-w-[300px] min-h-[600px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full md:w-[300px] md:min-w-[300px] min-h-[250px] md:min-h-[600px] bg-muted/30 border border-border/50 rounded-lg p-2';
       case 'square':
-        return 'w-[300px] min-w-[300px] min-h-[250px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full md:w-[300px] md:min-w-[300px] min-h-[250px] bg-muted/30 border border-border/50 rounded-lg p-2';
       case 'large-horizontal':
-        return 'w-full max-w-5xl min-w-[300px] min-h-[100px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full min-w-0 min-h-[100px] md:min-h-[120px] bg-muted/30 border border-border/50 rounded-lg p-2';
       default:
-        return 'w-full max-w-4xl min-w-[300px] min-h-[90px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full min-w-0 min-h-[90px] bg-muted/30 border border-border/50 rounded-lg p-2';
     }
   };
 
   const getAdStyle = () => {
-    switch (format) {
-      case 'vertical':
-        return { display: 'block', width: '100%', minHeight: '580px' };
-      case 'square':
-        return { display: 'block', width: '100%', minHeight: '230px' };
-      case 'large-horizontal':
-        return { display: 'block', width: '100%', minHeight: '80px' };
-      default:
-        return { display: 'block', width: '100%', minHeight: '70px' };
-    }
+    return { display: 'block', width: '100%', minHeight: '70px' };
   };
 
   return (
-    <div className={`flex items-center justify-center ${className}`} aria-label="Advertisement">
+    <div className={`flex items-center justify-center w-full ${className}`} aria-label="Advertisement">
       <div className={`${getContainerClass()} relative`}>
-        <div className="absolute top-2 left-2 text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded">
+        <div className="absolute top-2 left-2 text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded z-10">
           Advertisement
         </div>
         <ins

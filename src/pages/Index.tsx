@@ -277,10 +277,10 @@ const Index = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background p-4 py-8">
-      <div className="max-w-7xl mx-auto flex gap-6">
+    <main className="min-h-screen bg-background p-2 sm:p-4 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
-        <div className="flex-1 max-w-4xl mx-auto">
+        <div className="flex-1 w-full max-w-4xl mx-auto xl:mx-0">
         {/* Top Banner Ad */}
         <AdSenseBanner format="large-horizontal" className="mb-6" />
         
@@ -630,8 +630,8 @@ const Index = () => {
         )}
         </div>
 
-        {/* Right Sidebar Ads */}
-        <aside className="hidden xl:block w-[320px] space-y-6 sticky top-20 self-start">
+        {/* Right Sidebar Ads - Hidden on mobile/tablet */}
+        <aside className="hidden xl:flex xl:flex-col w-full xl:w-[320px] space-y-6 xl:sticky xl:top-20 xl:self-start">
           <AdSenseBanner format="vertical" />
           <AdSenseBanner format="square" />
         </aside>
