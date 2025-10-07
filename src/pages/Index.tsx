@@ -284,7 +284,7 @@ const Index = () => {
             Age Calculator
           </h1>
           <p className="text-muted-foreground text-base md:text-lg mb-4">
-            Calculate your exact age with precision down to minutes
+            Calculate your exact age with precision — and celebrate your special day with a personalized AI birthday wish! 🎉
           </p>
         </header>
 
