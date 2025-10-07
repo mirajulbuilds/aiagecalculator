@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -213,12 +214,20 @@ const Index = () => {
           <p className="text-muted-foreground text-base md:text-lg mb-4">
             Calculate your exact age with precision down to minutes
           </p>
-          {timezone && (
-            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-              <Globe className="w-4 h-4" />
-              <span>Timezone: <span className="font-medium">{timezone}</span></span>
-            </div>
-          )}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+            {timezone && (
+              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                <Globe className="w-4 h-4" />
+                <span>Timezone: <span className="font-medium">{timezone}</span></span>
+              </div>
+            )}
+            <Link to="/celebrities">
+              <Button variant="outline" className="gap-2">
+                <Users className="w-4 h-4" />
+                Famous Birthdays
+              </Button>
+            </Link>
+          </div>
         </header>
 
         {/* Calculator Card */}
