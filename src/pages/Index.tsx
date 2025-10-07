@@ -46,8 +46,7 @@ const Index = () => {
 
   // Live age update every second
   useEffect(() => {
-    if (!birthDay || !birthMonth || !birthYear) {
-      setLiveAge(null);
+    if (!birthDay || !birthMonth || !birthYear || !result) {
       return;
     }
 
@@ -102,7 +101,7 @@ const Index = () => {
     const interval = setInterval(updateLiveAge, 1000);
 
     return () => clearInterval(interval);
-  }, [birthDay, birthMonth, birthYear]);
+  }, [birthDay, birthMonth, birthYear, result]);
 
   const months = [
     { value: "1", label: "January" },
