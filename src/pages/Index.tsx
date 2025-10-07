@@ -485,72 +485,9 @@ const Index = () => {
           </section>
         )}
 
-        {/* Mid-Section Ad Banner */}
+        {/* Ad Banner after Traditional Age */}
         {result && (
           <AdSenseBanner format="large-horizontal" className="mb-6" />
-        )}
-
-        {/* AI Birthday Wish Section */}
-        {result && (
-          <section 
-            className="bg-gradient-to-br from-card via-accent/10 to-card rounded-xl shadow-sm p-3 md:p-4 mb-6"
-            aria-label="AI generated birthday wish"
-          >
-            <div className="flex items-center justify-center gap-1.5 mb-3">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <h2 className="text-base md:text-lg font-semibold text-foreground">
-                Your Personalized Birthday Wish
-              </h2>
-            </div>
-
-            {isGeneratingWish ? (
-              <div className="flex flex-col items-center justify-center py-6 space-y-2">
-                <div className="relative">
-                  <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  <Sparkles className="w-5 h-5 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <p className="text-xs text-muted-foreground text-center animate-pulse">
-                  Creating your birthday wish...
-                </p>
-              </div>
-            ) : birthdayWishImage ? (
-              <div className="space-y-3 animate-fade-in">
-                <div className="relative rounded-md overflow-hidden shadow-sm border border-primary/20 max-w-xl mx-auto">
-                  <img 
-                    src={birthdayWishImage} 
-                    alt="Personalized birthday wish"
-                    className="w-full h-auto"
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                  <Button
-                    onClick={downloadBirthdayWish}
-                    className="gap-1.5 bg-gradient-primary hover:opacity-90 h-8 text-xs"
-                    size="sm"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    Download
-                  </Button>
-                  <Button
-                    onClick={() => generateBirthdayWish(
-                      new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay)),
-                      result.years
-                    )}
-                    variant="outline"
-                    className="gap-1.5 h-8 text-xs"
-                    size="sm"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    New Wish
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-4 text-xs text-muted-foreground">
-                <p>Birthday wish will appear after calculating age</p>
-              </div>
-            )}
-          </section>
         )}
 
         {/* Live Age Display */}
@@ -616,6 +553,69 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </section>
+        )}
+
+        {/* AI Birthday Wish Section */}
+        {result && (
+          <section 
+            className="bg-gradient-to-br from-card via-accent/10 to-card rounded-xl shadow-sm p-3 md:p-4 mb-6"
+            aria-label="AI generated birthday wish"
+          >
+            <div className="flex items-center justify-center gap-1.5 mb-3">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <h2 className="text-base md:text-lg font-semibold text-foreground">
+                Your Personalized Birthday Wish
+              </h2>
+            </div>
+
+            {isGeneratingWish ? (
+              <div className="flex flex-col items-center justify-center py-6 space-y-2">
+                <div className="relative">
+                  <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                  <Sparkles className="w-5 h-5 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-xs text-muted-foreground text-center animate-pulse">
+                  Creating your birthday wish...
+                </p>
+              </div>
+            ) : birthdayWishImage ? (
+              <div className="space-y-3 animate-fade-in">
+                <div className="relative rounded-md overflow-hidden shadow-sm border border-primary/20 max-w-xl mx-auto">
+                  <img 
+                    src={birthdayWishImage} 
+                    alt="Personalized birthday wish"
+                    className="w-full h-auto"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                  <Button
+                    onClick={downloadBirthdayWish}
+                    className="gap-1.5 bg-gradient-primary hover:opacity-90 h-8 text-xs"
+                    size="sm"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download
+                  </Button>
+                  <Button
+                    onClick={() => generateBirthdayWish(
+                      new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay)),
+                      result.years
+                    )}
+                    variant="outline"
+                    className="gap-1.5 h-8 text-xs"
+                    size="sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    New Wish
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-4 text-xs text-muted-foreground">
+                <p>Birthday wish will appear after calculating age</p>
+              </div>
+            )}
           </section>
         )}
 
