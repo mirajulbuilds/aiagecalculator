@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { format, differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { CalendarIcon, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface AgeResult {
@@ -20,13 +21,48 @@ interface AgeResult {
 }
 
 const Index = () => {
-  const [birthDate, setBirthDate] = useState<Date>();
-  const [targetDate, setTargetDate] = useState<Date>(new Date());
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthYear, setBirthYear] = useState<string>("");
+  
+  const currentDate = new Date();
+  const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
+  const [targetMonth, setTargetMonth] = useState<string>((currentDate.getMonth() + 1).toString());
+  const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
+  
   const [result, setResult] = useState<AgeResult | null>(null);
 
+  const months = [
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
   const calculateAge = () => {
-    if (!birthDate) {
-      toast.error("Please select your birth date");
+    if (!birthDay || !birthMonth || !birthYear) {
+      toast.error("Please enter your complete birth date");
+      return;
+    }
+
+    if (!targetDay || !targetMonth || !targetYear) {
+      toast.error("Please enter a valid target date");
+      return;
+    }
+
+    const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
+    const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
+
+    if (isNaN(birthDate.getTime()) || isNaN(targetDate.getTime())) {
+      toast.error("Please enter valid dates");
       return;
     }
 
@@ -83,64 +119,114 @@ const Index = () => {
           <div className="space-y-6">
             {/* Birth Date Input */}
             <div>
-              <label htmlFor="birth-date" className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-3">
                 Date of Birth *
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="birth-date"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-12",
-                      !birthDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {birthDate ? format(birthDate, "PPP") : <span>Pick your birth date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={birthDate}
-                    onSelect={setBirthDate}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                    disabled={(date) => date > new Date()}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label htmlFor="birth-day" className="text-xs text-muted-foreground mb-1 block">
+                    Day
+                  </label>
+                  <Input
+                    id="birth-day"
+                    type="number"
+                    min="1"
+                    max="31"
+                    placeholder="DD"
+                    value={birthDay}
+                    onChange={(e) => setBirthDay(e.target.value)}
+                    className="h-12 text-center"
                   />
-                </PopoverContent>
-              </Popover>
+                </div>
+                <div>
+                  <label htmlFor="birth-month" className="text-xs text-muted-foreground mb-1 block">
+                    Month
+                  </label>
+                  <Select value={birthMonth} onValueChange={setBirthMonth}>
+                    <SelectTrigger id="birth-month" className="h-12">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map((month) => (
+                        <SelectItem key={month.value} value={month.value}>
+                          {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label htmlFor="birth-year" className="text-xs text-muted-foreground mb-1 block">
+                    Year
+                  </label>
+                  <Input
+                    id="birth-year"
+                    type="number"
+                    min="1900"
+                    max={new Date().getFullYear()}
+                    placeholder="YYYY"
+                    value={birthYear}
+                    onChange={(e) => setBirthYear(e.target.value)}
+                    className="h-12 text-center"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Target Date Input */}
             <div>
-              <label htmlFor="target-date" className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-3">
                 Calculate Age To
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="target-date"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-12"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(targetDate, "PPP")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={targetDate}
-                    onSelect={(date) => date && setTargetDate(date)}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label htmlFor="target-day" className="text-xs text-muted-foreground mb-1 block">
+                    Day
+                  </label>
+                  <Input
+                    id="target-day"
+                    type="number"
+                    min="1"
+                    max="31"
+                    placeholder="DD"
+                    value={targetDay}
+                    onChange={(e) => setTargetDay(e.target.value)}
+                    className="h-12 text-center"
                   />
-                </PopoverContent>
-              </Popover>
+                </div>
+                <div>
+                  <label htmlFor="target-month" className="text-xs text-muted-foreground mb-1 block">
+                    Month
+                  </label>
+                  <Select value={targetMonth} onValueChange={setTargetMonth}>
+                    <SelectTrigger id="target-month" className="h-12">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map((month) => (
+                        <SelectItem key={month.value} value={month.value}>
+                          {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label htmlFor="target-year" className="text-xs text-muted-foreground mb-1 block">
+                    Year
+                  </label>
+                  <Input
+                    id="target-year"
+                    type="number"
+                    min="1900"
+                    max={2100}
+                    placeholder="YYYY"
+                    value={targetYear}
+                    onChange={(e) => setTargetYear(e.target.value)}
+                    className="h-12 text-center"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Calculate Button */}
