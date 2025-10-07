@@ -206,6 +206,7 @@ const Index = () => {
     });
 
     toast.success("Age calculated successfully!");
+    toast("আলাবু কদবানু");
     
     // Generate birthday wish image
     generateBirthdayWish(birthDate, years);
