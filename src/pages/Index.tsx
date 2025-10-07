@@ -17,6 +17,7 @@ interface AgeResult {
   days: number;
   hours: number;
   minutes: number;
+  seconds: number;
   totalDays: number;
   totalHours: number;
   totalMinutes: number;
@@ -69,12 +70,19 @@ const Index = () => {
       const afterDays = new Date(afterMonths);
       afterDays.setDate(afterMonths.getDate() + days);
       const hours = differenceInHours(now, afterDays);
-      const minutes = differenceInMinutes(now, afterDays) % 60;
+      
+      const afterHours = new Date(afterDays);
+      afterHours.setHours(afterDays.getHours() + hours);
+      const minutes = differenceInMinutes(now, afterHours);
+      
+      const afterMinutes = new Date(afterHours);
+      afterMinutes.setMinutes(afterHours.getMinutes() + minutes);
+      const seconds = Math.floor((now.getTime() - afterMinutes.getTime()) / 1000);
 
       const totalDays = differenceInDays(now, birthDate);
       const totalHours = differenceInHours(now, birthDate);
       const totalMinutes = differenceInMinutes(now, birthDate);
-      const totalSeconds = Math.floor(totalMinutes * 60);
+      const totalSeconds = Math.floor((now.getTime() - birthDate.getTime()) / 1000);
 
       setLiveAge({
         years,
@@ -82,6 +90,7 @@ const Index = () => {
         days,
         hours,
         minutes,
+        seconds,
         totalDays,
         totalHours,
         totalMinutes,
@@ -162,13 +171,20 @@ const Index = () => {
     const afterDays = new Date(afterMonths);
     afterDays.setDate(afterMonths.getDate() + days);
     const hours = differenceInHours(targetDate, afterDays);
-    const minutes = differenceInMinutes(targetDate, afterDays) % 60;
+    
+    const afterHours = new Date(afterDays);
+    afterHours.setHours(afterDays.getHours() + hours);
+    const minutes = differenceInMinutes(targetDate, afterHours);
+    
+    const afterMinutes = new Date(afterHours);
+    afterMinutes.setMinutes(afterHours.getMinutes() + minutes);
+    const seconds = Math.floor((targetDate.getTime() - afterMinutes.getTime()) / 1000);
 
     // Calculate totals
     const totalDays = differenceInDays(targetDate, birthDate);
     const totalHours = differenceInHours(targetDate, birthDate);
     const totalMinutes = differenceInMinutes(targetDate, birthDate);
-    const totalSeconds = Math.floor(totalMinutes * 60);
+    const totalSeconds = Math.floor((targetDate.getTime() - birthDate.getTime()) / 1000);
 
     setResult({
       years,
@@ -176,6 +192,7 @@ const Index = () => {
       days,
       hours,
       minutes,
+      seconds,
       totalDays,
       totalHours,
       totalMinutes,
@@ -442,8 +459,8 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Hours, Minutes */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Hours, Minutes, Seconds */}
+              <div className="grid grid-cols-3 gap-4">
                 <div className="bg-muted rounded-xl p-4 text-center">
                   <div className="text-4xl md:text-5xl font-bold text-foreground mb-1">
                     {result.hours}
@@ -458,6 +475,14 @@ const Index = () => {
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Minutes
+                  </div>
+                </div>
+                <div className="bg-muted rounded-xl p-4 text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-1">
+                    {result.seconds}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Seconds
                   </div>
                 </div>
               </div>
