@@ -200,6 +200,9 @@ const FamousPeople = () => {
           </div>
         </section>
 
+        {/* Mid-Page Ad Banner */}
+        <AdSenseBanner format="large-horizontal" className="mb-8" />
+
         {/* People Grid */}
         {loading ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -218,59 +221,70 @@ const FamousPeople = () => {
           </section>
         ) : filteredPeople.length > 0 ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPeople.map((person) => (
-              <Card key={person.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage src={person.photo_url || undefined} alt={person.name} />
-                      <AvatarFallback>
-                        <Users className="w-8 h-8" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold mb-1 truncate">{person.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">{person.bio.split('.')[0]}</p>
-                      {person.categories?.name && (
-                        <Badge variant="secondary" className="text-xs">{person.categories.name}</Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3 pt-0">
-                  <div className="bg-muted/50 rounded-lg p-3">
-                    <div className="text-sm text-muted-foreground mb-1">Current Age:</div>
-                    <div className="text-2xl font-bold text-primary">
-                      {calculateAge(person.date_of_birth)} years
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <div className="text-muted-foreground mb-1">Birthday:</div>
-                      <div className="font-medium">
-                        {format(new Date(person.date_of_birth), 'MMMM d, yyyy')}
+            {filteredPeople.map((person, index) => (
+              <>
+                <Card key={person.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start gap-4">
+                      <Avatar className="w-16 h-16">
+                        <AvatarImage src={person.photo_url || undefined} alt={person.name} />
+                        <AvatarFallback>
+                          <Users className="w-8 h-8" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold mb-1 truncate">{person.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">{person.bio.split('.')[0]}</p>
+                        {person.categories?.name && (
+                          <Badge variant="secondary" className="text-xs">{person.categories.name}</Badge>
+                        )}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-muted-foreground mb-1">Next Birthday:</div>
-                      <div className="font-medium">
-                        {getNextBirthday(person.date_of_birth)}
+                  </CardHeader>
+                  <CardContent className="space-y-3 pt-0">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <div className="text-sm text-muted-foreground mb-1">Current Age:</div>
+                      <div className="text-2xl font-bold text-primary">
+                        {calculateAge(person.date_of_birth)} years
                       </div>
                     </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {person.bio}
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link to={`/famous-people/${person.id}`} className="w-full">
-                    <Button variant="outline" className="w-full gap-2">
-                      <Users className="w-4 h-4" />
-                      View Full Profile
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <div className="text-muted-foreground mb-1">Birthday:</div>
+                        <div className="font-medium">
+                          {format(new Date(person.date_of_birth), 'MMMM d, yyyy')}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground mb-1">Next Birthday:</div>
+                        <div className="font-medium">
+                          {getNextBirthday(person.date_of_birth)}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {person.bio}
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <Link to={`/famous-people/${person.id}`} className="w-full">
+                      <Button variant="outline" className="w-full gap-2">
+                        <Users className="w-4 h-4" />
+                        View Full Profile
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+                
+                {/* Insert ads every 3 cards */}
+                {(index + 1) % 3 === 0 && index !== filteredPeople.length - 1 && (
+                  <Card key={`ad-${index}`} className="bg-muted/20 border-dashed">
+                    <CardContent className="p-4 flex items-center justify-center min-h-[400px]">
+                      <AdSenseBanner format="square" />
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             ))}
           </section>
         ) : (
