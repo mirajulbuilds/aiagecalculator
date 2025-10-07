@@ -20,6 +20,7 @@ interface AgeResult {
   totalDays: number;
   totalHours: number;
   totalMinutes: number;
+  totalSeconds: number;
 }
 
 const Index = () => {
@@ -105,6 +106,7 @@ const Index = () => {
     const totalDays = differenceInDays(targetDate, birthDate);
     const totalHours = differenceInHours(targetDate, birthDate);
     const totalMinutes = differenceInMinutes(targetDate, birthDate);
+    const totalSeconds = Math.floor(totalMinutes * 60);
 
     setResult({
       years,
@@ -115,6 +117,7 @@ const Index = () => {
       totalDays,
       totalHours,
       totalMinutes,
+      totalSeconds,
     });
 
     toast.success("Age calculated successfully!");
@@ -329,7 +332,7 @@ const Index = () => {
               </div>
               
               <div className="bg-accent/30 rounded-xl p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="flex items-center justify-between md:justify-start md:gap-3">
                     <span className="text-sm text-muted-foreground">Total Days:</span>
                     <span className="text-lg font-semibold text-foreground">
@@ -346,6 +349,12 @@ const Index = () => {
                     <span className="text-sm text-muted-foreground">Total Minutes:</span>
                     <span className="text-lg font-semibold text-foreground">
                       {result.totalMinutes.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between md:justify-start md:gap-3">
+                    <span className="text-sm text-muted-foreground">Total Seconds:</span>
+                    <span className="text-lg font-semibold text-foreground">
+                      {result.totalSeconds.toLocaleString()}
                     </span>
                   </div>
                 </div>
