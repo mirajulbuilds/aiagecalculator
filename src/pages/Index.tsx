@@ -74,7 +74,16 @@ const Index = () => {
     }
 
     const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
-    const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
+    
+    // For target date, use current time if it's today, otherwise use midnight
+    const now = new Date();
+    const isToday = parseInt(targetDay) === now.getDate() && 
+                    parseInt(targetMonth) === (now.getMonth() + 1) && 
+                    parseInt(targetYear) === now.getFullYear();
+    
+    const targetDate = isToday 
+      ? now 
+      : new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
 
     if (isNaN(birthDate.getTime()) || isNaN(targetDate.getTime())) {
       toast.error("Please enter valid dates");
