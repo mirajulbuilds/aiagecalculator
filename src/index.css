@@ -116,3 +116,24 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

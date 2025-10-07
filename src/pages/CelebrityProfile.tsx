@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, format } from "date-fns";
 import { ArrowLeft, Users, Calendar as CalendarIcon } from "lucide-react";
@@ -9,55 +9,30 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
-interface Category {
-  id: string;
-  name: string;
-}
-
 interface FamousPerson {
   id: string;
   name: string;
-  date_of_birth: string;
+  dateOfBirth: string;
+  profession: string;
   bio: string | null;
-  photo_url: string | null;
-  category_id: string | null;
-  categories: Category | null;
+  photoUrl: string | null;
+  quote: string | null;
+  nationality: string | null;
 }
 
 const CelebrityProfile = () => {
-  const { id } = useParams<{ id: string }>();
-  const [celebrity, setCelebrity] = useState<FamousPerson | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+  const location = useLocation();
+  const [person, setPerson] = useState<FamousPerson | null>(location.state?.celebrity || null);
+  const [loading, setLoading] = useState(!location.state?.celebrity);
 
   useEffect(() => {
-    if (id) {
-      fetchCelebrity();
+    if (!person && id) {
+      // If no data passed via state, we could fetch from API here
+      // For now, redirect back to celebrities list
+      toast.error("Celebrity data not found");
     }
-  }, [id]);
-
-  const fetchCelebrity = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("famous_people")
-        .select(`
-          *,
-          categories (
-            id,
-            name
-          )
-        `)
-        .eq("id", id)
-        .single();
-
-      if (error) throw error;
-      setCelebrity(data);
-    } catch (error) {
-      console.error("Error fetching celebrity:", error);
-      toast.error("Failed to load celebrity profile");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [id, person]);
 
   const calculateDetailedAge = (dateOfBirth: string) => {
     const birthDate = new Date(dateOfBirth);
@@ -104,14 +79,14 @@ const CelebrityProfile = () => {
 
   // Live update every second
   useEffect(() => {
-    if (!celebrity) return;
+    if (!person) return;
     
     const interval = setInterval(() => {
-      setCelebrity(prev => prev ? { ...prev } : null);
+      setPerson(prev => prev ? { ...prev } : null);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [celebrity]);
+  }, [person]);
 
   if (loading) {
     return (
@@ -124,7 +99,7 @@ const CelebrityProfile = () => {
     );
   }
 
-  if (!celebrity) {
+  if (!person) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -140,7 +115,7 @@ const CelebrityProfile = () => {
     );
   }
 
-  const ageDetails = calculateDetailedAge(celebrity.date_of_birth);
+  const ageDetails = calculateDetailedAge(person.dateOfBirth);
 
   return (
     <main className="min-h-screen bg-background py-8">
@@ -161,7 +136,7 @@ const CelebrityProfile = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
               {/* Large Profile Image */}
               <Avatar className="w-40 h-40 border-4 border-primary/20">
-                <AvatarImage src={celebrity.photo_url || undefined} alt={celebrity.name} />
+                <AvatarImage src={person.photoUrl || undefined} alt={person.name} />
                 <AvatarFallback className="bg-gradient-primary text-primary-foreground text-4xl">
                   <Users className="w-20 h-20" />
                 </AvatarFallback>
@@ -170,18 +145,28 @@ const CelebrityProfile = () => {
               {/* Profile Details */}
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3">
-                  {celebrity.name}
+                  {person.name}
                 </h1>
                 
                 <p className="text-lg text-muted-foreground mb-4">
-                  {celebrity.bio || 'Notable personality'}
+                  {person.bio || 'Notable personality'}
                 </p>
 
                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                  {celebrity.categories && (
-                    <Badge variant="secondary" className="text-sm px-3 py-1">
-                      {celebrity.categories.name}
+                  <Badge variant="secondary" className="text-sm px-3 py-1">
+                    {person.profession}
+                  </Badge>
+                  {person.nationality && (
+                    <Badge variant="outline" className="text-sm px-3 py-1">
+                      {person.nationality}
                     </Badge>
+                  )}
+                  {person.quote && (
+                    <div className="w-full mt-4 p-4 bg-muted/50 rounded-lg border-l-2 border-primary">
+                      <p className="text-sm italic text-muted-foreground">
+                        "{person.quote}"
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -269,7 +254,7 @@ const CelebrityProfile = () => {
                 <div className="flex justify-between items-center py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Date of Birth:</span>
                   <span className="text-sm font-semibold text-foreground">
-                    {format(new Date(celebrity.date_of_birth), "EEEE, MMMM d, yyyy")}
+                    {format(new Date(person.dateOfBirth), "EEEE, MMMM d, yyyy")}
                   </span>
                 </div>
                 
