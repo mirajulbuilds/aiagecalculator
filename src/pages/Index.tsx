@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,6 +31,13 @@ const Index = () => {
   const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
   
   const [result, setResult] = useState<AgeResult | null>(null);
+  const [timezone, setTimezone] = useState<string>("");
+
+  useEffect(() => {
+    // Detect user's timezone
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setTimezone(userTimezone);
+  }, []);
 
   const months = [
     { value: "1", label: "January" },
@@ -111,9 +118,15 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3 bg-gradient-primary bg-clip-text text-transparent">
             Age Calculator
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg mb-3">
             Calculate your exact age in years, months, days, hours, and minutes
           </p>
+          {timezone && (
+            <div className="inline-flex items-center gap-2 bg-accent px-4 py-2 rounded-full text-sm text-accent-foreground">
+              <Globe className="w-4 h-4" />
+              <span>Your timezone: <span className="font-medium">{timezone}</span></span>
+            </div>
+          )}
         </header>
 
         {/* Calculator Card */}
@@ -309,7 +322,7 @@ const Index = () => {
 
         {/* Footer */}
         <footer className="text-center mt-8 text-muted-foreground text-sm">
-          <p>Fast, accurate, and easy to use on any device</p>
+          <p>All calculations are performed in your local timezone for accuracy</p>
         </footer>
       </div>
     </main>
