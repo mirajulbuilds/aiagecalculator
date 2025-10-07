@@ -128,7 +128,9 @@ const FamousPeople = () => {
 
   return (
     <main className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-7xl flex gap-6">
+        {/* Main Content */}
+        <div className="flex-1">
         {/* Back Button */}
         <div className="mb-6">
           <Link to="/">
@@ -283,6 +285,13 @@ const FamousPeople = () => {
 
         {/* Bottom Ad Banner */}
         <AdSenseBanner format="horizontal" className="mt-8" />
+        </div>
+
+        {/* Right Sidebar Ads */}
+        <aside className="hidden xl:block w-[320px] space-y-6 sticky top-8 self-start">
+          <AdSenseBanner format="vertical" />
+          <AdSenseBanner format="square" />
+        </aside>
       </div>
     </main>
   );
