@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Calendar, Filter, ArrowLeft } from "lucide-react";
+import { Users, Calendar, ArrowLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { differenceInYears } from "date-fns";
+import { differenceInYears, differenceInDays, format } from "date-fns";
 
 interface Category {
   id: string;
@@ -29,8 +30,10 @@ interface FamousPerson {
 
 const FamousPeople = () => {
   const [people, setPeople] = useState<FamousPerson[]>([]);
+  const [filteredPeople, setFilteredPeople] = useState<FamousPerson[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,8 +42,8 @@ const FamousPeople = () => {
   }, []);
 
   useEffect(() => {
-    fetchPeople();
-  }, [selectedCategory]);
+    filterPeople();
+  }, [people, selectedCategory, searchQuery]);
 
   const fetchCategories = async () => {
     try {
@@ -60,7 +63,7 @@ const FamousPeople = () => {
   const fetchPeople = async () => {
     try {
       setLoading(true);
-      let query = supabase
+      const { data, error } = await supabase
         .from('famous_people')
         .select(`
           *,
@@ -69,12 +72,6 @@ const FamousPeople = () => {
           )
         `)
         .order('name');
-
-      if (selectedCategory !== 'all') {
-        query = query.eq('category_id', selectedCategory);
-      }
-
-      const { data, error } = await query;
 
       if (error) throw error;
       setPeople(data || []);
@@ -86,8 +83,45 @@ const FamousPeople = () => {
     }
   };
 
+  const filterPeople = () => {
+    let filtered = people;
+
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(p => p.category_id === selectedCategory);
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(query) ||
+        p.bio.toLowerCase().includes(query) ||
+        p.categories?.name.toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredPeople(filtered);
+  };
+
   const calculateAge = (dateOfBirth: string) => {
     return differenceInYears(new Date(), new Date(dateOfBirth));
+  };
+
+  const getNextBirthday = (dateOfBirth: string) => {
+    const birthDate = new Date(dateOfBirth);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    
+    let nextBirthday = new Date(currentYear, birthDate.getMonth(), birthDate.getDate());
+    
+    if (nextBirthday < now) {
+      nextBirthday = new Date(currentYear + 1, birthDate.getMonth(), birthDate.getDate());
+    }
+
+    const daysUntil = differenceInDays(nextBirthday, now);
+    
+    if (daysUntil === 0) return "Today! 🎉";
+    if (daysUntil === 1) return "Tomorrow";
+    return `In ${daysUntil} days`;
   };
 
   return (
@@ -108,32 +142,54 @@ const FamousPeople = () => {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
             Famous People Birthdays
           </h1>
-          <p className="text-muted-foreground text-lg mb-2">
-            Discover notable personalities and their birthdays
+          <p className="text-muted-foreground text-lg mb-4">
+            Discover the ages and birthdays of celebrities, artists, athletes, and notable personalities
           </p>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Users className="w-4 h-4" />
-            <span>{people.length} famous {people.length === 1 ? 'person' : 'people'}</span>
+            <span>{filteredPeople.length} famous {filteredPeople.length === 1 ? 'personality' : 'personalities'}</span>
           </div>
         </header>
 
-        {/* Category Filter */}
+        {/* Search Bar */}
+        <section className="mb-6 max-w-2xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by name or profession..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-12 bg-card"
+            />
+          </div>
+        </section>
+
+        {/* Category Pills */}
         <section className="mb-8">
-          <div className="flex items-center justify-center gap-3 max-w-md mx-auto">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="bg-card">
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="text-sm font-medium text-muted-foreground mb-3 text-center">
+            Categories
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Button
+              variant={selectedCategory === "all" ? "default" : "outline"}
+              onClick={() => setSelectedCategory("all")}
+              className="rounded-full"
+              size="sm"
+            >
+              All
+            </Button>
+            {categories.map((category) => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category.id)}
+                className="rounded-full"
+                size="sm"
+              >
+                {category.name}
+              </Button>
+            ))}
           </div>
         </section>
 
@@ -153,53 +209,57 @@ const FamousPeople = () => {
               </Card>
             ))}
           </section>
-        ) : people.length > 0 ? (
+        ) : filteredPeople.length > 0 ? (
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {people.map((person) => (
-              <Card key={person.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative h-64 bg-muted">
-                  {person.photo_url ? (
-                    <img
-                      src={person.photo_url}
-                      alt={person.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Users className="w-16 h-16 text-muted-foreground/50" />
+            {filteredPeople.map((person) => (
+              <Card key={person.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start gap-4">
+                    <Avatar className="w-16 h-16">
+                      <AvatarImage src={person.photo_url || undefined} alt={person.name} />
+                      <AvatarFallback>
+                        <Users className="w-8 h-8" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold mb-1 truncate">{person.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{person.bio.split('.')[0]}</p>
+                      {person.categories?.name && (
+                        <Badge variant="secondary" className="text-xs">{person.categories.name}</Badge>
+                      )}
                     </div>
-                  )}
-                </div>
-                <CardHeader>
-                  <h3 className="text-xl font-bold">{person.name}</h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    <span>
-                      {new Date(person.date_of_birth).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </span>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {person.categories?.name && (
-                      <Badge variant="secondary">{person.categories.name}</Badge>
-                    )}
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                      {person.bio}
-                    </p>
-                    <p className="text-sm font-medium">
-                      Age: {calculateAge(person.date_of_birth)} years
-                    </p>
+                <CardContent className="space-y-3 pt-0">
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <div className="text-sm text-muted-foreground mb-1">Current Age:</div>
+                    <div className="text-2xl font-bold text-primary">
+                      {calculateAge(person.date_of_birth)} years
+                    </div>
                   </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <div className="text-muted-foreground mb-1">Birthday:</div>
+                      <div className="font-medium">
+                        {format(new Date(person.date_of_birth), 'MMMM d, yyyy')}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground mb-1">Next Birthday:</div>
+                      <div className="font-medium">
+                        {getNextBirthday(person.date_of_birth)}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {person.bio}
+                  </p>
                 </CardContent>
                 <CardFooter>
                   <Link to={`/famous-people/${person.id}`} className="w-full">
-                    <Button variant="outline" className="w-full">
-                      View Profile
+                    <Button variant="outline" className="w-full gap-2">
+                      <Users className="w-4 h-4" />
+                      View Full Profile
                     </Button>
                   </Link>
                 </CardFooter>
