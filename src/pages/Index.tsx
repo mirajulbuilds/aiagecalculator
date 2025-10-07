@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AgeDisplayFormats } from "@/components/AgeDisplayFormats";
+import { AdSenseBanner } from "@/components/AdSenseBanner";
 
 interface AgeResult {
   years: number;
@@ -309,6 +310,8 @@ const Index = () => {
           </Link>
         </div>
 
+        {/* Top Ad Banner */}
+        <AdSenseBanner format="horizontal" className="mb-6" />
 
         {/* Calculator Card */}
         <section 
@@ -480,6 +483,11 @@ const Index = () => {
           </section>
         )}
 
+        {/* Mid-Section Ad Banner */}
+        {result && (
+          <AdSenseBanner format="square" className="mb-6" />
+        )}
+
         {/* AI Birthday Wish Section */}
         {result && (
           <section 
@@ -612,6 +620,11 @@ const Index = () => {
         {/* Age Display Formats */}
         {result && (
           <AgeDisplayFormats result={result} timezone={timezone} />
+        )}
+
+        {/* Bottom Ad Banner */}
+        {result && (
+          <AdSenseBanner format="horizontal" className="mt-6" />
         )}
       </div>
     </main>
