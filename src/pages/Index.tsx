@@ -97,8 +97,11 @@ const Index = () => {
     afterMonths.setMonth(birthDate.getMonth() + months);
     const days = differenceInDays(targetDate, afterMonths);
     
-    const hours = differenceInHours(targetDate, birthDate) % 24;
-    const minutes = differenceInMinutes(targetDate, birthDate) % 60;
+    // For hours and minutes, calculate from the last complete day
+    const afterDays = new Date(afterMonths);
+    afterDays.setDate(afterMonths.getDate() + days);
+    const hours = differenceInHours(targetDate, afterDays);
+    const minutes = differenceInMinutes(targetDate, afterDays) % 60;
 
     // Calculate totals
     const totalDays = differenceInDays(targetDate, birthDate);
@@ -290,7 +293,7 @@ const Index = () => {
               <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 md:mb-6 text-center">
                 Your Exact Age
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
                 <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
                   <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
                     {result.years}
@@ -323,7 +326,7 @@ const Index = () => {
                     {result.hours === 1 ? "Hour" : "Hours"}
                   </div>
                 </div>
-                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center col-span-2 md:col-span-1">
+                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
                   <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
                     {result.minutes}
                   </div>
