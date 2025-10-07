@@ -21,50 +21,6 @@ interface AgeDisplayFormatsProps {
 export const AgeDisplayFormats = ({ result, timezone }: AgeDisplayFormatsProps) => {
   return (
     <div className="space-y-6">
-      {/* Traditional Age Section */}
-      <section 
-        className="bg-card rounded-2xl shadow-card p-6 md:p-8"
-        aria-label="Traditional age"
-      >
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Your Age
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Traditional format
-          </p>
-        </div>
-        
-        <div className="bg-accent/30 rounded-xl p-6">
-          <div className="grid grid-cols-3 gap-4 md:gap-6">
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-2">
-                {result.years}
-              </div>
-              <div className="text-sm md:text-base text-muted-foreground">
-                Years
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-2">
-                {result.months}
-              </div>
-              <div className="text-sm md:text-base text-muted-foreground">
-                Months
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-2">
-                {result.days}
-              </div>
-              <div className="text-sm md:text-base text-muted-foreground">
-                Days
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Total Days Section */}
       <section 
         className="bg-card rounded-2xl shadow-card p-6 md:p-8"

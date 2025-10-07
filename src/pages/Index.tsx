@@ -335,68 +335,112 @@ const Index = () => {
 
         {/* Live Age Display */}
         {liveAge && (
-          <section 
-            className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground"
-            aria-label="Live age counter"
-          >
-            <div className="text-center mb-4">
-              <h2 className="text-xl md:text-2xl font-semibold mb-1">
-                Your Current Age (Live)
-              </h2>
-              <p className="text-sm opacity-90">Updating in real-time every second</p>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.years}
+          <>
+            <section 
+              className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground"
+              aria-label="Live age counter"
+            >
+              <div className="text-center mb-4">
+                <h2 className="text-xl md:text-2xl font-semibold mb-1">
+                  Your Current Age (Live)
+                </h2>
+                <p className="text-sm opacity-90">Updating in real-time every second</p>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-3 md:gap-4">
+                <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                    {liveAge.years}
+                  </div>
+                  <div className="text-xs md:text-sm opacity-90">
+                    Years
+                  </div>
                 </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Years
+                <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                    {liveAge.months}
+                  </div>
+                  <div className="text-xs md:text-sm opacity-90">
+                    Months
+                  </div>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                    {liveAge.days}
+                  </div>
+                  <div className="text-xs md:text-sm opacity-90">
+                    Days
+                  </div>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                    {liveAge.hours}
+                  </div>
+                  <div className="text-xs md:text-sm opacity-90">
+                    Hours
+                  </div>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
+                    {liveAge.minutes}
+                  </div>
+                  <div className="text-xs md:text-sm opacity-90">
+                    Minutes
+                  </div>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
+                    {liveAge.seconds}
+                  </div>
+                  <div className="text-xs md:text-sm opacity-90">
+                    Seconds
+                  </div>
                 </div>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.months}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Months
+            </section>
+
+            {/* Traditional Age Section */}
+            <section 
+              className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
+              aria-label="Traditional age"
+            >
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <CalendarIconComponent className="w-6 h-6 text-primary" />
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                  Traditional Age
+                </h2>
+              </div>
+              
+              <div className="bg-gradient-to-br from-primary/10 via-accent/20 to-primary/5 rounded-2xl p-8 shadow-lg border border-primary/20">
+                <div className="grid grid-cols-3 gap-6 md:gap-8">
+                  <div className="text-center">
+                    <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-3">
+                      {result.years}
+                    </div>
+                    <div className="text-sm md:text-base font-medium text-muted-foreground">
+                      Years
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-3">
+                      {result.months}
+                    </div>
+                    <div className="text-sm md:text-base font-medium text-muted-foreground">
+                      Months
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-3">
+                      {result.days}
+                    </div>
+                    <div className="text-sm md:text-base font-medium text-muted-foreground">
+                      Days
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.days}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Days
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.hours}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Hours
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
-                  {liveAge.minutes}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Minutes
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
-                  {liveAge.seconds}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Seconds
-                </div>
-              </div>
-            </div>
-          </section>
+            </section>
+          </>
         )}
 
         {/* Age Display Formats */}
