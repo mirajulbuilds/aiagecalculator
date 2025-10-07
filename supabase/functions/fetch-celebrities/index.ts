@@ -59,14 +59,14 @@ async function fetchCelebritiesFromWikidata(birthMonth?: number, birthDay?: numb
 
     if (!response.ok) {
       console.error('Wikidata API error:', response.status);
-      return getFallbackCelebrities(birthMonth, birthDay);
+      return getFallbackCelebrities(birthMonth, birthDay, undefined);
     }
 
     const data = await response.json();
     
     if (!data.results?.bindings || data.results.bindings.length === 0) {
       console.log('No results from Wikidata, using fallback');
-      return getFallbackCelebrities(birthMonth, birthDay);
+      return getFallbackCelebrities(birthMonth, birthDay, undefined);
     }
     
     console.log(`Wikidata returned ${data.results.bindings.length} results`);
@@ -101,12 +101,12 @@ async function fetchCelebritiesFromWikidata(birthMonth?: number, birthDay?: numb
     return celebrities;
   } catch (error) {
     console.error('Error fetching celebrities:', error);
-    return getFallbackCelebrities(birthMonth, birthDay);
+    return getFallbackCelebrities(birthMonth, birthDay, undefined);
   }
 }
 
 // Fallback data when API fails
-function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebrity[] {
+function getFallbackCelebrities(birthMonth?: number, birthDay?: number, userCountry?: string): Celebrity[] {
   const fallbackData: Celebrity[] = [
     {
       id: '1',
@@ -115,7 +115,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actor, Producer',
       bio: 'American actor, producer, businessman and former professional wrestler',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Dwayne_Johnson_2%2C_2013.jpg/440px-Dwayne_Johnson_2%2C_2013.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'Success isn\'t always about greatness. It\'s about consistency.'
     },
     {
@@ -125,7 +125,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Tennis Player',
       bio: 'Swiss former professional tennis player',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Roger_Federer_%2826876366866%29_%28cropped_2%29.jpg/440px-Roger_Federer_%2826876366866%29_%28cropped_2%29.jpg',
-      nationality: 'Swiss',
+      nationality: 'Switzerland',
       quote: 'I fear no one, but respect everyone.'
     },
     {
@@ -135,7 +135,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Politician',
       bio: '44th President of the United States',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/440px-President_Barack_Obama.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'Change will not come if we wait for some other person or some other time.'
     },
     {
@@ -145,7 +145,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actress, Duchess',
       bio: 'American actress and member of the British royal family',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Meghan_Markle_and_Prince_Harry_in_Dublin_2018.jpg/440px-Meghan_Markle_and_Prince_Harry_in_Dublin_2018.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'With fame comes opportunity, but it also includes responsibility.'
     },
     {
@@ -155,7 +155,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actress, Producer',
       bio: 'South African and American actress and producer',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Charlize-theron-IMG_6045.jpg/440px-Charlize-theron-IMG_6045.jpg',
-      nationality: 'South African',
+      nationality: 'South Africa',
       quote: 'I think that life is about growth. You continue to grow and evolve.'
     },
     {
@@ -165,7 +165,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actor',
       bio: 'Australian actor best known for playing Thor in the Marvel Cinematic Universe',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Chris_Hemsworth_by_Gage_Skidmore_2_%28cropped%29.jpg/440px-Chris_Hemsworth_by_Gage_Skidmore_2_%28cropped%29.jpg',
-      nationality: 'Australian',
+      nationality: 'Australia',
       quote: 'The more conflict and contrast you have with a character, the more interesting.'
     },
     {
@@ -175,7 +175,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actress',
       bio: 'American actress and former fashion model',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Halle_Berry_by_Gage_Skidmore_3.jpg/440px-Halle_Berry_by_Gage_Skidmore_3.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'I\'m done with trying to be perfect. A perfect body belongs to somebody else.'
     },
     {
@@ -185,7 +185,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actress',
       bio: 'American actress known for The Hunger Games series',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Jennifer_Lawrence_SDCC_2015_X-Men.jpg/440px-Jennifer_Lawrence_SDCC_2015_X-Men.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'I\'m a woman that\'s living in this world of everybody telling everyone how they should look.'
     },
     {
@@ -195,7 +195,7 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Actor',
       bio: 'American actor and producer regarded as one of the greatest actors of all time',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Robert_De_Niro_Cannes_2016.jpg/440px-Robert_De_Niro_Cannes_2016.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'The talent is in the choices.'
     },
     {
@@ -205,20 +205,129 @@ function getFallbackCelebrities(birthMonth?: number, birthDay?: number): Celebri
       profession: 'Singer, Actress',
       bio: 'American singer-songwriter and actress known as the "Queen of Pop"',
       photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Madonna_Rebel_Heart_Tour_2015_-_Stockholm_%2823051472299%29_%28cropped%29.jpg/440px-Madonna_Rebel_Heart_Tour_2015_-_Stockholm_%2823051472299%29_%28cropped%29.jpg',
-      nationality: 'American',
+      nationality: 'United States',
       quote: 'I\'m tough, ambitious, and I know exactly what I want.'
+    },
+    {
+      id: '11',
+      name: 'Shah Rukh Khan',
+      dateOfBirth: '1965-11-02',
+      profession: 'Actor, Producer',
+      bio: 'Indian actor and film producer known as the "King of Bollywood"',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Shah_Rukh_Khan_graces_the_launch_of_the_new_Santro.jpg/440px-Shah_Rukh_Khan_graces_the_launch_of_the_new_Santro.jpg',
+      nationality: 'India',
+      quote: 'Success is not a good teacher, failure makes you humble.'
+    },
+    {
+      id: '12',
+      name: 'Priyanka Chopra',
+      dateOfBirth: '1982-07-18',
+      profession: 'Actress, Singer',
+      bio: 'Indian actress, singer, and film producer who works in Hindi films',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Priyanka-chopra-berlin-2016.jpg/440px-Priyanka-chopra-berlin-2016.jpg',
+      nationality: 'India',
+      quote: 'I believe destiny and hard work go hand in hand.'
+    },
+    {
+      id: '13',
+      name: 'Mohammed Abdu',
+      dateOfBirth: '1949-06-12',
+      profession: 'Singer',
+      bio: 'Saudi Arabian singer known as "Artist of the Arabs"',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Mohammed_Abdu.jpg/440px-Mohammed_Abdu.jpg',
+      nationality: 'Saudi Arabia',
+      quote: 'Music is the language of the soul.'
+    },
+    {
+      id: '14',
+      name: 'Nawal El Kuwaitia',
+      dateOfBirth: '1966-11-18',
+      profession: 'Singer',
+      bio: 'Kuwaiti singer and actress known throughout the Arab world',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Nawal.jpg/440px-Nawal.jpg',
+      nationality: 'Kuwait',
+      quote: 'Art has no boundaries.'
+    },
+    {
+      id: '15',
+      name: 'Shakib Khan',
+      dateOfBirth: '1979-03-24',
+      profession: 'Actor, Producer',
+      bio: 'Bangladeshi actor known as the "King of Dhallywood"',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Shakib_Khan.jpg/440px-Shakib_Khan.jpg',
+      nationality: 'Bangladesh',
+      quote: 'Work hard in silence, let success make the noise.'
+    },
+    {
+      id: '16',
+      name: 'Mehwish Hayat',
+      dateOfBirth: '1988-01-06',
+      profession: 'Actress',
+      bio: 'Pakistani actress who works in Urdu cinema and television',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Mehwish_Hayat.jpg/440px-Mehwish_Hayat.jpg',
+      nationality: 'Pakistan',
+      quote: 'Believe in yourself and all that you are.'
+    },
+    {
+      id: '17',
+      name: 'Amr Diab',
+      dateOfBirth: '1961-10-11',
+      profession: 'Singer, Composer',
+      bio: 'Egyptian singer and composer known as "El Hadaba"',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Amr_Diab.jpg/440px-Amr_Diab.jpg',
+      nationality: 'Egypt',
+      quote: 'Music is my life and my passion.'
+    },
+    {
+      id: '18',
+      name: 'Nancy Ajram',
+      dateOfBirth: '1983-05-16',
+      profession: 'Singer',
+      bio: 'Lebanese singer and one of the most successful Arab pop stars',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Nancy_Ajram.jpg/440px-Nancy_Ajram.jpg',
+      nationality: 'Lebanon',
+      quote: 'Music brings people together.'
+    },
+    {
+      id: '19',
+      name: 'Jackie Chan',
+      dateOfBirth: '1954-04-07',
+      profession: 'Actor, Martial Artist',
+      bio: 'Hong Kong actor and martial artist known for his acrobatic fighting style',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Jackie_Chan_2012.jpg/440px-Jackie_Chan_2012.jpg',
+      nationality: 'Hong Kong',
+      quote: 'Do not let circumstances control you. You change your circumstances.'
+    },
+    {
+      id: '20',
+      name: 'Aishwarya Rai',
+      dateOfBirth: '1973-11-01',
+      profession: 'Actress, Model',
+      bio: 'Indian actress and former Miss World',
+      photoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Aishwarya_Rai_Cannes_2017.jpg/440px-Aishwarya_Rai_Cannes_2017.jpg',
+      nationality: 'India',
+      quote: 'Life will take its toll on all of us. We get injured, we get old. It\'s really sad to try to run away from these harsh realities of life.'
     }
   ];
 
+  let filteredData = fallbackData;
+
   // Filter by birth date if provided
   if (birthMonth && birthDay) {
-    return fallbackData.filter(person => {
+    filteredData = filteredData.filter(person => {
       const date = new Date(person.dateOfBirth);
       return date.getMonth() + 1 === birthMonth && date.getDate() === birthDay;
     });
   }
 
-  return fallbackData;
+  // Filter by user country if provided
+  if (userCountry) {
+    filteredData = filteredData.filter(person => 
+      person.nationality && person.nationality.toLowerCase().includes(userCountry.toLowerCase())
+    );
+  }
+
+  return filteredData;
 }
 
 serve(async (req) => {
@@ -234,8 +343,9 @@ serve(async (req) => {
     const search = url.searchParams.get('search');
     const profession = url.searchParams.get('profession');
     const nationality = url.searchParams.get('nationality');
+    const userCountry = url.searchParams.get('userCountry');
 
-    console.log('Fetching celebrities with params:', { birthMonth, birthDay, search, profession, nationality });
+    console.log('Fetching celebrities with params:', { birthMonth, birthDay, search, profession, nationality, userCountry });
 
     // Fetch celebrities from Wikidata
     let celebrities = await fetchCelebritiesFromWikidata(
@@ -264,6 +374,13 @@ serve(async (req) => {
       const nationalityLower = nationality.toLowerCase();
       celebrities = celebrities.filter(c => 
         c.nationality && c.nationality.toLowerCase().includes(nationalityLower)
+      );
+    }
+
+    if (userCountry) {
+      const countryLower = userCountry.toLowerCase();
+      celebrities = celebrities.filter(c => 
+        c.nationality && c.nationality.toLowerCase().includes(countryLower)
       );
     }
 

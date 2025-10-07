@@ -30,10 +30,30 @@ const Celebrities = () => {
   const [selectedProfession, setSelectedProfession] = useState<string>("");
   const [selectedNationality, setSelectedNationality] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [userCountry, setUserCountry] = useState<string>("");
+  const [showRegionalOnly, setShowRegionalOnly] = useState(true);
 
   useEffect(() => {
-    fetchCelebrities();
-  }, [userBirthMonth, userBirthDay]);
+    detectUserLocation();
+  }, []);
+
+  useEffect(() => {
+    if (userCountry) {
+      fetchCelebrities();
+    }
+  }, [userBirthMonth, userBirthDay, userCountry, showRegionalOnly]);
+
+  const detectUserLocation = async () => {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      setUserCountry(data.country_name || '');
+      console.log('Detected user country:', data.country_name);
+    } catch (error) {
+      console.error('Error detecting location:', error);
+      setUserCountry('');
+    }
+  };
 
   const fetchCelebrities = async () => {
     try {
@@ -46,6 +66,7 @@ const Celebrities = () => {
       if (searchQuery) params.append('search', searchQuery);
       if (selectedProfession) params.append('profession', selectedProfession);
       if (selectedNationality) params.append('nationality', selectedNationality);
+      if (showRegionalOnly && userCountry) params.append('userCountry', userCountry);
 
       console.log('Fetching celebrities with params:', params.toString());
 
@@ -124,6 +145,28 @@ const Celebrities = () => {
 
         {/* Search and Filters */}
         <section className="mb-8 space-y-4">
+          {/* Regional Filter Toggle */}
+          {userCountry && (
+            <div className="flex items-center justify-center gap-3 max-w-2xl mx-auto mb-4">
+              <Button
+                variant={showRegionalOnly ? "default" : "outline"}
+                onClick={() => setShowRegionalOnly(true)}
+                className="gap-2"
+              >
+                <Users className="w-4 h-4" />
+                {userCountry} Celebrities
+              </Button>
+              <Button
+                variant={!showRegionalOnly ? "default" : "outline"}
+                onClick={() => setShowRegionalOnly(false)}
+                className="gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Global Celebrities
+              </Button>
+            </div>
+          )}
+
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
