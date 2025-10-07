@@ -14,6 +14,61 @@ serve(async (req) => {
   try {
     const { name, birthDate, age } = await req.json();
     
+    // Input validation
+    if (name && (typeof name !== 'string' || name.length > 100)) {
+      return new Response(
+        JSON.stringify({ error: "Name must be a string with maximum 100 characters" }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    if (!birthDate || typeof birthDate !== 'string') {
+      return new Response(
+        JSON.stringify({ error: "Birth date is required and must be a string" }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(birthDate)) {
+      return new Response(
+        JSON.stringify({ error: "Birth date must be in YYYY-MM-DD format" }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    // Validate that the date is valid
+    const parsedDate = new Date(birthDate);
+    if (isNaN(parsedDate.getTime())) {
+      return new Response(
+        JSON.stringify({ error: "Invalid birth date" }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    if (typeof age !== 'number' || age < 0 || age > 150) {
+      return new Response(
+        JSON.stringify({ error: "Age must be a number between 0 and 150" }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+    
     console.log('Generating birthday wish for:', { name, birthDate, age });
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
