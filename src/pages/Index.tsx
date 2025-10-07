@@ -226,7 +226,7 @@ const Index = () => {
           },
           body: JSON.stringify({
             name: name || undefined,
-            birthDate: birthDate.toISOString().split('T')[0],
+            birthDate: `${birthDate.getFullYear()}-${String(birthDate.getMonth() + 1).padStart(2, '0')}-${String(birthDate.getDate()).padStart(2, '0')}`,
             age: age
           }),
         }
