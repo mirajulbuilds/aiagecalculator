@@ -76,8 +76,9 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Format the birth date nicely
-    const date = new Date(birthDate);
+    // Format the birth date nicely - parse date components to avoid timezone issues
+    const [year, month, day] = birthDate.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
     const formattedDate = date.toLocaleDateString('en-US', { 
       month: 'long', 
       day: 'numeric', 
