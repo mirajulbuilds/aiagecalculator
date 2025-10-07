@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Users, Download, Sparkles } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -298,15 +297,6 @@ const Index = () => {
           </div>
         )}
 
-        {/* Explore Famous People Section */}
-        <div className="text-center mb-8">
-          <Link to={`/celebrities${birthDay && birthMonth ? `?birthMonth=${birthMonth}&birthDay=${birthDay}` : ''}`}>
-            <Button variant="outline" className="gap-2">
-              <Users className="w-4 h-4" />
-              Explore Famous People Birthdays
-            </Button>
-          </Link>
-        </div>
 
         {/* Calculator Card */}
         <section 
