@@ -470,6 +470,67 @@ const Index = () => {
           </section>
         )}
 
+        {/* AI Birthday Wish Section */}
+        {result && (
+          <section 
+            className="bg-gradient-to-br from-card via-accent/10 to-card rounded-2xl shadow-card p-4 md:p-6 mb-6"
+            aria-label="AI generated birthday wish"
+          >
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h2 className="text-lg md:text-xl font-bold text-foreground">
+                Your Personalized Birthday Wish
+              </h2>
+            </div>
+
+            {isGeneratingWish ? (
+              <div className="flex flex-col items-center justify-center py-8 space-y-3">
+                <div className="relative">
+                  <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                  <Sparkles className="w-6 h-6 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-sm text-muted-foreground text-center animate-pulse">
+                  Creating your magical birthday wish...
+                </p>
+              </div>
+            ) : birthdayWishImage ? (
+              <div className="space-y-4 animate-fade-in">
+                <div className="relative rounded-lg overflow-hidden shadow-md border border-primary/20 max-w-2xl mx-auto">
+                  <img 
+                    src={birthdayWishImage} 
+                    alt="Personalized birthday wish"
+                    className="w-full h-auto"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                  <Button
+                    onClick={downloadBirthdayWish}
+                    className="gap-2 bg-gradient-primary hover:opacity-90"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Birthday Wish
+                  </Button>
+                  <Button
+                    onClick={() => generateBirthdayWish(
+                      new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay)),
+                      result.years
+                    )}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Generate New Wish
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6 text-sm text-muted-foreground">
+                <p>Birthday wish will appear here after calculating your age</p>
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Live Age Display */}
         {liveAge && (
           <section 
@@ -533,69 +594,6 @@ const Index = () => {
                 </div>
               </div>
             </div>
-          </section>
-        )}
-
-        {/* AI Birthday Wish Section */}
-        {result && (
-          <section 
-            className="bg-gradient-to-br from-card via-accent/10 to-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
-            aria-label="AI generated birthday wish"
-          >
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <h2 className="text-xl md:text-2xl font-bold text-foreground">
-                Your Personalized Birthday Wish
-              </h2>
-            </div>
-
-            {isGeneratingWish ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <div className="relative">
-                  <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  <Sparkles className="w-8 h-8 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <p className="text-muted-foreground text-center animate-pulse">
-                  Creating your magical birthday wish...
-                </p>
-              </div>
-            ) : birthdayWishImage ? (
-              <div className="space-y-6 animate-fade-in">
-                <div className="relative rounded-xl overflow-hidden shadow-lg border-2 border-primary/20">
-                  <img 
-                    src={birthdayWishImage} 
-                    alt="Personalized birthday wish"
-                    className="w-full h-auto"
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button
-                    onClick={downloadBirthdayWish}
-                    className="gap-2 bg-gradient-primary hover:opacity-90"
-                    size="lg"
-                  >
-                    <Download className="w-5 h-5" />
-                    Download Birthday Wish
-                  </Button>
-                  <Button
-                    onClick={() => generateBirthdayWish(
-                      new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay)),
-                      result.years
-                    )}
-                    variant="outline"
-                    className="gap-2"
-                    size="lg"
-                  >
-                    <Sparkles className="w-5 h-5" />
-                    Generate New Wish
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>Birthday wish will appear here after calculating your age</p>
-              </div>
-            )}
           </section>
         )}
 
