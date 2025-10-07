@@ -281,6 +281,9 @@ const Index = () => {
       <div className="max-w-7xl mx-auto flex gap-6">
         {/* Main Content */}
         <div className="flex-1 max-w-4xl mx-auto">
+        {/* Top Banner Ad */}
+        <AdSenseBanner format="large-horizontal" className="mb-6" />
+        
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
@@ -311,9 +314,6 @@ const Index = () => {
             </Button>
           </Link>
         </div>
-
-        {/* Top Ad Banner */}
-        <AdSenseBanner format="large-horizontal" className="mb-6" />
 
         {/* Calculator Card */}
         <section 
