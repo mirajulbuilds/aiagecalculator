@@ -35,12 +35,65 @@ const Index = () => {
   
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
+  const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
 
   useEffect(() => {
     // Detect user's timezone
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setTimezone(userTimezone);
   }, []);
+
+  // Live age update every second
+  useEffect(() => {
+    if (!birthDay || !birthMonth || !birthYear) {
+      setLiveAge(null);
+      return;
+    }
+
+    const updateLiveAge = () => {
+      const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
+      const now = new Date();
+
+      if (isNaN(birthDate.getTime()) || birthDate > now) {
+        return;
+      }
+
+      const years = differenceInYears(now, birthDate);
+      const months = differenceInMonths(now, birthDate) % 12;
+      
+      const afterMonths = new Date(birthDate);
+      afterMonths.setFullYear(birthDate.getFullYear() + years);
+      afterMonths.setMonth(birthDate.getMonth() + months);
+      const days = differenceInDays(now, afterMonths);
+      
+      const afterDays = new Date(afterMonths);
+      afterDays.setDate(afterMonths.getDate() + days);
+      const hours = differenceInHours(now, afterDays);
+      const minutes = differenceInMinutes(now, afterDays) % 60;
+
+      const totalDays = differenceInDays(now, birthDate);
+      const totalHours = differenceInHours(now, birthDate);
+      const totalMinutes = differenceInMinutes(now, birthDate);
+      const totalSeconds = Math.floor(totalMinutes * 60);
+
+      setLiveAge({
+        years,
+        months,
+        days,
+        hours,
+        minutes,
+        totalDays,
+        totalHours,
+        totalMinutes,
+        totalSeconds,
+      });
+    };
+
+    updateLiveAge();
+    const interval = setInterval(updateLiveAge, 1000);
+
+    return () => clearInterval(interval);
+  }, [birthDay, birthMonth, birthYear]);
 
   const months = [
     { value: "1", label: "January" },
@@ -262,6 +315,93 @@ const Index = () => {
             Calculate Age
           </Button>
         </section>
+
+        {/* Live Age Display */}
+        {liveAge && (
+          <section 
+            className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground"
+            aria-label="Live age counter"
+          >
+            <div className="text-center mb-4">
+              <h2 className="text-xl md:text-2xl font-semibold mb-1">
+                Your Current Age (Live)
+              </h2>
+              <p className="text-sm opacity-90">Updating in real-time every second</p>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                  {liveAge.years}
+                </div>
+                <div className="text-xs md:text-sm opacity-90">
+                  Years
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                  {liveAge.months}
+                </div>
+                <div className="text-xs md:text-sm opacity-90">
+                  Months
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                  {liveAge.days}
+                </div>
+                <div className="text-xs md:text-sm opacity-90">
+                  Days
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                  {liveAge.hours}
+                </div>
+                <div className="text-xs md:text-sm opacity-90">
+                  Hours
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
+                  {liveAge.minutes}
+                </div>
+                <div className="text-xs md:text-sm opacity-90">
+                  Minutes
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-white/20">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                <div>
+                  <div className="text-lg md:text-xl font-bold tabular-nums">
+                    {liveAge.totalDays.toLocaleString()}
+                  </div>
+                  <div className="text-xs opacity-75">Total Days</div>
+                </div>
+                <div>
+                  <div className="text-lg md:text-xl font-bold tabular-nums">
+                    {liveAge.totalHours.toLocaleString()}
+                  </div>
+                  <div className="text-xs opacity-75">Total Hours</div>
+                </div>
+                <div>
+                  <div className="text-lg md:text-xl font-bold tabular-nums">
+                    {liveAge.totalMinutes.toLocaleString()}
+                  </div>
+                  <div className="text-xs opacity-75">Total Minutes</div>
+                </div>
+                <div>
+                  <div className="text-lg md:text-xl font-bold tabular-nums">
+                    {liveAge.totalSeconds.toLocaleString()}
+                  </div>
+                  <div className="text-xs opacity-75">Total Seconds</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Results Card */}
         {result && (
