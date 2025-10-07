@@ -439,12 +439,6 @@ const Index = () => {
           >
             Calculate Age
           </Button>
-          
-          {result && (
-            <p className="text-center mt-4 text-lg font-medium text-muted-foreground">
-              আলাবু কদবানু
-            </p>
-          )}
         </section>
 
         {/* Traditional Age Section */}
