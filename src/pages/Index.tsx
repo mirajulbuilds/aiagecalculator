@@ -47,6 +47,11 @@ const Index = () => {
     { value: "12", label: "December" },
   ];
 
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
+
   const calculateAge = () => {
     if (!birthDay || !birthMonth || !birthYear) {
       toast.error("Please enter your complete birth date");
@@ -127,16 +132,18 @@ const Index = () => {
                   <label htmlFor="birth-day" className="text-xs text-muted-foreground mb-1 block">
                     Day
                   </label>
-                  <Input
-                    id="birth-day"
-                    type="number"
-                    min="1"
-                    max="31"
-                    placeholder="DD"
-                    value={birthDay}
-                    onChange={(e) => setBirthDay(e.target.value)}
-                    className="h-12 text-center"
-                  />
+                  <Select value={birthDay} onValueChange={setBirthDay}>
+                    <SelectTrigger id="birth-day" className="h-12">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {days.map((day) => (
+                        <SelectItem key={day} value={day}>
+                          {day}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <label htmlFor="birth-month" className="text-xs text-muted-foreground mb-1 block">
@@ -159,16 +166,18 @@ const Index = () => {
                   <label htmlFor="birth-year" className="text-xs text-muted-foreground mb-1 block">
                     Year
                   </label>
-                  <Input
-                    id="birth-year"
-                    type="number"
-                    min="1900"
-                    max={new Date().getFullYear()}
-                    placeholder="YYYY"
-                    value={birthYear}
-                    onChange={(e) => setBirthYear(e.target.value)}
-                    className="h-12 text-center"
-                  />
+                  <Select value={birthYear} onValueChange={setBirthYear}>
+                    <SelectTrigger id="birth-year" className="h-12">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map((year) => (
+                        <SelectItem key={year} value={year}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -183,16 +192,18 @@ const Index = () => {
                   <label htmlFor="target-day" className="text-xs text-muted-foreground mb-1 block">
                     Day
                   </label>
-                  <Input
-                    id="target-day"
-                    type="number"
-                    min="1"
-                    max="31"
-                    placeholder="DD"
-                    value={targetDay}
-                    onChange={(e) => setTargetDay(e.target.value)}
-                    className="h-12 text-center"
-                  />
+                  <Select value={targetDay} onValueChange={setTargetDay}>
+                    <SelectTrigger id="target-day" className="h-12">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {days.map((day) => (
+                        <SelectItem key={day} value={day}>
+                          {day}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <label htmlFor="target-month" className="text-xs text-muted-foreground mb-1 block">
@@ -215,16 +226,18 @@ const Index = () => {
                   <label htmlFor="target-year" className="text-xs text-muted-foreground mb-1 block">
                     Year
                   </label>
-                  <Input
-                    id="target-year"
-                    type="number"
-                    min="1900"
-                    max={2100}
-                    placeholder="YYYY"
-                    value={targetYear}
-                    onChange={(e) => setTargetYear(e.target.value)}
-                    className="h-12 text-center"
-                  />
+                  <Select value={targetYear} onValueChange={setTargetYear}>
+                    <SelectTrigger id="target-year" className="h-12">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map((year) => (
+                        <SelectItem key={year} value={year}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
