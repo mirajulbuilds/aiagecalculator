@@ -277,8 +277,10 @@ const Index = () => {
   };
 
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4 py-8">
-      <div className="w-full max-w-4xl">
+    <main className="min-h-screen bg-background p-4 py-8">
+      <div className="max-w-7xl mx-auto flex gap-6">
+        {/* Main Content */}
+        <div className="flex-1 max-w-4xl mx-auto">
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
@@ -311,7 +313,7 @@ const Index = () => {
         </div>
 
         {/* Top Ad Banner */}
-        <AdSenseBanner format="horizontal" className="mb-6" />
+        <AdSenseBanner format="large-horizontal" className="mb-6" />
 
         {/* Calculator Card */}
         <section 
@@ -626,6 +628,13 @@ const Index = () => {
         {result && (
           <AdSenseBanner format="horizontal" className="mt-6" />
         )}
+        </div>
+
+        {/* Right Sidebar Ads */}
+        <aside className="hidden xl:block w-[320px] space-y-6 sticky top-20 self-start">
+          <AdSenseBanner format="vertical" />
+          <AdSenseBanner format="square" />
+        </aside>
       </div>
     </main>
   );

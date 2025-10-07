@@ -154,7 +154,7 @@ const FamousPeople = () => {
         </header>
 
         {/* Top Ad Banner */}
-        <AdSenseBanner format="horizontal" className="mb-8" />
+        <AdSenseBanner format="large-horizontal" className="mb-8" />
 
         {/* Search Bar */}
         <section className="mb-6 max-w-2xl mx-auto">
@@ -197,9 +197,6 @@ const FamousPeople = () => {
             ))}
           </div>
         </section>
-
-        {/* Mid-Section Ad Banner */}
-        <AdSenseBanner format="square" className="mb-8" />
 
         {/* People Grid */}
         {loading ? (
