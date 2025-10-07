@@ -37,6 +37,7 @@ const Index = () => {
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
+  const [displayFormat, setDisplayFormat] = useState<"detailed" | "days" | "hours">("detailed");
 
   useEffect(() => {
     // Detect user's timezone
@@ -344,78 +345,134 @@ const Index = () => {
               </h2>
               <p className="text-sm opacity-90">Updating in real-time every second</p>
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.years}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Years
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.months}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Months
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.days}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Days
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
-                  {liveAge.hours}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Hours
-                </div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
-                <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
-                  {liveAge.minutes}
-                </div>
-                <div className="text-xs md:text-sm opacity-90">
-                  Minutes
-                </div>
+
+            {/* Display Format Selector */}
+            <div className="flex justify-center mb-6">
+              <div className="inline-flex bg-white/10 backdrop-blur rounded-lg p-1 gap-1">
+                <button
+                  onClick={() => setDisplayFormat("detailed")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    displayFormat === "detailed"
+                      ? "bg-white/20 shadow-sm"
+                      : "hover:bg-white/5"
+                  }`}
+                >
+                  Detailed
+                </button>
+                <button
+                  onClick={() => setDisplayFormat("days")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    displayFormat === "days"
+                      ? "bg-white/20 shadow-sm"
+                      : "hover:bg-white/5"
+                  }`}
+                >
+                  Total Days
+                </button>
+                <button
+                  onClick={() => setDisplayFormat("hours")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    displayFormat === "hours"
+                      ? "bg-white/20 shadow-sm"
+                      : "hover:bg-white/5"
+                  }`}
+                >
+                  Hours & Minutes
+                </button>
               </div>
             </div>
+            
+            {/* Detailed Format */}
+            {displayFormat === "detailed" && (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
+                  <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                      {liveAge.years}
+                    </div>
+                    <div className="text-xs md:text-sm opacity-90">
+                      Years
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                      {liveAge.months}
+                    </div>
+                    <div className="text-xs md:text-sm opacity-90">
+                      Months
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                      {liveAge.days}
+                    </div>
+                    <div className="text-xs md:text-sm opacity-90">
+                      Days
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
+                      {liveAge.hours}
+                    </div>
+                    <div className="text-xs md:text-sm opacity-90">
+                      Hours
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
+                      {liveAge.minutes}
+                    </div>
+                    <div className="text-xs md:text-sm opacity-90">
+                      Minutes
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1 tabular-nums">
+                      {liveAge.seconds}
+                    </div>
+                    <div className="text-xs md:text-sm opacity-90">
+                      Seconds
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div className="mt-4 pt-4 border-t border-white/20">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                <div>
-                  <div className="text-lg md:text-xl font-bold tabular-nums">
+            {/* Total Days Format */}
+            {displayFormat === "days" && (
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="bg-white/10 backdrop-blur rounded-2xl p-8 text-center max-w-md w-full">
+                  <div className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 tabular-nums">
                     {liveAge.totalDays.toLocaleString()}
                   </div>
-                  <div className="text-xs opacity-75">Total Days</div>
-                </div>
-                <div>
-                  <div className="text-lg md:text-xl font-bold tabular-nums">
-                    {liveAge.totalHours.toLocaleString()}
+                  <div className="text-lg md:text-xl opacity-90">
+                    Total Days Lived
                   </div>
-                  <div className="text-xs opacity-75">Total Hours</div>
-                </div>
-                <div>
-                  <div className="text-lg md:text-xl font-bold tabular-nums">
-                    {liveAge.totalMinutes.toLocaleString()}
-                  </div>
-                  <div className="text-xs opacity-75">Total Minutes</div>
-                </div>
-                <div>
-                  <div className="text-lg md:text-xl font-bold tabular-nums">
-                    {liveAge.totalSeconds.toLocaleString()}
-                  </div>
-                  <div className="text-xs opacity-75">Total Seconds</div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Hours & Minutes Format */}
+            {displayFormat === "hours" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white/10 backdrop-blur rounded-2xl p-6 md:p-8 text-center">
+                  <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tabular-nums">
+                    {liveAge.totalHours.toLocaleString()}
+                  </div>
+                  <div className="text-base md:text-lg opacity-90">
+                    Total Hours
+                  </div>
+                </div>
+                <div className="bg-white/10 backdrop-blur rounded-2xl p-6 md:p-8 text-center">
+                  <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tabular-nums">
+                    {liveAge.totalMinutes.toLocaleString()}
+                  </div>
+                  <div className="text-base md:text-lg opacity-90">
+                    Total Minutes
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         )}
 
