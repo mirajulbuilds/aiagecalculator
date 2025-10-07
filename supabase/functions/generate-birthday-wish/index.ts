@@ -76,14 +76,11 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Format the birth date nicely - parse date components to avoid timezone issues
+    // Format the birth date nicely - parse date components directly without timezone conversion
     const [year, month, day] = birthDate.split('-').map(Number);
-    const date = new Date(year, month - 1, day); // month is 0-indexed
-    const formattedDate = date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+    const formattedDate = `${monthNames[month - 1]} ${day}, ${year}`;
 
     // Create a detailed prompt for the birthday wish image
     const nameText = name ? `Happy Birthday ${name}!` : 'Happy Birthday!';
