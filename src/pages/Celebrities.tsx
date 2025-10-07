@@ -50,37 +50,37 @@ const Celebrities = () => {
       console.log('Fetching celebrities with params:', params.toString());
 
       // Call edge function to fetch celebrities from external APIs
-      const { data, error } = await supabase.functions.invoke('fetch-celebrities', {
-        body: {},
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'GET',
-      });
-
-      // Use fetch as fallback with proper URL construction
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-celebrities?${params.toString()}`,
         {
           headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'Content-Type': 'application/json',
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch celebrities');
+        const errorText = await response.text();
+        console.error('Failed to fetch celebrities:', response.status, errorText);
+        throw new Error('Failed to fetch celebrities from API');
       }
 
       const result = await response.json();
+      console.log('Received celebrities:', result.celebrities?.length || 0);
+      
       setCelebrities(result.celebrities || []);
       
       if (result.celebrities?.length === 0) {
         toast.info("No celebrities found matching your criteria");
+      } else {
+        toast.success(`Found ${result.celebrities.length} famous people!`);
       }
     } catch (error) {
       console.error("Error fetching celebrities:", error);
-      toast.error("Failed to load celebrities. Please try again.");
+      toast.error("Unable to load celebrity data. Please try again.");
+      // Set empty array on error
+      setCelebrities([]);
     } finally {
       setLoading(false);
     }
