@@ -18,6 +18,10 @@ interface AgeResult {
   days: number;
   hours: number;
   minutes: number;
+  totalDays: number;
+  totalHours: number;
+  totalMinutes: number;
+  totalSeconds: number;
 }
 
 const Index = () => {
@@ -96,34 +100,44 @@ const Index = () => {
     const hours = differenceInHours(targetDate, birthDate) % 24;
     const minutes = differenceInMinutes(targetDate, birthDate) % 60;
 
+    // Calculate totals
+    const totalDays = differenceInDays(targetDate, birthDate);
+    const totalHours = differenceInHours(targetDate, birthDate);
+    const totalMinutes = differenceInMinutes(targetDate, birthDate);
+    const totalSeconds = Math.floor(totalMinutes * 60);
+
     setResult({
       years,
       months,
       days,
       hours,
       minutes,
+      totalDays,
+      totalHours,
+      totalMinutes,
+      totalSeconds,
     });
 
     toast.success("Age calculated successfully!");
   };
 
   return (
-    <main className="min-h-screen bg-gradient-bg flex items-center justify-center p-4">
+    <main className="min-h-screen bg-gradient-bg flex items-center justify-center p-4 py-8">
       <div className="w-full max-w-2xl animate-fade-in">
         {/* Header */}
-        <header className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4 shadow-elegant">
-            <Sparkles className="w-8 h-8 text-primary-foreground" />
+        <header className="text-center mb-6 md:mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-primary rounded-2xl mb-3 md:mb-4 shadow-elegant">
+            <Sparkles className="w-7 h-7 md:w-8 md:h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3 bg-gradient-primary bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-2 md:mb-3 bg-gradient-primary bg-clip-text text-transparent px-4">
             Age Calculator
           </h1>
-          <p className="text-muted-foreground text-lg mb-3">
+          <p className="text-muted-foreground text-base md:text-lg mb-3 px-4">
             Calculate your exact age in years, months, days, hours, and minutes
           </p>
           {timezone && (
-            <div className="inline-flex items-center gap-2 bg-accent px-4 py-2 rounded-full text-sm text-accent-foreground">
-              <Globe className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 bg-accent px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm text-accent-foreground">
+              <Globe className="w-3 h-3 md:w-4 md:h-4" />
               <span>Your timezone: <span className="font-medium">{timezone}</span></span>
             </div>
           )}
@@ -131,22 +145,22 @@ const Index = () => {
 
         {/* Calculator Card */}
         <section 
-          className="bg-card rounded-3xl shadow-card p-6 md:p-8 mb-6 animate-scale-in"
+          className="bg-card rounded-2xl md:rounded-3xl shadow-card p-4 md:p-6 lg:p-8 mb-4 md:mb-6 animate-scale-in"
           aria-label="Age calculation form"
         >
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Birth Date Input */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-3">
+              <label className="block text-xs md:text-sm font-medium text-foreground mb-2 md:mb-3">
                 Date of Birth *
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 md:gap-3">
                 <div>
-                  <label htmlFor="birth-day" className="text-xs text-muted-foreground mb-1 block">
+                  <label htmlFor="birth-day" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
                     Day
                   </label>
                   <Select value={birthDay} onValueChange={setBirthDay}>
-                    <SelectTrigger id="birth-day" className="h-12">
+                    <SelectTrigger id="birth-day" className="h-10 md:h-12 text-sm md:text-base">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
                     <SelectContent>
@@ -159,11 +173,11 @@ const Index = () => {
                   </Select>
                 </div>
                 <div>
-                  <label htmlFor="birth-month" className="text-xs text-muted-foreground mb-1 block">
+                  <label htmlFor="birth-month" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
                     Month
                   </label>
                   <Select value={birthMonth} onValueChange={setBirthMonth}>
-                    <SelectTrigger id="birth-month" className="h-12">
+                    <SelectTrigger id="birth-month" className="h-10 md:h-12 text-sm md:text-base">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -176,11 +190,11 @@ const Index = () => {
                   </Select>
                 </div>
                 <div>
-                  <label htmlFor="birth-year" className="text-xs text-muted-foreground mb-1 block">
+                  <label htmlFor="birth-year" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
                     Year
                   </label>
                   <Select value={birthYear} onValueChange={setBirthYear}>
-                    <SelectTrigger id="birth-year" className="h-12">
+                    <SelectTrigger id="birth-year" className="h-10 md:h-12 text-sm md:text-base">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -197,16 +211,16 @@ const Index = () => {
 
             {/* Target Date Input */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-3">
+              <label className="block text-xs md:text-sm font-medium text-foreground mb-2 md:mb-3">
                 Calculate Age To
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 md:gap-3">
                 <div>
-                  <label htmlFor="target-day" className="text-xs text-muted-foreground mb-1 block">
+                  <label htmlFor="target-day" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
                     Day
                   </label>
                   <Select value={targetDay} onValueChange={setTargetDay}>
-                    <SelectTrigger id="target-day" className="h-12">
+                    <SelectTrigger id="target-day" className="h-10 md:h-12 text-sm md:text-base">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
                     <SelectContent>
@@ -219,11 +233,11 @@ const Index = () => {
                   </Select>
                 </div>
                 <div>
-                  <label htmlFor="target-month" className="text-xs text-muted-foreground mb-1 block">
+                  <label htmlFor="target-month" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
                     Month
                   </label>
                   <Select value={targetMonth} onValueChange={setTargetMonth}>
-                    <SelectTrigger id="target-month" className="h-12">
+                    <SelectTrigger id="target-month" className="h-10 md:h-12 text-sm md:text-base">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -236,11 +250,11 @@ const Index = () => {
                   </Select>
                 </div>
                 <div>
-                  <label htmlFor="target-year" className="text-xs text-muted-foreground mb-1 block">
+                  <label htmlFor="target-year" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
                     Year
                   </label>
                   <Select value={targetYear} onValueChange={setTargetYear}>
-                    <SelectTrigger id="target-year" className="h-12">
+                    <SelectTrigger id="target-year" className="h-10 md:h-12 text-sm md:text-base">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -258,7 +272,7 @@ const Index = () => {
             {/* Calculate Button */}
             <Button
               onClick={calculateAge}
-              className="w-full h-12 bg-gradient-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-elegant/50 transition-all"
+              className="w-full h-10 md:h-12 bg-gradient-primary text-primary-foreground font-semibold text-base md:text-lg shadow-elegant hover:shadow-elegant/50 transition-all"
               size="lg"
             >
               Calculate Age
@@ -268,60 +282,106 @@ const Index = () => {
 
         {/* Results Card */}
         {result && (
-          <article 
-            className="bg-card rounded-3xl shadow-card p-6 md:p-8 animate-scale-in"
-            aria-label="Calculated age results"
-          >
-            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
-              Your Exact Age
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="bg-accent rounded-2xl p-4 text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
-                  {result.years}
+          <div className="space-y-4 md:space-y-6">
+            <article 
+              className="bg-card rounded-2xl md:rounded-3xl shadow-card p-4 md:p-6 lg:p-8 animate-scale-in"
+              aria-label="Calculated age results"
+            >
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 md:mb-6 text-center">
+                Your Exact Age
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+                    {result.years}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    {result.years === 1 ? "Year" : "Years"}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {result.years === 1 ? "Year" : "Years"}
+                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+                    {result.months}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    {result.months === 1 ? "Month" : "Months"}
+                  </div>
+                </div>
+                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+                    {result.days}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    {result.days === 1 ? "Day" : "Days"}
+                  </div>
+                </div>
+                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
+                    {result.hours}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    {result.hours === 1 ? "Hour" : "Hours"}
+                  </div>
+                </div>
+                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center col-span-2 md:col-span-1">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
+                    {result.minutes}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    {result.minutes === 1 ? "Minute" : "Minutes"}
+                  </div>
                 </div>
               </div>
-              <div className="bg-accent rounded-2xl p-4 text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
-                  {result.months}
+            </article>
+
+            {/* Total Time Lived Card */}
+            <article 
+              className="bg-card rounded-2xl md:rounded-3xl shadow-card p-4 md:p-6 lg:p-8 animate-scale-in"
+              aria-label="Total time lived"
+            >
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 md:mb-6 text-center">
+                Total Time You've Lived
+              </h2>
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
+                    {result.totalDays.toLocaleString()}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    Total Days
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {result.months === 1 ? "Month" : "Months"}
+                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
+                    {result.totalHours.toLocaleString()}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    Total Hours
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
+                    {result.totalMinutes.toLocaleString()}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    Total Minutes
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
+                    {result.totalSeconds.toLocaleString()}
+                  </div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                    Total Seconds
+                  </div>
                 </div>
               </div>
-              <div className="bg-accent rounded-2xl p-4 text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
-                  {result.days}
-                </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {result.days === 1 ? "Day" : "Days"}
-                </div>
-              </div>
-              <div className="bg-accent rounded-2xl p-4 text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
-                  {result.hours}
-                </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {result.hours === 1 ? "Hour" : "Hours"}
-                </div>
-              </div>
-              <div className="bg-accent rounded-2xl p-4 text-center col-span-2 md:col-span-1">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
-                  {result.minutes}
-                </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                  {result.minutes === 1 ? "Minute" : "Minutes"}
-                </div>
-              </div>
-            </div>
-          </article>
+            </article>
+          </div>
         )}
 
         {/* Footer */}
-        <footer className="text-center mt-8 text-muted-foreground text-sm">
+        <footer className="text-center mt-6 md:mt-8 text-muted-foreground text-xs md:text-sm px-4">
           <p>All calculations are performed in your local timezone for accuracy</p>
         </footer>
       </div>
