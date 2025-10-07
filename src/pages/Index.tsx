@@ -346,7 +346,7 @@ const Index = () => {
               <p className="text-sm opacity-90">Updating in real-time every second</p>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
+            <div className="grid grid-cols-3 gap-3 md:gap-4">
               <div className="bg-white/10 backdrop-blur rounded-xl p-3 md:p-4 text-center">
                 <div className="text-2xl md:text-3xl lg:text-4xl font-bold mb-1">
                   {liveAge.years}
