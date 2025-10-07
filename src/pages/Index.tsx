@@ -636,6 +636,11 @@ const Index = () => {
           <AdSenseBanner format="square" />
         </aside>
       </div>
+      
+      {/* Bottom Page Ad - Always visible */}
+      <div className="max-w-7xl mx-auto mt-6">
+        <AdSenseBanner format="large-horizontal" />
+      </div>
     </main>
   );
 };
