@@ -278,6 +278,26 @@ const Index = () => {
 
   return (
     <main className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-4 sm:py-8">
+      {/* Structured Data for SEO */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "AI Age Calculator",
+          "description": "Calculate your exact age in years, months, days, hours, minutes, and seconds with our free AI age calculator tool",
+          "url": "https://aiagecalculator.lovable.app/",
+          "mainEntity": {
+            "@type": "SoftwareApplication",
+            "name": "AI Age Calculator",
+            "applicationCategory": "UtilityApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0"
+            }
+          }
+        })}
+      </script>
+      
       <div className="max-w-5xl mx-auto flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
@@ -287,7 +307,7 @@ const Index = () => {
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
-            <Sparkles className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" />
+            <Sparkles className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" aria-hidden="true" />
             AI Age Calculator
           </h1>
           <p className="text-muted-foreground text-base md:text-lg mb-4">

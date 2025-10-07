@@ -1,23 +1,40 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    
+    // Set page title for SEO
+    document.title = "404 - Page Not Found | AI Age Calculator";
+    
+    // Add meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'The page you are looking for does not exist. Return to AI Age Calculator homepage.');
+    }
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          Return to Home
-        </a>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="text-center max-w-md">
+        <h1 className="mb-4 text-6xl md:text-8xl font-bold text-primary">404</h1>
+        <h2 className="mb-4 text-2xl md:text-3xl font-semibold text-foreground">Page Not Found</h2>
+        <p className="mb-8 text-base md:text-lg text-muted-foreground">
+          Sorry, the page you are looking for doesn't exist or has been moved.
+        </p>
+        <Link to="/">
+          <Button className="gap-2 bg-gradient-primary hover:opacity-90">
+            <Home className="w-4 h-4" aria-hidden="true" />
+            Return to Home
+          </Button>
+        </Link>
       </div>
-    </div>
+    </main>
   );
 };
 

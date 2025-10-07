@@ -165,25 +165,41 @@ const FamousPeopleProfile = () => {
 
   return (
     <main className="min-h-screen bg-background py-8">
+      {/* Structured Data for SEO */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": person.name,
+          "birthDate": person.date_of_birth,
+          "description": person.bio,
+          "image": person.photo_url,
+          "jobTitle": person.categories?.name,
+          "url": `https://aiagecalculator.lovable.app/famous-people/${person.id}`
+        })}
+      </script>
+      
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Back Button */}
-        <Link to="/famous-people">
-          <Button variant="ghost" size="sm" className="gap-2 mb-8">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Famous People
-          </Button>
-        </Link>
+        <nav aria-label="Breadcrumb" className="mb-8">
+          <Link to="/famous-people">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+              Back to Famous People
+            </Button>
+          </Link>
+        </nav>
 
         {/* Profile Header */}
         <Card className="mb-6">
           <CardContent className="pt-8">
             <div className="flex flex-col md:flex-row items-start gap-6 mb-6">
-              <Avatar className="w-32 h-32">
-                <AvatarImage src={person.photo_url || undefined} alt={person.name} />
-                <AvatarFallback className="text-4xl">
-                  {person.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
+               <Avatar className="w-32 h-32">
+                 <AvatarImage src={person.photo_url || undefined} alt={`${person.name} profile photo`} />
+                 <AvatarFallback className="text-4xl">
+                   {person.name.split(' ').map(n => n[0]).join('')}
+                 </AvatarFallback>
+               </Avatar>
               <div className="flex-1">
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
                   {person.name}

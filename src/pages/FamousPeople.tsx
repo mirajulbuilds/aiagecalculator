@@ -128,18 +128,42 @@ const FamousPeople = () => {
 
   return (
     <main className="min-h-screen bg-background py-4 sm:py-8">
+      {/* Structured Data for SEO */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Famous People Birthdays",
+          "description": "Discover the ages and birthdays of celebrities, artists, athletes, and notable personalities",
+          "url": "https://aiagecalculator.lovable.app/famous-people",
+          "mainEntity": {
+            "@type": "ItemList",
+            "itemListElement": filteredPeople.slice(0, 10).map((person, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "item": {
+                "@type": "Person",
+                "name": person.name,
+                "birthDate": person.date_of_birth,
+                "description": person.bio
+              }
+            }))
+          }
+        })}
+      </script>
+      
       <div className="container mx-auto px-2 sm:px-4 max-w-7xl flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
         <div className="flex-1 w-full">
         {/* Back Button */}
-        <div className="mb-6">
+        <nav className="mb-6" aria-label="Breadcrumb">
           <Link to="/">
             <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
               Back to Calculator
             </Button>
           </Link>
-        </div>
+        </nav>
 
         {/* Header */}
         <header className="text-center mb-8">
@@ -226,12 +250,12 @@ const FamousPeople = () => {
                 <Card key={person.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-4">
                     <div className="flex items-start gap-4">
-                      <Avatar className="w-16 h-16">
-                        <AvatarImage src={person.photo_url || undefined} alt={person.name} />
-                        <AvatarFallback>
-                          <Users className="w-8 h-8" />
-                        </AvatarFallback>
-                      </Avatar>
+                       <Avatar className="w-16 h-16">
+                         <AvatarImage src={person.photo_url || undefined} alt={`${person.name} profile photo`} />
+                         <AvatarFallback>
+                           <Users className="w-8 h-8" aria-hidden="true" />
+                         </AvatarFallback>
+                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold mb-1 truncate">{person.name}</h3>
                         <p className="text-sm text-muted-foreground mb-2">{person.bio.split('.')[0]}</p>
