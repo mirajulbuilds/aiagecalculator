@@ -286,19 +286,27 @@ const Index = () => {
           <p className="text-muted-foreground text-base md:text-lg mb-4">
             Calculate your exact age with precision down to minutes
           </p>
-          {timezone && (
-            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-4">
+        </header>
+
+        {/* Timezone Section */}
+        {timezone && (
+          <div className="text-center mb-4">
+            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <Globe className="w-4 h-4" />
               <span>Timezone: <span className="font-medium">{timezone}</span></span>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Explore Famous People Section */}
+        <div className="text-center mb-8">
           <Link to={`/celebrities${birthDay && birthMonth ? `?birthMonth=${birthMonth}&birthDay=${birthDay}` : ''}`}>
             <Button variant="outline" className="gap-2">
               <Users className="w-4 h-4" />
               Explore Famous People Birthdays
             </Button>
           </Link>
-        </header>
+        </div>
 
         {/* Calculator Card */}
         <section 
