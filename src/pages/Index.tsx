@@ -487,7 +487,7 @@ const Index = () => {
 
         {/* Mid-Section Ad Banner */}
         {result && (
-          <AdSenseBanner format="square" className="mb-6" />
+          <AdSenseBanner format="large-horizontal" className="mb-6" />
         )}
 
         {/* AI Birthday Wish Section */}
