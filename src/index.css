@@ -8,42 +8,39 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 240 25% 97%;
-    --foreground: 240 10% 15%;
+    --background: 210 20% 98%;
+    --foreground: 217 46% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 15%;
+    --card-foreground: 217 46% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 15%;
+    --popover-foreground: 217 46% 11%;
 
-    --primary: 262 83% 58%;
+    --primary: 267 80% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 188 94% 60%;
-    --secondary-foreground: 240 10% 15%;
+    --secondary: 210 22% 96%;
+    --secondary-foreground: 217 46% 11%;
 
-    --muted: 240 10% 95%;
-    --muted-foreground: 240 5% 50%;
+    --muted: 210 22% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 262 70% 92%;
-    --accent-foreground: 262 83% 58%;
+    --accent: 265 73% 96%;
+    --accent-foreground: 267 80% 56%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 15% 90%;
-    --input: 240 15% 92%;
-    --ring: 262 83% 58%;
+    --border: 214 22% 91%;
+    --input: 214 22% 91%;
+    --ring: 267 80% 56%;
 
     --radius: 0.75rem;
     
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(230 90% 65%));
-    --gradient-accent: linear-gradient(135deg, hsl(188 94% 60%), hsl(175 80% 55%));
-    --gradient-bg: linear-gradient(180deg, hsl(240 25% 97%), hsl(250 35% 95%));
+    --gradient-primary: linear-gradient(135deg, hsl(267 80% 56%), hsl(270 85% 65%));
     
-    --shadow-elegant: 0 10px 40px -10px hsl(262 83% 58% / 0.25);
-    --shadow-card: 0 4px 20px hsl(240 10% 15% / 0.08);
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 

@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Sparkles, Globe } from "lucide-react";
+import { CalendarIcon, Globe, Calendar as CalendarIconComponent } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { toast } from "sonner";
 
 interface AgeResult {
@@ -21,19 +21,11 @@ interface AgeResult {
   totalDays: number;
   totalHours: number;
   totalMinutes: number;
-  totalSeconds: number;
 }
 
 const Index = () => {
-  const [birthDay, setBirthDay] = useState<string>("");
-  const [birthMonth, setBirthMonth] = useState<string>("");
-  const [birthYear, setBirthYear] = useState<string>("");
-  
-  const currentDate = new Date();
-  const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
-  const [targetMonth, setTargetMonth] = useState<string>((currentDate.getMonth() + 1).toString());
-  const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
-  
+  const [birthDate, setBirthDate] = useState<Date>();
+  const [targetDate, setTargetDate] = useState<Date>(new Date());
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
 
@@ -43,42 +35,9 @@ const Index = () => {
     setTimezone(userTimezone);
   }, []);
 
-  const months = [
-    { value: "1", label: "January" },
-    { value: "2", label: "February" },
-    { value: "3", label: "March" },
-    { value: "4", label: "April" },
-    { value: "5", label: "May" },
-    { value: "6", label: "June" },
-    { value: "7", label: "July" },
-    { value: "8", label: "August" },
-    { value: "9", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
-
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
-  
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
-
   const calculateAge = () => {
-    if (!birthDay || !birthMonth || !birthYear) {
-      toast.error("Please enter your complete birth date");
-      return;
-    }
-
-    if (!targetDay || !targetMonth || !targetYear) {
-      toast.error("Please enter a valid target date");
-      return;
-    }
-
-    const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
-    const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
-
-    if (isNaN(birthDate.getTime()) || isNaN(targetDate.getTime())) {
-      toast.error("Please enter valid dates");
+    if (!birthDate) {
+      toast.error("Please select your birth date");
       return;
     }
 
@@ -107,7 +66,6 @@ const Index = () => {
     const totalDays = differenceInDays(targetDate, birthDate);
     const totalHours = differenceInHours(targetDate, birthDate);
     const totalMinutes = differenceInMinutes(targetDate, birthDate);
-    const totalSeconds = Math.floor(totalMinutes * 60);
 
     setResult({
       years,
@@ -118,275 +76,212 @@ const Index = () => {
       totalDays,
       totalHours,
       totalMinutes,
-      totalSeconds,
     });
 
     toast.success("Age calculated successfully!");
   };
 
   return (
-    <main className="min-h-screen bg-gradient-bg flex items-center justify-center p-4 py-8">
-      <div className="w-full max-w-2xl animate-fade-in">
+    <main className="min-h-screen bg-background flex items-center justify-center p-4 py-8">
+      <div className="w-full max-w-4xl">
         {/* Header */}
-        <header className="text-center mb-6 md:mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-primary rounded-2xl mb-3 md:mb-4 shadow-elegant">
-            <Sparkles className="w-7 h-7 md:w-8 md:h-8 text-primary-foreground" />
-          </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-2 md:mb-3 bg-gradient-primary bg-clip-text text-transparent px-4">
+        <header className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
             Age Calculator
           </h1>
-          <p className="text-muted-foreground text-base md:text-lg mb-3 px-4">
-            Calculate your exact age in years, months, days, hours, and minutes
+          <p className="text-muted-foreground text-base md:text-lg mb-4">
+            Calculate your exact age with precision down to minutes
           </p>
           {timezone && (
-            <div className="inline-flex items-center gap-2 bg-accent px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm text-accent-foreground">
-              <Globe className="w-3 h-3 md:w-4 md:h-4" />
-              <span>Your timezone: <span className="font-medium">{timezone}</span></span>
+            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+              <Globe className="w-4 h-4" />
+              <span>Timezone: <span className="font-medium">{timezone}</span></span>
             </div>
           )}
         </header>
 
         {/* Calculator Card */}
         <section 
-          className="bg-card rounded-2xl md:rounded-3xl shadow-card p-4 md:p-6 lg:p-8 mb-4 md:mb-6 animate-scale-in"
+          className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
           aria-label="Age calculation form"
         >
-          <div className="space-y-4 md:space-y-6">
+          <div className="flex items-center gap-2 mb-6">
+            <CalendarIconComponent className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold text-foreground">Enter Your Details</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
             {/* Birth Date Input */}
             <div>
-              <label className="block text-xs md:text-sm font-medium text-foreground mb-2 md:mb-3">
-                Date of Birth *
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Date of Birth
               </label>
-              <div className="grid grid-cols-3 gap-2 md:gap-3">
-                <div>
-                  <label htmlFor="birth-day" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
-                    Day
-                  </label>
-                  <Select value={birthDay} onValueChange={setBirthDay}>
-                    <SelectTrigger id="birth-day" className="h-10 md:h-12 text-sm md:text-base">
-                      <SelectValue placeholder="Day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {days.map((day) => (
-                        <SelectItem key={day} value={day}>
-                          {day}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label htmlFor="birth-month" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
-                    Month
-                  </label>
-                  <Select value={birthMonth} onValueChange={setBirthMonth}>
-                    <SelectTrigger id="birth-month" className="h-10 md:h-12 text-sm md:text-base">
-                      <SelectValue placeholder="Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {months.map((month) => (
-                        <SelectItem key={month.value} value={month.value}>
-                          {month.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label htmlFor="birth-year" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
-                    Year
-                  </label>
-                  <Select value={birthYear} onValueChange={setBirthYear}>
-                    <SelectTrigger id="birth-year" className="h-10 md:h-12 text-sm md:text-base">
-                      <SelectValue placeholder="Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {years.map((year) => (
-                        <SelectItem key={year} value={year}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-12 bg-muted hover:bg-muted/80",
+                      !birthDate && "text-muted-foreground"
+                    )}
+                  >
+                    {birthDate ? format(birthDate, "dd/MM/yyyy") : <span>DD/MM/YYYY</span>}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={birthDate}
+                    onSelect={setBirthDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                    disabled={(date) => date > new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Target Date Input */}
             <div>
-              <label className="block text-xs md:text-sm font-medium text-foreground mb-2 md:mb-3">
-                Calculate Age To
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Calculate Age Until
               </label>
-              <div className="grid grid-cols-3 gap-2 md:gap-3">
-                <div>
-                  <label htmlFor="target-day" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
-                    Day
-                  </label>
-                  <Select value={targetDay} onValueChange={setTargetDay}>
-                    <SelectTrigger id="target-day" className="h-10 md:h-12 text-sm md:text-base">
-                      <SelectValue placeholder="Day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {days.map((day) => (
-                        <SelectItem key={day} value={day}>
-                          {day}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label htmlFor="target-month" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
-                    Month
-                  </label>
-                  <Select value={targetMonth} onValueChange={setTargetMonth}>
-                    <SelectTrigger id="target-month" className="h-10 md:h-12 text-sm md:text-base">
-                      <SelectValue placeholder="Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {months.map((month) => (
-                        <SelectItem key={month.value} value={month.value}>
-                          {month.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label htmlFor="target-year" className="text-[10px] md:text-xs text-muted-foreground mb-1 block">
-                    Year
-                  </label>
-                  <Select value={targetYear} onValueChange={setTargetYear}>
-                    <SelectTrigger id="target-year" className="h-10 md:h-12 text-sm md:text-base">
-                      <SelectValue placeholder="Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {years.map((year) => (
-                        <SelectItem key={year} value={year}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal h-12 bg-muted hover:bg-muted/80"
+                  >
+                    {format(targetDate, "dd/MM/yyyy")}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={targetDate}
+                    onSelect={(date) => date && setTargetDate(date)}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-
-            {/* Calculate Button */}
-            <Button
-              onClick={calculateAge}
-              className="w-full h-10 md:h-12 bg-gradient-primary text-primary-foreground font-semibold text-base md:text-lg shadow-elegant hover:shadow-elegant/50 transition-all"
-              size="lg"
-            >
-              Calculate Age
-            </Button>
           </div>
+
+          {/* Calculate Button */}
+          <Button
+            onClick={calculateAge}
+            className="w-full h-12 bg-gradient-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity"
+            size="lg"
+          >
+            Calculate Age
+          </Button>
         </section>
 
         {/* Results Card */}
         {result && (
-          <div className="space-y-4 md:space-y-6">
-            <article 
-              className="bg-card rounded-2xl md:rounded-3xl shadow-card p-4 md:p-6 lg:p-8 animate-scale-in"
+          <div className="space-y-6">
+            <section 
+              className="bg-card rounded-2xl shadow-card p-6 md:p-8"
               aria-label="Calculated age results"
             >
-              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 md:mb-6 text-center">
-                Your Exact Age
+              <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
+                Your Age
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
-                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+              
+              {/* Years, Months, Days */}
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="bg-muted rounded-xl p-4 text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-1">
                     {result.years}
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    {result.years === 1 ? "Year" : "Years"}
+                  <div className="text-sm text-muted-foreground">
+                    Years
                   </div>
                 </div>
-                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+                <div className="bg-muted rounded-xl p-4 text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-1">
                     {result.months}
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    {result.months === 1 ? "Month" : "Months"}
+                  <div className="text-sm text-muted-foreground">
+                    Months
                   </div>
                 </div>
-                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">
+                <div className="bg-muted rounded-xl p-4 text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-1">
                     {result.days}
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    {result.days === 1 ? "Day" : "Days"}
+                  <div className="text-sm text-muted-foreground">
+                    Days
                   </div>
                 </div>
-                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
+              </div>
+
+              {/* Hours, Minutes */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-muted rounded-xl p-4 text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-foreground mb-1">
                     {result.hours}
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    {result.hours === 1 ? "Hour" : "Hours"}
+                  <div className="text-sm text-muted-foreground">
+                    Hours
                   </div>
                 </div>
-                <div className="bg-accent rounded-xl md:rounded-2xl p-3 md:p-4 text-center">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-accent bg-clip-text text-transparent mb-1">
+                <div className="bg-muted rounded-xl p-4 text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-foreground mb-1">
                     {result.minutes}
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    {result.minutes === 1 ? "Minute" : "Minutes"}
+                  <div className="text-sm text-muted-foreground">
+                    Minutes
                   </div>
                 </div>
               </div>
-            </article>
+            </section>
 
-            {/* Total Time Lived Card */}
-            <article 
-              className="bg-card rounded-2xl md:rounded-3xl shadow-card p-4 md:p-6 lg:p-8 animate-scale-in"
+            {/* Total Time Lived */}
+            <section 
+              className="bg-card rounded-2xl shadow-card p-6 md:p-8"
               aria-label="Total time lived"
             >
-              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 md:mb-6 text-center">
-                Total Time You've Lived
-              </h2>
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
-                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
-                    {result.totalDays.toLocaleString()}
+              <div className="flex items-start justify-between mb-4">
+                <h2 className="text-xl font-semibold text-foreground">
+                  Total Time Lived:
+                </h2>
+                {timezone && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Globe className="w-3 h-3" />
+                    <span>{timezone}</span>
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    Total Days
+                )}
+              </div>
+              
+              <div className="bg-accent/30 rounded-xl p-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center justify-between md:justify-start md:gap-3">
+                    <span className="text-sm text-muted-foreground">Total Days:</span>
+                    <span className="text-lg font-semibold text-foreground">
+                      {result.totalDays.toLocaleString()}
+                    </span>
                   </div>
-                </div>
-                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
-                    {result.totalHours.toLocaleString()}
+                  <div className="flex items-center justify-between md:justify-start md:gap-3">
+                    <span className="text-sm text-muted-foreground">Total Hours:</span>
+                    <span className="text-lg font-semibold text-foreground">
+                      {result.totalHours.toLocaleString()}
+                    </span>
                   </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    Total Hours
-                  </div>
-                </div>
-                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
-                    {result.totalMinutes.toLocaleString()}
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    Total Minutes
-                  </div>
-                </div>
-                <div className="bg-muted/50 rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-border">
-                  <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1">
-                    {result.totalSeconds.toLocaleString()}
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">
-                    Total Seconds
+                  <div className="flex items-center justify-between md:justify-start md:gap-3">
+                    <span className="text-sm text-muted-foreground">Total Minutes:</span>
+                    <span className="text-lg font-semibold text-foreground">
+                      {result.totalMinutes.toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </div>
-            </article>
+            </section>
           </div>
         )}
-
-        {/* Footer */}
-        <footer className="text-center mt-6 md:mt-8 text-muted-foreground text-xs md:text-sm px-4">
-          <p>All calculations are performed in your local timezone for accuracy</p>
-        </footer>
       </div>
     </main>
   );
