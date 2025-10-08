@@ -365,10 +365,11 @@ const FamousPeople = () => {
                     </Card>
                   </Link>
                   
-                  {/* Insert ads every 6 cards */}
-                  {(index + 1) % 6 === 0 && index !== filteredPeople.length - 1 && (
-                    <Card key={`ad-${index}`} className="bg-muted/20 border-dashed hidden lg:flex">
-                      <CardContent className="p-4 flex items-center justify-center min-h-[400px]">
+                  {/* Insert ad cards every 8 cards */}
+                  {(index + 1) % 8 === 0 && index !== filteredPeople.length - 1 && (
+                    <Card key={`ad-${index}`} className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-primary/20 overflow-hidden">
+                      <CardContent className="p-6 flex flex-col items-center justify-center min-h-[400px]">
+                        <div className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Advertisement</div>
                         <AdSenseBanner format="square" />
                       </CardContent>
                     </Card>

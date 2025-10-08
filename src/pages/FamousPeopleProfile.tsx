@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, format } from "date-fns";
+import { AdSenseBanner } from "@/components/AdSenseBanner";
 
 interface FamousPerson {
   id: string;
@@ -190,6 +191,9 @@ const FamousPeopleProfile = () => {
           </Link>
         </nav>
 
+        {/* Top Ad Banner */}
+        <AdSenseBanner format="horizontal" className="mb-6" />
+
         {/* Profile Header */}
         <Card className="mb-6">
           <CardContent className="pt-8">
@@ -222,6 +226,9 @@ const FamousPeopleProfile = () => {
             </p>
           </CardContent>
         </Card>
+
+        {/* Mid-Page Ad */}
+        <AdSenseBanner format="large-horizontal" className="mb-6" />
 
         {/* Current Age */}
         <Card className="mb-6">
@@ -353,6 +360,9 @@ const FamousPeopleProfile = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Bottom Ad Banner */}
+        <AdSenseBanner format="horizontal" className="mt-8" />
       </div>
     </main>
   );
