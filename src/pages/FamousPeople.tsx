@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Calendar, ArrowLeft, Search } from "lucide-react";
+import { Users, Calendar, ArrowLeft, Search, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -37,6 +37,7 @@ const FamousPeople = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<"name" | "age" | "birthday">("name");
 
   useEffect(() => {
     fetchCategories();
@@ -45,7 +46,7 @@ const FamousPeople = () => {
 
   useEffect(() => {
     filterPeople();
-  }, [people, selectedCategory, searchQuery]);
+  }, [people, selectedCategory, searchQuery, sortBy]);
 
   const fetchCategories = async () => {
     try {
@@ -101,6 +102,19 @@ const FamousPeople = () => {
       );
     }
 
+    // Sort
+    filtered = [...filtered].sort((a, b) => {
+      if (sortBy === "name") {
+        return a.name.localeCompare(b.name);
+      } else if (sortBy === "age") {
+        return calculateAge(b.date_of_birth) - calculateAge(a.date_of_birth);
+      } else {
+        const daysA = getDaysUntilBirthday(a.date_of_birth);
+        const daysB = getDaysUntilBirthday(b.date_of_birth);
+        return daysA - daysB;
+      }
+    });
+
     setFilteredPeople(filtered);
   };
 
@@ -108,7 +122,7 @@ const FamousPeople = () => {
     return differenceInYears(new Date(), new Date(dateOfBirth));
   };
 
-  const getNextBirthday = (dateOfBirth: string) => {
+  const getDaysUntilBirthday = (dateOfBirth: string) => {
     const birthDate = new Date(dateOfBirth);
     const now = new Date();
     const currentYear = now.getFullYear();
@@ -119,7 +133,11 @@ const FamousPeople = () => {
       nextBirthday = new Date(currentYear + 1, birthDate.getMonth(), birthDate.getDate());
     }
 
-    const daysUntil = differenceInDays(nextBirthday, now);
+    return differenceInDays(nextBirthday, now);
+  };
+
+  const getNextBirthday = (dateOfBirth: string) => {
+    const daysUntil = getDaysUntilBirthday(dateOfBirth);
     
     if (daysUntil === 0) return "Today! 🎉";
     if (daysUntil === 1) return "Tomorrow";
@@ -170,12 +188,18 @@ const FamousPeople = () => {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
             Famous People Birthdays
           </h1>
-          <p className="text-muted-foreground text-lg mb-4">
+          <p className="text-muted-foreground text-lg mb-6">
             Discover the ages and birthdays of celebrities, artists, athletes, and notable personalities
           </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Users className="w-4 h-4" />
-            <span>{filteredPeople.length} famous {filteredPeople.length === 1 ? 'personality' : 'personalities'}</span>
+          <div className="flex items-center justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              <span className="text-muted-foreground">{people.length} personalities</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              <span className="text-muted-foreground">{categories.length} categories</span>
+            </div>
           </div>
         </header>
 
@@ -196,31 +220,65 @@ const FamousPeople = () => {
           </div>
         </section>
 
-        {/* Category Pills */}
-        <section className="mb-8">
-          <div className="text-sm font-medium text-muted-foreground mb-3 text-center">
-            Categories
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <Button
-              variant={selectedCategory === "all" ? "default" : "outline"}
-              onClick={() => setSelectedCategory("all")}
-              className="rounded-full"
-              size="sm"
-            >
-              All
-            </Button>
-            {categories.map((category) => (
+        {/* Filters and Sorting */}
+        <section className="mb-8 space-y-4">
+          <div>
+            <div className="text-sm font-medium text-muted-foreground mb-3 text-center">
+              Categories
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category.id)}
+                variant={selectedCategory === "all" ? "default" : "outline"}
+                onClick={() => setSelectedCategory("all")}
                 className="rounded-full"
                 size="sm"
               >
-                {category.name}
+                All
               </Button>
-            ))}
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.id ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className="rounded-full"
+                  size="sm"
+                >
+                  {category.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-sm font-medium text-muted-foreground mb-3 text-center">
+              Sort by
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                variant={sortBy === "name" ? "default" : "outline"}
+                onClick={() => setSortBy("name")}
+                size="sm"
+                className="rounded-full"
+              >
+                Name
+              </Button>
+              <Button
+                variant={sortBy === "age" ? "default" : "outline"}
+                onClick={() => setSortBy("age")}
+                size="sm"
+                className="rounded-full"
+              >
+                Age
+              </Button>
+              <Button
+                variant={sortBy === "birthday" ? "default" : "outline"}
+                onClick={() => setSortBy("birthday")}
+                size="sm"
+                className="rounded-full"
+              >
+                <Sparkles className="w-3 h-3 mr-1" aria-hidden="true" />
+                Upcoming
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -244,72 +302,80 @@ const FamousPeople = () => {
             ))}
           </section>
         ) : filteredPeople.length > 0 ? (
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPeople.map((person, index) => (
-              <>
-                <Card key={person.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start gap-4">
-                       <Avatar className="w-16 h-16">
-                         <AvatarImage src={person.photo_url || undefined} alt={`${person.name} profile photo`} />
-                         <AvatarFallback>
-                           <Users className="w-8 h-8" aria-hidden="true" />
-                         </AvatarFallback>
-                       </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold mb-1 truncate">{person.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-2">{person.bio.split('.')[0]}</p>
-                        {person.categories?.name && (
-                          <Badge variant="secondary" className="text-xs">{person.categories.name}</Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3 pt-0">
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <div className="text-sm text-muted-foreground mb-1">Current Age:</div>
-                      <div className="text-2xl font-bold text-primary">
-                        {calculateAge(person.date_of_birth)} years
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <div className="text-muted-foreground mb-1">Birthday:</div>
-                        <div className="font-medium">
-                          {format(new Date(person.date_of_birth), 'MMMM d, yyyy')}
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredPeople.map((person, index) => {
+              const age = calculateAge(person.date_of_birth);
+              const daysUntil = getDaysUntilBirthday(person.date_of_birth);
+              const isBirthdaySoon = daysUntil <= 7;
+              
+              return (
+                <>
+                  <Link key={person.id} to={`/famous-people/${person.id}`}>
+                    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full group relative">
+                      {isBirthdaySoon && (
+                        <div className="absolute top-3 right-3 z-10 bg-primary text-primary-foreground text-xs px-2.5 py-1 rounded-full font-semibold animate-pulse flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" aria-hidden="true" />
+                          Soon!
                         </div>
+                      )}
+                      <div className="relative h-56 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 overflow-hidden">
+                        <Avatar className="absolute inset-0 w-full h-full rounded-none">
+                          <AvatarImage 
+                            src={person.photo_url || ""} 
+                            alt={`${person.name} profile photo`} 
+                            className="object-cover group-hover:scale-110 transition-transform duration-300" 
+                          />
+                          <AvatarFallback className="rounded-none text-5xl font-bold bg-gradient-to-br from-primary/30 to-primary/10">
+                            {person.name.split(" ").map((n) => n[0]).join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       </div>
-                      <div>
-                        <div className="text-muted-foreground mb-1">Next Birthday:</div>
-                        <div className="font-medium">
-                          {getNextBirthday(person.date_of_birth)}
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center justify-between gap-2 text-lg">
+                          <span className="truncate">{person.name}</span>
+                          {person.categories?.name && (
+                            <Badge variant="secondary" className="text-xs shrink-0">
+                              {person.categories.name}
+                            </Badge>
+                          )}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2 text-sm min-h-[2.5rem]">
+                          {person.bio}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-2 pt-0">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                          <span className="truncate">
+                            {format(new Date(person.date_of_birth), "MMM d, yyyy")}
+                          </span>
                         </div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {person.bio}
-                    </p>
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/famous-people/${person.id}`} className="w-full">
-                      <Button variant="outline" className="w-full gap-2">
-                        <Users className="w-4 h-4" />
-                        View Full Profile
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-                
-                {/* Insert ads every 3 cards */}
-                {(index + 1) % 3 === 0 && index !== filteredPeople.length - 1 && (
-                  <Card key={`ad-${index}`} className="bg-muted/20 border-dashed">
-                    <CardContent className="p-4 flex items-center justify-center min-h-[400px]">
-                      <AdSenseBanner format="square" />
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            ))}
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-2 text-sm">
+                            <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
+                            <span className="font-semibold text-foreground">{age} years</span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 text-xs ${isBirthdaySoon ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>
+                            <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                            <span>{daysUntil}d</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                  
+                  {/* Insert ads every 6 cards */}
+                  {(index + 1) % 6 === 0 && index !== filteredPeople.length - 1 && (
+                    <Card key={`ad-${index}`} className="bg-muted/20 border-dashed hidden lg:flex">
+                      <CardContent className="p-4 flex items-center justify-center min-h-[400px]">
+                        <AdSenseBanner format="square" />
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              );
+            })}
           </section>
         ) : (
           <div className="text-center py-12">
