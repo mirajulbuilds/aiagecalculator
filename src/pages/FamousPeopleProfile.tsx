@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { Sparkles } from "lucide-react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 interface FamousPerson {
   id: string;
