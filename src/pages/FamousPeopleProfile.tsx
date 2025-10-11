@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import { Sparkles } from "lucide-react";
+import { Helmet } from "react-helmet";
 
 interface FamousPerson {
   id: string;
@@ -19,6 +21,14 @@ interface FamousPerson {
   bio: string;
   photo_url: string | null;
   category_id: string | null;
+  birth_place?: string | null;
+  nationality?: string | null;
+  occupation?: string | null;
+  notable_works?: string | null;
+  achievements?: string | null;
+  awards?: string | null;
+  death_date?: string | null;
+  fun_facts?: string | null;
   categories?: {
     name: string;
   };
@@ -164,21 +174,48 @@ const FamousPeopleProfile = () => {
     );
   }
 
+  // Generate consistent avatar URL using UI Avatars
+  const avatarUrl = person.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=512&background=random&bold=true`;
+  
+  const pageTitle = `${person.name} Age, Birthday & Biography - AI Age Calculator`;
+  const pageDescription = `${person.name} is ${liveAge.years} years old. Born on ${format(new Date(person.date_of_birth), 'MMMM d, yyyy')}${person.birth_place ? ` in ${person.birth_place}` : ''}. ${person.bio.slice(0, 150)}...`;
+
   return (
-    <main className="min-h-screen bg-background py-8">
-      {/* Structured Data for SEO */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Person",
-          "name": person.name,
-          "birthDate": person.date_of_birth,
-          "description": person.bio,
-          "image": person.photo_url,
-          "jobTitle": person.categories?.name,
-          "url": `https://aiagecalculator.lovable.app/famous-people/${person.id}`
-        })}
-      </script>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={avatarUrl} />
+        <meta property="og:type" content="profile" />
+        <meta property="og:url" content={`https://aiagecalculator.lovable.app/famous-people/${person.id}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={avatarUrl} />
+        <link rel="canonical" href={`https://aiagecalculator.lovable.app/famous-people/${person.id}`} />
+      </Helmet>
+      
+      <main className="min-h-screen bg-background py-8">
+        {/* Structured Data for SEO */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": person.name,
+            "birthDate": person.date_of_birth,
+            "deathDate": person.death_date || undefined,
+            "birthPlace": person.birth_place || undefined,
+            "nationality": person.nationality || undefined,
+            "description": person.bio,
+            "image": avatarUrl,
+            "jobTitle": person.occupation || person.categories?.name,
+            "award": person.awards || undefined,
+            "knowsAbout": person.notable_works || undefined,
+            "url": `https://aiagecalculator.lovable.app/famous-people/${person.id}`
+          })}
+        </script>
       
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Back Button */}
@@ -195,35 +232,71 @@ const FamousPeopleProfile = () => {
         <AdSenseBanner format="horizontal" className="mb-6" />
 
         {/* Profile Header */}
-        <Card className="mb-6">
+        <Card className="mb-6 overflow-hidden">
           <CardContent className="pt-8">
-            <div className="flex flex-col md:flex-row items-start gap-6 mb-6">
-               <Avatar className="w-32 h-32">
-                 <AvatarImage src={person.photo_url || undefined} alt={`${person.name} profile photo`} />
-                 <AvatarFallback className="text-4xl">
-                   {person.name.split(' ').map(n => n[0]).join('')}
-                 </AvatarFallback>
-               </Avatar>
-              <div className="flex-1">
-                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-                  {person.name}
-                </h1>
-                <p className="text-lg text-muted-foreground mb-3">
-                  {person.bio.split('.')[0]}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {person.categories?.name && (
-                    <Badge variant="secondary" className="text-sm">
-                      {person.categories.name}
-                    </Badge>
-                  )}
+            <div className="flex flex-col md:flex-row items-start gap-8 mb-6">
+              <div className="relative group">
+                <Avatar className="w-32 h-32 md:w-40 md:h-40 border-4 border-primary/20 shadow-lg transition-transform group-hover:scale-105">
+                  <AvatarImage 
+                    src={avatarUrl} 
+                    alt={`${person.name} - ${person.occupation || person.categories?.name || 'Famous Person'}`} 
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-5xl font-bold bg-gradient-to-br from-primary/30 to-primary/10">
+                    {person.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div>
+                  <h1 className="text-3xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3">
+                    {person.name}
+                  </h1>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {person.occupation && (
+                      <Badge variant="default" className="text-sm px-3 py-1">
+                        {person.occupation}
+                      </Badge>
+                    )}
+                    {person.categories?.name && (
+                      <Badge variant="secondary" className="text-sm px-3 py-1">
+                        {person.categories.name}
+                      </Badge>
+                    )}
+                    {person.nationality && (
+                      <Badge variant="outline" className="text-sm px-3 py-1">
+                        {person.nationality}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4">
+                    {person.birth_place && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground font-medium">Born:</span>
+                        <span className="text-foreground">
+                          {format(new Date(person.date_of_birth), 'MMMM d, yyyy')} in {person.birth_place}
+                        </span>
+                      </div>
+                    )}
+                    {person.death_date && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground font-medium">Died:</span>
+                        <span className="text-foreground">
+                          {format(new Date(person.death_date), 'MMMM d, yyyy')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
+
+                <p className="text-muted-foreground leading-relaxed text-base">
+                  {person.bio}
+                </p>
               </div>
             </div>
-
-            <p className="text-muted-foreground leading-relaxed">
-              {person.bio}
-            </p>
           </CardContent>
         </Card>
 
@@ -308,6 +381,56 @@ const FamousPeopleProfile = () => {
           </CardContent>
         </Card>
 
+        {/* Additional Information Sections */}
+        <div className="grid gap-6 mb-6">
+          {person.notable_works && (
+            <Card>
+              <CardContent className="pt-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  Notable Works
+                </h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {person.notable_works}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {person.achievements && (
+            <Card>
+              <CardContent className="pt-6">
+                <h2 className="text-xl font-semibold mb-4">Key Achievements</h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {person.achievements}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {person.awards && (
+            <Card>
+              <CardContent className="pt-6">
+                <h2 className="text-xl font-semibold mb-4">Awards & Recognition</h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {person.awards}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {person.fun_facts && (
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="pt-6">
+                <h2 className="text-xl font-semibold mb-4">Interesting Facts</h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {person.fun_facts}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
         {/* Birthday Details and Time Lived */}
         <div className="grid md:grid-cols-2 gap-6">
           <Card>
@@ -324,6 +447,15 @@ const FamousPeopleProfile = () => {
                     {format(new Date(person.date_of_birth), 'EEEE, MMMM d, yyyy')}
                   </div>
                 </div>
+                {person.birth_place && (
+                  <>
+                    <Separator />
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">Place of Birth:</div>
+                      <div className="text-lg font-medium">{person.birth_place}</div>
+                    </div>
+                  </>
+                )}
                 <Separator />
                 <div>
                   <div className="text-sm text-muted-foreground mb-1">Age in Days:</div>
@@ -356,6 +488,13 @@ const FamousPeopleProfile = () => {
                     {liveAge.totalMinutes.toLocaleString()}
                   </div>
                 </div>
+                <Separator />
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">Total Seconds:</div>
+                  <div className="text-lg font-medium">
+                    {(liveAge.totalMinutes * 60).toLocaleString()}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -365,6 +504,7 @@ const FamousPeopleProfile = () => {
         <AdSenseBanner format="horizontal" className="mt-8" />
       </div>
     </main>
+    </>
   );
 };
 

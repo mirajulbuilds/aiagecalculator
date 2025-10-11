@@ -318,19 +318,19 @@ const FamousPeople = () => {
                           Soon!
                         </div>
                       )}
-                      <div className="relative h-56 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 overflow-hidden">
-                        <Avatar className="absolute inset-0 w-full h-full rounded-none">
-                          <AvatarImage 
-                            src={person.photo_url || ""} 
-                            alt={`${person.name} profile photo`} 
-                            className="object-cover group-hover:scale-110 transition-transform duration-300" 
-                          />
-                          <AvatarFallback className="rounded-none text-5xl font-bold bg-gradient-to-br from-primary/30 to-primary/10">
-                            {person.name.split(" ").map((n) => n[0]).join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      </div>
+                        <div className="relative h-56 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 overflow-hidden">
+                            <Avatar className="absolute inset-0 w-full h-full rounded-none">
+                                <AvatarImage 
+                                    src={person.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=512&background=random&bold=true`} 
+                                    alt={`${person.name} - Famous ${person.categories?.name || 'Person'}`} 
+                                    className="object-cover group-hover:scale-110 transition-transform duration-300" 
+                                />
+                                <AvatarFallback className="rounded-none text-5xl font-bold bg-gradient-to-br from-primary/30 to-primary/10">
+                                    {person.name.split(" ").map((n) => n[0]).join("")}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        </div>
                       <CardHeader className="pb-3">
                         <CardTitle className="flex items-center justify-between gap-2 text-lg">
                           <span className="truncate">{person.name}</span>

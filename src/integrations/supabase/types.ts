@@ -34,32 +34,56 @@ export type Database = {
       }
       famous_people: {
         Row: {
+          achievements: string | null
+          awards: string | null
           bio: string | null
+          birth_place: string | null
           category_id: string | null
           created_at: string
           date_of_birth: string
+          death_date: string | null
+          fun_facts: string | null
           id: string
           name: string
+          nationality: string | null
+          notable_works: string | null
+          occupation: string | null
           photo_url: string | null
           updated_at: string
         }
         Insert: {
+          achievements?: string | null
+          awards?: string | null
           bio?: string | null
+          birth_place?: string | null
           category_id?: string | null
           created_at?: string
           date_of_birth: string
+          death_date?: string | null
+          fun_facts?: string | null
           id?: string
           name: string
+          nationality?: string | null
+          notable_works?: string | null
+          occupation?: string | null
           photo_url?: string | null
           updated_at?: string
         }
         Update: {
+          achievements?: string | null
+          awards?: string | null
           bio?: string | null
+          birth_place?: string | null
           category_id?: string | null
           created_at?: string
           date_of_birth?: string
+          death_date?: string | null
+          fun_facts?: string | null
           id?: string
           name?: string
+          nationality?: string | null
+          notable_works?: string | null
+          occupation?: string | null
           photo_url?: string | null
           updated_at?: string
         }
