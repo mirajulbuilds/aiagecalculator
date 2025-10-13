@@ -13,6 +13,7 @@ import { differenceInYears, differenceInMonths, differenceInDays, differenceInHo
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { Sparkles } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { getCelebrityPhoto } from "@/lib/famous-people-photos";
 
 interface FamousPerson {
   id: string;
@@ -174,8 +175,8 @@ const FamousPeopleProfile = () => {
     );
   }
 
-  // Generate consistent avatar URL using UI Avatars
-  const avatarUrl = person.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=512&background=random&bold=true`;
+  // Generate consistent avatar URL using imported photos or UI Avatars fallback
+  const avatarUrl = getCelebrityPhoto(person.name) || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=512&background=random&bold=true`;
   
   const pageTitle = `${person.name} Age, Birthday & Biography - AI Age Calculator`;
   const pageDescription = `${person.name} is ${liveAge.years} years old. Born on ${format(new Date(person.date_of_birth), 'MMMM d, yyyy')}${person.birth_place ? ` in ${person.birth_place}` : ''}. ${person.bio.slice(0, 150)}...`;

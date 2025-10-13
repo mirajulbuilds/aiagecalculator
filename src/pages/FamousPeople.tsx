@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { differenceInYears, differenceInDays, format } from "date-fns";
+import { getCelebrityPhoto } from "@/lib/famous-people-photos";
 
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 
@@ -321,7 +322,7 @@ const FamousPeople = () => {
                         <div className="relative h-56 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 overflow-hidden">
                             <Avatar className="absolute inset-0 w-full h-full rounded-none">
                                 <AvatarImage 
-                                    src={person.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=512&background=random&bold=true`} 
+                                    src={getCelebrityPhoto(person.name) || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=512&background=random&bold=true`} 
                                     alt={`${person.name} - Famous ${person.categories?.name || 'Person'}`} 
                                     className="object-cover group-hover:scale-110 transition-transform duration-300" 
                                 />
