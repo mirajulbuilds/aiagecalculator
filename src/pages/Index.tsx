@@ -262,14 +262,56 @@ const Index = () => {
     }
   };
 
+  const addWatermarkToImage = async (imageDataUrl: string): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        // Draw the original image
+        ctx.drawImage(img, 0, 0);
+        
+        // Add watermark
+        const fontSize = Math.max(14, img.width * 0.02); // Responsive font size, min 14px
+        ctx.font = `${fontSize}px Inter, Roboto, sans-serif`;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        
+        const padding = 20;
+        ctx.fillText('aiagecalc.com', canvas.width - padding, canvas.height - padding);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/png');
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = imageDataUrl;
+    });
+  };
+
   const shareImage = async () => {
     if (!birthdayWishImage) return;
     
     try {
-      // Convert base64 to blob
-      const response = await fetch(birthdayWishImage);
-      const blob = await response.blob();
-      const file = new File([blob], 'birthday-wish.png', { type: 'image/png' });
+      // Add watermark to image
+      const imageBlob = await addWatermarkToImage(birthdayWishImage);
+      const file = new File([imageBlob], 'birthday-wish.png', { type: 'image/png' });
       
       // Check if Web Share API is supported
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
@@ -281,12 +323,14 @@ const Index = () => {
         toast.success("🎉 Image shared successfully!");
       } else {
         // Fallback: download the image
+        const url = URL.createObjectURL(imageBlob);
         const a = document.createElement('a');
-        a.href = birthdayWishImage;
+        a.href = url;
         a.download = `birthday-wish-${name || 'celebration'}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         toast.success("Image downloaded successfully! You can now share it manually");
       }
     } catch (error) {

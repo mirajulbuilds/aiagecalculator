@@ -1,42 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createCanvas, loadImage } from "https://deno.land/x/canvas@v1.4.1/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-async function addWatermarkToImage(base64Image: string): Promise<string> {
-  try {
-    // Load the image
-    const img = await loadImage(base64Image);
-    
-    // Create canvas with same dimensions as image
-    const canvas = createCanvas(img.width(), img.height());
-    const ctx = canvas.getContext('2d');
-    
-    // Draw the original image
-    ctx.drawImage(img, 0, 0);
-    
-    // Add watermark
-    const fontSize = Math.max(14, img.width() * 0.02); // Responsive font size, min 14px
-    ctx.font = `${fontSize}px Inter, Roboto, sans-serif`;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    
-    const padding = 20;
-    ctx.fillText('aiagecalc.com', img.width() - padding, img.height() - padding);
-    
-    // Convert canvas back to base64
-    const watermarkedImage = canvas.toDataURL('image/png');
-    return watermarkedImage;
-  } catch (error) {
-    console.error('Error adding watermark:', error);
-    // Return original image if watermarking fails
-    return base64Image;
-  }
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -203,14 +170,10 @@ serve(async (req) => {
       throw new Error("No image generated in response");
     }
 
-    // Add watermark to the image
-    console.log('Adding watermark to image');
-    const watermarkedImageUrl = await addWatermarkToImage(imageUrl);
-    
-    console.log('Successfully generated birthday wish image with watermark');
+    console.log('Successfully generated birthday wish image');
 
     return new Response(
-      JSON.stringify({ imageUrl: watermarkedImageUrl }),
+      JSON.stringify({ imageUrl }),
       { 
         headers: { 
           ...corsHeaders,
