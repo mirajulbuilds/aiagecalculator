@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { name, birthDate, age } = await req.json();
+    const { name, birthDate, age, customPrompt } = await req.json();
     
     // Input validation
     if (name && (typeof name !== 'string' || name.length > 100)) {
@@ -84,7 +84,7 @@ serve(async (req) => {
 
     // Create a detailed prompt for the birthday wish image
     const nameText = name ? `Happy Birthday ${name}!` : 'Happy Birthday!';
-    const prompt = `Create a beautiful, festive birthday celebration image with an elegant design. 
+    const defaultPrompt = `Create a beautiful, festive birthday celebration image with an elegant design. 
     Include the following text prominently and clearly:
     "${nameText}"
     "Born on ${formattedDate}"
@@ -99,6 +99,18 @@ serve(async (req) => {
     - A warm and uplifting atmosphere
     - Professional design quality
     Make it look like a premium birthday greeting card with all text clearly visible and beautifully styled.`;
+    
+    // Use custom prompt if provided, otherwise use default
+    const prompt = customPrompt 
+      ? `${customPrompt}
+
+      Important information to include:
+      ${nameText}
+      Born on ${formattedDate}
+      Celebrating ${age} wonderful years!
+      
+      Make sure the text is clearly visible and beautifully styled.`
+      : defaultPrompt;
 
     console.log('Calling Lovable AI with prompt...');
 

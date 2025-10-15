@@ -4,6 +4,7 @@ import { differenceInYears, differenceInMonths, differenceInDays, differenceInHo
 import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -44,6 +45,7 @@ const Index = () => {
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
   const [birthdayWishImage, setBirthdayWishImage] = useState<string | null>(null);
   const [isGeneratingWish, setIsGeneratingWish] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState<string>("");
 
   useEffect(() => {
     // Detect user's timezone
@@ -227,7 +229,8 @@ const Index = () => {
           body: JSON.stringify({
             name: name || undefined,
             birthDate: `${birthDate.getFullYear()}-${String(birthDate.getMonth() + 1).padStart(2, '0')}-${String(birthDate.getDate()).padStart(2, '0')}`,
-            age: age
+            age: age,
+            customPrompt: customPrompt || undefined
           }),
         }
       );
@@ -357,6 +360,22 @@ const Index = () => {
               onChange={(e) => setName(e.target.value)}
               className="h-12 bg-muted"
             />
+          </div>
+
+          {/* Custom Prompt Input (Optional) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Custom Birthday Wish Prompt (Optional)
+            </label>
+            <Textarea
+              placeholder="E.g., 'Create a birthday wish with space theme and rockets' or 'Make it elegant with gold accents'"
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              className="min-h-[80px] bg-muted resize-none"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Add your own creative touch to the birthday wish image
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
