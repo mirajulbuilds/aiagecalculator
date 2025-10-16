@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { AgeDisplayFormats } from "@/components/AgeDisplayFormats";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import FamousBirthdayMatches from "@/components/FamousBirthdayMatches";
 
 interface AgeResult {
   years: number;
@@ -752,6 +753,14 @@ const Index = () => {
         {/* Age Display Formats */}
         {result && (
           <AgeDisplayFormats result={result} timezone={timezone} />
+        )}
+
+        {/* Famous People Born on This Date */}
+        {result && birthMonth && birthDay && (
+          <FamousBirthdayMatches 
+            birthMonth={parseInt(birthMonth)} 
+            birthDay={parseInt(birthDay)} 
+          />
         )}
 
         {/* Bottom Ad Banner */}
