@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import * as React from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,39 +32,25 @@ interface FamousBirthdayMatchesProps {
 }
 
 const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesProps) => {
-  const [globalPeople, setGlobalPeople] = useState<FamousPerson[]>([]);
-  const [regionalPeople, setRegionalPeople] = useState<FamousPerson[]>([]);
-  const [userRegion, setUserRegion] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [globalPeople, setGlobalPeople] = React.useState<FamousPerson[]>([]);
+  const [regionalPeople, setRegionalPeople] = React.useState<FamousPerson[]>([]);
+  const [userRegion, setUserRegion] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
-  useEffect(() => {
-    detectUserRegion();
+  React.useEffect(() => {
+    // Use browser language as fallback region detection (no external API)
+    const browserLanguage = navigator.language;
+    if (browserLanguage.includes('-')) {
+      const region = browserLanguage.split('-')[1];
+      setUserRegion(region);
+    }
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (birthMonth && birthDay) {
       fetchFamousPeople();
     }
   }, [birthMonth, birthDay, userRegion]);
-
-  const detectUserRegion = async () => {
-    try {
-      // Try to get user's country from IP using a free geolocation service
-      const response = await fetch('https://ipapi.co/json/');
-      if (response.ok) {
-        const data = await response.json();
-        setUserRegion(data.country_name || null);
-      }
-    } catch (error) {
-      console.error('Error detecting region:', error);
-      // Fallback to browser language/region
-      const browserLanguage = navigator.language;
-      if (browserLanguage.includes('-')) {
-        const region = browserLanguage.split('-')[1];
-        setUserRegion(region);
-      }
-    }
-  };
 
   const fetchFamousPeople = async () => {
     try {
