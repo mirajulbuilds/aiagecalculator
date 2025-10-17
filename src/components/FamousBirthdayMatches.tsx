@@ -13,17 +13,14 @@ import { differenceInYears, format } from "date-fns";
 import { getCelebrityPhoto } from "@/lib/famous-people-photos";
 
 interface FamousPerson {
-  id: string;
   name: string;
-  date_of_birth: string;
-  bio: string;
-  photo_url: string | null;
-  nationality: string | null;
-  occupation: string | null;
-  category_id: string | null;
-  categories?: {
-    name: string;
-  };
+  dateOfBirth: string;
+  occupation: string[];
+  nationality: string;
+  description: string;
+  wikipediaUrl?: string;
+  imageUrl?: string;
+  aiFunFact?: string;
 }
 
 interface FamousBirthdayMatchesProps {
@@ -56,49 +53,25 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
     try {
       setLoading(true);
       
-      // Fetch all people born on this date
-      const { data, error } = await supabase
-        .from('famous_people')
-        .select(`
-          *,
-          categories (
-            name
-          )
-        `)
-        .not('date_of_birth', 'is', null)
-        .order('name');
+      // Call edge function to fetch real-time data from Wikidata + AI enhancements
+      const { data, error } = await supabase.functions.invoke('fetch-famous-birthdays', {
+        body: { 
+          birthMonth, 
+          birthDay,
+          userRegion 
+        }
+      });
 
       if (error) throw error;
 
-      // Filter people born on the same month and day
-      const matchingPeople = (data || []).filter((person) => {
-        const birthDate = new Date(person.date_of_birth);
-        return birthDate.getMonth() + 1 === birthMonth && birthDate.getDate() === birthDay;
-      });
-
-      // Sort by age (older first)
-      matchingPeople.sort((a, b) => {
-        const ageA = differenceInYears(new Date(), new Date(a.date_of_birth));
-        const ageB = differenceInYears(new Date(), new Date(b.date_of_birth));
-        return ageB - ageA;
-      });
-
-      // Set global people (top 5)
-      setGlobalPeople(matchingPeople.slice(0, 5));
-
-      // Filter regional people based on user's region
-      if (userRegion) {
-        const regional = matchingPeople.filter((person) => 
-          person.nationality?.toLowerCase().includes(userRegion.toLowerCase()) ||
-          person.nationality === userRegion
-        );
-        setRegionalPeople(regional.slice(0, 5));
-      } else {
-        setRegionalPeople([]);
-      }
+      setGlobalPeople(data.global || []);
+      setRegionalPeople(data.regional || []);
+      
+      console.log(`Loaded ${data.global?.length || 0} global and ${data.regional?.length || 0} regional celebrities from ${data.source}`);
+      
     } catch (error) {
       console.error('Error fetching famous people:', error);
-      toast.error('Failed to load birthday matches');
+      toast.error('Failed to load birthday matches. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -109,8 +82,8 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
   };
 
   const PersonCard = ({ person }: { person: FamousPerson }) => {
-    const age = calculateAge(person.date_of_birth);
-    const avatarUrl = getCelebrityPhoto(person.name) || 
+    const age = calculateAge(person.dateOfBirth);
+    const avatarUrl = person.imageUrl || getCelebrityPhoto(person.name) || 
       `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&size=256&background=random&bold=true`;
 
     return (
@@ -120,7 +93,7 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
             <Avatar className="w-16 h-16 border-2 border-primary/20">
               <AvatarImage 
                 src={avatarUrl}
-                alt={`${person.name} - ${person.occupation || person.categories?.name || 'Famous Person'}`}
+                alt={`${person.name} - ${person.occupation.join(', ') || 'Famous Person'}`}
                 className="object-cover"
               />
               <AvatarFallback className="text-lg font-bold bg-gradient-to-br from-primary/30 to-primary/10">
@@ -130,20 +103,20 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
             <div className="flex-1 min-w-0">
               <CardTitle className="text-lg mb-1 truncate">{person.name}</CardTitle>
               <div className="flex flex-wrap gap-1.5 mb-2">
-                {person.occupation && (
-                  <Badge variant="default" className="text-xs">
-                    {person.occupation}
+                {person.occupation.slice(0, 2).map((occ, idx) => (
+                  <Badge key={idx} variant="default" className="text-xs">
+                    {occ}
                   </Badge>
-                )}
-                {person.categories?.name && (
+                ))}
+                {person.nationality && (
                   <Badge variant="secondary" className="text-xs">
-                    {person.categories.name}
+                    {person.nationality}
                   </Badge>
                 )}
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="w-3 h-3" />
-                <span>Born in {format(new Date(person.date_of_birth), 'yyyy')}</span>
+                <span>Born in {format(new Date(person.dateOfBirth), 'yyyy')}</span>
                 <span>•</span>
                 <span>{age} years old</span>
               </div>
@@ -152,14 +125,24 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
         </CardHeader>
         <CardContent className="pt-0">
           <CardDescription className="line-clamp-2 text-sm mb-3">
-            {person.bio}
+            {person.description}
           </CardDescription>
-          <Link to={`/famous-people/${person.id}`}>
-            <Button variant="outline" size="sm" className="w-full gap-2">
-              <Users className="w-3.5 h-3.5" />
-              View Profile
-            </Button>
-          </Link>
+          {person.aiFunFact && (
+            <div className="mb-3 p-2 bg-primary/5 rounded-lg border border-primary/10">
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-muted-foreground italic">{person.aiFunFact}</p>
+              </div>
+            </div>
+          )}
+          {person.wikipediaUrl && (
+            <a href={person.wikipediaUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="w-full gap-2">
+                <Users className="w-3.5 h-3.5" />
+                View Wikipedia Profile
+              </Button>
+            </a>
+          )}
         </CardContent>
       </Card>
     );
@@ -247,8 +230,8 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {regionalPeople.map((person) => (
-                <PersonCard key={person.id} person={person} />
+              {regionalPeople.map((person, index) => (
+                <PersonCard key={`regional-${person.name}-${index}`} person={person} />
               ))}
             </div>
           </TabsContent>
@@ -261,8 +244,8 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {globalPeople.map((person) => (
-              <PersonCard key={person.id} person={person} />
+            {globalPeople.map((person, index) => (
+              <PersonCard key={`global-${person.name}-${index}`} person={person} />
             ))}
           </div>
         </TabsContent>

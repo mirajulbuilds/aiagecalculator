@@ -1,6 +1,6 @@
 project_id = "ryetajignnzczcybyggr"
 
-[functions.fetch-celebrities]
+[functions.fetch-famous-birthdays]
 verify_jwt = false
 
 [functions.generate-birthday-wish]
