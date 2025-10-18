@@ -34,9 +34,9 @@ interface AgeResult {
 
 const Index = () => {
   const [name, setName] = useState<string>("");
-  const [birthDay, setBirthDay] = useState<string>("1");
-  const [birthMonth, setBirthMonth] = useState<string>("1");
-  const [birthYear, setBirthYear] = useState<string>("2000");
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthYear, setBirthYear] = useState<string>("");
   
   const currentDate = new Date();
   const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
@@ -50,16 +50,12 @@ const Index = () => {
   const [isGeneratingWish, setIsGeneratingWish] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
-  const [showExampleMessage, setShowExampleMessage] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>("calculator");
 
   useEffect(() => {
     // Detect user's timezone
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setTimezone(userTimezone);
-    
-    // Auto-calculate with default example date on initial load
-    calculateAge();
   }, []);
 
   // Live age update every second
@@ -207,9 +203,6 @@ const Index = () => {
       toast.error("Please select a target date");
       return;
     }
-
-    // Hide example message when user calculates
-    setShowExampleMessage(false);
 
     const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
     const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
@@ -472,10 +465,10 @@ const Index = () => {
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
-            Your Age is More Than Just a Number
+            Unlock the Secrets of Your Birthday
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
-            Discover surprising life stats, your next birthday countdown, and your Zodiac sign with a single click!
+            Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
           </p>
         </header>
 
@@ -564,107 +557,6 @@ const Index = () => {
             </p>
           </div>
 
-          {/* CTA Text - Hidden after user calculates */}
-          {showExampleMessage && (
-            <div className="text-center mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20 animate-fade-in">
-              <p className="text-base md:text-lg font-semibold text-foreground">
-                This is just an example. Now, enter your own birthday to see the magic!
-              </p>
-            </div>
-          )}
-
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            {/* Birth Date Input */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Date of Birth
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <Select value={birthDay} onValueChange={setBirthDay}>
-                  <SelectTrigger className="h-12 bg-muted">
-                    <SelectValue placeholder="Day" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day} value={day}>
-                        {day}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={birthMonth} onValueChange={setBirthMonth}>
-                  <SelectTrigger className="h-12 bg-muted">
-                    <SelectValue placeholder="Month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={month.value}>
-                        {month.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={birthYear} onValueChange={setBirthYear}>
-                  <SelectTrigger className="h-12 bg-muted">
-                    <SelectValue placeholder="Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Target Date Input */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Calculate Age Until
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <Select value={targetDay} onValueChange={setTargetDay}>
-                  <SelectTrigger className="h-12 bg-muted">
-                    <SelectValue placeholder="Day" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day} value={day}>
-                        {day}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={targetMonth} onValueChange={setTargetMonth}>
-                  <SelectTrigger className="h-12 bg-muted">
-                    <SelectValue placeholder="Month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={month.value}>
-                        {month.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={targetYear} onValueChange={setTargetYear}>
-                  <SelectTrigger className="h-12 bg-muted">
-                    <SelectValue placeholder="Year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
           {/* Calculate Button */}
           <Button
             onClick={calculateAge}
@@ -673,6 +565,41 @@ const Index = () => {
           >
             Calculate Age
           </Button>
+
+          {/* What You'll Discover Section - Show before calculation */}
+          {!result && activeTab === "calculator" && (
+            <div className="mt-8 p-6 bg-accent/30 rounded-xl border border-border animate-fade-in">
+              <h3 className="text-xl font-semibold text-foreground mb-4 text-center">
+                Here's What You'll Discover:
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-2xl">📅</span>
+                  <div>
+                    <strong className="text-foreground">Next Birthday:</strong> How many days are left?
+                  </div>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-2xl">✨</span>
+                  <div>
+                    <strong className="text-foreground">Your Zodiac Sign:</strong> The mystery of your personality.
+                  </div>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-2xl">⏳</span>
+                  <div>
+                    <strong className="text-foreground">Life Statistics:</strong> How many total minutes have you lived?
+                  </div>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-2xl">🪐</span>
+                  <div>
+                    <strong className="text-foreground">Age on Planets:</strong> What is your age on Mars?
+                  </div>
+                </li>
+              </ul>
+            </div>
+          )}
               </div>
             </TabsContent>
 
