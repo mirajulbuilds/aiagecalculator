@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AgeDisplayFormats } from "@/components/AgeDisplayFormats";
+import { AdditionalAgeInfo } from "@/components/AdditionalAgeInfo";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import FamousBirthdayMatches from "@/components/FamousBirthdayMatches";
 
@@ -28,6 +29,9 @@ interface AgeResult {
   totalHours: number;
   totalMinutes: number;
   totalSeconds: number;
+  nextBirthdayDays: number;
+  zodiacSign: string;
+  zodiacSymbol: string;
 }
 
 const Index = () => {
@@ -93,6 +97,10 @@ const Index = () => {
       const totalMinutes = differenceInMinutes(now, birthDate);
       const totalSeconds = Math.floor((now.getTime() - birthDate.getTime()) / 1000);
 
+      // Calculate next birthday for live age
+      const nextBirthdayDays = calculateNextBirthday(parseInt(birthMonth), parseInt(birthDay));
+      const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
+
       setLiveAge({
         years,
         months,
@@ -104,6 +112,9 @@ const Index = () => {
         totalHours,
         totalMinutes,
         totalSeconds,
+        nextBirthdayDays,
+        zodiacSign: zodiac.sign,
+        zodiacSymbol: zodiac.symbol,
       });
     };
 
@@ -132,6 +143,55 @@ const Index = () => {
   
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
+
+  const getZodiacSign = (month: number, day: number): { sign: string; symbol: string } => {
+    const zodiacData: { [key: string]: { sign: string; symbol: string } } = {
+      capricorn: { sign: "Capricorn", symbol: "♑" },
+      aquarius: { sign: "Aquarius", symbol: "♒" },
+      pisces: { sign: "Pisces", symbol: "♓" },
+      aries: { sign: "Aries", symbol: "♈" },
+      taurus: { sign: "Taurus", symbol: "♉" },
+      gemini: { sign: "Gemini", symbol: "♊" },
+      cancer: { sign: "Cancer", symbol: "♋" },
+      leo: { sign: "Leo", symbol: "♌" },
+      virgo: { sign: "Virgo", symbol: "♍" },
+      libra: { sign: "Libra", symbol: "♎" },
+      scorpio: { sign: "Scorpio", symbol: "♏" },
+      sagittarius: { sign: "Sagittarius", symbol: "♐" },
+    };
+
+    if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return zodiacData.aries;
+    if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return zodiacData.taurus;
+    if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return zodiacData.gemini;
+    if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return zodiacData.cancer;
+    if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return zodiacData.leo;
+    if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return zodiacData.virgo;
+    if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return zodiacData.libra;
+    if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return zodiacData.scorpio;
+    if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return zodiacData.sagittarius;
+    if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return zodiacData.capricorn;
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return zodiacData.aquarius;
+    return zodiacData.pisces;
+  };
+
+  const calculateNextBirthday = (birthMonth: number, birthDay: number): number => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
+    // Create this year's birthday
+    let nextBirthday = new Date(currentYear, birthMonth - 1, birthDay);
+    
+    // If birthday has passed this year, use next year
+    if (nextBirthday < today) {
+      nextBirthday = new Date(currentYear + 1, birthMonth - 1, birthDay);
+    }
+    
+    // Calculate days difference
+    const diffTime = nextBirthday.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+  };
 
   const calculateAge = () => {
     if (!birthDay || !birthMonth || !birthYear) {
@@ -195,6 +255,12 @@ const Index = () => {
     const totalMinutes = differenceInMinutes(targetDate, birthDate);
     const totalSeconds = Math.floor((targetDate.getTime() - birthDate.getTime()) / 1000);
 
+    // Calculate next birthday countdown
+    const nextBirthdayDays = calculateNextBirthday(parseInt(birthMonth), parseInt(birthDay));
+
+    // Get zodiac sign
+    const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
+
     setResult({
       years,
       months,
@@ -206,6 +272,9 @@ const Index = () => {
       totalHours,
       totalMinutes,
       totalSeconds,
+      nextBirthdayDays,
+      zodiacSign: zodiac.sign,
+      zodiacSymbol: zodiac.symbol,
     });
 
     toast.success("Age calculated successfully!");
@@ -600,6 +669,15 @@ const Index = () => {
               </div>
             </div>
           </section>
+        )}
+
+        {/* Additional Age Info Section */}
+        {result && (
+          <AdditionalAgeInfo 
+            nextBirthdayDays={result.nextBirthdayDays}
+            zodiacSign={result.zodiacSign}
+            zodiacSymbol={result.zodiacSymbol}
+          />
         )}
 
         {/* AI Birthday Wish Section */}
