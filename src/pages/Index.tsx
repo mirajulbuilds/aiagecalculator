@@ -370,28 +370,28 @@ const Index = () => {
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="mb-6">
-              <TabsList className="w-full h-auto flex flex-col md:grid md:grid-cols-2 gap-0 md:gap-1">
+              <TabsList className="w-full h-auto grid grid-cols-2 md:grid-cols-4 gap-1">
                 <TabsTrigger 
                   value="calculator" 
-                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                  className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   Age Calculator
                 </TabsTrigger>
                 <TabsTrigger 
                   value="difference"
-                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                  className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   Age Difference
                 </TabsTrigger>
                 <TabsTrigger 
                   value="specific"
-                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                  className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   Specific Date
                 </TabsTrigger>
                 <TabsTrigger 
                   value="greetings"
-                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                  className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   AI Greetings
                 </TabsTrigger>
