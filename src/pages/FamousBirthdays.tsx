@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ interface Celebrity {
   description: string;
 }
 
-const FamousBirthdays = () => {
+const FamousBirthdays: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [bornToday, setBornToday] = useState<Celebrity[]>([]);
@@ -56,32 +56,7 @@ const FamousBirthdays = () => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    try {
-      setSearching(true);
-      const { data, error } = await supabase.functions.invoke('celebrity-data', {
-        body: { type: 'search', query: searchQuery }
-      });
-
-      if (error) throw error;
-
-      // Navigate to celebrity profile with the data
-      navigate(`/celebrity/${searchQuery.toLowerCase().replace(/\s+/g, '-')}`, {
-        state: { celebrityData: data.data, fromSearch: true }
-      });
-    } catch (error) {
-      console.error('Error searching:', error);
-      toast.error('Celebrity not found. Please try another name.');
-    } finally {
-      setSearching(false);
-    }
-  };
-
-  const handleCategoryClick = (category: string) => {
-    navigate(`/celebrities/category/${category.toLowerCase()}`);
-  };
-
-  const handleMonthClick = (month: string) => {
-    navigate(`/celebrities/month/${month.toLowerCase()}`);
+    toast.info('Search feature coming soon!');
   };
 
   const calculateAge = (dateOfBirth: string) => {
@@ -102,7 +77,7 @@ const FamousBirthdays = () => {
   ];
 
   return (
-    <>
+    <React.Fragment>
       <Helmet>
         <title>Famous Birthdays - Celebrity Ages & Birthday Calendar | AiAgeCalc.com</title>
         <meta 
@@ -114,7 +89,6 @@ const FamousBirthdays = () => {
       </Helmet>
 
       <main className="min-h-screen bg-background">
-        {/* Hero Section with Search */}
         <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-16 px-4">
           <div className="container mx-auto max-w-4xl text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -127,7 +101,6 @@ const FamousBirthdays = () => {
               Discover celebrity ages, birthdays, and fascinating profiles
             </p>
 
-            {/* Search Bar */}
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -152,7 +125,6 @@ const FamousBirthdays = () => {
         </section>
 
         <div className="container mx-auto px-4 py-12 max-w-7xl">
-          {/* Born Today Section */}
           <section className="mb-16">
             <div className="flex items-center gap-3 mb-6">
               <Calendar className="w-8 h-8 text-primary" />
@@ -185,16 +157,6 @@ const FamousBirthdays = () => {
                     <Card 
                       key={index}
                       className="hover:shadow-lg transition-shadow cursor-pointer group"
-                      onClick={() => navigate(`/celebrity/${celebrity.name.toLowerCase().replace(/\s+/g, '-')}`, {
-                        state: { 
-                          celebrityData: {
-                            fullName: celebrity.name,
-                            dateOfBirth: celebrity.dateOfBirth,
-                            profession: celebrity.profession,
-                            biography: celebrity.description
-                          }
-                        }
-                      })}
                     >
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
@@ -224,7 +186,6 @@ const FamousBirthdays = () => {
             )}
           </section>
 
-          {/* Browse by Category Section */}
           <section className="mb-16">
             <div className="flex items-center gap-3 mb-6">
               <Users className="w-8 h-8 text-primary" />
@@ -238,7 +199,6 @@ const FamousBirthdays = () => {
                   <Card
                     key={category.name}
                     className="cursor-pointer hover:shadow-lg transition-all hover:scale-105"
-                    onClick={() => handleCategoryClick(category.name)}
                   >
                     <CardContent className="p-6">
                       <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${category.color} flex items-center justify-center mx-auto mb-4`}>
@@ -254,7 +214,6 @@ const FamousBirthdays = () => {
             </div>
           </section>
 
-          {/* Browse by Month Section */}
           <section>
             <div className="flex items-center gap-3 mb-6">
               <Calendar className="w-8 h-8 text-primary" />
@@ -267,7 +226,6 @@ const FamousBirthdays = () => {
                   key={month}
                   variant="outline"
                   className="h-auto py-4 hover:bg-primary hover:text-primary-foreground transition-colors"
-                  onClick={() => handleMonthClick(month)}
                 >
                   {month}
                 </Button>
@@ -276,7 +234,7 @@ const FamousBirthdays = () => {
           </section>
         </div>
       </main>
-    </>
+    </React.Fragment>
   );
 };
 

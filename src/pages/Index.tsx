@@ -509,8 +509,7 @@ const Index = () => {
             Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
           </p>
           
-          {/* Famous Birthdays Button */}
-          <Link to="/famous-birthdays">
+          <a href="/famous-birthdays">
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all gap-2"
@@ -518,7 +517,7 @@ const Index = () => {
               <Sparkles className="w-5 h-5" />
               Explore Famous Birthdays
             </Button>
-          </Link>
+          </a>
         </header>
 
         {/* Timezone Section */}
@@ -583,19 +582,6 @@ const Index = () => {
                   AI Gift Advisor
                 </TabsTrigger>
               </TabsList>
-              
-              {/* Famous Birthdays Link Button */}
-              <div className="mt-4 text-center">
-                <Link to="/famous-birthdays">
-                  <Button 
-                    variant="outline" 
-                    className="w-full md:w-auto gap-2"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Explore Famous Birthdays
-                  </Button>
-                </Link>
-              </div>
             </div>
 
             {/* Main Age Calculator Tab */}
