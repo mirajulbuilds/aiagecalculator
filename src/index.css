@@ -124,6 +124,13 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Interactive gradient background */
+    background-image: radial-gradient(
+      circle 400px at var(--x, 50%) var(--y, 50%), 
+      hsl(var(--primary) / 0.15),
+      transparent 80%
+    );
+    transition: background 0.2s linear;
   }
 }
 
