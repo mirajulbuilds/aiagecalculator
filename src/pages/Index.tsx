@@ -369,32 +369,37 @@ const Index = () => {
           aria-label="Age calculators"
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6 h-auto">
-              <TabsTrigger 
-                value="calculator" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-              >
-                Age Calculator
-              </TabsTrigger>
-              <TabsTrigger 
-                value="difference"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-              >
-                Age Difference
-              </TabsTrigger>
-              <TabsTrigger 
-                value="specific"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-              >
-                Specific Date
-              </TabsTrigger>
-              <TabsTrigger 
-                value="greetings"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-              >
-                AI Greetings
-              </TabsTrigger>
-            </TabsList>
+            <div className="relative mb-6">
+              {/* Fade-out gradient indicator on mobile */}
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-muted to-transparent pointer-events-none md:hidden z-10" />
+              
+              <TabsList className="w-full md:grid md:grid-cols-4 h-auto flex overflow-x-auto scrollbar-hide">
+                <TabsTrigger 
+                  value="calculator" 
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                >
+                  Age Calculator
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="difference"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                >
+                  Age Difference
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="specific"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                >
+                  Specific Date
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="greetings"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                >
+                  AI Greetings
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Main Age Calculator Tab */}
             <TabsContent value="calculator" className="animate-fade-in space-y-0">
