@@ -67,6 +67,11 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
       setGlobalPeople(data.global || []);
       setRegionalPeople(data.regional || []);
       
+      // Show warning if data fetch failed
+      if (data.error && data.source === 'wikidata-failed') {
+        toast.warning(data.error);
+      }
+      
       console.log(`Loaded ${data.global?.length || 0} global and ${data.regional?.length || 0} regional celebrities from ${data.source}`);
       
     } catch (error) {

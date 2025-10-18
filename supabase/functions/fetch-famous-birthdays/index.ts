@@ -46,18 +46,61 @@ serve(async (req) => {
 
     const wikidataUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(wikidataQuery)}&format=json`;
     
-    const wikidataResponse = await fetch(wikidataUrl, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'FamousBirthdayApp/1.0'
+    // Add timeout and retry logic for Wikidata API
+    let wikidataData;
+    let lastError;
+    const maxRetries = 2;
+    const timeoutMs = 8000; // 8 second timeout
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        
+        const wikidataResponse = await fetch(wikidataUrl, {
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'FamousBirthdayApp/1.0'
+          },
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+
+        if (!wikidataResponse.ok) {
+          throw new Error(`Wikidata API error: ${wikidataResponse.status}`);
+        }
+
+        wikidataData = await wikidataResponse.json();
+        break; // Success, exit retry loop
+      } catch (error) {
+        lastError = error;
+        console.log(`Attempt ${attempt + 1} failed:`, error instanceof Error ? error.message : 'Unknown error');
+        
+        if (attempt < maxRetries) {
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        }
       }
-    });
-
-    if (!wikidataResponse.ok) {
-      throw new Error(`Wikidata API error: ${wikidataResponse.status}`);
     }
-
-    const wikidataData = await wikidataResponse.json();
+    
+    // If all retries failed, return empty results instead of crashing
+    if (!wikidataData) {
+      console.error('All Wikidata API attempts failed:', lastError);
+      return new Response(
+        JSON.stringify({ 
+          global: [],
+          regional: [],
+          error: 'Unable to fetch celebrity data at this time. Please try again later.',
+          source: 'wikidata-failed',
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 // Return 200 with empty data instead of 500
+        }
+      );
+    }
     console.log(`Found ${wikidataData.results.bindings.length} people from Wikidata`);
 
     // Process and structure the data
