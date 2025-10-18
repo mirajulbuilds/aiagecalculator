@@ -26,14 +26,15 @@ export const AgeDisplayFormats = ({ result, timezone }: AgeDisplayFormatsProps) 
         className="bg-card rounded-2xl shadow-card p-6 md:p-8"
         aria-label="Total days lived"
       >
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <Globe className="w-6 h-6 text-primary" />
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             Total Days You Lived in the World
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Complete days since birth
-          </p>
         </div>
+        <p className="text-sm text-muted-foreground text-center">
+          Complete days since birth
+        </p>
         
         <div className="bg-accent/20 rounded-xl p-8 md:p-12">
           <div className="text-center">
