@@ -34,9 +34,9 @@ interface AgeResult {
 
 const Index = () => {
   const [name, setName] = useState<string>("");
-  const [birthDay, setBirthDay] = useState<string>("");
-  const [birthMonth, setBirthMonth] = useState<string>("");
-  const [birthYear, setBirthYear] = useState<string>("");
+  const [birthDay, setBirthDay] = useState<string>("1");
+  const [birthMonth, setBirthMonth] = useState<string>("1");
+  const [birthYear, setBirthYear] = useState<string>("2000");
   
   const currentDate = new Date();
   const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
@@ -55,6 +55,9 @@ const Index = () => {
     // Detect user's timezone
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setTimezone(userTimezone);
+    
+    // Auto-calculate with default example date on initial load
+    calculateAge();
   }, []);
 
   // Live age update every second
@@ -463,12 +466,11 @@ const Index = () => {
         
         {/* Header */}
         <header className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
-            <Sparkles className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" aria-hidden="true" />
-            AI Age Calculator
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
+            Your Age is More Than Just a Number
           </h1>
-          <p className="text-muted-foreground text-base md:text-lg mb-4">
-            Calculate your exact age with precision — and celebrate your special day with a personalized AI birthday wish! 🎉
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+            Discover surprising life stats, your next birthday countdown, and your Zodiac sign with a single click!
           </p>
         </header>
 
@@ -529,6 +531,13 @@ const Index = () => {
             />
             <p className="text-xs text-muted-foreground mt-1">
               Add your own creative touch to the birthday wish image
+            </p>
+          </div>
+
+          {/* CTA Text */}
+          <div className="text-center mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
+            <p className="text-base md:text-lg font-semibold text-foreground">
+              This is just an example. Now, enter your own birthday to see the magic!
             </p>
           </div>
 
