@@ -71,9 +71,9 @@ serve(async (req) => {
     
     console.log('Generating birthday wish for:', { name, birthDate, age });
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     // Format the birth date nicely - parse date components directly without timezone conversion
@@ -112,29 +112,28 @@ serve(async (req) => {
       Make sure the text is clearly visible and beautifully styled.`
       : defaultPrompt;
 
-    console.log('Calling Lovable AI with prompt...');
+    console.log('Calling Gemini 2.5 Flash API with prompt...');
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image-preview",
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        modalities: ["image", "text"]
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          responseModalities: ["IMAGE"]
+        }
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      console.error('Gemini API error:', response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -146,24 +145,31 @@ serve(async (req) => {
         );
       }
       
-      if (response.status === 402) {
+      if (response.status === 403 || response.status === 401) {
         return new Response(
-          JSON.stringify({ error: "Payment required. Please add credits to your Lovable workspace." }),
+          JSON.stringify({ error: "Invalid API key. Please check your Gemini API key." }),
           { 
-            status: 402,
+            status: 403,
             headers: { ...corsHeaders, "Content-Type": "application/json" } 
           }
         );
       }
       
-      throw new Error(`AI Gateway error: ${response.status} ${errorText}`);
+      throw new Error(`Gemini API error: ${response.status} ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Received response from Lovable AI');
+    console.log('Received response from Gemini API');
 
     // Extract the base64 image from the response
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    const imageData = data.candidates?.[0]?.content?.parts?.find((part: any) => part.inlineData)?.inlineData?.data;
+    
+    if (!imageData) {
+      console.error('No image in response:', JSON.stringify(data));
+      throw new Error("No image generated in response");
+    }
+    
+    const imageUrl = `data:image/png;base64,${imageData}`;
     
     if (!imageUrl) {
       console.error('No image in response:', JSON.stringify(data));
