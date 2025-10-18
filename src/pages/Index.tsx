@@ -399,6 +399,11 @@ const Index = () => {
             {/* Main Age Calculator Tab */}
             <TabsContent value="calculator" className="animate-fade-in space-y-0">
               <div>
+          <div className="flex items-center gap-2 mb-6">
+            <CalendarIconComponent className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold text-foreground">Enter Your Details</h2>
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {/* Birth Date Input */}
             <div>
