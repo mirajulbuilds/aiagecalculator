@@ -573,7 +573,7 @@ const Index = () => {
                 </TabsTrigger>
                 <Link 
                   to="/famous-birthdays"
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm font-medium ring-offset-background bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] transition-all duration-500 w-full py-3 md:py-2 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm font-medium ring-offset-background bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] transition-all duration-500 w-full py-3 md:py-2 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 interactive-element"
                 >
                   Famous Birthdays
                 </Link>
