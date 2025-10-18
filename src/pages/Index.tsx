@@ -254,6 +254,7 @@ const Index = () => {
 
     // Calculate planet ages
     const planets = [
+      { name: "Moon", days: 27.3, emoji: "🌙" },
       { name: "Mercury", days: 88, emoji: "☿️" },
       { name: "Venus", days: 225, emoji: "♀️" },
       { name: "Mars", days: 687, emoji: "♂️" },
@@ -765,23 +766,46 @@ const Index = () => {
           <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in">
             <div className="flex items-center gap-2 mb-6">
               <Rocket className="w-5 h-5 text-primary" />
-              <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets</h3>
+              <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets & Moon</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-              {planetAges.map((result) => (
-                <div
-                  key={result.planet}
-                  className="bg-gradient-to-br from-primary/10 via-accent/20 to-primary/5 rounded-xl p-6 text-center border border-primary/20"
-                >
-                  <div className="text-4xl mb-2">{result.emoji}</div>
-                  <div className="text-2xl font-bold text-primary mb-1">
-                    {result.age}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {planetAges.map((result, index) => {
+                // Import planet images dynamically based on name
+                const planetImages: Record<string, string> = {
+                  'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
+                  'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
+                  'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
+                  'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
+                  'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+                };
+
+                return (
+                  <div
+                    key={result.planet}
+                    className="bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 rounded-xl p-6 border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-glow animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-24 h-24 mb-4 rounded-full overflow-hidden border-4 border-primary/20 shadow-elegant">
+                        <img
+                          src={planetImages[result.planet]}
+                          alt={result.planet}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <h4 className="text-lg font-bold text-foreground mb-2">
+                        {result.planet}
+                      </h4>
+                      <div className="text-3xl font-bold text-primary mb-1">
+                        {result.age}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        years old here!
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    years old on {result.planet}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
