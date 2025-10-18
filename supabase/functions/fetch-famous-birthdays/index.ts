@@ -26,7 +26,7 @@ serve(async (req) => {
 
     console.log(`Fetching famous people born on ${birthMonth}-${birthDay}`);
 
-    // Query Wikidata for people born on this date
+    // Query Wikidata for people born on this date (reduced limit for faster response)
     const wikidataQuery = `
       SELECT DISTINCT ?person ?personLabel ?birth ?occupationLabel ?countryLabel ?description ?image WHERE {
         ?person wdt:P31 wd:Q5;
@@ -41,7 +41,7 @@ serve(async (req) => {
         }
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
       }
-      LIMIT 100
+      LIMIT 50
     `;
 
     const wikidataUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(wikidataQuery)}&format=json`;
@@ -50,7 +50,7 @@ serve(async (req) => {
     let wikidataData;
     let lastError;
     const maxRetries = 2;
-    const timeoutMs = 8000; // 8 second timeout
+    const timeoutMs = 15000; // 15 second timeout per attempt
     
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
