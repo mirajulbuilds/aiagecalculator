@@ -35,7 +35,6 @@ interface AgeResult {
 }
 
 const Index = () => {
-  const [name, setName] = useState<string>("");
   const [birthDay, setBirthDay] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -48,9 +47,6 @@ const Index = () => {
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
-  const [birthdayWishImage, setBirthdayWishImage] = useState<string | null>(null);
-  const [isGeneratingWish, setIsGeneratingWish] = useState(false);
-  const [customPrompt, setCustomPrompt] = useState<string>("");
   const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
@@ -306,153 +302,8 @@ const Index = () => {
     });
 
     toast.success("Age calculated successfully!");
-    
-    // Generate birthday wish image
-    generateBirthdayWish(birthDate, years);
   };
 
-  const generateBirthdayWish = async (birthDate: Date, age: number) => {
-    setIsGeneratingWish(true);
-    setBirthdayWishImage(null);
-    
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-birthday-wish`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            name: name || undefined,
-            birthDate: `${birthDate.getFullYear()}-${String(birthDate.getMonth() + 1).padStart(2, '0')}-${String(birthDate.getDate()).padStart(2, '0')}`,
-            age: age,
-            customPrompt: customPrompt || undefined
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 429) {
-          toast.error("Rate limit exceeded. Please try again in a moment.");
-        } else if (response.status === 402) {
-          toast.error("Please add credits to your Lovable workspace to generate birthday wishes.");
-        } else {
-          throw new Error(errorData.error || 'Failed to generate birthday wish');
-        }
-        return;
-      }
-
-      const data = await response.json();
-      if (data.imageUrl) {
-        setBirthdayWishImage(data.imageUrl);
-        toast.success("Birthday wish generated! 🎉");
-      } else {
-        throw new Error('No image URL received');
-      }
-    } catch (error) {
-      console.error('Error generating birthday wish:', error);
-      toast.error("Failed to generate birthday wish. Please try again.");
-    } finally {
-      setIsGeneratingWish(false);
-    }
-  };
-
-  const addWatermarkToImage = async (imageDataUrl: string): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        
-        if (!ctx) {
-          reject(new Error('Could not get canvas context'));
-          return;
-        }
-        
-        // Draw the original image
-        ctx.drawImage(img, 0, 0);
-        
-        // Add watermark
-        const fontSize = Math.max(14, img.width * 0.02); // Responsive font size, min 14px
-        ctx.font = `${fontSize}px Inter, Roboto, sans-serif`;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'bottom';
-        
-        const padding = 20;
-        ctx.fillText('aiagecalc.com', canvas.width - padding, canvas.height - padding);
-        
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to create blob'));
-          }
-        }, 'image/png');
-      };
-      
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = imageDataUrl;
-    });
-  };
-
-  const shareImage = async () => {
-    if (!birthdayWishImage) return;
-    
-    try {
-      // Add watermark to image
-      const imageBlob = await addWatermarkToImage(birthdayWishImage);
-      const file = new File([imageBlob], 'birthday-wish.png', { type: 'image/png' });
-      
-      // Check if Web Share API is supported
-      if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Birthday Wish',
-          text: 'Check out this personalized birthday wish! 🎉',
-        });
-        toast.success("🎉 Image shared successfully!");
-      } else {
-        // Fallback: download the image
-        const url = URL.createObjectURL(imageBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `birthday-wish-${name || 'celebration'}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        toast.success("Image downloaded successfully! You can now share it manually");
-      }
-    } catch (error) {
-      console.error('Error sharing image:', error);
-      toast.error("Failed to share image. Please try again.");
-    }
-  };
-
-  const downloadBirthdayWish = () => {
-    if (!birthdayWishImage) return;
-    
-    try {
-      const link = document.createElement('a');
-      link.href = birthdayWishImage;
-      link.download = `birthday-wish-${name || 'celebration'}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.success("Birthday wish downloaded!");
-    } catch (error) {
-      console.error('Error downloading image:', error);
-      toast.error("Failed to download image. Please try right-clicking and saving.");
-    }
-  };
 
   return (
     <main className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-4 sm:py-8">
@@ -548,41 +399,6 @@ const Index = () => {
             {/* Main Age Calculator Tab */}
             <TabsContent value="calculator" className="animate-fade-in space-y-0">
               <div>
-          <div className="flex items-center gap-2 mb-6">
-            <CalendarIconComponent className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Enter Your Details</h2>
-          </div>
-
-          {/* Name Input (Optional) */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Your Name (Optional - for personalized birthday wish)
-            </label>
-            <Input
-              type="text"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="h-12 bg-muted"
-            />
-          </div>
-
-          {/* Custom Prompt Input (Optional) */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Custom Birthday Wish Prompt (Optional)
-            </label>
-            <Textarea
-              placeholder="E.g., 'Create a birthday wish with space theme and rockets' or 'Make it elegant with gold accents'"
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              className="min-h-[80px] bg-muted resize-none"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              Add your own creative touch to the birthday wish image
-            </p>
-          </div>
-
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {/* Birth Date Input */}
             <div>
@@ -1158,84 +974,6 @@ const Index = () => {
           </section>
         )}
 
-        {/* AI Birthday Wish Section */}
-        {result && activeTab === "calculator" && (
-          <section 
-            className="bg-gradient-to-br from-card via-accent/10 to-card rounded-xl shadow-sm p-3 md:p-4 mb-6"
-            aria-label="AI generated birthday wish"
-          >
-            <div className="flex items-center justify-center gap-1.5 mb-3">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <h2 className="text-base md:text-lg font-semibold text-foreground">
-                Your Personalized Birthday Wish
-              </h2>
-            </div>
-
-            {isGeneratingWish ? (
-              <div className="flex flex-col items-center justify-center py-6 space-y-2">
-                <div className="relative">
-                  <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  <Sparkles className="w-5 h-5 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <p className="text-xs text-muted-foreground text-center animate-pulse">
-                  Creating your birthday wish...
-                </p>
-              </div>
-            ) : birthdayWishImage ? (
-              <div className="space-y-3 animate-fade-in">
-                <div className="relative rounded-md overflow-hidden shadow-sm border border-primary/20 max-w-xl mx-auto">
-                  <img 
-                    src={birthdayWishImage} 
-                    alt="Personalized birthday wish"
-                    className="w-full h-auto"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                    <Button
-                      onClick={shareImage}
-                      className="gap-1.5 bg-gradient-primary hover:opacity-90 h-9 text-sm"
-                      size="sm"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Share Image
-                    </Button>
-                    <Button
-                      onClick={downloadBirthdayWish}
-                      variant="outline"
-                      className="gap-1.5 h-9 text-sm"
-                      size="sm"
-                    >
-                      <Download className="w-4 h-4" />
-                      Download
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        if (birthDay && birthMonth && birthYear) {
-                          const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
-                          generateBirthdayWish(birthDate, result.years);
-                        }
-                      }}
-                      variant="outline"
-                      className="gap-1.5 h-9 text-sm"
-                      size="sm"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      New Wish
-                    </Button>
-                  </div>
-                  <p className="text-xs text-center text-muted-foreground">
-                    Share on WhatsApp, Instagram, Messenger, or download to share manually
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-4 text-xs text-muted-foreground">
-                <p>Birthday wish will appear after calculating age</p>
-              </div>
-            )}
-          </section>
-        )}
 
         {/* Ad Banner */}
         {result && activeTab === "calculator" && (
