@@ -153,4 +153,16 @@ All colors MUST be HSL.
       transform: translateY(0);
     }
   }
+  
+  /* Universal Hover Animation for All Tabs and Buttons */
+  .interactive-element {
+    transition: transform 0.2s ease, filter 0.2s ease;
+    will-change: transform, filter;
+  }
+
+  .interactive-element:hover {
+    filter: brightness(1.15);
+    transform: scale(1.03);
+    cursor: pointer;
+  }
 }
