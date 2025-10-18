@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2 } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { AgeDisplayFormats } from "@/components/AgeDisplayFormats";
 import { AdditionalAgeInfo } from "@/components/AdditionalAgeInfo";
-import { PlanetAgeCalculator } from "@/components/PlanetAgeCalculator";
 import { AgeDifferenceCalculator } from "@/components/AgeDifferenceCalculator";
 import { AgeAtDateCalculator } from "@/components/AgeAtDateCalculator";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
@@ -50,6 +49,7 @@ const Index = () => {
   const [birthdayWishImage, setBirthdayWishImage] = useState<string | null>(null);
   const [isGeneratingWish, setIsGeneratingWish] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
 
   useEffect(() => {
     // Detect user's timezone
@@ -250,6 +250,23 @@ const Index = () => {
 
     // Get zodiac sign
     const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
+
+    // Calculate planet ages
+    const planets = [
+      { name: "Mercury", days: 88, emoji: "☿️" },
+      { name: "Venus", days: 225, emoji: "♀️" },
+      { name: "Mars", days: 687, emoji: "♂️" },
+      { name: "Jupiter", days: 4333, emoji: "♃" },
+    ];
+    
+    const earthDays = totalDays;
+    const calculatedPlanetAges = planets.map(planet => ({
+      planet: planet.name,
+      age: Number((earthDays / planet.days).toFixed(2)),
+      emoji: planet.emoji,
+    }));
+
+    setPlanetAges(calculatedPlanetAges);
 
     setResult({
       years,
@@ -670,6 +687,32 @@ const Index = () => {
           />
         )}
 
+        {/* Planet Ages Section */}
+        {planetAges.length > 0 && (
+          <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in">
+            <div className="flex items-center gap-2 mb-6">
+              <Rocket className="w-5 h-5 text-primary" />
+              <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              {planetAges.map((result) => (
+                <div
+                  key={result.planet}
+                  className="bg-gradient-to-br from-primary/10 via-accent/20 to-primary/5 rounded-xl p-6 text-center border border-primary/20"
+                >
+                  <div className="text-4xl mb-2">{result.emoji}</div>
+                  <div className="text-2xl font-bold text-primary mb-1">
+                    {result.age}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    years old on {result.planet}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* AI Birthday Wish Section */}
         {result && (
           <section 
@@ -836,16 +879,11 @@ const Index = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="planets" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="planets">Other Planets</TabsTrigger>
+          <Tabs defaultValue="difference" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="difference">Age Difference</TabsTrigger>
               <TabsTrigger value="specific">Specific Date</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="planets" className="animate-fade-in">
-              <PlanetAgeCalculator />
-            </TabsContent>
             
             <TabsContent value="difference" className="animate-fade-in">
               <AgeDifferenceCalculator />
