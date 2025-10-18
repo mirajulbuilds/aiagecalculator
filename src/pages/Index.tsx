@@ -685,7 +685,7 @@ const Index = () => {
 
           {/* What You'll Discover Section - Show before calculation */}
           {!result && activeTab === "calculator" && (
-            <div className="mt-8 p-6 pb-10 bg-accent/30 rounded-xl border border-border animate-fade-in">
+            <div className="mt-8 p-6 pb-[50px] bg-accent/30 rounded-xl border border-border animate-fade-in">
               <h3 className="text-xl font-semibold text-foreground mb-4 text-center">
                 Here's What You'll Discover:
               </h3>
