@@ -544,7 +544,7 @@ const Index = () => {
               </div>
               
               {/* SEO Content for Age Calculator */}
-              <div className="mt-12 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   More Than Just an Age Calculator
                 </h2>
@@ -559,7 +559,7 @@ const Index = () => {
               <AgeDifferenceCalculator />
               
               {/* SEO Content for Age Difference */}
-              <div className="mt-12 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Easily Compare Ages with Our Age Difference Calculator
                 </h2>
@@ -574,7 +574,7 @@ const Index = () => {
               <AgeAtDateCalculator />
               
               {/* SEO Content for Specific Date */}
-              <div className="mt-12 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Travel Through Time and Space
                 </h2>
@@ -807,7 +807,7 @@ const Index = () => {
               </div>
               
               {/* SEO Content for AI Greetings */}
-              <div className="mt-12 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Create Unique AI-Powered Greeting Images
                 </h2>
