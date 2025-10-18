@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake } from "lucide-react";
+import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake, Palette, Cpu, Globe2, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,20 +9,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInYears } from "date-fns";
+import { CelebrityProfileModal } from "@/components/CelebrityProfileModal";
+import { AdSenseBanner } from "@/components/AdSenseBanner";
 
 interface Celebrity {
   name: string;
   dateOfBirth: string;
   profession: string;
-  description: string;
 }
 
 const FamousBirthdays: React.FC = () => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [bornToday, setBornToday] = useState<Celebrity[]>([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [selectedCelebrity, setSelectedCelebrity] = useState<Celebrity | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const today = new Date();
   const todayFormatted = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -38,7 +39,7 @@ const FamousBirthdays: React.FC = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase.functions.invoke('celebrity-data', {
-        body: { type: 'bornToday', month, date }
+        body: { type: 'bornTodayLite', month, date }
       });
 
       if (error) throw error;
@@ -50,6 +51,11 @@ const FamousBirthdays: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCelebrityClick = (celebrity: Celebrity) => {
+    setSelectedCelebrity(celebrity);
+    setIsModalOpen(true);
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -68,6 +74,10 @@ const FamousBirthdays: React.FC = () => {
     { name: 'Musicians', icon: Music, color: 'from-blue-500 to-cyan-500' },
     { name: 'Athletes', icon: Trophy, color: 'from-green-500 to-emerald-500' },
     { name: 'Scientists & Leaders', icon: Microscope, color: 'from-orange-500 to-red-500' },
+    { name: 'Tech Innovators', icon: Cpu, color: 'from-indigo-500 to-violet-500' },
+    { name: 'Artists & Painters', icon: Palette, color: 'from-rose-500 to-pink-500' },
+    { name: 'World Leaders', icon: Globe2, color: 'from-emerald-500 to-teal-500' },
+    { name: 'Internet Personalities', icon: Video, color: 'from-cyan-500 to-blue-500' },
     { name: 'Trending', icon: TrendingUp, color: 'from-yellow-500 to-amber-500' },
   ];
 
@@ -84,8 +94,11 @@ const FamousBirthdays: React.FC = () => {
           name="description" 
           content="Discover celebrity ages, birthdays, and profiles. Find out how old your favorite actors, musicians, athletes, and famous personalities are today." 
         />
-        <meta name="keywords" content="celebrity ages, famous birthdays, celebrity birthdays, how old is, celebrity profiles" />
+        <meta name="keywords" content="celebrity ages, famous birthdays, celebrity birthdays, how old is, celebrity profiles, actors ages, musicians birthdays" />
         <link rel="canonical" href="https://aiagecalc.com/famous-birthdays" />
+        <meta property="og:title" content="Famous Birthdays - Celebrity Ages & Birthday Calendar" />
+        <meta property="og:description" content="Discover celebrity ages, birthdays, and profiles. Find out how old your favorite actors, musicians, athletes, and famous personalities are today." />
+        <meta property="og:type" content="website" />
       </Helmet>
 
       <main className="min-h-screen bg-background">
@@ -150,39 +163,54 @@ const FamousBirthdays: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {bornToday.slice(0, 6).map((celebrity, index) => {
-                  const age = calculateAge(celebrity.dateOfBirth);
-                  return (
-                    <Card 
-                      key={index}
-                      className="hover:shadow-lg transition-shadow cursor-pointer group"
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-4">
-                          <Avatar className="w-20 h-20 border-2 border-primary/20 group-hover:border-primary transition-colors">
-                            <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(celebrity.name)}&size=128&background=random`} />
-                            <AvatarFallback className="bg-gradient-primary text-primary-foreground text-lg">
-                              {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors truncate">
-                              {celebrity.name}
-                            </h3>
-                            <Badge variant="secondary" className="mb-2">
-                              {celebrity.profession}
-                            </Badge>
-                            <p className="text-sm text-primary font-semibold">
-                              Turning {age} today 🎂
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+              <>
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {bornToday.slice(0, 6).map((celebrity, index) => {
+                    const age = calculateAge(celebrity.dateOfBirth);
+                    
+                    // Insert ad after 5th card
+                    const showAd = index === 4;
+                    
+                    return (
+                      <React.Fragment key={index}>
+                        <li>
+                          <Card 
+                            className="hover:shadow-lg transition-all cursor-pointer group hover:scale-105"
+                            onClick={() => handleCelebrityClick(celebrity)}
+                          >
+                            <CardContent className="p-6">
+                              <div className="flex items-start gap-4">
+                                <Avatar className="w-20 h-20 border-2 border-primary/20 group-hover:border-primary transition-colors">
+                                  <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(celebrity.name)}&size=128&background=random`} />
+                                  <AvatarFallback className="bg-gradient-primary text-primary-foreground text-lg">
+                                    {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors truncate">
+                                    {celebrity.name}
+                                  </h3>
+                                  <Badge variant="secondary" className="mb-2">
+                                    {celebrity.profession}
+                                  </Badge>
+                                  <p className="text-sm text-primary font-semibold">
+                                    Turning {age} today 🎂
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </li>
+                        {showAd && (
+                          <li id="ad-in-feed" className="md:col-span-1">
+                            <AdSenseBanner format="vertical" />
+                          </li>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </ul>
+              </>
             )}
           </section>
 
@@ -192,7 +220,7 @@ const FamousBirthdays: React.FC = () => {
               <h2 className="text-3xl font-bold text-foreground">Browse by Category</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {categories.map((category) => {
                 const Icon = category.icon;
                 return (
@@ -204,7 +232,7 @@ const FamousBirthdays: React.FC = () => {
                       <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${category.color} flex items-center justify-center mx-auto mb-4`}>
                         <Icon className="w-8 h-8 text-white" />
                       </div>
-                      <h3 className="text-center font-semibold text-foreground">
+                      <h3 className="text-center font-semibold text-foreground text-sm">
                         {category.name}
                       </h3>
                     </CardContent>
@@ -234,6 +262,19 @@ const FamousBirthdays: React.FC = () => {
           </section>
         </div>
       </main>
+
+      {selectedCelebrity && (
+        <CelebrityProfileModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedCelebrity(null);
+          }}
+          celebrityName={selectedCelebrity.name}
+          dateOfBirth={selectedCelebrity.dateOfBirth}
+          profession={selectedCelebrity.profession}
+        />
+      )}
     </React.Fragment>
   );
 };

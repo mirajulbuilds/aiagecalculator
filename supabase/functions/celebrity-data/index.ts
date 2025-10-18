@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { type, query, date, month, category } = await req.json();
+    const { type, name, query, date, month, category, dateOfBirth, profession } = await req.json();
     const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
     
     if (!GEMINI_API_KEY) {
@@ -24,16 +24,34 @@ serve(async (req) => {
 
     if (type === 'search') {
       systemPrompt = 'You are a celebrity information expert. Provide accurate, comprehensive data about celebrities.';
-      userPrompt = `Provide detailed information about the celebrity "${query}". Include: full name, date of birth (YYYY-MM-DD format), place of birth, profession, zodiac sign, a 2-3 paragraph biography, and list 4-6 of their most famous works/achievements. Format as JSON with keys: fullName, dateOfBirth, placeOfBirth, profession, zodiacSign, biography, famousWorks (array).`;
+      userPrompt = `Provide detailed information about the celebrity "${query || name}". Include: full name, date of birth (YYYY-MM-DD format), place of birth, profession, zodiac sign, a 2-3 paragraph biography, and list 4-6 of their most famous works/achievements. Format as JSON with keys: fullName, dateOfBirth, placeOfBirth, profession, zodiacSign, biography, famousWorks (array).`;
+    } else if (type === 'bornTodayLite') {
+      // Lightweight version - only names, dates, and professions
+      systemPrompt = 'You are a celebrity birthday expert.';
+      userPrompt = `List 6 famous celebrities born on ${month} ${date}. For each, provide ONLY: name (string), dateOfBirth (string in YYYY-MM-DD format), profession (string). NO descriptions or additional fields. Format as a JSON array with ONLY these 3 keys per object.`;
     } else if (type === 'bornToday') {
+      // Full version with descriptions
       systemPrompt = 'You are a celebrity birthday expert.';
       userPrompt = `List 6 famous celebrities born on ${month} ${date}. For each, provide: name, date of birth (include year in YYYY-MM-DD format), profession, and a brief one-sentence description. Format as JSON array with keys: name, dateOfBirth, profession, description.`;
+    } else if (type === 'profile') {
+      // Detailed profile for a specific celebrity
+      systemPrompt = 'You are a celebrity biographer. Provide comprehensive, accurate profiles of celebrities.';
+      userPrompt = `Provide a detailed profile for ${name} (${profession}, born ${dateOfBirth}). Include:
+- name (full name as string)
+- dateOfBirth (YYYY-MM-DD format as string)
+- placeOfBirth (city, country as string)
+- profession (as string)
+- zodiacSign (as string)
+- biography (2-3 detailed paragraphs as a single string, separate paragraphs with \\n\\n)
+- knownFor (array of 3-5 strings describing famous works/achievements)
+- careerHighlights (array of 4-6 strings describing major awards, milestones, or achievements)
+Return as a single JSON object with these exact keys.`;
     } else if (type === 'category') {
       systemPrompt = 'You are a celebrity categorization expert.';
-      userPrompt = `List 12 famous ${category} celebrities. For each, provide: name, date of birth (YYYY-MM-DD format), profession, and a brief description. Format as JSON array with keys: name, dateOfBirth, profession, description.`;
+      userPrompt = `List 12 famous ${category} celebrities. For each, provide ONLY: name, dateOfBirth (YYYY-MM-DD format), profession. NO descriptions. Format as JSON array.`;
     } else if (type === 'month') {
       systemPrompt = 'You are a celebrity birthday calendar expert.';
-      userPrompt = `List 15 famous celebrities born in ${month}. For each, provide: name, date of birth (YYYY-MM-DD format), profession, and brief description. Format as JSON array with keys: name, dateOfBirth, profession, description.`;
+      userPrompt = `List 20 famous celebrities born in ${month}. For each, provide ONLY: name, dateOfBirth (YYYY-MM-DD format), profession. NO descriptions. Format as JSON array.`;
     }
 
     const response = await fetch(

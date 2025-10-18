@@ -505,19 +505,9 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
             Unlock the Secrets of Your Birthday
           </h1>
-          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
             Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
           </p>
-          
-          <a href="/famous-birthdays">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl transition-all gap-2"
-            >
-              <Sparkles className="w-5 h-5" />
-              Explore Famous Birthdays
-            </Button>
-          </a>
         </header>
 
         {/* Timezone Section */}
@@ -538,7 +528,7 @@ const Index = () => {
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="mb-6">
-              <TabsList className="w-full h-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-1">
+              <TabsList className="w-full h-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1">
                 <TabsTrigger 
                   value="calculator" 
                   className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm"
@@ -581,6 +571,12 @@ const Index = () => {
                 >
                   AI Gift Advisor
                 </TabsTrigger>
+                <Link 
+                  to="/famous-birthdays"
+                  className="w-full justify-center py-3 md:py-2 rounded-md hover:bg-primary hover:text-primary-foreground transition-all text-sm flex items-center border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                >
+                  Famous Birthdays
+                </Link>
               </TabsList>
             </div>
 
