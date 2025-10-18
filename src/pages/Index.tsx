@@ -374,78 +374,72 @@ const Index = () => {
 
     // Calculate planet ages using single structured data source
     const celestialData = [
-      { 
-        name: "Moon", 
-        orbitalPeriod: 27.3, 
-        imageURL: new URL('../assets/planets/moon.jpg', import.meta.url).href,
-        group: "visible" 
+      {
+        group: "visible",
+        name: "The Moon",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/1628_PIA00405.jpg",
+        orbitalPeriod: 27.3
       },
-      { 
-        name: "Mercury", 
-        orbitalPeriod: 88, 
-        imageURL: new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-        group: "visible" 
+      {
+        group: "visible",
+        name: "Mercury",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/771_PIA16853.jpg",
+        orbitalPeriod: 88
       },
-      { 
-        name: "Venus", 
-        orbitalPeriod: 225, 
-        imageURL: new URL('../assets/planets/venus.jpg', import.meta.url).href,
-        group: "visible" 
+      {
+        group: "visible",
+        name: "Venus",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/793_PIA00271.jpg",
+        orbitalPeriod: 225
       },
-      { 
-        name: "Mars", 
-        orbitalPeriod: 687, 
-        imageURL: new URL('../assets/planets/mars.jpg', import.meta.url).href,
-        group: "visible" 
+      {
+        group: "visible",
+        name: "Mars",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/683_mars-globe-valles-marineris-enhanced-full2.jpg",
+        orbitalPeriod: 687
       },
-      { 
-        name: "Jupiter", 
-        orbitalPeriod: 4333, 
-        imageURL: new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-        group: "hidden" 
+      {
+        group: "hidden",
+        name: "Jupiter",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/803_PIA21776.jpg",
+        orbitalPeriod: 4333
       },
-      { 
-        name: "Saturn", 
-        orbitalPeriod: 10759, 
-        imageURL: new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-        group: "hidden" 
+      {
+        group: "hidden",
+        name: "Saturn",
+        imageURL: "https://solarsystem.nasa.gov/system/stellar_items/image_files/38_saturn_1600x900.jpg",
+        orbitalPeriod: 10759
       },
-      { 
-        name: "Uranus", 
-        orbitalPeriod: 30687, 
-        imageURL: new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-        group: "hidden" 
+      {
+        group: "hidden",
+        name: "Uranus",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/599_PIA18182.jpg",
+        orbitalPeriod: 30687
       },
-      { 
-        name: "Neptune", 
-        orbitalPeriod: 60190, 
-        imageURL: new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-        group: "hidden" 
+      {
+        group: "hidden",
+        name: "Neptune",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/612_PIA01492.jpg",
+        orbitalPeriod: 60190
       },
-      { 
-        name: "Pluto", 
-        orbitalPeriod: 90560, 
-        imageURL: new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-        group: "hidden" 
+      {
+        group: "hidden",
+        name: "Pluto",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/933_pluto_natural_color_20150713.jpg",
+        orbitalPeriod: 90560
       },
-      { 
-        name: "Ceres", 
-        orbitalPeriod: 1682, 
-        imageURL: new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-        group: "hidden" 
+      {
+        group: "hidden",
+        name: "Ceres",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/2493_Ceres_-_Main_Belt_Grand_Tour.jpg",
+        orbitalPeriod: 1682
       },
-      { 
-        name: "Eris", 
-        orbitalPeriod: 203830, 
-        imageURL: new URL('../assets/planets/eris.jpg', import.meta.url).href,
-        group: "hidden" 
-      },
-      { 
-        name: "Sun", 
-        orbitalPeriod: 27, 
-        imageURL: new URL('../assets/planets/sun.jpg', import.meta.url).href,
-        group: "hidden" 
-      },
+      {
+        group: "hidden",
+        name: "Eris",
+        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/2500_PIA20473_Eris_and_Dysnomia.jpg",
+        orbitalPeriod: 203830
+      }
     ];
     
     const earthDays = totalDays;
@@ -1535,7 +1529,7 @@ const Index = () => {
                       >
                         <img
                           src={body.imageURL}
-                          alt={`Image of ${body.name === 'Moon' ? 'The Moon' : body.name === 'Sun' ? 'The Sun' : `the ${body.name === 'Ceres' || body.name === 'Eris' ? 'dwarf planet' : 'planet'} ${body.name}`}${body.name === 'Saturn' ? ' with its rings' : ''}`}
+                          alt={`Image of ${body.name}`}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -1593,7 +1587,7 @@ const Index = () => {
                         >
                           <img
                             src={body.imageURL}
-                            alt={`Image of ${body.name === 'Moon' ? 'The Moon' : body.name === 'Sun' ? 'The Sun' : `the ${body.name === 'Ceres' || body.name === 'Eris' ? 'dwarf planet' : 'planet'} ${body.name}`}${body.name === 'Saturn' ? ' with its rings' : ''}`}
+                            alt={`Image of ${body.name}`}
                             className="w-full h-full object-cover"
                           />
                         </div>
