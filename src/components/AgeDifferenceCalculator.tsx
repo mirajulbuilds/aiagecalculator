@@ -1,35 +1,64 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Users2 } from "lucide-react";
-import { format, differenceInYears, differenceInMonths, differenceInDays } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Users2 } from "lucide-react";
+import { differenceInYears, differenceInMonths, differenceInDays } from "date-fns";
 import { toast } from "sonner";
 
 export const AgeDifferenceCalculator = () => {
-  const [person1Date, setPerson1Date] = useState<Date>();
-  const [person2Date, setPerson2Date] = useState<Date>();
+  const [person1Day, setPerson1Day] = useState<string>("");
+  const [person1Month, setPerson1Month] = useState<string>("");
+  const [person1Year, setPerson1Year] = useState<string>("");
+  const [person2Day, setPerson2Day] = useState<string>("");
+  const [person2Month, setPerson2Month] = useState<string>("");
+  const [person2Year, setPerson2Year] = useState<string>("");
   const [difference, setDifference] = useState<{ years: number; months: number; days: number } | null>(null);
 
+  const months = [
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
+
   const calculateDifference = () => {
-    if (!person1Date || !person2Date) {
+    if (!person1Day || !person1Month || !person1Year || !person2Day || !person2Month || !person2Year) {
       toast.error("Please select both dates");
+      return;
+    }
+
+    const person1Date = new Date(parseInt(person1Year), parseInt(person1Month) - 1, parseInt(person1Day));
+    const person2Date = new Date(parseInt(person2Year), parseInt(person2Month) - 1, parseInt(person2Day));
+
+    if (isNaN(person1Date.getTime()) || isNaN(person2Date.getTime())) {
+      toast.error("Please select valid dates");
       return;
     }
 
     const olderDate = person1Date < person2Date ? person1Date : person2Date;
     const youngerDate = person1Date < person2Date ? person2Date : person1Date;
 
-    const years = differenceInYears(youngerDate, olderDate);
-    const months = differenceInMonths(youngerDate, olderDate) % 12;
+    const diffYears = differenceInYears(youngerDate, olderDate);
+    const diffMonths = differenceInMonths(youngerDate, olderDate) % 12;
 
     const afterMonths = new Date(olderDate);
-    afterMonths.setFullYear(olderDate.getFullYear() + years);
-    afterMonths.setMonth(olderDate.getMonth() + months);
-    const days = differenceInDays(youngerDate, afterMonths);
+    afterMonths.setFullYear(olderDate.getFullYear() + diffYears);
+    afterMonths.setMonth(olderDate.getMonth() + diffMonths);
+    const diffDays = differenceInDays(youngerDate, afterMonths);
 
-    setDifference({ years, months, days });
+    setDifference({ years: diffYears, months: diffMonths, days: diffDays });
     toast.success("Age difference calculated!");
   };
 
@@ -45,60 +74,88 @@ export const AgeDifferenceCalculator = () => {
           <label className="block text-sm font-medium text-foreground mb-2">
             Person 1's Date of Birth
           </label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal h-12 bg-muted",
-                  !person1Date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {person1Date ? format(person1Date, "PPP") : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={person1Date}
-                onSelect={setPerson1Date}
-                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                initialFocus
-                className="pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="grid grid-cols-3 gap-2">
+            <Select value={person1Day} onValueChange={setPerson1Day}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Day" />
+              </SelectTrigger>
+              <SelectContent>
+                {days.map((day) => (
+                  <SelectItem key={day} value={day}>
+                    {day}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={person1Month} onValueChange={setPerson1Month}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={person1Year} onValueChange={setPerson1Year}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
             Person 2's Date of Birth
           </label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal h-12 bg-muted",
-                  !person2Date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {person2Date ? format(person2Date, "PPP") : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={person2Date}
-                onSelect={setPerson2Date}
-                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                initialFocus
-                className="pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="grid grid-cols-3 gap-2">
+            <Select value={person2Day} onValueChange={setPerson2Day}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Day" />
+              </SelectTrigger>
+              <SelectContent>
+                {days.map((day) => (
+                  <SelectItem key={day} value={day}>
+                    {day}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={person2Month} onValueChange={setPerson2Month}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={person2Year} onValueChange={setPerson2Year}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

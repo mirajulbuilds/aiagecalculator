@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Rocket } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
-import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Rocket } from "lucide-react";
+import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
 
 const planets = [
@@ -15,16 +13,44 @@ const planets = [
 ];
 
 export const PlanetAgeCalculator = () => {
-  const [birthDate, setBirthDate] = useState<Date>();
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthYear, setBirthYear] = useState<string>("");
   const [results, setResults] = useState<{ planet: string; age: number; emoji: string }[]>([]);
 
+  const months = [
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
+
   const calculatePlanetAge = () => {
-    if (!birthDate) {
+    if (!birthDay || !birthMonth || !birthYear) {
       toast.error("Please select your birth date");
       return;
     }
 
+    const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
     const today = new Date();
+    
+    if (isNaN(birthDate.getTime())) {
+      toast.error("Please select a valid date");
+      return;
+    }
+
     if (birthDate > today) {
       toast.error("Birth date cannot be in the future");
       return;
@@ -53,30 +79,44 @@ export const PlanetAgeCalculator = () => {
           <label className="block text-sm font-medium text-foreground mb-2">
             Your Date of Birth
           </label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal h-12 bg-muted",
-                  !birthDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {birthDate ? format(birthDate, "PPP") : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={birthDate}
-                onSelect={setBirthDate}
-                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                initialFocus
-                className="pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="grid grid-cols-3 gap-2">
+            <Select value={birthDay} onValueChange={setBirthDay}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Day" />
+              </SelectTrigger>
+              <SelectContent>
+                {days.map((day) => (
+                  <SelectItem key={day} value={day}>
+                    {day}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={birthMonth} onValueChange={setBirthMonth}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={birthYear} onValueChange={setBirthYear}>
+              <SelectTrigger className="h-12 bg-muted">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <Button

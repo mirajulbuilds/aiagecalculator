@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, format } from "date-fns";
+import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -36,10 +35,14 @@ interface AgeResult {
 
 const Index = () => {
   const [name, setName] = useState<string>("");
-  const [birthDate, setBirthDate] = useState<Date>();
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthYear, setBirthYear] = useState<string>("");
   
   const currentDate = new Date();
-  const [targetDate, setTargetDate] = useState<Date>(currentDate);
+  const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
+  const [targetMonth, setTargetMonth] = useState<string>((currentDate.getMonth() + 1).toString());
+  const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
   
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
@@ -56,12 +59,13 @@ const Index = () => {
 
   // Live age update every second
   useEffect(() => {
-    if (!birthDate || !result) {
+    if (!birthDay || !birthMonth || !birthYear || !result) {
       return;
     }
 
     const updateLiveAge = () => {
       const now = new Date();
+      const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
 
       if (isNaN(birthDate.getTime()) || birthDate > now) {
         return;
@@ -93,8 +97,8 @@ const Index = () => {
       const totalSeconds = Math.floor((now.getTime() - birthDate.getTime()) / 1000);
 
       // Calculate next birthday for live age
-      const nextBirthdayDays = calculateNextBirthday(birthDate.getMonth() + 1, birthDate.getDate());
-      const zodiac = getZodiacSign(birthDate.getMonth() + 1, birthDate.getDate());
+      const nextBirthdayDays = calculateNextBirthday(parseInt(birthMonth), parseInt(birthDay));
+      const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
 
       setLiveAge({
         years,
@@ -117,7 +121,7 @@ const Index = () => {
     const interval = setInterval(updateLiveAge, 1000);
 
     return () => clearInterval(interval);
-  }, [birthDate, result]);
+  }, [birthDay, birthMonth, birthYear, result]);
 
   const months = [
     { value: "1", label: "January" },
@@ -189,15 +193,18 @@ const Index = () => {
   };
 
   const calculateAge = () => {
-    if (!birthDate) {
+    if (!birthDay || !birthMonth || !birthYear) {
       toast.error("Please select your birth date");
       return;
     }
 
-    if (!targetDate) {
+    if (!targetDay || !targetMonth || !targetYear) {
       toast.error("Please select a target date");
       return;
     }
+
+    const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
+    const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
 
     if (isNaN(birthDate.getTime()) || isNaN(targetDate.getTime())) {
       toast.error("Please select valid dates");
@@ -239,10 +246,10 @@ const Index = () => {
     const totalSeconds = Math.floor((targetDate.getTime() - birthDate.getTime()) / 1000);
 
     // Calculate next birthday countdown
-    const nextBirthdayDays = calculateNextBirthday(birthDate.getMonth() + 1, birthDate.getDate());
+    const nextBirthdayDays = calculateNextBirthday(parseInt(birthMonth), parseInt(birthDay));
 
     // Get zodiac sign
-    const zodiac = getZodiacSign(birthDate.getMonth() + 1, birthDate.getDate());
+    const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
 
     setResult({
       years,
@@ -514,30 +521,44 @@ const Index = () => {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Date of Birth
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-12 bg-muted",
-                      !birthDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIconComponent className="mr-2 h-4 w-4" />
-                    {birthDate ? format(birthDate, "PPP") : "Select your birth date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={birthDate}
-                    onSelect={setBirthDate}
-                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="grid grid-cols-3 gap-2">
+                <Select value={birthDay} onValueChange={setBirthDay}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={birthMonth} onValueChange={setBirthMonth}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={birthYear} onValueChange={setBirthYear}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Target Date Input */}
@@ -545,29 +566,44 @@ const Index = () => {
               <label className="block text-sm font-medium text-foreground mb-2">
                 Calculate Age Until
               </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal h-12 bg-muted",
-                      !targetDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIconComponent className="mr-2 h-4 w-4" />
-                    {targetDate ? format(targetDate, "PPP") : "Select target date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={targetDate}
-                    onSelect={setTargetDate}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="grid grid-cols-3 gap-2">
+                <Select value={targetDay} onValueChange={setTargetDay}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetMonth} onValueChange={setTargetMonth}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetYear} onValueChange={setTargetYear}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
@@ -686,10 +722,12 @@ const Index = () => {
                       Download
                     </Button>
                     <Button
-                      onClick={() => generateBirthdayWish(
-                        birthDate,
-                        result.years
-                      )}
+                      onClick={() => {
+                        if (birthDay && birthMonth && birthYear) {
+                          const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
+                          generateBirthdayWish(birthDate, result.years);
+                        }
+                      }}
                       variant="outline"
                       className="gap-1.5 h-9 text-sm"
                       size="sm"
@@ -820,10 +858,10 @@ const Index = () => {
         </section>
 
         {/* Famous People Born on This Date */}
-        {result && birthDate && (
+        {result && birthMonth && birthDay && (
           <FamousBirthdayMatches 
-            birthMonth={birthDate.getMonth() + 1} 
-            birthDay={birthDate.getDate()} 
+            birthMonth={parseInt(birthMonth)} 
+            birthDay={parseInt(birthDay)} 
           />
         )}
 
