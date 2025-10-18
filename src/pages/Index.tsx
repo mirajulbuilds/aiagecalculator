@@ -266,6 +266,7 @@ const Index = () => {
       { name: "Pluto", days: 90560, emoji: "♇" },
       { name: "Ceres", days: 1682, emoji: "⚳" },
       { name: "Eris", days: 203830, emoji: "⯰" },
+      { name: "Sun", days: 27, emoji: "☀️" },
     ];
     
     const earthDays = totalDays;
@@ -792,6 +793,7 @@ const Index = () => {
                   'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
                   'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
                   'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
+                  'Sun': new URL('../assets/planets/sun.jpg', import.meta.url).href,
                 };
 
                 return (
@@ -866,6 +868,7 @@ const Index = () => {
                     'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
                     'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
                     'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
+                    'Sun': new URL('../assets/planets/sun.jpg', import.meta.url).href,
                   };
 
                   return (
