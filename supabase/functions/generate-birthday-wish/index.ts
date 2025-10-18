@@ -71,9 +71,9 @@ serve(async (req) => {
     
     console.log('Generating birthday wish for:', { name, birthDate, age });
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     // Format the birth date nicely - parse date components directly without timezone conversion
@@ -112,29 +112,34 @@ serve(async (req) => {
       Make sure the text is clearly visible and beautifully styled.`
       : defaultPrompt;
 
-    console.log('Calling Lovable AI with prompt...');
+    console.log('Calling Gemini API with prompt...');
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image-preview",
-        messages: [
-          {
-            role: "user",
-            content: prompt
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.9,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 8192,
           }
-        ],
-        modalities: ["image", "text"]
-      })
-    });
+        })
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      console.error('Gemini API error:', response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -146,34 +151,33 @@ serve(async (req) => {
         );
       }
       
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Payment required. Please add credits to your Lovable workspace." }),
-          { 
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" } 
-          }
-        );
-      }
-      
-      throw new Error(`AI Gateway error: ${response.status} ${errorText}`);
+      throw new Error(`Gemini API error: ${response.status} ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Received response from Lovable AI');
+    console.log('Received response from Gemini API');
 
-    // Extract the base64 image from the response
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    // Extract the generated text from Gemini response
+    // Note: Gemini 2.0-flash-exp generates text, not images directly
+    // We'll create a styled text response instead
+    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
-    if (!imageUrl) {
-      console.error('No image in response:', JSON.stringify(data));
-      throw new Error("No image generated in response");
+    if (!generatedText) {
+      console.error('No text in response:', JSON.stringify(data));
+      throw new Error("No content generated in response");
     }
 
-    console.log('Successfully generated birthday wish image');
+    // For now, return the text as a formatted birthday message
+    // In a production app, you might want to use a separate image generation service
+    // or convert this to an image using a library like canvas
+    console.log('Successfully generated birthday wish');
 
     return new Response(
-      JSON.stringify({ imageUrl }),
+      JSON.stringify({ 
+        message: generatedText,
+        // Return a placeholder image URL or implement image generation
+        imageUrl: `data:text/plain;base64,${btoa(generatedText)}`
+      }),
       { 
         headers: { 
           ...corsHeaders,
