@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2, Rocket, Loader2 } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Share2, Rocket, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,6 @@ import { AdditionalAgeInfo } from "@/components/AdditionalAgeInfo";
 import { AgeDifferenceCalculator } from "@/components/AgeDifferenceCalculator";
 import { AgeAtDateCalculator } from "@/components/AgeAtDateCalculator";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import FamousBirthdayMatches from "@/components/FamousBirthdayMatches";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 
@@ -353,15 +352,6 @@ const Index = () => {
           </div>
         )}
 
-        {/* Famous People Section */}
-        <div className="text-center mb-8">
-          <Link to="/famous-people">
-            <Button variant="outline" className="gap-2">
-              <Users className="w-4 h-4" />
-              Explore Famous People Birthdays
-            </Button>
-          </Link>
-        </div>
 
         {/* Tabbed Calculator Interface */}
         <section 
@@ -1098,13 +1088,6 @@ const Index = () => {
           <AgeDisplayFormats result={result} timezone={timezone} />
         )}
 
-        {/* Famous People Born on This Date */}
-        {result && birthMonth && birthDay && activeTab === "calculator" && (
-          <FamousBirthdayMatches 
-            birthMonth={parseInt(birthMonth)} 
-            birthDay={parseInt(birthDay)} 
-          />
-        )}
 
         {/* Bottom Ad Banner */}
         {result && activeTab === "calculator" && (
