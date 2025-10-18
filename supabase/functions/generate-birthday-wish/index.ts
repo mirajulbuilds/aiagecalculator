@@ -71,9 +71,9 @@ serve(async (req) => {
     
     console.log('Generating birthday wish for:', { name, birthDate, age });
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     // Format the birth date nicely - parse date components directly without timezone conversion
@@ -82,49 +82,59 @@ serve(async (req) => {
                         'July', 'August', 'September', 'October', 'November', 'December'];
     const formattedDate = `${monthNames[month - 1]} ${day}, ${year}`;
 
-    // Create a concise prompt for a birthday wish message that will be displayed on an image
-    const nameText = name ? name : 'you';
-    const defaultPrompt = `Write a heartfelt and joyful birthday wish for ${nameText} who is turning ${age} years old and was born on ${formattedDate}. 
+    // Create a detailed prompt for the birthday wish image
+    const nameText = name ? `Happy Birthday ${name}!` : 'Happy Birthday!';
+    const defaultPrompt = `Create a beautiful, festive birthday celebration image with an elegant design. 
+    Include the following text prominently and clearly:
+    "${nameText}"
+    "Born on ${formattedDate}"
+    "Celebrating ${age} wonderful years!"
+    "Wishing you joy, success, and endless happiness!"
     
-    Keep it short (maximum 50 words), warm, personal, and celebratory. Focus on wishing them happiness, success, and wonderful memories. 
-    
-    Do not include the name or age in the message as those will be displayed separately on the birthday card. Just write the wish itself.`;
+    The image should have:
+    - Colorful balloons, confetti, and festive decorations
+    - A modern, joyful aesthetic with vibrant colors
+    - Beautiful typography that's easy to read
+    - Celebratory elements like stars, sparkles, or fireworks
+    - A warm and uplifting atmosphere
+    - Professional design quality
+    Make it look like a premium birthday greeting card with all text clearly visible and beautifully styled.`;
     
     // Use custom prompt if provided, otherwise use default
     const prompt = customPrompt 
       ? `${customPrompt}
+
+      Important information to include:
+      ${nameText}
+      Born on ${formattedDate}
+      Celebrating ${age} wonderful years!
       
-      Keep the message short (maximum 50 words) and suitable for a birthday card.`
+      Make sure the text is clearly visible and beautifully styled.`
       : defaultPrompt;
 
-    console.log('Calling Gemini API with prompt...');
+    console.log('Calling Lovable AI with prompt...');
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.9,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 8192,
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image-preview",
+        messages: [
+          {
+            role: "user",
+            content: prompt
           }
-        })
-      }
-    );
+        ],
+        modalities: ["image", "text"]
+      })
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error:', response.status, errorText);
+      console.error('Lovable AI error:', response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -136,27 +146,34 @@ serve(async (req) => {
         );
       }
       
-      throw new Error(`Gemini API error: ${response.status} ${errorText}`);
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Payment required. Please add credits to your Lovable workspace." }),
+          { 
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" } 
+          }
+        );
+      }
+      
+      throw new Error(`AI Gateway error: ${response.status} ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Received response from Gemini API');
+    console.log('Received response from Lovable AI');
 
-    // Extract the generated text from Gemini response
-    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    // Extract the base64 image from the response
+    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
     
-    if (!generatedText) {
-      console.error('No text in response:', JSON.stringify(data));
-      throw new Error("No content generated in response");
+    if (!imageUrl) {
+      console.error('No image in response:', JSON.stringify(data));
+      throw new Error("No image generated in response");
     }
 
-    console.log('Successfully generated birthday wish message');
+    console.log('Successfully generated birthday wish image');
 
     return new Response(
-      JSON.stringify({ 
-        message: generatedText,
-        success: true
-      }),
+      JSON.stringify({ imageUrl }),
       { 
         headers: { 
           ...corsHeaders,

@@ -104,43 +104,37 @@ serve(async (req) => {
     
     const global = people.slice(0, 5);
 
-    // Enhance with Gemini AI-generated fun facts (for top 3 global celebrities)
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+    // Enhance with AI-generated fun facts (for top 3 global celebrities)
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
-    if (GEMINI_API_KEY && global.length > 0) {
-      console.log('Enhancing top celebrities with Gemini AI fun facts...');
+    if (LOVABLE_API_KEY && global.length > 0) {
+      console.log('Enhancing top celebrities with AI fun facts...');
       
       for (let i = 0; i < Math.min(3, global.length); i++) {
         try {
           const person = global[i];
           const aiPrompt = `Generate a single interesting and lesser-known fun fact about ${person.name} (${person.occupation.join(', ')}). Keep it under 30 words, fascinating, and appropriate for all ages. Start directly with the fact, no introduction.`;
           
-          const aiResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                contents: [{
-                  parts: [{
-                    text: aiPrompt
-                  }]
-                }],
-                generationConfig: {
-                  temperature: 0.7,
-                  maxOutputTokens: 100,
-                }
-              }),
-            }
-          );
+          const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: 'You are a helpful assistant that provides interesting facts about famous people.' },
+                { role: 'user', content: aiPrompt }
+              ],
+            }),
+          });
 
           if (aiResponse.ok) {
             const aiData = await aiResponse.json();
-            const funFact = aiData.candidates?.[0]?.content?.parts?.[0]?.text;
+            const funFact = aiData.choices?.[0]?.message?.content;
             if (funFact) {
-              global[i] = { ...person, aiFunFact: funFact.trim() };
+              global[i] = { ...person, aiFunFact: funFact };
             }
           }
         } catch (error) {

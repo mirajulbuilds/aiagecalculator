@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { AgeDisplayFormats } from "@/components/AgeDisplayFormats";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import FamousBirthdayMatches from "@/components/FamousBirthdayMatches";
-import { generateBirthdayCardImage } from "@/lib/birthdayCardCanvas";
 
 interface AgeResult {
   years: number;
@@ -220,9 +219,6 @@ const Index = () => {
     setBirthdayWishImage(null);
     
     try {
-      const formattedDate = `${birthDate.getFullYear()}-${String(birthDate.getMonth() + 1).padStart(2, '0')}-${String(birthDate.getDate()).padStart(2, '0')}`;
-      
-      // Call edge function to get AI-generated message
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-birthday-wish`,
         {
@@ -233,7 +229,7 @@ const Index = () => {
           },
           body: JSON.stringify({
             name: name || undefined,
-            birthDate: formattedDate,
+            birthDate: `${birthDate.getFullYear()}-${String(birthDate.getMonth() + 1).padStart(2, '0')}-${String(birthDate.getDate()).padStart(2, '0')}`,
             age: age,
             customPrompt: customPrompt || undefined
           }),
@@ -244,6 +240,8 @@ const Index = () => {
         const errorData = await response.json();
         if (response.status === 429) {
           toast.error("Rate limit exceeded. Please try again in a moment.");
+        } else if (response.status === 402) {
+          toast.error("Please add credits to your Lovable workspace to generate birthday wishes.");
         } else {
           throw new Error(errorData.error || 'Failed to generate birthday wish');
         }
@@ -251,19 +249,11 @@ const Index = () => {
       }
 
       const data = await response.json();
-      if (data.message) {
-        // Generate beautiful birthday card image from the AI message
-        const imageDataUrl = await generateBirthdayCardImage({
-          name: name || undefined,
-          age: age,
-          birthDate: formattedDate,
-          message: data.message
-        });
-        
-        setBirthdayWishImage(imageDataUrl);
+      if (data.imageUrl) {
+        setBirthdayWishImage(data.imageUrl);
         toast.success("Birthday wish generated! 🎉");
       } else {
-        throw new Error('No message received from AI');
+        throw new Error('No image URL received');
       }
     } catch (error) {
       console.error('Error generating birthday wish:', error);
