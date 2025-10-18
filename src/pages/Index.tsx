@@ -51,6 +51,7 @@ const Index = () => {
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
   const [activeTab, setActiveTab] = useState<string>("calculator");
+  const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
 
   useEffect(() => {
     // Detect user's timezone
@@ -259,6 +260,12 @@ const Index = () => {
       { name: "Venus", days: 225, emoji: "♀️" },
       { name: "Mars", days: 687, emoji: "♂️" },
       { name: "Jupiter", days: 4333, emoji: "♃" },
+      { name: "Saturn", days: 10759, emoji: "♄" },
+      { name: "Uranus", days: 30687, emoji: "⛢" },
+      { name: "Neptune", days: 60190, emoji: "♆" },
+      { name: "Pluto", days: 90560, emoji: "♇" },
+      { name: "Ceres", days: 1682, emoji: "⚳" },
+      { name: "Eris", days: 203830, emoji: "⯰" },
     ];
     
     const earthDays = totalDays;
@@ -768,8 +775,10 @@ const Index = () => {
               <Rocket className="w-5 h-5 text-primary" />
               <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets & Moon</h3>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {planetAges.map((result, index) => {
+            
+            {/* Initially Visible - First 5 Bodies */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              {planetAges.slice(0, 5).map((result, index) => {
                 // Import planet images dynamically based on name
                 const planetImages: Record<string, string> = {
                   'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
@@ -777,6 +786,12 @@ const Index = () => {
                   'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
                   'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
                   'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+                  'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
+                  'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
+                  'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
+                  'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
+                  'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
+                  'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
                 };
 
                 return (
@@ -807,6 +822,66 @@ const Index = () => {
                 );
               })}
             </div>
+
+            {/* "See More" Button */}
+            <div className="flex justify-center mb-6">
+              <Button
+                onClick={() => setShowMorePlanets(!showMorePlanets)}
+                variant="outline"
+                className="gap-2"
+              >
+                <Rocket className="w-4 h-4" />
+                {showMorePlanets ? "Show Less" : "See More Celestial Bodies"}
+              </Button>
+            </div>
+
+            {/* Expandable Section - Additional 6 Bodies */}
+            {showMorePlanets && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                {planetAges.slice(5).map((result, index) => {
+                  const planetImages: Record<string, string> = {
+                    'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
+                    'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
+                    'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
+                    'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
+                    'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+                    'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
+                    'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
+                    'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
+                    'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
+                    'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
+                    'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
+                  };
+
+                  return (
+                    <div
+                      key={result.planet}
+                      className="bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 rounded-xl p-6 border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-glow animate-fade-in"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="flex flex-col items-center text-center">
+                        <div className="w-24 h-24 mb-4 rounded-full overflow-hidden border-4 border-primary/20 shadow-elegant">
+                          <img
+                            src={planetImages[result.planet]}
+                            alt={result.planet}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <h4 className="text-lg font-bold text-foreground mb-2">
+                          {result.planet}
+                        </h4>
+                        <div className="text-3xl font-bold text-primary mb-1">
+                          {result.age}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         )}
 
