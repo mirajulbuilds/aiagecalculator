@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Calendar, MapPin, Star, Trophy, X } from "lucide-react";
+import { Loader2, Calendar, MapPin, Star, Trophy, X, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from "date-fns";
@@ -160,6 +160,15 @@ export const CelebrityProfileModal: React.FC<CelebrityProfileModalProps> = ({
       )}
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="absolute left-4 top-4 gap-2"
+          onClick={onClose}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Directory
+        </Button>
         <Button
           variant="ghost"
           size="icon"

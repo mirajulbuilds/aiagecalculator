@@ -5,16 +5,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background overflow-hidden transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 before:absolute before:inset-0 before:w-0 before:transition-[width] before:duration-[400ms] before:ease-in-out hover:before:w-full [&>*]:relative [&>*]:z-10",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground before:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground before:bg-destructive/90",
-        outline: "border border-input bg-background hover:text-accent-foreground before:bg-accent",
-        secondary: "bg-secondary text-secondary-foreground before:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground before:hidden",
-        link: "text-primary underline-offset-4 hover:underline before:hidden",
+        default: "bg-gradient-to-r from-primary via-primary/80 to-primary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-primary-foreground",
+        destructive: "bg-gradient-to-r from-destructive via-destructive/80 to-destructive bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-destructive-foreground",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-gradient-to-r from-secondary via-secondary/80 to-secondary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-secondary-foreground",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

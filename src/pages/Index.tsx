@@ -531,49 +531,49 @@ const Index = () => {
               <TabsList className="w-full h-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1">
                 <TabsTrigger 
                   value="calculator" 
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   Age Calculator
                 </TabsTrigger>
                 <TabsTrigger 
                   value="difference"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   Age Difference
                 </TabsTrigger>
                 <TabsTrigger 
                   value="specific"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   Specific Date
                 </TabsTrigger>
                 <TabsTrigger 
                   value="greetings"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   AI Greetings
                 </TabsTrigger>
                 <TabsTrigger 
                   value="birthday"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   On Your Birthday
                 </TabsTrigger>
                 <TabsTrigger 
                   value="milestones"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   Life Milestones
                 </TabsTrigger>
                 <TabsTrigger 
                   value="gift-advisor"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary-foreground after:transition-[width] after:duration-300 after:ease-in-out data-[state=active]:after:w-full hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 w-full justify-center py-3 md:py-2 text-sm"
                 >
                   AI Gift Advisor
                 </TabsTrigger>
                 <Link 
                   to="/famous-birthdays"
-                  className="relative overflow-hidden w-full justify-center py-3 md:py-2 rounded-md hover:bg-primary hover:text-primary-foreground transition-all text-sm flex items-center border border-input bg-background after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-primary after:transition-[width] after:duration-300 after:ease-in-out hover:after:w-full"
+                  className="bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] transition-all duration-500 w-full justify-center py-3 md:py-2 rounded-md text-sm flex items-center border border-input"
                 >
                   Famous Birthdays
                 </Link>
