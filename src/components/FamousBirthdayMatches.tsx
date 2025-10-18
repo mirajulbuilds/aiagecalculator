@@ -67,8 +67,8 @@ const FamousBirthdayMatches = ({ birthMonth, birthDay }: FamousBirthdayMatchesPr
       setGlobalPeople(data.global || []);
       setRegionalPeople(data.regional || []);
       
-      // Show warning if data fetch failed
-      if (data.error && data.source === 'wikidata-failed') {
+      // Show warning only if all sources failed
+      if (data.error && data.source === 'all-failed') {
         toast.warning(data.error);
       }
       

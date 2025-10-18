@@ -84,20 +84,79 @@ serve(async (req) => {
       }
     }
     
-    // If all retries failed, return empty results instead of crashing
+    // If all retries failed, use AI fallback to generate celebrity data
     if (!wikidataData) {
-      console.error('All Wikidata API attempts failed:', lastError);
+      console.error('All Wikidata API attempts failed, using AI fallback:', lastError);
+      
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (LOVABLE_API_KEY) {
+        try {
+          const aiPrompt = `List 5 famous people born on ${["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][birthMonth]} ${birthDay}. For each person provide: full name, birth year, main occupation(s), nationality, and a brief description (1 sentence). Format as JSON array with fields: name, dateOfBirth (YYYY-MM-DD format), occupation (array), nationality, description.`;
+          
+          const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: 'You are a helpful assistant that provides accurate historical information about famous people. Always respond with valid JSON.' },
+                { role: 'user', content: aiPrompt }
+              ],
+            }),
+          });
+
+          if (aiResponse.ok) {
+            const aiData = await aiResponse.json();
+            const content = aiData.choices?.[0]?.message?.content;
+            if (content) {
+              // Extract JSON from response (handle markdown code blocks)
+              let jsonStr = content.trim();
+              if (jsonStr.startsWith('```json')) {
+                jsonStr = jsonStr.slice(7);
+              }
+              if (jsonStr.startsWith('```')) {
+                jsonStr = jsonStr.slice(3);
+              }
+              if (jsonStr.endsWith('```')) {
+                jsonStr = jsonStr.slice(0, -3);
+              }
+              
+              const aiPeople = JSON.parse(jsonStr.trim());
+              
+              return new Response(
+                JSON.stringify({ 
+                  global: aiPeople,
+                  regional: [],
+                  source: 'ai-fallback',
+                  timestamp: new Date().toISOString()
+                }),
+                { 
+                  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                  status: 200
+                }
+              );
+            }
+          }
+        } catch (aiError) {
+          console.error('AI fallback also failed:', aiError);
+        }
+      }
+      
+      // If AI fallback also fails, return empty
       return new Response(
         JSON.stringify({ 
           global: [],
           regional: [],
           error: 'Unable to fetch celebrity data at this time. Please try again later.',
-          source: 'wikidata-failed',
+          source: 'all-failed',
           timestamp: new Date().toISOString()
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 // Return 200 with empty data instead of 500
+          status: 200
         }
       );
     }
