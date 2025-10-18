@@ -861,18 +861,43 @@ const Index = () => {
                         },
                       });
 
-                      if (error) throw error;
+                      // Check if there's an error from Supabase SDK
+                      if (error) {
+                        // If data contains an error message, use that
+                        if (data && data.error) {
+                          throw new Error(data.error);
+                        }
+                        throw error;
+                      }
 
-                      if (data.error) {
+                      // Check if response contains an error message
+                      if (data && data.error) {
                         throw new Error(data.error);
+                      }
+
+                      // Check if we got a valid image URL
+                      if (!data || !data.imageUrl) {
+                        throw new Error("No image was generated. Please try again.");
                       }
 
                       setGeneratedGreeting(data.imageUrl);
                       toast.success("Your greeting image has been generated!");
                     } catch (error) {
                       console.error('Error generating image:', error);
-                      const errorMessage = error instanceof Error ? error.message : "Failed to generate image. Please try again.";
-                      toast.error(errorMessage);
+                      let errorMessage = "Failed to generate image. Please try again.";
+                      
+                      if (error instanceof Error) {
+                        errorMessage = error.message;
+                      }
+                      
+                      // Add helpful context for payment errors
+                      if (errorMessage.includes("Payment required") || errorMessage.includes("credits")) {
+                        errorMessage += " You can add credits in Settings → Workspace → Usage.";
+                      }
+                      
+                      toast.error(errorMessage, {
+                        duration: 6000,
+                      });
                     } finally {
                       setIsGeneratingGreeting(false);
                     }
