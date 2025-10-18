@@ -28,7 +28,7 @@ export const AgeDisplayFormats = ({ result, timezone }: AgeDisplayFormatsProps) 
       >
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Total Days Lived
+            Total Days You Lived in the World
           </h2>
           <p className="text-sm text-muted-foreground">
             Complete days since birth
