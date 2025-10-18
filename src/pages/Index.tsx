@@ -66,6 +66,18 @@ const Index = () => {
     setTimezone(userTimezone);
   }, []);
 
+  // Auto-scroll active tab into view on mobile
+  useEffect(() => {
+    const activeTabElement = document.querySelector(`[data-state="active"][role="tab"]`);
+    if (activeTabElement && window.innerWidth < 768) {
+      activeTabElement.scrollIntoView({ 
+        behavior: 'smooth', 
+        inline: 'center', 
+        block: 'nearest' 
+      });
+    }
+  }, [activeTab]);
+
   // Live age update every second
   useEffect(() => {
     if (!birthDay || !birthMonth || !birthYear || !result) {
