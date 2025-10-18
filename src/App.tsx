@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
+import FamousBirthdays from "./pages/FamousBirthdays";
+import CelebrityProfile from "./pages/CelebrityProfile";
+import CelebrityCategoryList from "./pages/CelebrityCategoryList";
+import CelebrityMonthList from "./pages/CelebrityMonthList";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,6 +22,10 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/famous-birthdays" element={<FamousBirthdays />} />
+            <Route path="/celebrity/:name" element={<CelebrityProfile />} />
+            <Route path="/celebrities/category/:category" element={<CelebrityCategoryList />} />
+            <Route path="/celebrities/month/:month" element={<CelebrityMonthList />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
