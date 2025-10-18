@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.ai-gift-advisor]
 verify_jwt = false
+
+[functions.birthday-facts]
+verify_jwt = false

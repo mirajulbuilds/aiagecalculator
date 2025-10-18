@@ -14,6 +14,7 @@ import { AdditionalAgeInfo } from "@/components/AdditionalAgeInfo";
 import { AgeDifferenceCalculator } from "@/components/AgeDifferenceCalculator";
 import { AgeAtDateCalculator } from "@/components/AgeAtDateCalculator";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import { BirthdayFacts } from "@/components/BirthdayFacts";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 
@@ -999,25 +1000,37 @@ const Index = () => {
 
                 {/* Discover Button */}
                 <Button
-                  onClick={() => {
+                  onClick={async () => {
                     if (!birthdayDay || !birthdayMonth || !birthdayYear) {
                       toast.error("Please select your complete birth date");
                       return;
                     }
-                    setIsLoadingBirthdayInfo(true);
                     
-                    // Simulate loading and show placeholder data
-                    setTimeout(() => {
-                      const monthName = months.find(m => m.value === birthdayMonth)?.label || '';
-                      setBirthdayInfo({
-                        song: "Imagine - John Lennon",
-                        movie: "The Godfather",
-                        famousPeople: ["Albert Einstein", "Steve Jobs", "Oprah Winfrey"],
-                        historicalEvent: `On ${monthName} ${birthdayDay}, ${birthdayYear}, significant events shaped our world.`
+                    setIsLoadingBirthdayInfo(true);
+                    setBirthdayInfo(null);
+                    
+                    const birthDate = `${birthdayYear}-${birthdayMonth.padStart(2, '0')}-${birthdayDay.padStart(2, '0')}`;
+                    
+                    try {
+                      const { data, error } = await supabase.functions.invoke('birthday-facts', {
+                        body: { birthDate }
                       });
+
+                      if (error) {
+                        console.error('Error fetching birthday facts:', error);
+                        toast.error(error.message || 'Failed to load birthday facts');
+                      } else if (data?.error) {
+                        toast.error(data.error);
+                      } else {
+                        setBirthdayInfo(data);
+                        toast.success("Birthday information loaded!");
+                      }
+                    } catch (error: any) {
+                      console.error('Error:', error);
+                      toast.error('Failed to load birthday facts');
+                    } finally {
                       setIsLoadingBirthdayInfo(false);
-                      toast.success("Birthday information loaded!");
-                    }, 1500);
+                    }
                   }}
                   disabled={isLoadingBirthdayInfo}
                   className="w-full h-12 text-lg"
@@ -1036,45 +1049,10 @@ const Index = () => {
                 </Button>
 
                 {/* Results Display */}
-                {birthdayInfo && (
-                  <div className="grid gap-4 animate-fade-in">
-                    <div className="p-6 bg-primary/10 rounded-xl border border-primary/20">
-                      <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
-                        🎵 The #1 Song
-                      </h3>
-                      <p className="text-muted-foreground">
-                        The #1 song in the world on the day you were born was <strong>{birthdayInfo.song}</strong>
-                      </p>
-                    </div>
-
-                    <div className="p-6 bg-accent/20 rounded-xl border border-border">
-                      <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
-                        🎬 Top Movie
-                      </h3>
-                      <p className="text-muted-foreground">
-                        The top-grossing movie at that time was <strong>{birthdayInfo.movie}</strong>
-                      </p>
-                    </div>
-
-                    <div className="p-6 bg-primary/10 rounded-xl border border-primary/20">
-                      <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
-                        ⭐ Famous People
-                      </h3>
-                      <p className="text-muted-foreground">
-                        You share a birthday with: <strong>{birthdayInfo.famousPeople.join(", ")}</strong>
-                      </p>
-                    </div>
-
-                    <div className="p-6 bg-accent/20 rounded-xl border border-border">
-                      <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
-                        📚 Historical Events
-                      </h3>
-                      <p className="text-muted-foreground">
-                        {birthdayInfo.historicalEvent}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                <BirthdayFacts
+                  facts={birthdayInfo}
+                  loading={isLoadingBirthdayInfo}
+                />
               </div>
 
               {/* SEO Content */}
