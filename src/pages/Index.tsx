@@ -776,9 +776,9 @@ const Index = () => {
               <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets & Moon</h3>
             </div>
             
-            {/* Initially Visible - First 5 Bodies */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              {planetAges.slice(0, 5).map((result, index) => {
+            {/* Initially Visible - First 4 Bodies (2x2 Grid) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              {planetAges.slice(0, 4).map((result, index) => {
                 // Import planet images dynamically based on name
                 const planetImages: Record<string, string> = {
                   'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
@@ -797,36 +797,40 @@ const Index = () => {
                 return (
                   <div
                     key={result.planet}
-                    className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in"
+                    className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    {/* Rotating Background Image */}
-                    <div 
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        animation: 'spin 28s linear infinite',
-                      }}
-                    >
-                      <img
-                        src={planetImages[result.planet]}
-                        alt={result.planet}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    
-                    {/* Dark Overlay for Text Readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
-                    
-                    {/* Text Content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
-                      <h4 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                    {/* Card Content Container */}
+                    <div className="flex flex-col items-center justify-center space-y-4">
+                      {/* Planet Name */}
+                      <h4 className="text-2xl font-bold text-foreground text-center">
                         {result.planet}
                       </h4>
-                      <div className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
-                        {result.age}
+                      
+                      {/* Rotating Planet Image - Circular Frame */}
+                      <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
+                        <div 
+                          className="absolute inset-0 w-full h-full"
+                          style={{
+                            animation: 'spin 35s linear infinite',
+                          }}
+                        >
+                          <img
+                            src={planetImages[result.planet]}
+                            alt={result.planet}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
-                      <div className="text-base text-white/90 drop-shadow-md">
-                        years old here!
+                      
+                      {/* Age Display */}
+                      <div className="flex flex-col items-center space-y-1">
+                        <div className="text-5xl font-bold text-primary">
+                          {result.age}
+                        </div>
+                        <div className="text-lg text-muted-foreground">
+                          years old here!
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -846,10 +850,10 @@ const Index = () => {
               </Button>
             </div>
 
-            {/* Expandable Section - Additional 6 Bodies */}
+            {/* Expandable Section - Additional 7 Bodies */}
             {showMorePlanets && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                {planetAges.slice(5).map((result, index) => {
+                {planetAges.slice(4).map((result, index) => {
                   const planetImages: Record<string, string> = {
                     'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
                     'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
@@ -867,36 +871,40 @@ const Index = () => {
                   return (
                     <div
                       key={result.planet}
-                      className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in"
+                      className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      {/* Rotating Background Image */}
-                      <div 
-                        className="absolute inset-0 w-full h-full"
-                        style={{
-                          animation: 'spin 28s linear infinite',
-                        }}
-                      >
-                        <img
-                          src={planetImages[result.planet]}
-                          alt={result.planet}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      {/* Dark Overlay for Text Readability */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
-                      
-                      {/* Text Content */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
-                        <h4 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                      {/* Card Content Container */}
+                      <div className="flex flex-col items-center justify-center space-y-4">
+                        {/* Planet Name */}
+                        <h4 className="text-2xl font-bold text-foreground text-center">
                           {result.planet}
                         </h4>
-                        <div className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
-                          {result.age}
+                        
+                        {/* Rotating Planet Image - Circular Frame */}
+                        <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
+                          <div 
+                            className="absolute inset-0 w-full h-full"
+                            style={{
+                              animation: 'spin 35s linear infinite',
+                            }}
+                          >
+                            <img
+                              src={planetImages[result.planet]}
+                              alt={result.planet}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                         </div>
-                        <div className="text-base text-white/90 drop-shadow-md">
-                          years old here!
+                        
+                        {/* Age Display */}
+                        <div className="flex flex-col items-center space-y-1">
+                          <div className="text-5xl font-bold text-primary">
+                            {result.age}
+                          </div>
+                          <div className="text-lg text-muted-foreground">
+                            years old here!
+                          </div>
                         </div>
                       </div>
                     </div>
