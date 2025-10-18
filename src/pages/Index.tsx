@@ -50,6 +50,7 @@ const Index = () => {
   const [isGeneratingWish, setIsGeneratingWish] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
+  const [showExampleMessage, setShowExampleMessage] = useState<boolean>(true);
 
   useEffect(() => {
     // Detect user's timezone
@@ -205,6 +206,9 @@ const Index = () => {
       toast.error("Please select a target date");
       return;
     }
+
+    // Hide example message when user calculates
+    setShowExampleMessage(false);
 
     const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
     const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
@@ -494,11 +498,36 @@ const Index = () => {
           </Link>
         </div>
 
-        {/* Calculator Card */}
+        {/* Tabbed Calculator Interface */}
         <section 
           className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
-          aria-label="Age calculation form"
+          aria-label="Age calculators"
         >
+          <Tabs defaultValue="calculator" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
+              <TabsTrigger 
+                value="calculator" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+              >
+                Age Calculator
+              </TabsTrigger>
+              <TabsTrigger 
+                value="difference"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+              >
+                Age Difference
+              </TabsTrigger>
+              <TabsTrigger 
+                value="specific"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+              >
+                Specific Date
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Main Age Calculator Tab */}
+            <TabsContent value="calculator" className="animate-fade-in space-y-0">
+              <div>
           <div className="flex items-center gap-2 mb-6">
             <CalendarIconComponent className="w-5 h-5 text-primary" />
             <h2 className="text-xl font-semibold text-foreground">Enter Your Details</h2>
@@ -534,12 +563,14 @@ const Index = () => {
             </p>
           </div>
 
-          {/* CTA Text */}
-          <div className="text-center mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
-            <p className="text-base md:text-lg font-semibold text-foreground">
-              This is just an example. Now, enter your own birthday to see the magic!
-            </p>
-          </div>
+          {/* CTA Text - Hidden after user calculates */}
+          {showExampleMessage && (
+            <div className="text-center mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20 animate-fade-in">
+              <p className="text-base md:text-lg font-semibold text-foreground">
+                This is just an example. Now, enter your own birthday to see the magic!
+              </p>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {/* Birth Date Input */}
@@ -641,6 +672,19 @@ const Index = () => {
           >
             Calculate Age
           </Button>
+              </div>
+            </TabsContent>
+
+            {/* Age Difference Calculator Tab */}
+            <TabsContent value="difference" className="animate-fade-in">
+              <AgeDifferenceCalculator />
+            </TabsContent>
+
+            {/* Specific Date Calculator Tab */}
+            <TabsContent value="specific" className="animate-fade-in">
+              <AgeAtDateCalculator />
+            </TabsContent>
+          </Tabs>
         </section>
 
         {/* Traditional Age Section */}
@@ -876,33 +920,6 @@ const Index = () => {
         {result && (
           <AgeDisplayFormats result={result} timezone={timezone} />
         )}
-
-        {/* Additional Calculators Section */}
-        <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              More Age Calculators
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Explore different ways to calculate and compare ages
-            </p>
-          </div>
-
-          <Tabs defaultValue="difference" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="difference">Age Difference</TabsTrigger>
-              <TabsTrigger value="specific">Specific Date</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="difference" className="animate-fade-in">
-              <AgeDifferenceCalculator />
-            </TabsContent>
-            
-            <TabsContent value="specific" className="animate-fade-in">
-              <AgeAtDateCalculator />
-            </TabsContent>
-          </Tabs>
-        </section>
 
         {/* Famous People Born on This Date */}
         {result && birthMonth && birthDay && (
