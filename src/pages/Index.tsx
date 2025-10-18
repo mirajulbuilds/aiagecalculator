@@ -797,24 +797,35 @@ const Index = () => {
                 return (
                   <div
                     key={result.planet}
-                    className="bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 rounded-xl p-6 border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-glow animate-fade-in"
+                    className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <div className="flex flex-col items-center text-center">
-                      <div className="w-24 h-24 mb-4 rounded-full overflow-hidden border-4 border-primary/20 shadow-elegant">
-                        <img
-                          src={planetImages[result.planet]}
-                          alt={result.planet}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h4 className="text-lg font-bold text-foreground mb-2">
+                    {/* Rotating Background Image */}
+                    <div 
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        animation: 'spin 28s linear infinite',
+                      }}
+                    >
+                      <img
+                        src={planetImages[result.planet]}
+                        alt={result.planet}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    {/* Dark Overlay for Text Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+                    
+                    {/* Text Content */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
+                      <h4 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
                         {result.planet}
                       </h4>
-                      <div className="text-3xl font-bold text-primary mb-1">
+                      <div className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                         {result.age}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-base text-white/90 drop-shadow-md">
                         years old here!
                       </div>
                     </div>
@@ -856,24 +867,35 @@ const Index = () => {
                   return (
                     <div
                       key={result.planet}
-                      className="bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 rounded-xl p-6 border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-glow animate-fade-in"
+                      className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <div className="flex flex-col items-center text-center">
-                        <div className="w-24 h-24 mb-4 rounded-full overflow-hidden border-4 border-primary/20 shadow-elegant">
-                          <img
-                            src={planetImages[result.planet]}
-                            alt={result.planet}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <h4 className="text-lg font-bold text-foreground mb-2">
+                      {/* Rotating Background Image */}
+                      <div 
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                          animation: 'spin 28s linear infinite',
+                        }}
+                      >
+                        <img
+                          src={planetImages[result.planet]}
+                          alt={result.planet}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      {/* Dark Overlay for Text Readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+                      
+                      {/* Text Content */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
+                        <h4 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
                           {result.planet}
                         </h4>
-                        <div className="text-3xl font-bold text-primary mb-1">
+                        <div className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                           {result.age}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-base text-white/90 drop-shadow-md">
                           years old here!
                         </div>
                       </div>
