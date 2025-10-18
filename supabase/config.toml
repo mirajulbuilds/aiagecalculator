@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-birthday-wish]
 verify_jwt = false
+
+[functions.generate-greeting-image]
+verify_jwt = false

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2, Rocket } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Users, Share2, Rocket, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +15,8 @@ import { AgeDifferenceCalculator } from "@/components/AgeDifferenceCalculator";
 import { AgeAtDateCalculator } from "@/components/AgeAtDateCalculator";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import FamousBirthdayMatches from "@/components/FamousBirthdayMatches";
+import { supabase } from "@/integrations/supabase/client";
+import { Label } from "@/components/ui/label";
 
 interface AgeResult {
   years: number;
@@ -52,6 +54,13 @@ const Index = () => {
   const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
+  
+  // AI Greetings state
+  const [selectedOccasion, setSelectedOccasion] = useState('');
+  const [occasionDate, setOccasionDate] = useState('');
+  const [greetingPrompt, setGreetingPrompt] = useState('');
+  const [generatedGreeting, setGeneratedGreeting] = useState('');
+  const [isGeneratingGreeting, setIsGeneratingGreeting] = useState(false);
 
   useEffect(() => {
     // Detect user's timezone
@@ -507,7 +516,7 @@ const Index = () => {
           aria-label="Age calculators"
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
+            <TabsList className="grid w-full grid-cols-4 mb-6 h-auto">
               <TabsTrigger 
                 value="calculator" 
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
@@ -525,6 +534,12 @@ const Index = () => {
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
               >
                 Specific Date
+              </TabsTrigger>
+              <TabsTrigger 
+                value="greetings"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+              >
+                AI Greetings
               </TabsTrigger>
             </TabsList>
 
@@ -712,6 +727,164 @@ const Index = () => {
             {/* Specific Date Calculator Tab */}
             <TabsContent value="specific" className="animate-fade-in">
               <AgeAtDateCalculator />
+            </TabsContent>
+
+            {/* AI Greetings Tab */}
+            <TabsContent value="greetings" className="animate-fade-in">
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-primary mb-2">AI Greetings Generator</h2>
+                  <p className="text-muted-foreground">
+                    Create beautiful custom greeting images for any special occasion
+                  </p>
+                </div>
+
+                {/* Step 1: Occasion Selector */}
+                <div className="space-y-2">
+                  <Label htmlFor="occasion" className="text-lg font-semibold">
+                    1. Choose an Occasion
+                  </Label>
+                  <select
+                    id="occasion"
+                    value={selectedOccasion}
+                    onChange={(e) => {
+                      setSelectedOccasion(e.target.value);
+                      // Reset date if occasion doesn't need it
+                      if (!['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(e.target.value)) {
+                        setOccasionDate('');
+                      }
+                    }}
+                    className="w-full p-3 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="">Select an occasion...</option>
+                    <option value="Birthday">Birthday</option>
+                    <option value="Wedding Anniversary">Wedding Anniversary</option>
+                    <option value="Valentine's Day">Valentine's Day</option>
+                    <option value="Women's Day">Women's Day</option>
+                    <option value="Mother's Day">Mother's Day</option>
+                    <option value="Eid Mubarak">Eid Mubarak</option>
+                    <option value="Puja Greetings">Puja Greetings</option>
+                    <option value="Christmas">Christmas</option>
+                    <option value="General Anniversary">General Anniversary</option>
+                  </select>
+                </div>
+
+                {/* Step 2: Conditional Date Picker */}
+                {selectedOccasion && ['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(selectedOccasion) && (
+                  <div className="space-y-2 animate-fade-in">
+                    <Label htmlFor="occasion-date" className="text-lg font-semibold">
+                      2. Select a Date (Optional)
+                    </Label>
+                    <Input
+                      id="occasion-date"
+                      type="date"
+                      value={occasionDate}
+                      onChange={(e) => setOccasionDate(e.target.value)}
+                      className="w-full h-12 bg-muted"
+                    />
+                  </div>
+                )}
+
+                {/* Step 3: Custom Prompt */}
+                <div className="space-y-2">
+                  <Label htmlFor="greeting-prompt" className="text-lg font-semibold">
+                    {selectedOccasion && ['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(selectedOccasion) ? '3' : '2'}. Describe the Image You Want
+                  </Label>
+                  <Textarea
+                    id="greeting-prompt"
+                    value={greetingPrompt}
+                    onChange={(e) => setGreetingPrompt(e.target.value)}
+                    placeholder="e.g., A beautiful birthday cake with 'Happy Birthday Alex' on it, surrounded by blue and silver balloons."
+                    className="w-full min-h-[120px] bg-muted resize-y"
+                  />
+                </div>
+
+                {/* Generate Button */}
+                <Button
+                  onClick={async () => {
+                    if (!selectedOccasion || !greetingPrompt) {
+                      toast.error("Please select an occasion and describe your image.");
+                      return;
+                    }
+
+                    setIsGeneratingGreeting(true);
+                    setGeneratedGreeting('');
+
+                    try {
+                      const { data, error } = await supabase.functions.invoke('generate-greeting-image', {
+                        body: {
+                          occasion: selectedOccasion,
+                          date: occasionDate,
+                          customPrompt: greetingPrompt,
+                        },
+                      });
+
+                      if (error) throw error;
+
+                      if (data.error) {
+                        throw new Error(data.error);
+                      }
+
+                      setGeneratedGreeting(data.imageUrl);
+                      toast.success("Your greeting image has been generated!");
+                    } catch (error) {
+                      console.error('Error generating image:', error);
+                      const errorMessage = error instanceof Error ? error.message : "Failed to generate image. Please try again.";
+                      toast.error(errorMessage);
+                    } finally {
+                      setIsGeneratingGreeting(false);
+                    }
+                  }}
+                  disabled={isGeneratingGreeting || !selectedOccasion || !greetingPrompt}
+                  className="w-full h-12 text-lg"
+                >
+                  {isGeneratingGreeting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Generating Your Image...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Generate Image
+                    </>
+                  )}
+                </Button>
+
+                {/* Image Result Area */}
+                {isGeneratingGreeting && (
+                  <div className="flex flex-col items-center justify-center py-12 space-y-4 animate-fade-in">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <p className="text-muted-foreground text-lg">Generating your image, please wait...</p>
+                  </div>
+                )}
+
+                {generatedGreeting && !isGeneratingGreeting && (
+                  <div className="space-y-4 animate-fade-in">
+                    <div className="relative rounded-lg overflow-hidden border-2 border-primary/20 bg-muted">
+                      <img
+                        src={generatedGreeting}
+                        alt="Generated greeting"
+                        className="w-full h-auto"
+                      />
+                    </div>
+                    <Button
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = generatedGreeting;
+                        link.download = `${selectedOccasion.toLowerCase().replace(/\s+/g, '-')}-greeting.png`;
+                        link.click();
+                        toast.success("Image downloaded successfully!");
+                      }}
+                      className="w-full"
+                      variant="outline"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Image
+                    </Button>
+                  </div>
+                )}
+              </div>
             </TabsContent>
           </Tabs>
         </section>
