@@ -57,7 +57,9 @@ const Index = () => {
   
   // AI Greetings state
   const [selectedOccasion, setSelectedOccasion] = useState('');
-  const [occasionDate, setOccasionDate] = useState('');
+  const [occasionDay, setOccasionDay] = useState('');
+  const [occasionMonth, setOccasionMonth] = useState('');
+  const [occasionYear, setOccasionYear] = useState('');
   const [greetingPrompt, setGreetingPrompt] = useState('');
   const [generatedGreeting, setGeneratedGreeting] = useState('');
   const [isGeneratingGreeting, setIsGeneratingGreeting] = useState(false);
@@ -751,7 +753,9 @@ const Index = () => {
                       setSelectedOccasion(e.target.value);
                       // Reset date if occasion doesn't need it
                       if (!['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(e.target.value)) {
-                        setOccasionDate('');
+                        setOccasionDay('');
+                        setOccasionMonth('');
+                        setOccasionYear('');
                       }
                     }}
                     className="w-full p-3 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
@@ -775,13 +779,44 @@ const Index = () => {
                     <Label htmlFor="occasion-date" className="text-lg font-semibold">
                       2. Select a Date (Optional)
                     </Label>
-                    <Input
-                      id="occasion-date"
-                      type="date"
-                      value={occasionDate}
-                      onChange={(e) => setOccasionDate(e.target.value)}
-                      className="w-full h-12 bg-muted"
-                    />
+                    <div className="grid grid-cols-3 gap-2">
+                      <Select value={occasionDay} onValueChange={setOccasionDay}>
+                        <SelectTrigger className="h-12 bg-muted">
+                          <SelectValue placeholder="Day" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {days.map((day) => (
+                            <SelectItem key={day} value={day}>
+                              {day}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={occasionMonth} onValueChange={setOccasionMonth}>
+                        <SelectTrigger className="h-12 bg-muted">
+                          <SelectValue placeholder="Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((month) => (
+                            <SelectItem key={month.value} value={month.value}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={occasionYear} onValueChange={setOccasionYear}>
+                        <SelectTrigger className="h-12 bg-muted">
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {years.map((year) => (
+                            <SelectItem key={year} value={year}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 )}
 
@@ -811,10 +846,17 @@ const Index = () => {
                     setGeneratedGreeting('');
 
                     try {
+                      // Format date if selected
+                      let formattedDate = '';
+                      if (occasionDay && occasionMonth && occasionYear) {
+                        const monthName = months.find(m => m.value === occasionMonth)?.label || '';
+                        formattedDate = `${monthName} ${occasionDay}, ${occasionYear}`;
+                      }
+
                       const { data, error } = await supabase.functions.invoke('generate-greeting-image', {
                         body: {
                           occasion: selectedOccasion,
-                          date: occasionDate,
+                          date: formattedDate,
                           customPrompt: greetingPrompt,
                         },
                       });
