@@ -1246,15 +1246,21 @@ const Index = () => {
                         throw error;
                       }
 
+                      if (data?.error) {
+                        toast.error(data.error);
+                        return;
+                      }
+
                       if (data && data.giftIdeas) {
                         setGiftIdeas(data.giftIdeas);
                         toast.success("Gift ideas generated successfully!");
                       } else {
                         throw new Error("No gift ideas returned");
                       }
-                    } catch (error) {
+                    } catch (error: any) {
                       console.error('Error generating gift ideas:', error);
-                      toast.error("Failed to generate gift ideas. Please try again.");
+                      const errorMessage = error?.message || "Failed to generate gift ideas. Please try again.";
+                      toast.error(errorMessage);
                     } finally {
                       setIsGeneratingGifts(false);
                     }
