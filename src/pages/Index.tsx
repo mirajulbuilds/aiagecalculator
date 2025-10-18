@@ -557,6 +557,128 @@ const Index = () => {
             </p>
           </div>
 
+          {/* Name Input (Optional) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Your Name (Optional - for personalized birthday wish)
+            </label>
+            <Input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-12 bg-muted"
+            />
+          </div>
+
+          {/* Custom Prompt Input (Optional) */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Custom Birthday Wish Prompt (Optional)
+            </label>
+            <Textarea
+              placeholder="E.g., 'Create a birthday wish with space theme and rockets' or 'Make it elegant with gold accents'"
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              className="min-h-[80px] bg-muted resize-none"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Add your own creative touch to the birthday wish image
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {/* Birth Date Input */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Date of Birth
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <Select value={birthDay} onValueChange={setBirthDay}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={birthMonth} onValueChange={setBirthMonth}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={birthYear} onValueChange={setBirthYear}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Target Date Input */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Calculate Age Until
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <Select value={targetDay} onValueChange={setTargetDay}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetMonth} onValueChange={setTargetMonth}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={targetYear} onValueChange={setTargetYear}>
+                  <SelectTrigger className="h-12 bg-muted">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
           {/* Calculate Button */}
           <Button
             onClick={calculateAge}
