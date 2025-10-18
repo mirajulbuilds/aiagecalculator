@@ -47,7 +47,7 @@ const Index = () => {
   const [result, setResult] = useState<AgeResult | null>(null);
   const [timezone, setTimezone] = useState<string>("");
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
-  const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
+  const [planetAges, setPlanetAges] = useState<{ name: string; age: number; imageURL: string; group: string }[]>([]);
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
   
@@ -372,27 +372,88 @@ const Index = () => {
     // Get zodiac sign
     const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
 
-    // Calculate planet ages
-    const planets = [
-      { name: "Moon", days: 27.3, emoji: "🌙" },
-      { name: "Mercury", days: 88, emoji: "☿️" },
-      { name: "Venus", days: 225, emoji: "♀️" },
-      { name: "Mars", days: 687, emoji: "♂️" },
-      { name: "Jupiter", days: 4333, emoji: "♃" },
-      { name: "Saturn", days: 10759, emoji: "♄" },
-      { name: "Uranus", days: 30687, emoji: "⛢" },
-      { name: "Neptune", days: 60190, emoji: "♆" },
-      { name: "Pluto", days: 90560, emoji: "♇" },
-      { name: "Ceres", days: 1682, emoji: "⚳" },
-      { name: "Eris", days: 203830, emoji: "⯰" },
-      { name: "Sun", days: 27, emoji: "☀️" },
+    // Calculate planet ages using single structured data source
+    const celestialData = [
+      { 
+        name: "Moon", 
+        orbitalPeriod: 27.3, 
+        imageURL: new URL('../assets/planets/moon.jpg', import.meta.url).href,
+        group: "visible" 
+      },
+      { 
+        name: "Mercury", 
+        orbitalPeriod: 88, 
+        imageURL: new URL('../assets/planets/mercury.jpg', import.meta.url).href,
+        group: "visible" 
+      },
+      { 
+        name: "Venus", 
+        orbitalPeriod: 225, 
+        imageURL: new URL('../assets/planets/venus.jpg', import.meta.url).href,
+        group: "visible" 
+      },
+      { 
+        name: "Mars", 
+        orbitalPeriod: 687, 
+        imageURL: new URL('../assets/planets/mars.jpg', import.meta.url).href,
+        group: "visible" 
+      },
+      { 
+        name: "Jupiter", 
+        orbitalPeriod: 4333, 
+        imageURL: new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Saturn", 
+        orbitalPeriod: 10759, 
+        imageURL: new URL('../assets/planets/saturn.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Uranus", 
+        orbitalPeriod: 30687, 
+        imageURL: new URL('../assets/planets/uranus.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Neptune", 
+        orbitalPeriod: 60190, 
+        imageURL: new URL('../assets/planets/neptune.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Pluto", 
+        orbitalPeriod: 90560, 
+        imageURL: new URL('../assets/planets/pluto.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Ceres", 
+        orbitalPeriod: 1682, 
+        imageURL: new URL('../assets/planets/ceres.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Eris", 
+        orbitalPeriod: 203830, 
+        imageURL: new URL('../assets/planets/eris.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
+      { 
+        name: "Sun", 
+        orbitalPeriod: 27, 
+        imageURL: new URL('../assets/planets/sun.jpg', import.meta.url).href,
+        group: "hidden" 
+      },
     ];
     
     const earthDays = totalDays;
-    const calculatedPlanetAges = planets.map(planet => ({
-      planet: planet.name,
-      age: Number((earthDays / planet.days).toFixed(2)),
-      emoji: planet.emoji,
+    const calculatedPlanetAges = celestialData.map(body => ({
+      name: body.name,
+      age: Number((earthDays / body.orbitalPeriod).toFixed(2)),
+      imageURL: body.imageURL,
+      group: body.group,
     }));
 
     setPlanetAges(calculatedPlanetAges);
@@ -1449,67 +1510,49 @@ const Index = () => {
               <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets & Moon</h3>
             </div>
             
-            {/* Initially Visible - First 4 Bodies (2x2 Grid) */}
+            {/* Initially Visible Bodies */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-              {planetAges.slice(0, 4).map((result, index) => {
-                // Import planet images dynamically based on name
-                const planetImages: Record<string, string> = {
-                  'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                  'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                  'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                  'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                  'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                  'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                  'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                  'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                  'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                  'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                  'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                  'Sun': new URL('../assets/planets/sun.jpg', import.meta.url).href,
-                };
-
-                return (
-                  <div
-                    key={result.planet}
-                    className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    {/* Card Content Container */}
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                      {/* Planet Name */}
-                      <h4 className="text-2xl font-bold text-foreground text-center">
-                        {result.planet}
-                      </h4>
-                      
-                      {/* Rotating Planet Image - Circular Frame */}
-                      <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
-                        <div 
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            animation: 'spin 35s linear infinite',
-                          }}
-                        >
-                          <img
-                            src={planetImages[result.planet]}
-                            alt={`Image of ${result.planet === 'Moon' ? 'The Moon' : result.planet === 'Sun' ? 'The Sun' : `the ${result.planet === 'Ceres' || result.planet === 'Eris' ? 'dwarf planet' : 'planet'} ${result.planet}`}${result.planet === 'Saturn' ? ' with its rings' : ''}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+              {planetAges.filter(body => body.group === "visible").map((body, index) => (
+                <div
+                  key={body.name}
+                  className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  {/* Card Content Container */}
+                  <div className="flex flex-col items-center justify-center space-y-4">
+                    {/* Planet Name */}
+                    <h4 className="text-2xl font-bold text-foreground text-center">
+                      {body.name}
+                    </h4>
+                    
+                    {/* Rotating Planet Image - Circular Frame */}
+                    <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
+                      <div 
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                          animation: 'spin 35s linear infinite',
+                        }}
+                      >
+                        <img
+                          src={body.imageURL}
+                          alt={`Image of ${body.name === 'Moon' ? 'The Moon' : body.name === 'Sun' ? 'The Sun' : `the ${body.name === 'Ceres' || body.name === 'Eris' ? 'dwarf planet' : 'planet'} ${body.name}`}${body.name === 'Saturn' ? ' with its rings' : ''}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      
-                      {/* Age Display */}
-                      <div className="flex flex-col items-center space-y-1">
-                        <div className="text-5xl font-bold text-primary">
-                          {result.age}
-                        </div>
-                        <div className="text-lg text-muted-foreground">
-                          years old here!
-                        </div>
+                    </div>
+                    
+                    {/* Age Display */}
+                    <div className="flex flex-col items-center space-y-1">
+                      <div className="text-5xl font-bold text-primary">
+                        {body.age}
+                      </div>
+                      <div className="text-lg text-muted-foreground">
+                        years old here!
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
 
             {/* "See More" Button */}
@@ -1524,67 +1567,50 @@ const Index = () => {
               </Button>
             </div>
 
-            {/* Expandable Section - Additional 7 Bodies */}
+            {/* Expandable Section - Hidden Bodies */}
             {showMorePlanets && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                {planetAges.slice(4).map((result, index) => {
-                  const planetImages: Record<string, string> = {
-                    'Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                    'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                    'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                    'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                    'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                    'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                    'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                    'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                    'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                    'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                    'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                    'Sun': new URL('../assets/planets/sun.jpg', import.meta.url).href,
-                  };
-
-                  return (
-                    <div
-                      key={result.planet}
-                      className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      {/* Card Content Container */}
-                      <div className="flex flex-col items-center justify-center space-y-4">
-                        {/* Planet Name */}
-                        <h4 className="text-2xl font-bold text-foreground text-center">
-                          {result.planet}
-                        </h4>
-                        
-                        {/* Rotating Planet Image - Circular Frame */}
-                        <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
-                          <div 
-                            className="absolute inset-0 w-full h-full"
-                            style={{
-                              animation: 'spin 35s linear infinite',
-                            }}
-                          >
-                            <img
-                              src={planetImages[result.planet]}
-                              alt={`Image of ${result.planet === 'Moon' ? 'The Moon' : result.planet === 'Sun' ? 'The Sun' : `the ${result.planet === 'Ceres' || result.planet === 'Eris' ? 'dwarf planet' : 'planet'} ${result.planet}`}${result.planet === 'Saturn' ? ' with its rings' : ''}`}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
+                {planetAges.filter(body => body.group === "hidden").map((body, index) => (
+                  <div
+                    key={body.name}
+                    className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    {/* Card Content Container */}
+                    <div className="flex flex-col items-center justify-center space-y-4">
+                      {/* Planet Name */}
+                      <h4 className="text-2xl font-bold text-foreground text-center">
+                        {body.name}
+                      </h4>
+                      
+                      {/* Rotating Planet Image - Circular Frame */}
+                      <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
+                        <div 
+                          className="absolute inset-0 w-full h-full"
+                          style={{
+                            animation: 'spin 35s linear infinite',
+                          }}
+                        >
+                          <img
+                            src={body.imageURL}
+                            alt={`Image of ${body.name === 'Moon' ? 'The Moon' : body.name === 'Sun' ? 'The Sun' : `the ${body.name === 'Ceres' || body.name === 'Eris' ? 'dwarf planet' : 'planet'} ${body.name}`}${body.name === 'Saturn' ? ' with its rings' : ''}`}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        
-                        {/* Age Display */}
-                        <div className="flex flex-col items-center space-y-1">
-                          <div className="text-5xl font-bold text-primary">
-                            {result.age}
-                          </div>
-                          <div className="text-lg text-muted-foreground">
-                            years old here!
-                          </div>
+                      </div>
+                      
+                      {/* Age Display */}
+                      <div className="flex flex-col items-center space-y-1">
+                        <div className="text-5xl font-bold text-primary">
+                          {body.age}
+                        </div>
+                        <div className="text-lg text-muted-foreground">
+                          years old here!
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             )}
           </section>
