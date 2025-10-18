@@ -1,10 +1,10 @@
 project_id = "ryetajignnzczcybyggr"
 
-[functions.fetch-famous-birthdays]
-verify_jwt = false
-
 [functions.generate-birthday-wish]
 verify_jwt = false
 
 [functions.generate-greeting-image]
+verify_jwt = false
+
+[functions.ai-gift-advisor]
 verify_jwt = false
