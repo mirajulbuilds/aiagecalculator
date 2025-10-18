@@ -112,11 +112,12 @@ serve(async (req) => {
       Make sure the text is clearly visible and beautifully styled.`
       : defaultPrompt;
 
-    console.log('Calling Gemini 2.5 Flash API with prompt...');
+    console.log('Calling Gemini 2.5 Flash Image API with prompt...');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-exp-image-generation:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent", {
       method: "POST",
       headers: {
+        "x-goog-api-key": GEMINI_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -124,10 +125,7 @@ serve(async (req) => {
           parts: [{
             text: prompt
           }]
-        }],
-        generationConfig: {
-          responseModalities: ["IMAGE"]
-        }
+        }]
       })
     });
 
