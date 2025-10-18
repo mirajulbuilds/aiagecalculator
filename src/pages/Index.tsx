@@ -51,6 +51,7 @@ const Index = () => {
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [planetAges, setPlanetAges] = useState<{ planet: string; age: number; emoji: string }[]>([]);
   const [showExampleMessage, setShowExampleMessage] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<string>("calculator");
 
   useEffect(() => {
     // Detect user's timezone
@@ -503,7 +504,7 @@ const Index = () => {
           className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
           aria-label="Age calculators"
         >
-          <Tabs defaultValue="calculator" className="w-full">
+          <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
               <TabsTrigger 
                 value="calculator" 
@@ -688,7 +689,7 @@ const Index = () => {
         </section>
 
         {/* Traditional Age Section */}
-        {result && (
+        {result && activeTab === "calculator" && (
           <section 
             className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in"
             aria-label="Traditional age"
@@ -732,7 +733,7 @@ const Index = () => {
         )}
 
         {/* Additional Age Info Section */}
-        {result && (
+        {result && activeTab === "calculator" && (
           <AdditionalAgeInfo 
             nextBirthdayDays={result.nextBirthdayDays}
             zodiacSign={result.zodiacSign}
@@ -741,7 +742,7 @@ const Index = () => {
         )}
 
         {/* Planet Ages Section */}
-        {planetAges.length > 0 && (
+        {planetAges.length > 0 && activeTab === "calculator" && (
           <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in">
             <div className="flex items-center gap-2 mb-6">
               <Rocket className="w-5 h-5 text-primary" />
@@ -767,7 +768,7 @@ const Index = () => {
         )}
 
         {/* AI Birthday Wish Section */}
-        {result && (
+        {result && activeTab === "calculator" && (
           <section 
             className="bg-gradient-to-br from-card via-accent/10 to-card rounded-xl shadow-sm p-3 md:p-4 mb-6"
             aria-label="AI generated birthday wish"
@@ -846,12 +847,12 @@ const Index = () => {
         )}
 
         {/* Ad Banner */}
-        {result && (
+        {result && activeTab === "calculator" && (
           <AdSenseBanner format="large-horizontal" className="mb-6" />
         )}
 
         {/* Live Age Display */}
-        {liveAge && (
+        {liveAge && activeTab === "calculator" && (
           <section 
             className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground"
             aria-label="Live age counter"
@@ -917,12 +918,12 @@ const Index = () => {
         )}
 
         {/* Age Display Formats */}
-        {result && (
+        {result && activeTab === "calculator" && (
           <AgeDisplayFormats result={result} timezone={timezone} />
         )}
 
         {/* Famous People Born on This Date */}
-        {result && birthMonth && birthDay && (
+        {result && birthMonth && birthDay && activeTab === "calculator" && (
           <FamousBirthdayMatches 
             birthMonth={parseInt(birthMonth)} 
             birthDay={parseInt(birthDay)} 
@@ -930,7 +931,7 @@ const Index = () => {
         )}
 
         {/* Bottom Ad Banner */}
-        {result && (
+        {result && activeTab === "calculator" && (
           <AdSenseBanner format="horizontal" className="mt-6" />
         )}
         </div>
