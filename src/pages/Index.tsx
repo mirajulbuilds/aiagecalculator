@@ -57,6 +57,7 @@ const Index = () => {
   const [occasionYear, setOccasionYear] = useState('');
   const [greetingPrompt, setGreetingPrompt] = useState('');
   const [generatedGreeting, setGeneratedGreeting] = useState('');
+  const [watermarkedGreeting, setWatermarkedGreeting] = useState('');
   const [isGeneratingGreeting, setIsGeneratingGreeting] = useState(false);
 
   // On Your Birthday state
@@ -79,6 +80,96 @@ const Index = () => {
   const [giftInterests, setGiftInterests] = useState('');
   const [giftIdeas, setGiftIdeas] = useState<any[]>([]);
   const [isGeneratingGifts, setIsGeneratingGifts] = useState(false);
+
+  // Watermark utility function
+  const addWatermarkToImage = (imageUrl: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        // Set canvas size to match image
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw the original image
+        ctx.drawImage(img, 0, 0);
+        
+        // Add watermark text
+        const watermarkText = 'aiagecalc.com';
+        const fontSize = Math.max(16, Math.floor(img.width / 30)); // Responsive font size
+        const padding = fontSize;
+        
+        ctx.font = `${fontSize}px sans-serif`;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        
+        // Draw watermark in bottom-right corner
+        ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
+        
+        // Convert canvas to data URL
+        const watermarkedImageUrl = canvas.toDataURL('image/png');
+        resolve(watermarkedImageUrl);
+      };
+      
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = imageUrl;
+    });
+  };
+
+  // Share or download function
+  const handleShareImage = async () => {
+    if (!watermarkedGreeting) {
+      toast.error("No image to share");
+      return;
+    }
+
+    try {
+      // Convert data URL to blob
+      const response = await fetch(watermarkedGreeting);
+      const blob = await response.blob();
+      const file = new File([blob], 'greeting-from-aiagecalc.com.png', { type: 'image/png' });
+
+      // Check if Web Share API is supported with files
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        // Use Web Share API (mobile and some desktop browsers)
+        await navigator.share({
+          files: [file],
+          title: 'AI Greeting',
+          text: 'Check out this image I created on aiagecalc.com!'
+        });
+        toast.success("Shared successfully!");
+      } else {
+        // Fallback: Download the image
+        const link = document.createElement('a');
+        link.href = watermarkedGreeting;
+        link.download = `${selectedOccasion.toLowerCase().replace(/\s+/g, '-')}-greeting-aiagecalc.png`;
+        link.click();
+        toast.success("Image downloaded successfully!");
+      }
+    } catch (error) {
+      console.error('Error sharing/downloading image:', error);
+      // If sharing fails, fallback to download
+      const link = document.createElement('a');
+      link.href = watermarkedGreeting;
+      link.download = `${selectedOccasion.toLowerCase().replace(/\s+/g, '-')}-greeting-aiagecalc.png`;
+      link.click();
+      toast.success("Image downloaded successfully!");
+    }
+  };
 
   useEffect(() => {
     // Detect user's timezone
@@ -726,6 +817,7 @@ const Index = () => {
 
                     setIsGeneratingGreeting(true);
                     setGeneratedGreeting('');
+                    setWatermarkedGreeting('');
 
                     try {
                       // Format date if selected
@@ -763,7 +855,18 @@ const Index = () => {
                       }
 
                       setGeneratedGreeting(data.imageUrl);
-                      toast.success("Your greeting image has been generated!");
+                      
+                      // Automatically apply watermark
+                      try {
+                        const watermarked = await addWatermarkToImage(data.imageUrl);
+                        setWatermarkedGreeting(watermarked);
+                        toast.success("Your greeting image has been generated!");
+                      } catch (watermarkError) {
+                        console.error('Error adding watermark:', watermarkError);
+                        // If watermarking fails, still show the original image
+                        setWatermarkedGreeting(data.imageUrl);
+                        toast.success("Your greeting image has been generated!");
+                      }
                     } catch (error) {
                       console.error('Error generating image:', error);
                       let errorMessage = "Failed to generate image. Please try again.";
@@ -808,28 +911,21 @@ const Index = () => {
                   </div>
                 )}
 
-                {generatedGreeting && !isGeneratingGreeting && (
+                {watermarkedGreeting && !isGeneratingGreeting && (
                   <div className="space-y-4 animate-fade-in">
                     <div className="relative rounded-lg overflow-hidden border-2 border-primary/20 bg-muted">
                       <img
-                        src={generatedGreeting}
-                        alt="Generated greeting"
+                        src={watermarkedGreeting}
+                        alt="Generated greeting with watermark"
                         className="w-full h-auto"
                       />
                     </div>
                     <Button
-                      onClick={() => {
-                        const link = document.createElement('a');
-                        link.href = generatedGreeting;
-                        link.download = `${selectedOccasion.toLowerCase().replace(/\s+/g, '-')}-greeting.png`;
-                        link.click();
-                        toast.success("Image downloaded successfully!");
-                      }}
-                      className="w-full"
-                      variant="outline"
+                      onClick={handleShareImage}
+                      className="w-full h-12 text-lg"
                     >
-                      <Download className="mr-2 h-4 w-4" />
-                      Download Image
+                      <Share2 className="mr-2 h-5 w-5" />
+                      Share Image
                     </Button>
                   </div>
                 )}
