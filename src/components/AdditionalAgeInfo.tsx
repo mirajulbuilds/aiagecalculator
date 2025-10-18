@@ -16,15 +16,6 @@ export const AdditionalAgeInfo = ({
       className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
       aria-label="Additional age information"
     >
-      <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-          Additional Info
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          More insights about your birthday
-        </p>
-      </div>
-
       <div className="grid md:grid-cols-2 gap-6">
         {/* Next Birthday Countdown */}
         <div className="bg-gradient-to-br from-primary/10 via-accent/20 to-primary/5 rounded-xl p-6 md:p-8 text-center border border-primary/20">
