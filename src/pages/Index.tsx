@@ -401,7 +401,7 @@ const Index = () => {
               <div>
           <div className="flex items-center gap-2 mb-6">
             <CalendarIconComponent className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Enter your details to see the magic</h2>
+            <h2 className="text-xl font-semibold text-foreground">Enter Your Details to See the Magic</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
