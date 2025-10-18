@@ -72,7 +72,7 @@ const Index = () => {
     if (activeTabElement && window.innerWidth < 768) {
       activeTabElement.scrollIntoView({ 
         behavior: 'smooth', 
-        inline: 'center', 
+        inline: 'start', 
         block: 'nearest' 
       });
     }
