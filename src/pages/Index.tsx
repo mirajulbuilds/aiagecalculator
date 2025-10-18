@@ -539,7 +539,7 @@ const Index = () => {
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="mb-6">
-              <TabsList className="w-full h-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1">
+              <TabsList className="w-full h-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-1">
                 <TabsTrigger 
                   value="calculator" 
                   className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm"
@@ -582,19 +582,20 @@ const Index = () => {
                 >
                   AI Gift Advisor
                 </TabsTrigger>
-                <Link to="/famous-birthdays" className="contents">
-                  <TabsTrigger 
-                    value="famous-birthdays"
-                    className="w-full justify-center py-3 md:py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-primary/10 transition-all text-sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = '/famous-birthdays';
-                    }}
-                  >
-                    Famous Birthdays
-                  </TabsTrigger>
-                </Link>
               </TabsList>
+              
+              {/* Famous Birthdays Link Button */}
+              <div className="mt-4 text-center">
+                <Link to="/famous-birthdays">
+                  <Button 
+                    variant="outline" 
+                    className="w-full md:w-auto gap-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Explore Famous Birthdays
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Main Age Calculator Tab */}
