@@ -538,18 +538,48 @@ const Index = () => {
                 </li>
               </ul>
             </div>
-          )}
+            )}
+              </div>
+              
+              {/* SEO Content for Age Calculator */}
+              <div className="mt-8 p-6 bg-accent/20 rounded-xl border border-border">
+                <h2 className="text-2xl font-bold text-foreground mb-3">
+                  More Than Just an Age Calculator
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  Go beyond simple age calculation. Our tool not only tells you your precise age in years, months, and days but also reveals fun life statistics like your total time on Earth in hours and minutes. Discover your Zodiac sign and get an exciting <strong>birthday countdown</strong> to your next celebration. It's the ultimate tool for understanding your life's timeline.
+                </p>
               </div>
             </TabsContent>
 
             {/* Age Difference Calculator Tab */}
             <TabsContent value="difference" className="animate-fade-in">
               <AgeDifferenceCalculator />
+              
+              {/* SEO Content for Age Difference */}
+              <div className="mt-8 p-6 bg-accent/20 rounded-xl border border-border">
+                <h2 className="text-2xl font-bold text-foreground mb-3">
+                  Easily Compare Ages with Our Age Difference Calculator
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  Ever wondered about the exact age gap between you and a friend, family member, or colleague? Our <strong>Age Difference Calculator</strong> makes it simple. Just enter two dates of birth to get a precise calculation of the difference in years, months, and days. Perfect for event planning, historical comparisons, or just for fun!
+                </p>
+              </div>
             </TabsContent>
 
             {/* Specific Date Calculator Tab */}
             <TabsContent value="specific" className="animate-fade-in">
               <AgeAtDateCalculator />
+              
+              {/* SEO Content for Specific Date */}
+              <div className="mt-8 p-6 bg-accent/20 rounded-xl border border-border">
+                <h2 className="text-2xl font-bold text-foreground mb-3">
+                  Travel Through Time and Space
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  What was your exact age during a historic event? How old will you be in 2050? Our <strong>Age at a Specific Date</strong> tool lets you find out instantly. Plus, take an interstellar journey with our <strong>Age on Other Planets calculator</strong>. Discover your age on Mars, Jupiter, the Moon, and more in a stunning visual experience. It's a fun and educational tool for space enthusiasts of all ages.
+                </p>
+              </div>
             </TabsContent>
 
             {/* AI Greetings Tab */}
@@ -773,6 +803,16 @@ const Index = () => {
                   </div>
                 )}
               </div>
+              
+              {/* SEO Content for AI Greetings */}
+              <div className="mt-8 p-6 bg-accent/20 rounded-xl border border-border">
+                <h2 className="text-2xl font-bold text-foreground mb-3">
+                  Create Unique AI-Powered Greeting Images
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  Say goodbye to generic wishes! With our <strong>AI Greetings Image Generator</strong>, you can create beautiful, custom images for any occasion. Generate personalized <strong>birthday wishes</strong>, romantic wedding anniversary cards, Eid Mubarak greetings, or festive Christmas images. Just choose an occasion, describe your idea, and let our AI bring your vision to life.
+                </p>
+              </div>
             </TabsContent>
           </Tabs>
         </section>
@@ -880,7 +920,7 @@ const Index = () => {
                         >
                           <img
                             src={planetImages[result.planet]}
-                            alt={result.planet}
+                            alt={`Image of ${result.planet === 'Moon' ? 'The Moon' : result.planet === 'Sun' ? 'The Sun' : `the ${result.planet === 'Ceres' || result.planet === 'Eris' ? 'dwarf planet' : 'planet'} ${result.planet}`}${result.planet === 'Saturn' ? ' with its rings' : ''}`}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -955,7 +995,7 @@ const Index = () => {
                           >
                             <img
                               src={planetImages[result.planet]}
-                              alt={result.planet}
+                              alt={`Image of ${result.planet === 'Moon' ? 'The Moon' : result.planet === 'Sun' ? 'The Sun' : `the ${result.planet === 'Ceres' || result.planet === 'Eris' ? 'dwarf planet' : 'planet'} ${result.planet}`}${result.planet === 'Saturn' ? ' with its rings' : ''}`}
                               className="w-full h-full object-cover"
                             />
                           </div>
