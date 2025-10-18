@@ -66,18 +66,6 @@ const Index = () => {
     setTimezone(userTimezone);
   }, []);
 
-  // Auto-scroll active tab into view on mobile
-  useEffect(() => {
-    const activeTabElement = document.querySelector(`[data-state="active"][role="tab"]`);
-    if (activeTabElement && window.innerWidth < 768) {
-      activeTabElement.scrollIntoView({ 
-        behavior: 'smooth', 
-        inline: 'start', 
-        block: 'nearest' 
-      });
-    }
-  }, [activeTab]);
-
   // Live age update every second
   useEffect(() => {
     if (!birthDay || !birthMonth || !birthYear || !result) {
@@ -381,32 +369,29 @@ const Index = () => {
           aria-label="Age calculators"
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="relative mb-6">
-              {/* Fade-out gradient indicator on mobile */}
-              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-muted to-transparent pointer-events-none md:hidden z-10" />
-              
-              <TabsList className="w-full md:grid md:grid-cols-4 h-auto flex overflow-x-auto scrollbar-hide">
+            <div className="mb-6">
+              <TabsList className="w-full h-auto flex flex-col md:grid md:grid-cols-4 gap-0 md:gap-1">
                 <TabsTrigger 
                   value="calculator" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   Age Calculator
                 </TabsTrigger>
                 <TabsTrigger 
                   value="difference"
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   Age Difference
                 </TabsTrigger>
                 <TabsTrigger 
                   value="specific"
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   Specific Date
                 </TabsTrigger>
                 <TabsTrigger 
                   value="greetings"
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all whitespace-nowrap flex-shrink-0"
+                  className="w-full justify-center py-3 md:py-2 border-b md:border-b-0 border-border last:border-b-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
                 >
                   AI Greetings
                 </TabsTrigger>
