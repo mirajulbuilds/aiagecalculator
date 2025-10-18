@@ -82,34 +82,19 @@ serve(async (req) => {
                         'July', 'August', 'September', 'October', 'November', 'December'];
     const formattedDate = `${monthNames[month - 1]} ${day}, ${year}`;
 
-    // Create a detailed prompt for the birthday wish image
-    const nameText = name ? `Happy Birthday ${name}!` : 'Happy Birthday!';
-    const defaultPrompt = `Create a beautiful, festive birthday celebration image with an elegant design. 
-    Include the following text prominently and clearly:
-    "${nameText}"
-    "Born on ${formattedDate}"
-    "Celebrating ${age} wonderful years!"
-    "Wishing you joy, success, and endless happiness!"
+    // Create a concise prompt for a birthday wish message that will be displayed on an image
+    const nameText = name ? name : 'you';
+    const defaultPrompt = `Write a heartfelt and joyful birthday wish for ${nameText} who is turning ${age} years old and was born on ${formattedDate}. 
     
-    The image should have:
-    - Colorful balloons, confetti, and festive decorations
-    - A modern, joyful aesthetic with vibrant colors
-    - Beautiful typography that's easy to read
-    - Celebratory elements like stars, sparkles, or fireworks
-    - A warm and uplifting atmosphere
-    - Professional design quality
-    Make it look like a premium birthday greeting card with all text clearly visible and beautifully styled.`;
+    Keep it short (maximum 50 words), warm, personal, and celebratory. Focus on wishing them happiness, success, and wonderful memories. 
+    
+    Do not include the name or age in the message as those will be displayed separately on the birthday card. Just write the wish itself.`;
     
     // Use custom prompt if provided, otherwise use default
     const prompt = customPrompt 
       ? `${customPrompt}
-
-      Important information to include:
-      ${nameText}
-      Born on ${formattedDate}
-      Celebrating ${age} wonderful years!
       
-      Make sure the text is clearly visible and beautifully styled.`
+      Keep the message short (maximum 50 words) and suitable for a birthday card.`
       : defaultPrompt;
 
     console.log('Calling Gemini API with prompt...');
@@ -158,8 +143,6 @@ serve(async (req) => {
     console.log('Received response from Gemini API');
 
     // Extract the generated text from Gemini response
-    // Note: Gemini 2.0-flash-exp generates text, not images directly
-    // We'll create a styled text response instead
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!generatedText) {
@@ -167,16 +150,12 @@ serve(async (req) => {
       throw new Error("No content generated in response");
     }
 
-    // For now, return the text as a formatted birthday message
-    // In a production app, you might want to use a separate image generation service
-    // or convert this to an image using a library like canvas
-    console.log('Successfully generated birthday wish');
+    console.log('Successfully generated birthday wish message');
 
     return new Response(
       JSON.stringify({ 
         message: generatedText,
-        // Return a placeholder image URL or implement image generation
-        imageUrl: `data:text/plain;base64,${btoa(generatedText)}`
+        success: true
       }),
       { 
         headers: { 
