@@ -372,72 +372,89 @@ const Index = () => {
     // Get zodiac sign
     const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
 
-    // Calculate planet ages using single structured data source
+    // Calculate planet ages using single structured data source with local images
+    const getLocalImagePath = (name: string) => {
+      const imageMap: Record<string, string> = {
+        'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
+        'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
+        'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
+        'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
+        'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+        'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
+        'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
+        'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
+        'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
+        'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
+        'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
+      };
+      return imageMap[name] || '';
+    };
+
     const celestialData = [
       {
         group: "visible",
         name: "The Moon",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/1628_PIA00405.jpg",
+        imageURL: getLocalImagePath('The Moon'),
         orbitalPeriod: 27.3
       },
       {
         group: "visible",
         name: "Mercury",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/771_PIA16853.jpg",
+        imageURL: getLocalImagePath('Mercury'),
         orbitalPeriod: 88
       },
       {
         group: "visible",
         name: "Venus",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/793_PIA00271.jpg",
+        imageURL: getLocalImagePath('Venus'),
         orbitalPeriod: 225
       },
       {
         group: "visible",
         name: "Mars",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/683_mars-globe-valles-marineris-enhanced-full2.jpg",
+        imageURL: getLocalImagePath('Mars'),
         orbitalPeriod: 687
       },
       {
         group: "hidden",
         name: "Jupiter",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/803_PIA21776.jpg",
+        imageURL: getLocalImagePath('Jupiter'),
         orbitalPeriod: 4333
       },
       {
         group: "hidden",
         name: "Saturn",
-        imageURL: "https://solarsystem.nasa.gov/system/stellar_items/image_files/38_saturn_1600x900.jpg",
+        imageURL: getLocalImagePath('Saturn'),
         orbitalPeriod: 10759
       },
       {
         group: "hidden",
         name: "Uranus",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/599_PIA18182.jpg",
+        imageURL: getLocalImagePath('Uranus'),
         orbitalPeriod: 30687
       },
       {
         group: "hidden",
         name: "Neptune",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/612_PIA01492.jpg",
+        imageURL: getLocalImagePath('Neptune'),
         orbitalPeriod: 60190
       },
       {
         group: "hidden",
         name: "Pluto",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/933_pluto_natural_color_20150713.jpg",
+        imageURL: getLocalImagePath('Pluto'),
         orbitalPeriod: 90560
       },
       {
         group: "hidden",
         name: "Ceres",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/2493_Ceres_-_Main_Belt_Grand_Tour.jpg",
+        imageURL: getLocalImagePath('Ceres'),
         orbitalPeriod: 1682
       },
       {
         group: "hidden",
         name: "Eris",
-        imageURL: "https://solarsystem.nasa.gov/system/resources/detail_files/2500_PIA20473_Eris_and_Dysnomia.jpg",
+        imageURL: getLocalImagePath('Eris'),
         orbitalPeriod: 203830
       }
     ];
@@ -1543,27 +1560,6 @@ const Index = () => {
                             src={body.imageURL}
                             alt={`Image of ${body.name}`}
                             className="w-full h-full object-cover"
-                            crossOrigin="anonymous"
-                            onError={(e) => {
-                              // Fallback to local assets if NASA images fail
-                              const target = e.currentTarget;
-                              const localImages: Record<string, string> = {
-                                'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                                'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                                'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                                'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                                'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                                'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                                'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                                'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                                'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                                'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                                'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                              };
-                              if (localImages[body.name] && target.src !== localImages[body.name]) {
-                                target.src = localImages[body.name];
-                              }
-                            }}
                           />
                         </div>
                       </div>
@@ -1629,27 +1625,6 @@ const Index = () => {
                               src={body.imageURL}
                               alt={`Image of ${body.name}`}
                               className="w-full h-full object-cover"
-                              crossOrigin="anonymous"
-                              onError={(e) => {
-                                // Fallback to local assets if NASA images fail
-                                const target = e.currentTarget;
-                                const localImages: Record<string, string> = {
-                                  'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                                  'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                                  'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                                  'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                                  'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                                  'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                                  'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                                  'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                                  'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                                  'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                                  'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                                };
-                                if (localImages[body.name] && target.src !== localImages[body.name]) {
-                                  target.src = localImages[body.name];
-                                }
-                              }}
                             />
                           </div>
                         </div>
