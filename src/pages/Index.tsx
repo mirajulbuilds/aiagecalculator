@@ -18,6 +18,19 @@ import { BirthdayFacts } from "@/components/BirthdayFacts";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 
+// Import planet images
+import moonImg from "@/assets/planets/moon.jpg";
+import mercuryImg from "@/assets/planets/mercury.jpg";
+import venusImg from "@/assets/planets/venus.jpg";
+import marsImg from "@/assets/planets/mars.jpg";
+import jupiterImg from "@/assets/planets/jupiter.jpg";
+import saturnImg from "@/assets/planets/saturn.jpg";
+import uranusImg from "@/assets/planets/uranus.jpg";
+import neptuneImg from "@/assets/planets/neptune.jpg";
+import plutoImg from "@/assets/planets/pluto.jpg";
+import ceresImg from "@/assets/planets/ceres.jpg";
+import erisImg from "@/assets/planets/eris.jpg";
+
 interface AgeResult {
   years: number;
   months: number;
@@ -372,89 +385,72 @@ const Index = () => {
     // Get zodiac sign
     const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
 
-    // Calculate planet ages using single structured data source with local images
-    const getLocalImagePath = (name: string) => {
-      const imageMap: Record<string, string> = {
-        'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-        'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-        'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-        'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-        'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-        'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-        'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-        'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-        'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-        'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-        'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-      };
-      return imageMap[name] || '';
-    };
-
+    // Calculate planet ages using single structured data source with imported images
     const celestialData = [
       {
         group: "visible",
         name: "The Moon",
-        imageURL: getLocalImagePath('The Moon'),
+        imageURL: moonImg,
         orbitalPeriod: 27.3
       },
       {
         group: "visible",
         name: "Mercury",
-        imageURL: getLocalImagePath('Mercury'),
+        imageURL: mercuryImg,
         orbitalPeriod: 88
       },
       {
         group: "visible",
         name: "Venus",
-        imageURL: getLocalImagePath('Venus'),
+        imageURL: venusImg,
         orbitalPeriod: 225
       },
       {
         group: "visible",
         name: "Mars",
-        imageURL: getLocalImagePath('Mars'),
+        imageURL: marsImg,
         orbitalPeriod: 687
       },
       {
         group: "hidden",
         name: "Jupiter",
-        imageURL: getLocalImagePath('Jupiter'),
+        imageURL: jupiterImg,
         orbitalPeriod: 4333
       },
       {
         group: "hidden",
         name: "Saturn",
-        imageURL: getLocalImagePath('Saturn'),
+        imageURL: saturnImg,
         orbitalPeriod: 10759
       },
       {
         group: "hidden",
         name: "Uranus",
-        imageURL: getLocalImagePath('Uranus'),
+        imageURL: uranusImg,
         orbitalPeriod: 30687
       },
       {
         group: "hidden",
         name: "Neptune",
-        imageURL: getLocalImagePath('Neptune'),
+        imageURL: neptuneImg,
         orbitalPeriod: 60190
       },
       {
         group: "hidden",
         name: "Pluto",
-        imageURL: getLocalImagePath('Pluto'),
+        imageURL: plutoImg,
         orbitalPeriod: 90560
       },
       {
         group: "hidden",
         name: "Ceres",
-        imageURL: getLocalImagePath('Ceres'),
+        imageURL: ceresImg,
         orbitalPeriod: 1682
       },
       {
         group: "hidden",
         name: "Eris",
-        imageURL: getLocalImagePath('Eris'),
+        imageURL: erisImg,
         orbitalPeriod: 203830
       }
     ];
