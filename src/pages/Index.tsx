@@ -1510,107 +1510,34 @@ const Index = () => {
               <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets & Moon</h3>
             </div>
             
-            {/* Initially Visible Bodies */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            {/* Initially Visible Bodies - 2x2 Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {planetAges.filter(body => body.group === "visible").map((body, index) => (
                 <div
                   key={body.name}
-                  className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
+                  className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
+                  {/* Background with Semi-transparent Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  
                   {/* Card Content Container */}
-                  <div className="flex flex-col items-center justify-center space-y-4">
+                  <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
                     {/* Planet Name */}
-                    <h4 className="text-2xl font-bold text-foreground text-center">
+                    <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
                       {body.name}
                     </h4>
                     
-                    {/* Rotating Planet Image - Circular Frame */}
-                    <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
-                      <div 
-                        className="absolute inset-0 w-full h-full"
-                        style={{
-                          animation: 'spin 35s linear infinite',
-                        }}
-                      >
-                        <img
-                          src={body.imageURL}
-                          alt={`Image of ${body.name}`}
-                          className="w-full h-full object-cover"
-                          crossOrigin="anonymous"
-                          onError={(e) => {
-                            // Fallback to local assets if NASA images fail
-                            const target = e.currentTarget;
-                            const localImages: Record<string, string> = {
-                              'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                              'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                              'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                              'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                              'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                              'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                              'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                              'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                              'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                              'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                              'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                            };
-                            if (localImages[body.name] && target.src !== localImages[body.name]) {
-                              target.src = localImages[body.name];
-                            }
-                          }}
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Age Display */}
-                    <div className="flex flex-col items-center space-y-1">
-                      <div className="text-5xl font-bold text-primary">
-                        {body.age}
-                      </div>
-                      <div className="text-lg text-muted-foreground">
-                        years old here!
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* "See More" Button */}
-            <div className="flex justify-center mb-6">
-              <Button
-                onClick={() => setShowMorePlanets(!showMorePlanets)}
-                variant="outline"
-                className="gap-2"
-              >
-                <Rocket className="w-4 h-4" />
-                {showMorePlanets ? "Show Less" : "See More Celestial Bodies"}
-              </Button>
-            </div>
-
-            {/* Expandable Section - Hidden Bodies */}
-            {showMorePlanets && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                {planetAges.filter(body => body.group === "hidden").map((body, index) => (
-                  <div
-                    key={body.name}
-                    className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-background via-card to-accent/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl animate-fade-in p-8"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    {/* Card Content Container */}
-                    <div className="flex flex-col items-center justify-center space-y-4">
-                      {/* Planet Name */}
-                      <h4 className="text-2xl font-bold text-foreground text-center">
-                        {body.name}
-                      </h4>
+                    {/* Rotating Planet Image - Circular Frame with 3D Effect */}
+                    <div className="relative w-44 h-44 md:w-48 md:h-48">
+                      {/* Glow effect behind planet */}
+                      <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
                       
-                      {/* Rotating Planet Image - Circular Frame */}
-                      <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-2xl">
+                      {/* Planet container */}
+                      <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                         <div 
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            animation: 'spin 35s linear infinite',
-                          }}
+                          className="absolute inset-0 w-full h-full animate-planet-rotate"
                         >
                           <img
                             src={body.imageURL}
@@ -1640,13 +1567,100 @@ const Index = () => {
                           />
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Age Display */}
+                    <div className="flex flex-col items-center space-y-1 z-10">
+                      <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                        {body.age}
+                      </div>
+                      <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                        years old here!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* "See More" Button */}
+            <div className="flex justify-center mb-6">
+              <Button
+                onClick={() => setShowMorePlanets(!showMorePlanets)}
+                variant="outline"
+                className="gap-2"
+              >
+                <Rocket className="w-4 h-4" />
+                {showMorePlanets ? "Show Less" : "See More Celestial Bodies"}
+              </Button>
+            </div>
+
+            {/* Expandable Section - Hidden Bodies */}
+            {showMorePlanets && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                {planetAges.filter(body => body.group === "hidden").map((body, index) => (
+                  <div
+                    key={body.name}
+                    className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    {/* Background with Semi-transparent Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    
+                    {/* Card Content Container */}
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      {/* Planet Name */}
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        {body.name}
+                      </h4>
+                      
+                      {/* Rotating Planet Image - Circular Frame with 3D Effect */}
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        {/* Glow effect behind planet */}
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        
+                        {/* Planet container */}
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div 
+                            className="absolute inset-0 w-full h-full animate-planet-rotate"
+                          >
+                            <img
+                              src={body.imageURL}
+                              alt={`Image of ${body.name}`}
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                // Fallback to local assets if NASA images fail
+                                const target = e.currentTarget;
+                                const localImages: Record<string, string> = {
+                                  'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
+                                  'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
+                                  'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
+                                  'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
+                                  'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+                                  'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
+                                  'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
+                                  'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
+                                  'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
+                                  'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
+                                  'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
+                                };
+                                if (localImages[body.name] && target.src !== localImages[body.name]) {
+                                  target.src = localImages[body.name];
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                       
                       {/* Age Display */}
-                      <div className="flex flex-col items-center space-y-1">
-                        <div className="text-5xl font-bold text-primary">
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
                           {body.age}
                         </div>
-                        <div className="text-lg text-muted-foreground">
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
                           years old here!
                         </div>
                       </div>
