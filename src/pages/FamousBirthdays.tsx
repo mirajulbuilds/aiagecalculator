@@ -94,11 +94,72 @@ const FamousBirthdays: React.FC = () => {
           name="description" 
           content="Discover celebrity ages, birthdays, and profiles. Find out how old your favorite actors, musicians, athletes, and famous personalities are today." 
         />
-        <meta name="keywords" content="celebrity ages, famous birthdays, celebrity birthdays, how old is, celebrity profiles, actors ages, musicians birthdays" />
+        <meta name="keywords" content="celebrity ages, famous birthdays, celebrity birthdays, how old is, celebrity profiles, actors ages, musicians birthdays, famous people born today, celebrity age calculator" />
         <link rel="canonical" href="https://aiagecalc.com/famous-birthdays" />
         <meta property="og:title" content="Famous Birthdays - Celebrity Ages & Birthday Calendar" />
         <meta property="og:description" content="Discover celebrity ages, birthdays, and profiles. Find out how old your favorite actors, musicians, athletes, and famous personalities are today." />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://aiagecalc.com/famous-birthdays" />
+
+        {/* Structured Data - CollectionPage */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "Famous Birthdays - Celebrity Directory",
+            "description": "Comprehensive celebrity birthday database with ages, profiles, and birth dates of famous people including actors, musicians, athletes, scientists, and world leaders.",
+            "url": "https://aiagecalc.com/famous-birthdays",
+            "mainEntity": {
+              "@type": "ItemList",
+              "name": `Celebrities Born on ${todayFormatted}`,
+              "description": `Famous people celebrating their birthday on ${todayFormatted}`,
+              "numberOfItems": bornToday.length,
+              "itemListElement": bornToday.slice(0, 10).map((celebrity, index) => ({
+                "@type": "ListItem",
+                "position": index + 1,
+                "item": {
+                  "@type": "Person",
+                  "name": celebrity.name,
+                  "birthDate": celebrity.dateOfBirth,
+                  "jobTitle": celebrity.profession,
+                  "description": `${celebrity.name} - ${celebrity.profession}, age ${calculateAge(celebrity.dateOfBirth)}`,
+                }
+              }))
+            },
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://aiagecalc.com/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Famous Birthdays",
+                  "item": "https://aiagecalc.com/famous-birthdays"
+                }
+              ]
+            }
+          })}
+        </script>
+
+        {/* Structured Data - WebSite with SearchAction */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Famous Birthdays - Celebrity Database",
+            "url": "https://aiagecalc.com/famous-birthdays",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://aiagecalc.com/famous-birthdays?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          })}
+        </script>
       </Helmet>
 
       <main className="min-h-screen bg-background">
