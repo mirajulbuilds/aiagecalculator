@@ -32,18 +32,27 @@ export const AdSenseBanner = ({
   const getContainerClass = () => {
     switch (format) {
       case 'vertical':
-        return 'w-full md:w-[300px] md:min-w-[300px] min-h-[180px] md:min-h-[420px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full max-w-full md:w-[300px] md:max-w-[300px] min-h-[250px] md:min-h-[600px] bg-muted/30 border border-border/50 rounded-lg p-3';
       case 'square':
-        return 'w-full md:w-[300px] md:min-w-[300px] min-h-[180px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full max-w-full md:w-[300px] md:max-w-[300px] min-h-[250px] md:min-h-[250px] bg-muted/30 border border-border/50 rounded-lg p-3';
       case 'large-horizontal':
-        return 'w-full min-w-0 min-h-[70px] md:min-h-[90px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full max-w-full min-h-[90px] md:min-h-[90px] bg-muted/30 border border-border/50 rounded-lg p-3';
       default:
-        return 'w-full min-w-0 min-h-[60px] bg-muted/30 border border-border/50 rounded-lg p-2';
+        return 'w-full max-w-full min-h-[50px] md:min-h-[50px] bg-muted/30 border border-border/50 rounded-lg p-3';
     }
   };
 
   const getAdStyle = () => {
-    return { display: 'block', width: '100%', minHeight: '50px' };
+    switch (format) {
+      case 'vertical':
+        return { display: 'block', width: '100%', minHeight: '250px' };
+      case 'square':
+        return { display: 'block', width: '100%', minHeight: '250px' };
+      case 'large-horizontal':
+        return { display: 'block', width: '100%', minHeight: '90px' };
+      default:
+        return { display: 'block', width: '100%', minHeight: '50px' };
+    }
   };
 
   return (
