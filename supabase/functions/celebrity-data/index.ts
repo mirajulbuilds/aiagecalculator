@@ -30,22 +30,29 @@ serve(async (req) => {
       systemPrompt = 'You are a celebrity birthday expert.';
       userPrompt = `List 6 famous celebrities born on ${month} ${date}. For each, provide ONLY: name (string), dateOfBirth (string in YYYY-MM-DD format), profession (string). NO descriptions or additional fields. Format as a JSON array with ONLY these 3 keys per object.`;
     } else if (type === 'bornToday') {
-      // Full version with descriptions
-      systemPrompt = 'You are a celebrity birthday expert.';
-      userPrompt = `List 6 famous celebrities born on ${month} ${date}. For each, provide: name, date of birth (include year in YYYY-MM-DD format), profession, and a brief one-sentence description. Format as JSON array with keys: name, dateOfBirth, profession, description.`;
+      // Full version with rich content - 2-3 sentence summaries
+      systemPrompt = 'You are a celebrity birthday expert specializing in engaging biographical content.';
+      userPrompt = `List 6 famous celebrities born on ${month} ${date}. For each celebrity, provide:
+- name (full name as string)
+- dateOfBirth (string in YYYY-MM-DD format with year)
+- profession (string)
+- summary (2-3 engaging sentences highlighting their most famous achievements, contributions, or why they're well-known. Make it informative and interesting.)
+
+Format as a JSON array. Each celebrity MUST include all 4 fields with substantive content.`;
     } else if (type === 'profile') {
-      // Detailed profile for a specific celebrity
-      systemPrompt = 'You are a celebrity biographer. Provide comprehensive, accurate profiles of celebrities.';
-      userPrompt = `Provide a detailed profile for ${name} (${profession}, born ${dateOfBirth}). Include:
+      // Detailed profile for a specific celebrity with comprehensive 300-400 word biography
+      systemPrompt = 'You are a professional celebrity biographer. Write comprehensive, engaging, and accurate profiles.';
+      userPrompt = `Create a detailed profile for ${name} (${profession}, born ${dateOfBirth}). Include:
 - name (full name as string)
 - dateOfBirth (YYYY-MM-DD format as string)
 - placeOfBirth (city, country as string)
 - profession (as string)
 - zodiacSign (as string)
-- biography (2-3 detailed paragraphs as a single string, separate paragraphs with \\n\\n)
-- knownFor (array of 3-5 strings describing famous works/achievements)
-- careerHighlights (array of 4-6 strings describing major awards, milestones, or achievements)
-Return as a single JSON object with these exact keys.`;
+- biography (a comprehensive 300-400 word biography covering their early life, career journey, major achievements, impact on their field, and legacy. Write in an engaging narrative style with multiple paragraphs separated by \\n\\n. Make it informative, well-structured, and content-rich.)
+- knownFor (array of 4-6 strings describing their most famous works, roles, achievements, or contributions)
+- careerHighlights (array of 5-8 strings describing major awards, milestones, breakthrough moments, or significant achievements throughout their career)
+
+Return as a single JSON object with these exact keys. The biography MUST be 300-400 words and provide substantial, high-quality content.`;
     } else if (type === 'category') {
       systemPrompt = 'You are a celebrity categorization expert.';
       userPrompt = `List 12 famous ${category} celebrities. For each, provide ONLY: name, dateOfBirth (YYYY-MM-DD format), profession. NO descriptions. Format as JSON array.`;

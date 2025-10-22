@@ -17,6 +17,7 @@ interface Celebrity {
   name: string;
   dateOfBirth: string;
   profession: string;
+  summary?: string;
 }
 
 const FamousBirthdays: React.FC = () => {
@@ -40,7 +41,7 @@ const FamousBirthdays: React.FC = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase.functions.invoke('celebrity-data', {
-        body: { type: 'bornTodayLite', month, date }
+        body: { type: 'bornToday', month, date }
       });
 
       if (error) throw error;
@@ -250,22 +251,27 @@ const FamousBirthdays: React.FC = () => {
                           >
                             <CardContent className="p-6">
                               <div className="flex items-start gap-4">
-                                <Avatar className="w-20 h-20 border-2 border-primary/20 group-hover:border-primary transition-colors">
+                                <Avatar className="w-20 h-20 border-2 border-primary/20 group-hover:border-primary transition-colors flex-shrink-0">
                                   <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(celebrity.name)}&size=128&background=random`} />
                                   <AvatarFallback className="bg-gradient-primary text-primary-foreground text-lg">
                                     {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
-                                  <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors truncate">
+                                  <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors">
                                     {celebrity.name}
                                   </h3>
                                   <Badge variant="secondary" className="mb-2">
                                     {celebrity.profession}
                                   </Badge>
-                                  <p className="text-sm text-primary font-semibold">
+                                  <p className="text-sm text-primary font-semibold mb-2">
                                     Turning {age} today 🎂
                                   </p>
+                                  {celebrity.summary && (
+                                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                                      {celebrity.summary}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </CardContent>
