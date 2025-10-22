@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake, Palette, Cpu, Globe2, Video } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake, Palette, Cpu, Globe2, Video, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -164,18 +165,25 @@ const FamousBirthdays: React.FC = () => {
 
       <main className="min-h-screen bg-background">
         <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-16 px-4">
-          <div className="container mx-auto max-w-4xl text-center">
-            <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="container mx-auto max-w-4xl">
+            <Link to="/">
+              <Button variant="ghost" className="mb-6 hover:bg-primary/10">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
               <Cake className="w-12 h-12 text-primary" />
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 Famous Birthdays
               </h1>
             </div>
-            <p className="text-lg text-muted-foreground mb-8">
-              Discover celebrity ages, birthdays, and fascinating profiles
-            </p>
+              <p className="text-lg text-muted-foreground mb-8">
+                Discover celebrity ages, birthdays, and fascinating profiles
+              </p>
 
-            <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+              <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -195,6 +203,7 @@ const FamousBirthdays: React.FC = () => {
                 </Button>
               </div>
             </form>
+            </div>
           </div>
         </section>
 
