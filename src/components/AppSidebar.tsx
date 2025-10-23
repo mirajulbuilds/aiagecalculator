@@ -15,7 +15,7 @@ import { AdSenseBanner } from "@/components/AdSenseBanner";
 
 const navigationItems = [
   { title: "Age Calculator", url: "/", icon: Home },
-  { title: "Famous People", url: "/famous-people", icon: Users },
+  { title: "Famous Birthdays", url: "/famous-birthdays", icon: Users },
   { title: "Blog", url: "/blog", icon: BookOpen },
 ];
 
