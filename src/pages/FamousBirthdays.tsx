@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake, Palette, Cpu, Globe2, Video, ArrowLeft } from "lucide-react";
@@ -7,63 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInYears } from "date-fns";
-import { CelebrityProfileModal } from "@/components/CelebrityProfileModal";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-
-interface Celebrity {
-  name: string;
-  dateOfBirth: string;
-  profession: string;
-  summary?: string;
-}
+import { featuredCelebrities } from "@/data/celebrities";
 
 const FamousBirthdays: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [bornToday, setBornToday] = useState<Celebrity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searching, setSearching] = useState(false);
-  const [selectedCelebrity, setSelectedCelebrity] = useState<Celebrity | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const today = new Date();
-  const todayFormatted = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const month = today.toLocaleDateString('en-US', { month: 'long' });
-  const date = today.getDate();
-
-  useEffect(() => {
-    loadBornToday();
-  }, []);
-
-  const loadBornToday = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.functions.invoke('celebrity-data', {
-        body: { type: 'bornToday', month, date }
-      });
-
-      if (error) throw error;
-
-      setBornToday(data.data || []);
-    } catch (error) {
-      console.error('Error loading born today:', error);
-      toast.error('Failed to load celebrities born today');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCelebrityClick = (celebrity: Celebrity) => {
-    setSelectedCelebrity(celebrity);
-    setIsModalOpen(true);
-  };
-
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
-
     toast.info('Search feature coming soon!');
   };
 
@@ -112,11 +65,11 @@ const FamousBirthdays: React.FC = () => {
             "description": "Comprehensive celebrity birthday database with ages, profiles, and birth dates of famous people including actors, musicians, athletes, scientists, and world leaders.",
             "url": "https://aiagecalc.com/famous-birthdays",
             "mainEntity": {
-              "@type": "ItemList",
-              "name": `Celebrities Born on ${todayFormatted}`,
-              "description": `Famous people celebrating their birthday on ${todayFormatted}`,
-              "numberOfItems": bornToday.length,
-              "itemListElement": bornToday.slice(0, 10).map((celebrity, index) => ({
+            "@type": "ItemList",
+            "name": "Trending Celebrities",
+            "description": "Most popular celebrities and their profiles",
+            "numberOfItems": featuredCelebrities.length,
+            "itemListElement": featuredCelebrities.map((celebrity, index) => ({
                 "@type": "ListItem",
                 "position": index + 1,
                 "item": {
@@ -187,20 +140,18 @@ const FamousBirthdays: React.FC = () => {
               <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
+                  <Input
                   type="text"
                   placeholder="Search for a celebrity..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-12 pr-32 py-6 text-lg bg-background/80 backdrop-blur"
-                  disabled={searching}
                 />
                 <Button 
                   type="submit" 
                   className="absolute right-2 top-1/2 -translate-y-1/2"
-                  disabled={searching || !searchQuery.trim()}
                 >
-                  {searching ? 'Searching...' : 'Search'}
+                  Search
                 </Button>
               </div>
             </form>
@@ -211,83 +162,38 @@ const FamousBirthdays: React.FC = () => {
         <div className="container mx-auto px-4 py-12 max-w-7xl">
           <section className="mb-16">
             <div className="flex items-center gap-3 mb-6">
-              <Calendar className="w-8 h-8 text-primary" />
-              <h2 className="text-3xl font-bold text-foreground">
-                Born Today: {todayFormatted}
-              </h2>
+              <TrendingUp className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl font-bold text-foreground">Trending Celebrities This Week</h2>
             </div>
 
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 rounded-full bg-muted" />
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-muted rounded w-3/4" />
-                          <div className="h-3 bg-muted rounded w-1/2" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <>
-                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {bornToday.slice(0, 6).map((celebrity, index) => {
-                    const age = calculateAge(celebrity.dateOfBirth);
-                    
-                    // Insert ad after 5th card
-                    const showAd = index === 4;
-                    
-                    return (
-                      <React.Fragment key={index}>
-                        <li>
-                          <Card 
-                            className="hover:shadow-lg transition-all cursor-pointer group hover:scale-105"
-                            onClick={() => handleCelebrityClick(celebrity)}
-                          >
-                            <CardContent className="p-6">
-                              <div className="flex items-start gap-4">
-                                <Avatar className="w-20 h-20 border-2 border-primary/20 group-hover:border-primary transition-colors flex-shrink-0">
-                                  <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(celebrity.name)}&size=128&background=random`} />
-                                  <AvatarFallback className="bg-gradient-primary text-primary-foreground text-lg">
-                                    {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors">
-                                    {celebrity.name}
-                                  </h3>
-                                  <Badge variant="secondary" className="mb-2">
-                                    {celebrity.profession}
-                                  </Badge>
-                                  <p className="text-sm text-primary font-semibold mb-2">
-                                    Turning {age} today 🎂
-                                  </p>
-                                  {celebrity.summary && (
-                                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                                      {celebrity.summary}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </li>
-                        {showAd && (
-                          <li id="ad-in-feed" className="md:col-span-1">
-                            <AdSenseBanner format="vertical" />
-                          </li>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </ul>
-              </>
-            )}
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredCelebrities.slice(0, 8).map((celebrity) => {
+                const age = calculateAge(celebrity.dateOfBirth);
+                return (
+                  <li key={celebrity.id}>
+                    <Link to={`/famous-birthdays/${celebrity.slug}`}>
+                      <Card className="hover:shadow-lg transition-all group hover:scale-105 h-full">
+                        <CardContent className="p-6 text-center">
+                          <Avatar className="w-24 h-24 mx-auto mb-4 border-2 border-primary/20 group-hover:border-primary transition-colors">
+                            <AvatarImage src={celebrity.photoUrl} alt={celebrity.name} />
+                            <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xl">
+                              {celebrity.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
+                            {celebrity.name}
+                          </h3>
+                          <Badge variant="secondary" className="mb-2">
+                            {celebrity.profession.split(',')[0]}
+                          </Badge>
+                          <p className="text-sm text-muted-foreground">Age {age}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
 
           <section className="mb-16">
@@ -339,18 +245,6 @@ const FamousBirthdays: React.FC = () => {
         </div>
       </main>
 
-      {selectedCelebrity && (
-        <CelebrityProfileModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedCelebrity(null);
-          }}
-          celebrityName={selectedCelebrity.name}
-          dateOfBirth={selectedCelebrity.dateOfBirth}
-          profession={selectedCelebrity.profession}
-        />
-      )}
     </React.Fragment>
   );
 };
