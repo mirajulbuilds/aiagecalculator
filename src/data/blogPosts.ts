@@ -18,7 +18,7 @@ export const blogPosts: BlogPost[] = [
     summary: "Discover fascinating birthday customs from cultures across the globe that will surprise and inspire you. From breaking plates to pulling ears, these traditions are anything but ordinary.",
     author: "Cultural Insights Team",
     publishedDate: "2025-01-15",
-    featuredImage: "/placeholder.svg",
+    featuredImage: "/src/assets/blog-birthday-traditions.jpg",
     metaDescription: "Explore 10 unique birthday traditions from around the world. Learn about fascinating cultural customs and celebrations you've never heard of.",
     content: `
 # 10 Unique Birthday Traditions From Around the World You've Never Heard Of
@@ -79,7 +79,7 @@ As our world becomes increasingly interconnected, learning about and appreciatin
     summary: "Dive deep into the fascinating world of astrology and discover how your zodiac sign influences your personality traits, relationships, and life path in ways that go far beyond your daily horoscope.",
     author: "Astrology Research Team",
     publishedDate: "2025-01-10",
-    featuredImage: "/placeholder.svg",
+    featuredImage: "/src/assets/blog-zodiac-personality.jpg",
     metaDescription: "Discover what your zodiac sign really reveals about your personality. Go beyond daily horoscopes to understand astrological influences on your traits and relationships.",
     content: `
 # Beyond the Horoscope: What Does Your Zodiac Sign Really Say About Your Personality?
@@ -144,7 +144,7 @@ Whether you approach astrology with skepticism or faith, exploring your zodiac s
     summary: "Ever wondered how old you'd be on Mars? Learn the fascinating science behind calculating your age on different planets and discover what it reveals about our place in the solar system.",
     author: "Space Science Team",
     publishedDate: "2025-01-05",
-    featuredImage: "/placeholder.svg",
+    featuredImage: "/src/assets/blog-mars-age.jpg",
     metaDescription: "Learn how to calculate your age on Mars and other planets. Understand the science of planetary orbits and what your interplanetary age really means.",
     content: `
 # The Science of Your Age on Mars: A Simple Guide to Interplanetary Age Calculation
