@@ -150,12 +150,14 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
             </Link>
 
             <div className="flex flex-col md:flex-row gap-8 items-start">
-              <Avatar className="w-48 h-48 border-4 border-primary/20 flex-shrink-0">
-                <AvatarImage src={celebrity.photoUrl} alt={celebrity.name} />
-                <AvatarFallback className="bg-gradient-primary text-primary-foreground text-4xl">
-                  {celebrity.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative group flex-shrink-0">
+                <div className="absolute -inset-1 bg-gradient-primary rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                <img 
+                  src={celebrity.photoUrl} 
+                  alt={celebrity.name}
+                  className="relative w-48 h-48 rounded-full object-cover border-4 border-background shadow-xl"
+                />
+              </div>
 
               <div className="flex-1">
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-3">
@@ -196,10 +198,10 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
         <div className="container mx-auto px-4 py-12 max-w-5xl">
           {/* Live Age Counter */}
           <section className="mb-12">
-            <Card className="overflow-hidden border-2 border-primary/20">
+            <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
               <CardContent className="p-8">
                 <h2 className="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-3">
-                  <Cake className="w-8 h-8 text-primary" />
+                  <Cake className="w-8 h-8 text-primary animate-pulse" />
                   Live Age Counter
                 </h2>
                 
@@ -212,9 +214,12 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
                     { label: 'Minutes', value: age.minutes },
                     { label: 'Seconds', value: age.seconds }
                   ].map((item) => (
-                    <div key={item.label} className="text-center p-4 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg">
-                      <div className="text-4xl font-bold text-primary mb-1">{item.value}</div>
-                      <div className="text-sm text-muted-foreground">{item.label}</div>
+                    <div key={item.label} className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-primary rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+                      <div className="relative text-center p-6 bg-background rounded-lg border border-primary/10">
+                        <div className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-1">{item.value}</div>
+                        <div className="text-sm text-muted-foreground font-medium">{item.label}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -251,12 +256,15 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
 
           {/* Biography Section */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Biography</h2>
-            <Card>
+            <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+              <div className="w-2 h-8 bg-gradient-primary rounded-full"></div>
+              Biography
+            </h2>
+            <Card className="border-2 border-primary/10 bg-gradient-to-br from-card to-accent/5">
               <CardContent className="p-8">
                 <div className="prose prose-lg max-w-none text-foreground">
                   {celebrity.biography.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4 leading-relaxed">{paragraph}</p>
+                    <p key={index} className="mb-6 leading-relaxed text-lg">{paragraph}</p>
                   ))}
                 </div>
               </CardContent>
@@ -265,14 +273,19 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
 
           {/* Career Highlights Section */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6">Career Highlights</h2>
-            <Card>
+            <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+              <div className="w-2 h-8 bg-gradient-primary rounded-full"></div>
+              Career Highlights
+            </h2>
+            <Card className="border-2 border-primary/10 bg-gradient-to-br from-card to-accent/5">
               <CardContent className="p-8">
                 <ul className="space-y-4">
                   {celebrity.careerHighlights.map((highlight, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <span className="text-lg text-foreground">{highlight}</span>
+                    <li key={index} className="flex items-start gap-4 p-4 rounded-lg hover:bg-primary/5 transition-colors">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center">
+                        <Star className="w-4 h-4 text-primary-foreground fill-current" />
+                      </div>
+                      <span className="text-lg text-foreground leading-relaxed">{highlight}</span>
                     </li>
                   ))}
                 </ul>

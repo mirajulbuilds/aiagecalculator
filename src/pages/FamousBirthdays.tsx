@@ -172,21 +172,28 @@ const FamousBirthdays: React.FC = () => {
                 return (
                   <li key={celebrity.id}>
                     <Link to={`/famous-birthdays/${celebrity.slug}`}>
-                      <Card className="hover:shadow-lg transition-all group hover:scale-105 h-full">
-                        <CardContent className="p-6 text-center">
-                          <Avatar className="w-24 h-24 mx-auto mb-4 border-2 border-primary/20 group-hover:border-primary transition-colors">
-                            <AvatarImage src={celebrity.photoUrl} alt={celebrity.name} />
-                            <AvatarFallback className="bg-gradient-primary text-primary-foreground text-xl">
-                              {celebrity.name.split(' ').map(n => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
-                            {celebrity.name}
-                          </h3>
-                          <Badge variant="secondary" className="mb-2">
-                            {celebrity.profession.split(',')[0]}
-                          </Badge>
-                          <p className="text-sm text-muted-foreground">Age {age}</p>
+                      <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full bg-gradient-to-br from-card via-card to-accent/5">
+                        <CardContent className="p-0">
+                          <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
+                            <img 
+                              src={celebrity.photoUrl} 
+                              alt={celebrity.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+                          </div>
+                          <div className="p-6 text-center">
+                            <h3 className="font-bold text-xl text-foreground mb-2 group-hover:text-primary transition-colors">
+                              {celebrity.name}
+                            </h3>
+                            <Badge variant="secondary" className="mb-3 text-sm">
+                              {celebrity.profession.split(',')[0]}
+                            </Badge>
+                            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                              <Cake className="w-4 h-4" />
+                              <span>Age {age}</span>
+                            </div>
+                          </div>
                         </CardContent>
                       </Card>
                     </Link>
