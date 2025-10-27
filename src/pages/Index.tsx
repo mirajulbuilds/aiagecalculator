@@ -724,47 +724,6 @@ const Index = () => {
             </div>
             )}
               </div>
-              
-              {/* SEO Content for Age Calculator */}
-              <article className="mt-20 p-8 bg-accent/20 rounded-xl border border-border">
-                <h2 className="text-3xl font-bold text-foreground mb-6">
-                  The Complete Guide to Understanding Your Age
-                </h2>
-                
-                <div className="space-y-6 text-muted-foreground leading-relaxed">
-                  <p>
-                    Age is more than just a number—it's a fascinating journey through time that tells the story of your existence. While most people know their age in years, our comprehensive age calculator reveals the incredible details of your life's timeline in ways you've never imagined.
-                  </p>
-
-                  <div>
-                    <h3 className="text-xl font-semibold text-foreground mb-3">The History of Age Calculation</h3>
-                    <p>
-                      Humans have been tracking age for thousands of years, though the methods have evolved dramatically. Ancient civilizations like the Egyptians and Babylonians developed some of the earliest calendar systems to mark the passage of time. The concept of celebrating birthdays, however, is relatively modern. For centuries, only royalty and the wealthy celebrated birth anniversaries, while common people often didn't know their exact birth date. Today, with precise timekeeping and calendar systems, we can calculate age down to the exact second, revealing fascinating patterns in our life journey.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-semibold text-foreground mb-3">Why Days and Seconds Matter</h3>
-                    <p>
-                      Knowing your age in days and seconds isn't just a novelty—it offers a fresh perspective on your life. When you discover you've lived over 10,000 days or that you're approaching your one-billionth second, these milestones become meaningful markers worth celebrating. This granular view of time helps us appreciate each moment more deeply. Parents often track their baby's age in days during the first year, and this precision continues to be meaningful throughout life. Whether you're counting down to a special event or reflecting on how many hours you've experienced, these smaller units of time make the abstract concept of age tangible and real.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-semibold text-foreground mb-3">Your Age and Zodiac Connection</h3>
-                    <p>
-                      Your birth date determines not only your chronological age but also your zodiac sign, which has fascinated humanity for millennia. The zodiac system divides the year into twelve astrological signs, each associated with specific personality traits and characteristics. From Aries' bold leadership to Pisces' creative sensitivity, your zodiac sign adds another dimension to understanding who you are. While astrology may not be scientifically proven, millions find meaning in exploring how their sign's traits align with their personality. Our age calculator automatically reveals your zodiac sign, connecting your precise age with this ancient system of celestial influence.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-semibold text-foreground mb-3">Celebrating Every Moment</h3>
-                    <p>
-                      Beyond traditional birthday celebrations, knowing your exact age in various formats opens up new opportunities for marking life's passage. You can celebrate your 5,000th day on Earth, your 500-millionth second, or even your half-birthday. These unique milestones create special moments to pause and reflect on your journey. Understanding your age in hours and minutes also puts life's brevity into perspective, encouraging us to make each moment count. Whether you're planning a special celebration, satisfying curiosity, or simply gaining a new appreciation for the time you've been given, our age calculator transforms simple arithmetic into a meaningful exploration of your personal timeline.
-                    </p>
-                  </div>
-                </div>
-              </article>
             </TabsContent>
 
             {/* Age Difference Calculator Tab */}
@@ -1860,6 +1819,47 @@ const Index = () => {
       <div className="max-w-7xl mx-auto mt-6">
         <AdSenseBanner format="large-horizontal" />
       </div>
+      
+      {/* SEO Content for Age Calculator */}
+      <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border">
+        <h2 className="text-3xl font-bold text-foreground mb-6">
+          The Complete Guide to Understanding Your Age
+        </h2>
+        
+        <div className="space-y-6 text-muted-foreground leading-relaxed">
+          <p>
+            Age is more than just a number—it's a fascinating journey through time that tells the story of your existence. While most people know their age in years, our comprehensive age calculator reveals the incredible details of your life's timeline in ways you've never imagined.
+          </p>
+
+          <div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">The History of Age Calculation</h3>
+            <p>
+              Humans have been tracking age for thousands of years, though the methods have evolved dramatically. Ancient civilizations like the Egyptians and Babylonians developed some of the earliest calendar systems to mark the passage of time. The concept of celebrating birthdays, however, is relatively modern. For centuries, only royalty and the wealthy celebrated birth anniversaries, while common people often didn't know their exact birth date. Today, with precise timekeeping and calendar systems, we can calculate age down to the exact second, revealing fascinating patterns in our life journey.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Why Days and Seconds Matter</h3>
+            <p>
+              Knowing your age in days and seconds isn't just a novelty—it offers a fresh perspective on your life. When you discover you've lived over 10,000 days or that you're approaching your one-billionth second, these milestones become meaningful markers worth celebrating. This granular view of time helps us appreciate each moment more deeply. Parents often track their baby's age in days during the first year, and this precision continues to be meaningful throughout life. Whether you're counting down to a special event or reflecting on how many hours you've experienced, these smaller units of time make the abstract concept of age tangible and real.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Your Age and Zodiac Connection</h3>
+            <p>
+              Your birth date determines not only your chronological age but also your zodiac sign, which has fascinated humanity for millennia. The zodiac system divides the year into twelve astrological signs, each associated with specific personality traits and characteristics. From Aries' bold leadership to Pisces' creative sensitivity, your zodiac sign adds another dimension to understanding who you are. While astrology may not be scientifically proven, millions find meaning in exploring how their sign's traits align with their personality. Our age calculator automatically reveals your zodiac sign, connecting your precise age with this ancient system of celestial influence.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Celebrating Every Moment</h3>
+            <p>
+              Beyond traditional birthday celebrations, knowing your exact age in various formats opens up new opportunities for marking life's passage. You can celebrate your 5,000th day on Earth, your 500-millionth second, or even your half-birthday. These unique milestones create special moments to pause and reflect on your journey. Understanding your age in hours and minutes also puts life's brevity into perspective, encouraging us to make each moment count. Whether you're planning a special celebration, satisfying curiosity, or simply gaining a new appreciation for the time you've been given, our age calculator transforms simple arithmetic into a meaningful exploration of your personal timeline.
+            </p>
+          </div>
+        </div>
+      </article>
     </main>
   );
 };
