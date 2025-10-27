@@ -1815,11 +1815,6 @@ const Index = () => {
         </aside>
       </div>
       
-      {/* Bottom Page Ad - Always visible */}
-      <div className="max-w-7xl mx-auto mt-6">
-        <AdSenseBanner format="large-horizontal" />
-      </div>
-      
       {/* SEO Content for Age Calculator */}
       <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border">
         <h2 className="text-3xl font-bold text-foreground mb-6">
@@ -1860,6 +1855,11 @@ const Index = () => {
           </div>
         </div>
       </article>
+      
+      {/* Bottom Page Ad - Always visible */}
+      <div className="max-w-7xl mx-auto mt-6 mb-8">
+        <AdSenseBanner format="large-horizontal" />
+      </div>
     </main>
   );
 };
