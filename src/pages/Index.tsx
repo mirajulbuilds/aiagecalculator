@@ -1557,77 +1557,46 @@ const Index = () => {
           />
         )}
 
-        {/* Planet Ages Section */}
+        {/* Planet Ages Section - Rebuilt with Manual Cards */}
         {planetAges.length > 0 && activeTab === "calculator" && (
           <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in">
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4">
               <Rocket className="w-5 h-5 text-primary" />
-              <h3 className="text-xl font-semibold text-foreground">Your Age on Other Planets & Moon</h3>
+              <h3 className="text-xl font-semibold text-foreground">My Age in the Universe</h3>
             </div>
             
             {/* Initially Visible Bodies - 2x2 Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {planetAges.filter(body => body.group === "visible").map((body, index) => (
-                <div
-                  key={body.name}
-                  className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {/* Background with Semi-transparent Overlay */}
+              {/* Card 1: The Moon */}
+              {planetAges.find(p => p.name === "The Moon") && (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in">
                   <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
                   <div className="absolute inset-0 bg-black/20" />
-                  
-                  {/* Card Content Container */}
                   <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
-                    {/* Planet Name */}
                     <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
-                      {body.name}
+                      The Moon
                     </h4>
-                    
-                    {/* Rotating Planet Image - Circular Frame with 3D Effect */}
                     <div className="relative w-44 h-44 md:w-48 md:h-48">
-                      {/* Glow effect behind planet */}
                       <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
-                      
-                      {/* Planet container */}
                       <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
-                        <div 
-                          className="absolute inset-0 w-full h-full animate-planet-rotate"
-                        >
+                        <div className="absolute inset-0 w-full h-full animate-planet-rotate">
                           <img
-                            src={body.imageURL}
-                            alt={`Image of ${body.name}`}
+                            src="https://solarsystem.nasa.gov/system/resources/detail_files/1628_PIA00405.jpg"
+                            alt="Image of The Moon"
                             className="w-full h-full object-cover"
                             crossOrigin="anonymous"
                             onError={(e) => {
-                              // Fallback to local assets if NASA images fail
                               const target = e.currentTarget;
-                              const localImages: Record<string, string> = {
-                                'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                                'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                                'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                                'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                                'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                                'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                                'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                                'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                                'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                                'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                                'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                              };
-                              if (localImages[body.name] && target.src !== localImages[body.name]) {
-                                target.src = localImages[body.name];
-                              }
+                              const fallback = new URL('../assets/planets/moon.jpg', import.meta.url).href;
+                              if (target.src !== fallback) target.src = fallback;
                             }}
                           />
                         </div>
                       </div>
                     </div>
-                    
-                    {/* Age Display */}
                     <div className="flex flex-col items-center space-y-1 z-10">
                       <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
-                        {body.age}
+                        {planetAges.find(p => p.name === "The Moon")?.age}
                       </div>
                       <div className="text-lg md:text-xl text-white/90 drop-shadow">
                         years old here!
@@ -1635,7 +1604,124 @@ const Index = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Card 2: Mercury */}
+              {planetAges.find(p => p.name === "Mercury") && (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '100ms' }}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                    <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                      Mercury
+                    </h4>
+                    <div className="relative w-44 h-44 md:w-48 md:h-48">
+                      <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                      <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                        <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                          <img
+                            src="https://solarsystem.nasa.gov/system/resources/detail_files/771_PIA16853.jpg"
+                            alt="Image of Mercury"
+                            className="w-full h-full object-cover"
+                            crossOrigin="anonymous"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              const fallback = new URL('../assets/planets/mercury.jpg', import.meta.url).href;
+                              if (target.src !== fallback) target.src = fallback;
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center space-y-1 z-10">
+                      <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                        {planetAges.find(p => p.name === "Mercury")?.age}
+                      </div>
+                      <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                        years old here!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Card 3: Venus */}
+              {planetAges.find(p => p.name === "Venus") && (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '200ms' }}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                    <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                      Venus
+                    </h4>
+                    <div className="relative w-44 h-44 md:w-48 md:h-48">
+                      <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                      <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                        <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                          <img
+                            src="https://solarsystem.nasa.gov/system/resources/detail_files/793_PIA00271.jpg"
+                            alt="Image of Venus"
+                            className="w-full h-full object-cover"
+                            crossOrigin="anonymous"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              const fallback = new URL('../assets/planets/venus.jpg', import.meta.url).href;
+                              if (target.src !== fallback) target.src = fallback;
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center space-y-1 z-10">
+                      <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                        {planetAges.find(p => p.name === "Venus")?.age}
+                      </div>
+                      <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                        years old here!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Card 4: Mars */}
+              {planetAges.find(p => p.name === "Mars") && (
+                <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '300ms' }}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                    <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                      Mars
+                    </h4>
+                    <div className="relative w-44 h-44 md:w-48 md:h-48">
+                      <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                      <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                        <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                          <img
+                            src="https://solarsystem.nasa.gov/system/resources/detail_files/683_mars-globe-valles-marineris-enhanced-full2.jpg"
+                            alt="Image of Mars"
+                            className="w-full h-full object-cover"
+                            crossOrigin="anonymous"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              const fallback = new URL('../assets/planets/mars.jpg', import.meta.url).href;
+                              if (target.src !== fallback) target.src = fallback;
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center space-y-1 z-10">
+                      <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                        {planetAges.find(p => p.name === "Mars")?.age}
+                      </div>
+                      <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                        years old here!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* "See More" Button */}
@@ -1653,67 +1739,36 @@ const Index = () => {
             {/* Expandable Section - Hidden Bodies */}
             {showMorePlanets && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                {planetAges.filter(body => body.group === "hidden").map((body, index) => (
-                  <div
-                    key={body.name}
-                    className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    {/* Background with Semi-transparent Overlay */}
+                {/* Card 5: Jupiter */}
+                {planetAges.find(p => p.name === "Jupiter") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in">
                     <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
                     <div className="absolute inset-0 bg-black/20" />
-                    
-                    {/* Card Content Container */}
                     <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
-                      {/* Planet Name */}
                       <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
-                        {body.name}
+                        Jupiter
                       </h4>
-                      
-                      {/* Rotating Planet Image - Circular Frame with 3D Effect */}
                       <div className="relative w-44 h-44 md:w-48 md:h-48">
-                        {/* Glow effect behind planet */}
                         <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
-                        
-                        {/* Planet container */}
                         <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
-                          <div 
-                            className="absolute inset-0 w-full h-full animate-planet-rotate"
-                          >
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
                             <img
-                              src={body.imageURL}
-                              alt={`Image of ${body.name}`}
+                              src="https://solarsystem.nasa.gov/system/resources/detail_files/803_PIA21776.jpg"
+                              alt="Image of Jupiter"
                               className="w-full h-full object-cover"
                               crossOrigin="anonymous"
                               onError={(e) => {
-                                // Fallback to local assets if NASA images fail
                                 const target = e.currentTarget;
-                                const localImages: Record<string, string> = {
-                                  'The Moon': new URL('../assets/planets/moon.jpg', import.meta.url).href,
-                                  'Mercury': new URL('../assets/planets/mercury.jpg', import.meta.url).href,
-                                  'Venus': new URL('../assets/planets/venus.jpg', import.meta.url).href,
-                                  'Mars': new URL('../assets/planets/mars.jpg', import.meta.url).href,
-                                  'Jupiter': new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
-                                  'Saturn': new URL('../assets/planets/saturn.jpg', import.meta.url).href,
-                                  'Uranus': new URL('../assets/planets/uranus.jpg', import.meta.url).href,
-                                  'Neptune': new URL('../assets/planets/neptune.jpg', import.meta.url).href,
-                                  'Pluto': new URL('../assets/planets/pluto.jpg', import.meta.url).href,
-                                  'Ceres': new URL('../assets/planets/ceres.jpg', import.meta.url).href,
-                                  'Eris': new URL('../assets/planets/eris.jpg', import.meta.url).href,
-                                };
-                                if (localImages[body.name] && target.src !== localImages[body.name]) {
-                                  target.src = localImages[body.name];
-                                }
+                                const fallback = new URL('../assets/planets/jupiter.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
                               }}
                             />
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Age Display */}
                       <div className="flex flex-col items-center space-y-1 z-10">
                         <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
-                          {body.age}
+                          {planetAges.find(p => p.name === "Jupiter")?.age}
                         </div>
                         <div className="text-lg md:text-xl text-white/90 drop-shadow">
                           years old here!
@@ -1721,7 +1776,241 @@ const Index = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                )}
+
+                {/* Card 6: Saturn */}
+                {planetAges.find(p => p.name === "Saturn") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '100ms' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        Saturn
+                      </h4>
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                            <img
+                              src="https://solarsystem.nasa.gov/system/stellar_items/image_files/38_saturn_1600x900.jpg"
+                              alt="Image of Saturn"
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = new URL('../assets/planets/saturn.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                          {planetAges.find(p => p.name === "Saturn")?.age}
+                        </div>
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card 7: Uranus */}
+                {planetAges.find(p => p.name === "Uranus") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '200ms' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        Uranus
+                      </h4>
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                            <img
+                              src="https://solarsystem.nasa.gov/system/resources/detail_files/599_PIA18182.jpg"
+                              alt="Image of Uranus"
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = new URL('../assets/planets/uranus.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                          {planetAges.find(p => p.name === "Uranus")?.age}
+                        </div>
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card 8: Neptune */}
+                {planetAges.find(p => p.name === "Neptune") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '300ms' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        Neptune
+                      </h4>
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                            <img
+                              src="https://solarsystem.nasa.gov/system/resources/detail_files/612_PIA01492.jpg"
+                              alt="Image of Neptune"
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = new URL('../assets/planets/neptune.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                          {planetAges.find(p => p.name === "Neptune")?.age}
+                        </div>
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card 9: Pluto */}
+                {planetAges.find(p => p.name === "Pluto") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '400ms' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        Pluto
+                      </h4>
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                            <img
+                              src="https://solarsystem.nasa.gov/system/resources/detail_files/933_pluto_natural_color_20150713.jpg"
+                              alt="Image of Pluto"
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = new URL('../assets/planets/pluto.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                          {planetAges.find(p => p.name === "Pluto")?.age}
+                        </div>
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card 10: Ceres */}
+                {planetAges.find(p => p.name === "Ceres") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '500ms' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        Ceres
+                      </h4>
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                            <img
+                              src="https://solarsystem.nasa.gov/system/resources/detail_files/2493_Ceres_-_Main_Belt_Grand_Tour.jpg"
+                              alt="Image of Ceres"
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = new URL('../assets/planets/ceres.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                          {planetAges.find(p => p.name === "Ceres")?.age}
+                        </div>
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card 11: Eris */}
+                {planetAges.find(p => p.name === "Eris") && (
+                  <div className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{ animationDelay: '600ms' }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
+                      <h4 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg text-center z-10">
+                        Eris
+                      </h4>
+                      <div className="relative w-44 h-44 md:w-48 md:h-48">
+                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
+                          <div className="absolute inset-0 w-full h-full animate-planet-rotate">
+                            <img
+                              src="https://solarsystem.nasa.gov/system/resources/detail_files/2500_PIA20473_Eris_and_Dysnomia.jpg"
+                              alt="Image of Eris"
+                              className="w-full h-full object-cover"
+                              crossOrigin="anonymous"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                const fallback = new URL('../assets/planets/eris.jpg', import.meta.url).href;
+                                if (target.src !== fallback) target.src = fallback;
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-1 z-10">
+                        <div className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+                          {planetAges.find(p => p.name === "Eris")?.age}
+                        </div>
+                        <div className="text-lg md:text-xl text-white/90 drop-shadow">
+                          years old here!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </section>
