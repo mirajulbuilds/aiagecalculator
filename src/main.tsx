@@ -2,9 +2,12 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Interactive gradient background logic
+// Interactive gradient background logic with optimized performance
 document.addEventListener('DOMContentLoaded', function() {
   const root = document.documentElement;
+  let rafId: number | null = null;
+  let pendingX: number | null = null;
+  let pendingY: number | null = null;
 
   // Function to update the CSS variables for the gradient
   function updateGradient(e: MouseEvent | TouchEvent) {
@@ -23,8 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (x !== undefined && y !== undefined) {
-      root.style.setProperty('--x', x + 'px');
-      root.style.setProperty('--y', y + 'px');
+      pendingX = x;
+      pendingY = y;
+      
+      // Use requestAnimationFrame to batch updates and prevent forced reflows
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          if (pendingX !== null && pendingY !== null) {
+            root.style.setProperty('--x', pendingX + 'px');
+            root.style.setProperty('--y', pendingY + 'px');
+          }
+          rafId = null;
+        });
+      }
     }
   }
 
