@@ -17,6 +17,17 @@ import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { BirthdayFacts } from "@/components/BirthdayFacts";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
+import moonImg from '../assets/planets/moon.jpg';
+import mercuryImg from '../assets/planets/mercury.jpg';
+import venusImg from '../assets/planets/venus.jpg';
+import marsImg from '../assets/planets/mars.jpg';
+import jupiterImg from '../assets/planets/jupiter.jpg';
+import saturnImg from '../assets/planets/saturn.jpg';
+import uranusImg from '../assets/planets/uranus.jpg';
+import neptuneImg from '../assets/planets/neptune.jpg';
+import plutoImg from '../assets/planets/pluto.jpg';
+import ceresImg from '../assets/planets/ceres.jpg';
+import erisImg from '../assets/planets/eris.jpg';
 
 interface AgeResult {
   years: number;
@@ -377,67 +388,67 @@ const Index = () => {
       {
         group: "visible",
         name: "The Moon",
-        imageURL: new URL('../assets/planets/moon.jpg', import.meta.url).href,
+        imageURL: moonImg,
         orbitalPeriod: 27.3
       },
       {
         group: "visible",
         name: "Mercury",
-        imageURL: new URL('../assets/planets/mercury.jpg', import.meta.url).href,
+        imageURL: mercuryImg,
         orbitalPeriod: 88
       },
       {
         group: "visible",
         name: "Venus",
-        imageURL: new URL('../assets/planets/venus.jpg', import.meta.url).href,
+        imageURL: venusImg,
         orbitalPeriod: 225
       },
       {
         group: "visible",
         name: "Mars",
-        imageURL: new URL('../assets/planets/mars.jpg', import.meta.url).href,
+        imageURL: marsImg,
         orbitalPeriod: 687
       },
       {
         group: "hidden",
         name: "Jupiter",
-        imageURL: new URL('../assets/planets/jupiter.jpg', import.meta.url).href,
+        imageURL: jupiterImg,
         orbitalPeriod: 4333
       },
       {
         group: "hidden",
         name: "Saturn",
-        imageURL: new URL('../assets/planets/saturn.jpg', import.meta.url).href,
+        imageURL: saturnImg,
         orbitalPeriod: 10759
       },
       {
         group: "hidden",
         name: "Uranus",
-        imageURL: new URL('../assets/planets/uranus.jpg', import.meta.url).href,
+        imageURL: uranusImg,
         orbitalPeriod: 30687
       },
       {
         group: "hidden",
         name: "Neptune",
-        imageURL: new URL('../assets/planets/neptune.jpg', import.meta.url).href,
+        imageURL: neptuneImg,
         orbitalPeriod: 60190
       },
       {
         group: "hidden",
         name: "Pluto",
-        imageURL: new URL('../assets/planets/pluto.jpg', import.meta.url).href,
+        imageURL: plutoImg,
         orbitalPeriod: 90560
       },
       {
         group: "hidden",
         name: "Ceres",
-        imageURL: new URL('../assets/planets/ceres.jpg', import.meta.url).href,
+        imageURL: ceresImg,
         orbitalPeriod: 1682
       },
       {
         group: "hidden",
         name: "Eris",
-        imageURL: new URL('../assets/planets/eris.jpg', import.meta.url).href,
+        imageURL: erisImg,
         orbitalPeriod: 203830
       }
     ];
