@@ -250,9 +250,9 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
           </section>
 
           {/* Ad */}
-          <div className="mb-12">
+          {/* <div className="mb-12">
             <AdSenseBanner format="horizontal" />
-          </div>
+          </div> */}
 
           {/* Biography Section */}
           <section className="mb-12">
@@ -294,9 +294,9 @@ export const CelebrityProfile: React.FC<CelebrityProfileProps> = ({ celebrity })
           </section>
 
           {/* Ad */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <AdSenseBanner format="horizontal" />
-          </div>
+          </div> */}
         </div>
       </main>
     </>

@@ -50,12 +50,12 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Sidebar Ads - Only show when sidebar is open */}
-        {open && (
+        {/* {open && (
           <div className="space-y-4 mt-6 px-2">
             <AdSenseBanner format="vertical" />
             <AdSenseBanner format="square" />
           </div>
-        )}
+        )} */}
       </SidebarContent>
     </Sidebar>
   );

@@ -509,7 +509,7 @@ const Index = () => {
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
         {/* Top Banner Ad */}
-        <AdSenseBanner format="large-horizontal" className="mb-6" />
+        {/* <AdSenseBanner format="large-horizontal" className="mb-6" /> */}
         
         {/* Header */}
         <header className="text-center mb-8">
@@ -1680,9 +1680,9 @@ const Index = () => {
 
 
         {/* Ad Banner */}
-        {result && activeTab === "calculator" && (
+        {/* {result && activeTab === "calculator" && (
           <AdSenseBanner format="large-horizontal" className="mb-6" />
-        )}
+        )} */}
 
         {/* Live Age Display */}
         {liveAge && activeTab === "calculator" && (
@@ -1757,16 +1757,16 @@ const Index = () => {
 
 
         {/* Bottom Ad Banner */}
-        {result && activeTab === "calculator" && (
+        {/* {result && activeTab === "calculator" && (
           <AdSenseBanner format="horizontal" className="mt-6" />
-        )}
+        )} */}
         </div>
 
         {/* Right Sidebar Ads - Hidden on mobile/tablet */}
-        <aside className="hidden xl:flex xl:flex-col w-full xl:w-[320px] space-y-6 xl:sticky xl:top-20 xl:self-start">
+        {/* <aside className="hidden xl:flex xl:flex-col w-full xl:w-[320px] space-y-6 xl:sticky xl:top-20 xl:self-start">
           <AdSenseBanner format="vertical" />
           <AdSenseBanner format="square" />
-        </aside>
+        </aside> */}
       </div>
       
       {/* SEO Content for Age Calculator */}
@@ -1811,9 +1811,9 @@ const Index = () => {
       </article>
       
       {/* Bottom Page Ad - Always visible */}
-      <div className="max-w-7xl mx-auto mt-6 mb-8">
+      {/* <div className="max-w-7xl mx-auto mt-6 mb-8">
         <AdSenseBanner format="large-horizontal" />
-      </div>
+      </div> */}
     </main>
   );
 };

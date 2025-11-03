@@ -282,9 +282,9 @@ export const CelebrityProfileModal: React.FC<CelebrityProfileModalProps> = ({
             </section>
 
             {/* Ad placeholder for in-profile ad */}
-            <div id="ad-in-profile" className="my-6">
+            {/* <div id="ad-in-profile" className="my-6">
               <AdSenseBanner format="large-horizontal" />
-            </div>
+            </div> */}
 
             <section>
               <h2 className="text-2xl font-bold mb-4">Biography</h2>
