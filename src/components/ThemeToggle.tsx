@@ -30,7 +30,7 @@ const ThemeToggle = () => {
     <button
       onClick={toggleTheme}
       className={`
-        group relative w-20 h-10 md:w-24 md:h-12 rounded-[50px] 
+        group relative w-16 h-8 md:w-20 md:h-10 rounded-[50px]
         backdrop-blur-[10px] 
         bg-gradient-to-r from-[hsl(220,50%,35%)] via-[hsl(260,45%,40%)] to-[hsl(270,50%,45%)]
         transition-all duration-500 ease-in-out
@@ -54,14 +54,14 @@ const ThemeToggle = () => {
     >
       {/* Fixed Sun Icon on Left */}
       <Sun 
-        className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-white/60 transition-all duration-500"
+        className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-white/60 transition-all duration-500"
       />
       
       {/* Sliding Knob with Moon Icon */}
       <div 
         className={`
           absolute top-1 ${isDark ? 'right-1' : 'left-1'}
-          w-8 h-8 md:w-10 md:h-10 rounded-full
+          w-6 h-6 md:w-8 md:h-8 rounded-full
           backdrop-blur-md bg-gradient-to-br from-[hsl(260,50%,60%)] to-[hsl(280,50%,50%)]
           border-2 border-white/30
           shadow-[0_4px_15px_rgba(0,0,0,0.3),inset_0_1px_3px_rgba(255,255,255,0.2)]
@@ -76,7 +76,7 @@ const ThemeToggle = () => {
       >
         {/* Moon Icon Inside Knob */}
         <Moon 
-          className="h-5 w-5 md:h-6 md:w-6 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+          className="h-4 w-4 md:h-5 md:w-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
         />
       </div>
     </button>
