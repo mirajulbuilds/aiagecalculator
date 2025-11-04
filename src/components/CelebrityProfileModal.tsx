@@ -115,24 +115,55 @@ export const CelebrityProfileModal: React.FC<CelebrityProfileModalProps> = ({
   const loadFullProfile = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke('celebrity-data', {
-        body: { 
-          type: 'profile', 
-          name: celebrityName,
-          dateOfBirth,
-          profession
-        }
-      });
+      
+      // Query the Supabase database directly
+      const { data: celebData, error } = await supabase
+        .from('explore_famous_birthdays')
+        .select('*')
+        .eq('name', celebrityName)
+        .maybeSingle();
 
       if (error) throw error;
 
-      setProfile(data.data);
+      if (celebData) {
+        // Map database fields to profile structure
+        setProfile({
+          name: celebData.name,
+          dateOfBirth: celebData.dob,
+          placeOfBirth: celebData.country || 'Unknown',
+          profession: celebData.profession,
+          zodiacSign: getZodiacSign(new Date(celebData.dob)),
+          biography: celebData.bio || celebData.ai_summary || 'Biography not available.',
+          knownFor: celebData.famous_for ? [celebData.famous_for] : [],
+          careerHighlights: []
+        });
+      } else {
+        toast.error('Celebrity profile not found');
+      }
     } catch (error) {
       console.error('Error loading celebrity profile:', error);
       toast.error('Failed to load celebrity profile');
     } finally {
       setLoading(false);
     }
+  };
+
+  const getZodiacSign = (date: Date): string => {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "Aries";
+    if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return "Taurus";
+    if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return "Gemini";
+    if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return "Cancer";
+    if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return "Leo";
+    if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return "Virgo";
+    if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return "Libra";
+    if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return "Scorpio";
+    if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "Sagittarius";
+    if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricorn";
+    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "Aquarius";
+    return "Pisces";
   };
 
   const formatDate = (dateString: string) => {
@@ -188,7 +219,7 @@ export const CelebrityProfileModal: React.FC<CelebrityProfileModalProps> = ({
             <DialogHeader>
               <div className="flex flex-col md:flex-row items-start gap-6">
                 <Avatar className="w-32 h-32 border-4 border-primary/20">
-                  <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&size=256&background=random`} />
+                  <AvatarImage src={(profile as any).image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&size=256&background=random`} />
                   <AvatarFallback className="bg-gradient-primary text-primary-foreground text-3xl">
                     {profile.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </AvatarFallback>

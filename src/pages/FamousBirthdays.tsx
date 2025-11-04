@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake, Palette, Cpu, Globe2, Video, ArrowLeft } from "lucide-react";
+import { Search, Calendar, TrendingUp, Users, Music, Trophy, Microscope, Cake, Palette, Cpu, Globe2, Video, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,10 +10,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { differenceInYears } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import { featuredCelebrities } from "@/data/celebrities";
+import { useFamousBirthdays } from "@/hooks/useFamousBirthdays";
 
 const FamousBirthdays: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Fetch trending celebrities from Supabase
+  const { data: trendingData, isLoading } = useFamousBirthdays({ 
+    trending: true, 
+    top: 8 
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +29,8 @@ const FamousBirthdays: React.FC = () => {
   const calculateAge = (dateOfBirth: string) => {
     return differenceInYears(new Date(), new Date(dateOfBirth));
   };
+
+  const celebrities = trendingData?.data || [];
 
   const categories = [
     { name: 'Actors', icon: Users, color: 'from-purple-500 to-pink-500' },
@@ -68,16 +76,16 @@ const FamousBirthdays: React.FC = () => {
             "@type": "ItemList",
             "name": "Trending Celebrities",
             "description": "Most popular celebrities and their profiles",
-            "numberOfItems": featuredCelebrities.length,
-            "itemListElement": featuredCelebrities.map((celebrity, index) => ({
+            "numberOfItems": celebrities.length,
+            "itemListElement": celebrities.map((celebrity, index) => ({
                 "@type": "ListItem",
                 "position": index + 1,
                 "item": {
                   "@type": "Person",
                   "name": celebrity.name,
-                  "birthDate": celebrity.dateOfBirth,
+                  "birthDate": celebrity.dob,
                   "jobTitle": celebrity.profession,
-                  "description": `${celebrity.name} - ${celebrity.profession}, age ${calculateAge(celebrity.dateOfBirth)}`,
+                  "description": `${celebrity.name} - ${celebrity.profession}, age ${calculateAge(celebrity.dob)}`,
                 }
               }))
             },
@@ -166,20 +174,32 @@ const FamousBirthdays: React.FC = () => {
               <h2 className="text-3xl font-bold text-foreground">Trending Celebrities This Week</h2>
             </div>
 
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredCelebrities.slice(0, 8).map((celebrity) => {
-                const age = calculateAge(celebrity.dateOfBirth);
-                return (
-                  <li key={celebrity.id}>
-                    <Link to={`/famous-birthdays/${celebrity.slug}`}>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+              </div>
+            ) : (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {celebrities.map((celebrity) => {
+                  const age = calculateAge(celebrity.dob);
+                  return (
+                    <li key={celebrity.id}>
                       <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full bg-gradient-to-br from-card via-card to-accent/5">
                         <CardContent className="p-0">
                           <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
-                            <img 
-                              src={celebrity.photoUrl} 
-                              alt={celebrity.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
+                            {celebrity.image_url ? (
+                              <img 
+                                src={celebrity.image_url} 
+                                alt={celebrity.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
+                                <span className="text-4xl font-bold text-primary/40">
+                                  {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                </span>
+                              </div>
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
                           </div>
                           <div className="p-6 text-center">
@@ -187,7 +207,7 @@ const FamousBirthdays: React.FC = () => {
                               {celebrity.name}
                             </h3>
                             <Badge variant="secondary" className="mb-3 text-sm">
-                              {celebrity.profession.split(',')[0]}
+                              {celebrity.profession}
                             </Badge>
                             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                               <Cake className="w-4 h-4" />
@@ -196,11 +216,11 @@ const FamousBirthdays: React.FC = () => {
                           </div>
                         </CardContent>
                       </Card>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </section>
 
           <section className="mb-16">
