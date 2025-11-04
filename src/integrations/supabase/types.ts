@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      explore_famous_birthdays: {
+        Row: {
+          ai_summary: string | null
+          bio: string | null
+          country: string | null
+          created_at: string | null
+          dob: string
+          famous_for: string | null
+          id: string
+          image_url: string | null
+          name: string
+          popularity_score: number | null
+          profession: string
+          region_category: string | null
+          social_links: Json | null
+          source_url: string | null
+          today_trending: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          dob: string
+          famous_for?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          popularity_score?: number | null
+          profession: string
+          region_category?: string | null
+          social_links?: Json | null
+          source_url?: string | null
+          today_trending?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_summary?: string | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          dob?: string
+          famous_for?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          popularity_score?: number | null
+          profession?: string
+          region_category?: string | null
+          social_links?: Json | null
+          source_url?: string | null
+          today_trending?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

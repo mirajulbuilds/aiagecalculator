@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.birthday-facts]
 verify_jwt = false
+
+[functions.explore-famous-birthdays]
+verify_jwt = false
+
+[functions.seed-celebrities]
+verify_jwt = false

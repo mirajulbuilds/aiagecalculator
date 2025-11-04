@@ -27,6 +27,7 @@ const Beyonce = lazy(() => import("./pages/celebrity/Beyonce"));
 const BillGates = lazy(() => import("./pages/celebrity/BillGates"));
 const DwayneJohnson = lazy(() => import("./pages/celebrity/DwayneJohnson"));
 const EmmaWatson = lazy(() => import("./pages/celebrity/EmmaWatson"));
+const SeedDatabase = lazy(() => import("./pages/SeedDatabase"));
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ const App = () => (
                     <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/seed-database" element={<SeedDatabase />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
