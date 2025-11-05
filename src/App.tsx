@@ -12,6 +12,7 @@ import Footer from "./components/Footer";
 // Lazy load route components for code splitting
 const Index = lazy(() => import("./pages/Index"));
 const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
+const CelebrityDetail = lazy(() => import("./pages/CelebrityDetail"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
@@ -46,6 +47,7 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/famous-birthdays" element={<FamousBirthdays />} />
+                    <Route path="/celebrity/:id" element={<CelebrityDetail />} />
                     <Route path="/famous-birthdays/tom-hanks" element={<TomHanks />} />
                     <Route path="/famous-birthdays/taylor-swift" element={<TaylorSwift />} />
                     <Route path="/famous-birthdays/elon-musk" element={<ElonMusk />} />

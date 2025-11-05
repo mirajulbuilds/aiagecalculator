@@ -220,7 +220,8 @@ const FamousBirthdays: React.FC = () => {
                       
                       return (
                         <li key={celebrity.id}>
-                          <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full bg-gradient-to-br from-card via-card to-accent/5">
+                          <Link to={`/celebrity/${celebrity.id}`}>
+                            <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full bg-gradient-to-br from-card via-card to-accent/5 cursor-pointer">
                             <CardContent className="p-0">
                               <div className="relative h-56 overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
                                 {celebrity.image_url ? (
@@ -265,6 +266,7 @@ const FamousBirthdays: React.FC = () => {
                               </div>
                             </CardContent>
                           </Card>
+                          </Link>
                         </li>
                       );
                     })}
