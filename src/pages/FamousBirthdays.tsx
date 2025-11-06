@@ -1,47 +1,55 @@
 import React, { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Search, ArrowLeft, TrendingUp, Calendar, SortAsc, MapPin, Instagram, Twitter, Youtube, Facebook, Globe } from "lucide-react";
+import { Search, ArrowLeft, Calendar, MapPin, Instagram, Twitter, Youtube, Facebook, Globe, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import { famousBirthdays } from "@/data/famousBirthdays";
+import celebrityData from "../../data/explore_famous_birthdays.json";
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 50;
 
 const FamousBirthdays: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"trending" | "name" | "dob">("trending");
+  const [selectedProfession, setSelectedProfession] = useState<string>("all");
+  const [selectedCountry, setSelectedCountry] = useState<string>("all");
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredAndSortedCelebrities = useMemo(() => {
-    let filtered = famousBirthdays.filter((celebrity) =>
-      celebrity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      celebrity.occupation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      celebrity.country.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const celebrities = celebrityData.celebrities;
+  const categories = celebrityData.categories;
 
-    filtered.sort((a, b) => {
-      if (sortBy === "name") {
-        return a.name.localeCompare(b.name);
-      } else if (sortBy === "dob") {
-        return new Date(a.dob).getTime() - new Date(b.dob).getTime();
-      } else if (sortBy === "trending") {
-        return b.popularityScore - a.popularityScore;
+  const filteredCelebrities = useMemo(() => {
+    let filtered = celebrities.filter((celebrity) => {
+      const matchesSearch = 
+        celebrity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        celebrity.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        celebrity.country.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesProfession = selectedProfession === "all" || celebrity.profession === selectedProfession;
+      const matchesCountry = selectedCountry === "all" || celebrity.country === selectedCountry;
+      
+      let matchesMonth = true;
+      if (selectedMonth !== "all") {
+        const birthMonth = format(new Date(celebrity.birthdate), "MMMM");
+        matchesMonth = birthMonth === selectedMonth;
       }
-      return 0;
+
+      return matchesSearch && matchesProfession && matchesCountry && matchesMonth;
     });
 
-    return filtered;
-  }, [searchQuery, sortBy]);
+    // Sort by name A-Z
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
 
-  const totalPages = Math.ceil(filteredAndSortedCelebrities.length / ITEMS_PER_PAGE);
-  const paginatedCelebrities = filteredAndSortedCelebrities.slice(
+    return filtered;
+  }, [searchQuery, selectedProfession, selectedCountry, selectedMonth, celebrities]);
+
+  const totalPages = Math.ceil(filteredCelebrities.length / ITEMS_PER_PAGE);
+  const paginatedCelebrities = filteredCelebrities.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -50,20 +58,25 @@ const FamousBirthdays: React.FC = () => {
     return differenceInYears(new Date(), new Date(dateOfBirth));
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-  };
-
   const getSocialIcon = (platform: string) => {
     switch (platform) {
       case "instagram": return <Instagram className="w-4 h-4" />;
+      case "x": return <Twitter className="w-4 h-4" />;
       case "twitter": return <Twitter className="w-4 h-4" />;
       case "youtube": return <Youtube className="w-4 h-4" />;
       case "facebook": return <Facebook className="w-4 h-4" />;
+      case "tiktok": return <Globe className="w-4 h-4" />;
       case "website": return <Globe className="w-4 h-4" />;
       default: return null;
     }
+  };
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedProfession("all");
+    setSelectedCountry("all");
+    setSelectedMonth("all");
+    setCurrentPage(1);
   };
 
   return (
@@ -72,44 +85,51 @@ const FamousBirthdays: React.FC = () => {
         <title>Explore Famous Birthdays | Celebrity Birthdays Database | AiAgeCalc.com</title>
         <meta 
           name="description" 
-          content="Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars from entertainment, sports, and more." 
+          content="Discover celebrity birthdays from around the world. Explore detailed profiles, birth dates, careers, and achievements of famous people from entertainment, sports, and more." 
         />
-        <meta name="keywords" content="celebrity birthdays, famous birthdays, celebrity ages, star birthdays, celebrity profiles, famous people birthdays, celebrity birth dates, trending celebrities, celebrity database" />
+        <meta name="keywords" content="celebrity birthdays, famous birthdays, celebrity ages, star birthdays, celebrity profiles, famous people birthdays, celebrity birth dates, celebrity database, famous actors, singers birthdays" />
         <link rel="canonical" href="https://aiagecalc.com/famous-birthdays" />
+        {currentPage > 1 && (
+          <link rel="prev" href={`https://aiagecalc.com/famous-birthdays?page=${currentPage - 1}`} />
+        )}
+        {currentPage < totalPages && (
+          <link rel="next" href={`https://aiagecalc.com/famous-birthdays?page=${currentPage + 1}`} />
+        )}
         
         <meta property="og:title" content="Explore Famous Birthdays | Celebrity Birthdays Database" />
-        <meta property="og:description" content="Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars." />
+        <meta property="og:description" content="Discover celebrity birthdays from around the world. Explore detailed profiles, birth dates, careers, and achievements of famous people." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://aiagecalc.com/famous-birthdays" />
         <meta property="og:image" content="https://aiagecalc.com/og-image.jpg" />
         
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Explore Famous Birthdays | Celebrity Birthdays Database" />
-        <meta name="twitter:description" content="Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars." />
+        <meta name="twitter:description" content="Discover celebrity birthdays from around the world. Explore detailed profiles and achievements." />
 
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "Explore Famous Birthdays - Celebrity Database",
-            "description": "Comprehensive celebrity birthday database with profiles, birth dates, professions, and trending stars from around the world.",
+            "description": "Comprehensive celebrity birthday database with profiles, birth dates, professions, careers, and achievements from around the world.",
             "url": "https://aiagecalc.com/famous-birthdays",
             "mainEntity": {
               "@type": "ItemList",
               "name": "Celebrity Birthdays",
               "description": "Famous people and their birthdays",
-              "numberOfItems": famousBirthdays.length,
+              "numberOfItems": celebrities.length,
               "itemListElement": paginatedCelebrities.map((celebrity, index) => ({
                 "@type": "ListItem",
                 "position": (currentPage - 1) * ITEMS_PER_PAGE + index + 1,
                 "item": {
                   "@type": "Person",
                   "name": celebrity.name,
-                  "birthDate": celebrity.dob,
-                  "birthPlace": `${celebrity.birthPlace}, ${celebrity.country}`,
-                  "jobTitle": celebrity.occupation,
-                  "description": celebrity.bio,
-                  "image": celebrity.imageUrl,
+                  "birthDate": celebrity.birthdate,
+                  "birthPlace": `${celebrity.birthplace}, ${celebrity.country}`,
+                  "jobTitle": celebrity.profession,
+                  "description": celebrity.excerpt,
+                  "image": celebrity.image,
+                  "url": `https://aiagecalc.com/celebrity/${celebrity.slug}`
                 }
               }))
             },
@@ -136,61 +156,46 @@ const FamousBirthdays: React.FC = () => {
 
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-12 px-4 border-b">
+        <header className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-8 px-4 border-b">
           <div className="container mx-auto max-w-7xl">
             <Link to="/">
-              <Button variant="ghost" className="mb-6 hover:bg-primary/10">
+              <Button variant="ghost" className="mb-4 hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
               </Button>
             </Link>
             
-            <div className="text-center mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+            <div className="text-center mb-6">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 text-foreground">
                 Explore Famous Birthdays
               </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars from entertainment, sports, and beyond.
+              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+                Discover celebrity birthdays from around the world. Explore detailed profiles, birth dates, careers, achievements, and fascinating facts about famous people from entertainment, sports, and beyond.
               </p>
             </div>
 
-            {/* Search and Filter Bar */}
-            <div className="max-w-4xl mx-auto">
-              <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search by name, occupation, or country..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="pl-12 py-6 text-lg"
-                  />
-                </div>
-                
-                <div className="flex gap-4">
-                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                    <SelectTrigger className="w-[180px] py-6">
-                      <SortAsc className="w-4 h-4 mr-2" />
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="trending">Trending</SelectItem>
-                      <SelectItem value="name">Name (A-Z)</SelectItem>
-                      <SelectItem value="dob">Birth Date</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </form>
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                <Input
+                  type="search"
+                  placeholder="Search by name, profession, or country..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-12 py-5 text-base"
+                  aria-label="Search celebrities"
+                />
+              </div>
             </div>
           </div>
-        </section>
+        </header>
 
-        {/* Ad Banner Top */}
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
+        {/* Top Ad Banner */}
+        <div className="container mx-auto px-4 py-4 max-w-7xl" id="ad-top">
           <AdSenseBanner 
             adSlot="1234567890"
             format="horizontal"
@@ -198,157 +203,261 @@ const FamousBirthdays: React.FC = () => {
         </div>
 
         {/* Main Content with Sidebar */}
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Main Content Area */}
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left Sidebar - Category Navigation */}
+            <aside className="lg:w-64 space-y-4" role="navigation" aria-label="Category filters">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-bold text-base text-foreground flex items-center gap-2">
+                    <Filter className="w-4 h-4" aria-hidden="true" />
+                    Filters
+                  </h2>
+                  {(selectedProfession !== "all" || selectedCountry !== "all" || selectedMonth !== "all") && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={resetFilters}
+                      className="h-7 text-xs"
+                    >
+                      Reset
+                    </Button>
+                  )}
+                </div>
+
+                {/* Profession Filter */}
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold mb-2 text-foreground">Profession</h3>
+                  <select
+                    value={selectedProfession}
+                    onChange={(e) => {
+                      setSelectedProfession(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full p-2 text-sm border rounded-md bg-background text-foreground"
+                    aria-label="Filter by profession"
+                  >
+                    <option value="all">All Professions</option>
+                    {categories.professions.map((prof) => (
+                      <option key={prof} value={prof}>{prof}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Country Filter */}
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold mb-2 text-foreground">Country</h3>
+                  <select
+                    value={selectedCountry}
+                    onChange={(e) => {
+                      setSelectedCountry(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full p-2 text-sm border rounded-md bg-background text-foreground"
+                    aria-label="Filter by country"
+                  >
+                    <option value="all">All Countries</option>
+                    {categories.countries.map((country) => (
+                      <option key={country} value={country}>{country}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Month Filter */}
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold mb-2 text-foreground">Birth Month</h3>
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => {
+                      setSelectedMonth(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full p-2 text-sm border rounded-md bg-background text-foreground"
+                    aria-label="Filter by birth month"
+                  >
+                    <option value="all">All Months</option>
+                    {categories.months.map((month) => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+              </Card>
+            </aside>
+
+            {/* Center - Main Content */}
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                  <TrendingUp className="w-6 h-6 text-primary" />
-                  {searchQuery ? `Search Results (${filteredAndSortedCelebrities.length})` : 'All Celebrities'}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground">
+                  {searchQuery ? `Search Results (${filteredCelebrities.length})` : `All Celebrities (${filteredCelebrities.length})`}
                 </h2>
                 {totalPages > 0 && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground" aria-live="polite">
                     Page {currentPage} of {totalPages}
                   </p>
                 )}
               </div>
 
-              {filteredAndSortedCelebrities.length === 0 ? (
+              {filteredCelebrities.length === 0 ? (
                 <Card className="p-12 text-center">
-                  <p className="text-muted-foreground text-lg">
-                    {searchQuery ? 'No celebrities found matching your search.' : 'No celebrity data available yet. Check back soon!'}
+                  <p className="text-muted-foreground text-base">
+                    {searchQuery ? 'No celebrities found matching your search. Try different keywords or filters.' : 'No celebrity data available. Please check back soon!'}
                   </p>
                 </Card>
               ) : (
                 <>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                    {paginatedCelebrities.map((celebrity) => {
-                      const age = calculateAge(celebrity.dob);
-                      const birthDate = format(new Date(celebrity.dob), 'MMMM d, yyyy');
+                  <ul className="space-y-4 mb-6">
+                    {paginatedCelebrities.map((celebrity, index) => {
+                      const age = calculateAge(celebrity.birthdate);
+                      const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
                       
-                      return (
+                      // Insert inline ad after 5th item
+                      const items = [];
+                      items.push(
                         <li key={celebrity.id}>
-                          <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full cursor-pointer">
-                            <CardContent className="p-0">
-                              <div className="relative h-48 overflow-hidden">
-                                <img 
-                                  src={celebrity.imageUrl} 
-                                  alt={`${celebrity.name} - ${celebrity.occupation}`}
-                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                  loading="lazy"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
-                                {celebrity.trending && (
-                                  <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground">
-                                    <TrendingUp className="w-3 h-3 mr-1" />
-                                    Trending
-                                  </Badge>
-                                )}
-                              </div>
-                              
-                              <div className="p-5">
-                                <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1">
-                                  {celebrity.name}
-                                </h3>
-                                
-                                <Badge variant="secondary" className="mb-3 text-xs">
-                                  {celebrity.occupation}
-                                </Badge>
-                                
-                                <div className="space-y-2 text-sm text-muted-foreground mb-3">
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 flex-shrink-0" />
-                                    <span className="line-clamp-1">{birthDate}</span>
+                          <Link to={`/celebrity/${celebrity.slug}`}>
+                            <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer">
+                              <CardContent className="p-0">
+                                <article className="flex flex-col sm:flex-row gap-4 p-4">
+                                  <div className="relative w-full sm:w-32 h-32 flex-shrink-0 overflow-hidden rounded-md">
+                                    <img 
+                                      src={celebrity.image} 
+                                      alt={`${celebrity.name} profile picture`}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                      loading="lazy"
+                                      width="128"
+                                      height="128"
+                                    />
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <MapPin className="w-4 h-4 flex-shrink-0" />
-                                    <span className="line-clamp-1">{celebrity.birthPlace}, {celebrity.country}</span>
-                                  </div>
-                                  <p className="font-semibold text-foreground">Age: {age} years</p>
-                                </div>
-                                
-                                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                                  {celebrity.bio}
-                                </p>
+                                  
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                                      {celebrity.name}
+                                    </h3>
+                                    
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                      <Badge variant="secondary" className="text-xs">
+                                        {celebrity.profession}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-xs">
+                                        {celebrity.country}
+                                      </Badge>
+                                    </div>
+                                    
+                                    <div className="space-y-1 text-sm text-muted-foreground mb-2">
+                                      <div className="flex items-center gap-2">
+                                        <Calendar className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                                        <span>{birthDate} • Age: {age} years • {celebrity.birth_sign}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <MapPin className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                                        <span className="line-clamp-1">{celebrity.birthplace}</span>
+                                      </div>
+                                    </div>
+                                    
+                                    <p className="text-sm text-muted-foreground line-clamp-2">
+                                      {celebrity.excerpt}
+                                    </p>
 
-                                {celebrity.socialLinks && Object.keys(celebrity.socialLinks).length > 0 && (
-                                  <div className="flex gap-2 pt-2 border-t border-border">
-                                    {Object.entries(celebrity.socialLinks).map(([platform, url]) => (
-                                      <a
-                                        key={platform}
-                                        href={url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-muted-foreground hover:text-primary transition-colors"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        {getSocialIcon(platform)}
-                                      </a>
-                                    ))}
+                                    {celebrity.social_links && Object.keys(celebrity.social_links).length > 0 && (
+                                      <div className="flex gap-3 mt-3">
+                                        {Object.entries(celebrity.social_links).map(([platform, url]) => (
+                                          <a
+                                            key={platform}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-muted-foreground hover:text-primary transition-colors"
+                                            onClick={(e) => e.stopPropagation()}
+                                            aria-label={`${celebrity.name} on ${platform}`}
+                                          >
+                                            {getSocialIcon(platform)}
+                                          </a>
+                                        ))}
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
+                                </article>
+                              </CardContent>
+                            </Card>
+                          </Link>
                         </li>
                       );
+
+                      // Add inline ad after 5th item on first page
+                      if (index === 4 && currentPage === 1) {
+                        items.push(
+                          <li key="inline-ad" id="ad-inline" className="my-4">
+                            <AdSenseBanner 
+                              adSlot="5544332211"
+                              format="horizontal"
+                            />
+                          </li>
+                        );
+                      }
+
+                      return items;
                     })}
                   </ul>
 
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious 
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                          />
-                        </PaginationItem>
-                        
-                        {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                          let pageNum;
-                          if (totalPages <= 5) {
-                            pageNum = i + 1;
-                          } else if (currentPage <= 3) {
-                            pageNum = i + 1;
-                          } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i;
-                          } else {
-                            pageNum = currentPage - 2 + i;
-                          }
+                    <nav aria-label="Pagination">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious 
+                              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              aria-label="Go to previous page"
+                            />
+                          </PaginationItem>
                           
-                          return (
-                            <PaginationItem key={pageNum}>
-                              <PaginationLink
-                                onClick={() => setCurrentPage(pageNum)}
-                                isActive={currentPage === pageNum}
-                                className="cursor-pointer"
-                              >
-                                {pageNum}
-                              </PaginationLink>
-                            </PaginationItem>
-                          );
-                        })}
-                        
-                        <PaginationItem>
-                          <PaginationNext 
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
+                          {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                            let pageNum;
+                            if (totalPages <= 5) {
+                              pageNum = i + 1;
+                            } else if (currentPage <= 3) {
+                              pageNum = i + 1;
+                            } else if (currentPage >= totalPages - 2) {
+                              pageNum = totalPages - 4 + i;
+                            } else {
+                              pageNum = currentPage - 2 + i;
+                            }
+                            
+                            return (
+                              <PaginationItem key={pageNum}>
+                                <PaginationLink
+                                  onClick={() => setCurrentPage(pageNum)}
+                                  isActive={currentPage === pageNum}
+                                  className="cursor-pointer"
+                                  aria-label={`Go to page ${pageNum}`}
+                                  aria-current={currentPage === pageNum ? "page" : undefined}
+                                >
+                                  {pageNum}
+                                </PaginationLink>
+                              </PaginationItem>
+                            );
+                          })}
+                          
+                          <PaginationItem>
+                            <PaginationNext 
+                              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                              aria-label="Go to next page"
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </nav>
                   )}
                 </>
               )}
             </div>
 
-            {/* Sidebar for Ads */}
-            <aside className="lg:w-80 space-y-6">
-              <Card className="p-6 sticky top-4">
-                <h3 className="font-bold text-lg mb-4 text-foreground">Sponsored</h3>
+            {/* Right Sidebar - Ads */}
+            <aside className="lg:w-80 space-y-4" id="ad-side">
+              <Card className="p-4 sticky top-4">
+                <h3 className="font-bold text-sm mb-3 text-foreground">Sponsored</h3>
                 <AdSenseBanner 
                   adSlot="0987654321"
                   format="vertical"
@@ -359,7 +468,7 @@ const FamousBirthdays: React.FC = () => {
         </div>
 
         {/* Bottom Ad Banner */}
-        <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="container mx-auto px-4 py-4 max-w-7xl">
           <AdSenseBanner 
             adSlot="1122334455"
             format="large-horizontal"
