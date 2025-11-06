@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Search, ArrowLeft, Loader2, TrendingUp, Calendar, SortAsc } from "lucide-react";
+import { Search, ArrowLeft, TrendingUp, Calendar, SortAsc, MapPin, Instagram, Twitter, Youtube, Facebook, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,22 +10,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import { useFamousBirthdays } from "@/hooks/useFamousBirthdays";
+import { famousBirthdays } from "@/data/famousBirthdays";
 
 const ITEMS_PER_PAGE = 12;
 
 const FamousBirthdays: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "dob" | "trending">("trending");
+  const [sortBy, setSortBy] = useState<"trending" | "name" | "dob">("trending");
   const [currentPage, setCurrentPage] = useState(1);
-  
-  const { data: allData, isLoading } = useFamousBirthdays({ top: 1000 });
-  const celebrities = allData?.data || [];
 
   const filteredAndSortedCelebrities = useMemo(() => {
-    let filtered = celebrities.filter((celebrity) =>
+    let filtered = famousBirthdays.filter((celebrity) =>
       celebrity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      celebrity.profession?.toLowerCase().includes(searchQuery.toLowerCase())
+      celebrity.occupation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      celebrity.country.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     filtered.sort((a, b) => {
@@ -34,13 +32,13 @@ const FamousBirthdays: React.FC = () => {
       } else if (sortBy === "dob") {
         return new Date(a.dob).getTime() - new Date(b.dob).getTime();
       } else if (sortBy === "trending") {
-        return (b.popularity_score || 0) - (a.popularity_score || 0);
+        return b.popularityScore - a.popularityScore;
       }
       return 0;
     });
 
     return filtered;
-  }, [celebrities, searchQuery, sortBy]);
+  }, [searchQuery, sortBy]);
 
   const totalPages = Math.ceil(filteredAndSortedCelebrities.length / ITEMS_PER_PAGE);
   const paginatedCelebrities = filteredAndSortedCelebrities.slice(
@@ -57,15 +55,26 @@ const FamousBirthdays: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case "instagram": return <Instagram className="w-4 h-4" />;
+      case "twitter": return <Twitter className="w-4 h-4" />;
+      case "youtube": return <Youtube className="w-4 h-4" />;
+      case "facebook": return <Facebook className="w-4 h-4" />;
+      case "website": return <Globe className="w-4 h-4" />;
+      default: return null;
+    }
+  };
+
   return (
     <React.Fragment>
       <Helmet>
         <title>Explore Famous Birthdays | Celebrity Birthdays Database | AiAgeCalc.com</title>
         <meta 
           name="description" 
-          content="Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars." 
+          content="Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars from entertainment, sports, and more." 
         />
-        <meta name="keywords" content="celebrity birthdays, famous birthdays, celebrity ages, star birthdays, celebrity profiles, famous people birthdays, celebrity birth dates, trending celebrities" />
+        <meta name="keywords" content="celebrity birthdays, famous birthdays, celebrity ages, star birthdays, celebrity profiles, famous people birthdays, celebrity birth dates, trending celebrities, celebrity database" />
         <link rel="canonical" href="https://aiagecalc.com/famous-birthdays" />
         
         <meta property="og:title" content="Explore Famous Birthdays | Celebrity Birthdays Database" />
@@ -89,7 +98,7 @@ const FamousBirthdays: React.FC = () => {
               "@type": "ItemList",
               "name": "Celebrity Birthdays",
               "description": "Famous people and their birthdays",
-              "numberOfItems": celebrities.length,
+              "numberOfItems": famousBirthdays.length,
               "itemListElement": paginatedCelebrities.map((celebrity, index) => ({
                 "@type": "ListItem",
                 "position": (currentPage - 1) * ITEMS_PER_PAGE + index + 1,
@@ -97,10 +106,10 @@ const FamousBirthdays: React.FC = () => {
                   "@type": "Person",
                   "name": celebrity.name,
                   "birthDate": celebrity.dob,
-                  "jobTitle": celebrity.profession,
-                  "description": celebrity.bio || `${celebrity.name} - ${celebrity.profession}, age ${calculateAge(celebrity.dob)}`,
-                  "image": celebrity.image_url,
-                  "url": celebrity.source_url,
+                  "birthPlace": `${celebrity.birthPlace}, ${celebrity.country}`,
+                  "jobTitle": celebrity.occupation,
+                  "description": celebrity.bio,
+                  "image": celebrity.imageUrl,
                 }
               }))
             },
@@ -137,11 +146,11 @@ const FamousBirthdays: React.FC = () => {
             </Link>
             
             <div className="text-center mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
                 Explore Famous Birthdays
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars.
+                Discover celebrity birthdays from around the world. Explore profiles, birth dates, professions, and trending stars from entertainment, sports, and beyond.
               </p>
             </div>
 
@@ -152,13 +161,13 @@ const FamousBirthdays: React.FC = () => {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Search celebrities by name or profession..."
+                    placeholder="Search by name, occupation, or country..."
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="pl-12 py-6 text-lg bg-background/80 backdrop-blur"
+                    className="pl-12 py-6 text-lg"
                   />
                 </div>
                 
@@ -198,18 +207,18 @@ const FamousBirthdays: React.FC = () => {
                   <TrendingUp className="w-6 h-6 text-primary" />
                   {searchQuery ? `Search Results (${filteredAndSortedCelebrities.length})` : 'All Celebrities'}
                 </h2>
-                <p className="text-sm text-muted-foreground">
-                  Page {currentPage} of {totalPages}
-                </p>
+                {totalPages > 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                  </p>
+                )}
               </div>
 
-              {isLoading ? (
-                <div className="flex justify-center items-center py-20">
-                  <Loader2 className="w-12 h-12 animate-spin text-primary" />
-                </div>
-              ) : filteredAndSortedCelebrities.length === 0 ? (
+              {filteredAndSortedCelebrities.length === 0 ? (
                 <Card className="p-12 text-center">
-                  <p className="text-muted-foreground text-lg">No celebrities found matching your search.</p>
+                  <p className="text-muted-foreground text-lg">
+                    {searchQuery ? 'No celebrities found matching your search.' : 'No celebrity data available yet. Check back soon!'}
+                  </p>
                 </Card>
               ) : (
                 <>
@@ -220,53 +229,68 @@ const FamousBirthdays: React.FC = () => {
                       
                       return (
                         <li key={celebrity.id}>
-                          <Link to={`/celebrity/${celebrity.id}`}>
-                            <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full bg-gradient-to-br from-card via-card to-accent/5 cursor-pointer">
+                          <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 h-full cursor-pointer">
                             <CardContent className="p-0">
-                              <div className="relative h-56 overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
-                                {celebrity.image_url ? (
-                                  <img 
-                                    src={celebrity.image_url} 
-                                    alt={`${celebrity.name} - ${celebrity.profession}`}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    loading="lazy"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                                    <span className="text-5xl font-bold text-primary/40">
-                                      {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                    </span>
-                                  </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent"></div>
-                                {celebrity.today_trending && (
+                              <div className="relative h-48 overflow-hidden">
+                                <img 
+                                  src={celebrity.imageUrl} 
+                                  alt={`${celebrity.name} - ${celebrity.occupation}`}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                  loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
+                                {celebrity.trending && (
                                   <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground">
                                     <TrendingUp className="w-3 h-3 mr-1" />
                                     Trending
                                   </Badge>
                                 )}
                               </div>
-                              <div className="p-6">
-                                <h3 className="font-bold text-xl text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                              
+                              <div className="p-5">
+                                <h3 className="font-bold text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1">
                                   {celebrity.name}
                                 </h3>
-                                <Badge variant="secondary" className="mb-3 text-sm">
-                                  {celebrity.profession}
+                                
+                                <Badge variant="secondary" className="mb-3 text-xs">
+                                  {celebrity.occupation}
                                 </Badge>
-                                <div className="space-y-2 text-sm text-muted-foreground">
+                                
+                                <div className="space-y-2 text-sm text-muted-foreground mb-3">
                                   <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" />
-                                    <span>{birthDate}</span>
+                                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                                    <span className="line-clamp-1">{birthDate}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <MapPin className="w-4 h-4 flex-shrink-0" />
+                                    <span className="line-clamp-1">{celebrity.birthPlace}, {celebrity.country}</span>
                                   </div>
                                   <p className="font-semibold text-foreground">Age: {age} years</p>
-                                  {celebrity.famous_for && (
-                                    <p className="text-xs line-clamp-2">{celebrity.famous_for}</p>
-                                  )}
                                 </div>
+                                
+                                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                                  {celebrity.bio}
+                                </p>
+
+                                {celebrity.socialLinks && Object.keys(celebrity.socialLinks).length > 0 && (
+                                  <div className="flex gap-2 pt-2 border-t border-border">
+                                    {Object.entries(celebrity.socialLinks).map(([platform, url]) => (
+                                      <a
+                                        key={platform}
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-muted-foreground hover:text-primary transition-colors"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        {getSocialIcon(platform)}
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             </CardContent>
                           </Card>
-                          </Link>
                         </li>
                       );
                     })}
