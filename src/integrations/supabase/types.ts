@@ -26,6 +26,7 @@ export type Database = {
           category_memberships: Json | null
           country: string | null
           created_at: string | null
+          created_by: string | null
           dob: string
           excerpt: string | null
           family_life: string | null
@@ -42,6 +43,7 @@ export type Database = {
           popularity_score: number | null
           profession: string
           profile_complete: boolean | null
+          published: boolean | null
           region_category: string | null
           slug: string | null
           social_links: Json | null
@@ -49,6 +51,7 @@ export type Database = {
           today_trending: boolean | null
           trivia: Json | null
           updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           about_word_count?: number | null
@@ -61,6 +64,7 @@ export type Database = {
           category_memberships?: Json | null
           country?: string | null
           created_at?: string | null
+          created_by?: string | null
           dob: string
           excerpt?: string | null
           family_life?: string | null
@@ -77,6 +81,7 @@ export type Database = {
           popularity_score?: number | null
           profession: string
           profile_complete?: boolean | null
+          published?: boolean | null
           region_category?: string | null
           slug?: string | null
           social_links?: Json | null
@@ -84,6 +89,7 @@ export type Database = {
           today_trending?: boolean | null
           trivia?: Json | null
           updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           about_word_count?: number | null
@@ -96,6 +102,7 @@ export type Database = {
           category_memberships?: Json | null
           country?: string | null
           created_at?: string | null
+          created_by?: string | null
           dob?: string
           excerpt?: string | null
           family_life?: string | null
@@ -112,6 +119,7 @@ export type Database = {
           popularity_score?: number | null
           profession?: string
           profile_complete?: boolean | null
+          published?: boolean | null
           region_category?: string | null
           slug?: string | null
           social_links?: Json | null
@@ -119,6 +127,28 @@ export type Database = {
           today_trending?: boolean | null
           trivia?: Json | null
           updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -131,9 +161,16 @@ export type Database = {
         Args: { bio_text: string }
         Returns: number
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -260,6 +297,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

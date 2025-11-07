@@ -32,6 +32,8 @@ const DwayneJohnson = lazy(() => import("./pages/celebrity/DwayneJohnson"));
 const EmmaWatson = lazy(() => import("./pages/celebrity/EmmaWatson"));
 const SeedDatabase = lazy(() => import("./pages/SeedDatabase"));
 const ProfileManager = lazy(() => import("./pages/ProfileManager"));
+const Auth = lazy(() => import("./pages/Auth"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -69,6 +71,8 @@ const App = () => (
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/seed-database" element={<SeedDatabase />} />
                     <Route path="/profile-manager" element={<ProfileManager />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/admin/celebrities" element={<AdminDashboard />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
