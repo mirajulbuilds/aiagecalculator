@@ -1,16 +1,17 @@
 import React, { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Search, ArrowLeft, Calendar, MapPin, Instagram, Twitter, Youtube, Facebook, Globe, Filter, TrendingUp } from "lucide-react";
+import { ArrowLeft, Filter, TrendingUp, Instagram, Twitter, Youtube, Facebook, Globe, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import { PopularityBadge } from "@/components/PopularityBadge";
 import { TrendingBadge } from "@/components/TrendingBadge";
+import { PopularityBadge } from "@/components/PopularityBadge";
+import { AutocompleteSearch } from "@/components/AutocompleteSearch";
+import { CelebrityCard } from "@/components/CelebrityCard";
 import celebritiesData from "@/data/explore_famous_birthdays.json";
 
 const ITEMS_PER_PAGE = 50;
@@ -202,22 +203,16 @@ const FamousBirthdays: React.FC = () => {
               </p>
             </div>
 
-            {/* Search Bar */}
+            {/* Search Bar with Autocomplete */}
             <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
-                <Input
-                  type="search"
-                  placeholder="Search by name, profession, or country..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="pl-12 py-5 text-base"
-                  aria-label="Search celebrities"
-                />
-              </div>
+              <AutocompleteSearch
+                celebrities={celebrities}
+                value={searchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  setCurrentPage(1);
+                }}
+              />
             </div>
           </div>
         </header>

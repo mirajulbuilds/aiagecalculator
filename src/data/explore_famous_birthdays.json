@@ -6,6 +6,7 @@
       "name": "Taylor Swift",
       "profession": "Singer-Songwriter",
       "country": "United States",
+      "country_code": "us",
       "birthdate": "1989-12-13",
       "birthplace": "Reading, Pennsylvania",
       "birth_sign": "Sagittarius",
@@ -38,6 +39,7 @@
       "name": "Leonardo DiCaprio",
       "profession": "Actor & Environmental Activist",
       "country": "United States",
+      "country_code": "us",
       "birthdate": "1974-11-11",
       "birthplace": "Los Angeles, California",
       "birth_sign": "Scorpio",
@@ -69,6 +71,7 @@
       "name": "Emma Watson",
       "profession": "Actress & Activist",
       "country": "United Kingdom",
+      "country_code": "gb",
       "birthdate": "1990-04-15",
       "birthplace": "Paris, France",
       "birth_sign": "Aries",
@@ -104,6 +107,7 @@
       "birthplace": "Boca Raton, FL",
       "profession": "Pop Singer",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Pop superstar known for her four-octave vocal range and hits like 'Thank U, Next' and 'Into You.' Grammy-winning artist with multiple chart-topping albums.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -135,6 +139,7 @@
       "birthplace": "Los Angeles, CA",
       "profession": "Pop Singer",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Grammy-winning pop phenomenon who became the youngest person to win all four major Grammy categories. Known for her ethereal vocals and innovative sound.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -166,6 +171,7 @@
       "birthplace": "Oakland, CA",
       "profession": "TV Actress",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Emmy Award-winning actress known for Disney Channel's 'Shake It Up' and HBO's 'Euphoria.' Also starred in Spider-Man and Dune films.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -196,6 +202,7 @@
       "birthplace": "Kingston upon Thames, England",
       "profession": "Movie Actor",
       "country": "United Kingdom",
+      "country_code": "gb",
       "excerpt": "British actor best known for playing Spider-Man in the Marvel Cinematic Universe. His portrayal brought youthful energy to the iconic superhero.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -226,6 +233,7 @@
       "birthplace": "New York City, NY",
       "profession": "Movie Actor",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Oscar-nominated actor known for complex, artistic projects. Starred in 'Call Me by Your Name,' 'Dune,' and 'Little Women.'",
       "image": "/placeholder.svg",
       "social_links": {
@@ -256,6 +264,7 @@
       "birthplace": "Temecula, CA",
       "profession": "Pop Singer",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Singer-songwriter who became a global sensation with 'drivers license.' Known for confessional songwriting and emotional vocals.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -287,6 +296,7 @@
       "birthplace": "Vega Baja, Puerto Rico",
       "profession": "Rapper",
       "country": "Puerto Rico",
+      "country_code": "pr",
       "excerpt": "Puerto Rican rapper who became one of the biggest Latin music stars. Known for deep vocals and pushing boundaries in reggaeton and Latin trap.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -318,6 +328,7 @@
       "birthplace": "Akron, OH",
       "profession": "Basketball Player",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "NBA legend and all-time leading scorer. Known as 'King James,' he has won four championships and four MVP awards.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -349,6 +360,7 @@
       "birthplace": "Saint Michael, Barbados",
       "profession": "Pop Singer",
       "country": "Barbados",
+      "country_code": "bb",
       "excerpt": "Barbadian singer and businesswoman known as the 'Queen of Pop.' Built billion-dollar empire with Fenty Beauty and Savage X Fenty.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -380,6 +392,7 @@
       "birthplace": "Redditch, England",
       "profession": "Pop Singer",
       "country": "United Kingdom",
+      "country_code": "gb",
       "excerpt": "British singer who gained fame with One Direction. Solo career established him as a pop star known for distinctive style and genre-blending music.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -411,6 +424,7 @@
       "birthplace": "Wichita, KS",
       "profession": "YouTube Star",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Most-subscribed individual YouTuber known for elaborate challenges, massive giveaways, and philanthropic stunts. Videos reach tens of millions of views.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -443,6 +457,7 @@
       "birthplace": "Los Angeles, CA",
       "profession": "Reality Star",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Reality TV star and businesswoman who founded Kylie Cosmetics. One of the most-followed people on social media.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -474,6 +489,7 @@
       "birthplace": "Manhattan, NY",
       "profession": "Movie Actor",
       "country": "United States",
+      "country_code": "us",
       "excerpt": "Acclaimed actor best known for playing Tony Stark/Iron Man in the Marvel Cinematic Universe. One of Hollywood's highest-paid actors.",
       "image": "/placeholder.svg",
       "social_links": {
@@ -505,6 +521,7 @@
       "birthplace": "Barranquilla, Colombia",
       "profession": "Pop Singer",
       "country": "Colombia",
+      "country_code": "co",
       "excerpt": "Colombian singer known as the 'Queen of Latin Music.' Sold over 95 million records worldwide, known for distinctive voice and belly dancing.",
       "image": "/placeholder.svg",
       "social_links": {

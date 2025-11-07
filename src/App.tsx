@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 const Index = lazy(() => import("./pages/Index"));
 const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
 const CelebrityDetail = lazy(() => import("./pages/CelebrityDetail"));
+const CelebrityAdmin = lazy(() => import("./pages/CelebrityAdmin"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
@@ -48,6 +49,7 @@ const App = () => (
                     <Route path="/" element={<Index />} />
                     <Route path="/famous-birthdays" element={<FamousBirthdays />} />
                     <Route path="/celebrity/:slug" element={<CelebrityDetail />} />
+                    <Route path="/celebrity-admin" element={<CelebrityAdmin />} />
                     <Route path="/famous-birthdays/tom-hanks" element={<TomHanks />} />
                     <Route path="/famous-birthdays/taylor-swift" element={<TaylorSwift />} />
                     <Route path="/famous-birthdays/elon-musk" element={<ElonMusk />} />
