@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Filter, TrendingUp, Instagram, Twitter, Youtube, Facebook, Globe, Calendar, MapPin } from "lucide-react";
+import { ArrowLeft, Filter, TrendingUp, Instagram, Twitter, Youtube, Facebook, Globe, Calendar, MapPin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,32 +13,127 @@ import { PopularityBadge } from "@/components/PopularityBadge";
 import { AutocompleteSearch } from "@/components/AutocompleteSearch";
 import { CelebrityCard } from "@/components/CelebrityCard";
 import celebritiesData from "@/data/explore_famous_birthdays.json";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const ITEMS_PER_PAGE = 50;
 
 const FamousBirthdays: React.FC = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProfession, setSelectedProfession] = useState<string>("all");
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"popular" | "trending" | "az" | "recent">("popular");
   const [currentPage, setCurrentPage] = useState(1);
+  const [celebrities, setCelebrities] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [needsMigration, setNeedsMigration] = useState(false);
 
-  const celebrities = celebritiesData.celebrities;
   const categories = celebritiesData.categories;
+
+  // Fetch celebrities from database
+  useEffect(() => {
+    const fetchCelebrities = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('explore_famous_birthdays')
+          .select('*');
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          console.log('No celebrities in database, using JSON fallback');
+          setNeedsMigration(true);
+          setCelebrities(celebritiesData.celebrities.map((c: any) => ({
+            ...c,
+            image_url: c.image,
+            bio: c.about,
+            birthdate: c.dob
+          })));
+        } else {
+          console.log(`Loaded ${data.length} celebrities from database`);
+          setCelebrities(data.map((c: any) => ({
+            ...c,
+            birthdate: c.dob,
+            image: c.image_url
+          })));
+          setNeedsMigration(false);
+        }
+      } catch (error) {
+        console.error('Error fetching celebrities:', error);
+        toast({
+          title: "Error loading celebrities",
+          description: "Using local data as fallback",
+          variant: "destructive"
+        });
+        setCelebrities(celebritiesData.celebrities.map((c: any) => ({
+          ...c,
+          image_url: c.image,
+          bio: c.about,
+          birthdate: c.dob
+        })));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCelebrities();
+  }, [toast]);
+
+  // Migrate celebrities to database
+  const handleMigration = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('migrate-celebrities-to-db', {
+        body: { celebrities: celebritiesData.celebrities }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Migration successful!",
+        description: `Migrated ${data.migrated} celebrities to database`,
+      });
+
+      // Reload celebrities from database
+      const { data: dbData } = await supabase
+        .from('explore_famous_birthdays')
+        .select('*');
+      
+      if (dbData) {
+        setCelebrities(dbData.map((c: any) => ({
+          ...c,
+          birthdate: c.dob,
+          image: c.image_url
+        })));
+        setNeedsMigration(false);
+      }
+    } catch (error) {
+      console.error('Migration error:', error);
+      toast({
+        title: "Migration failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredCelebrities = useMemo(() => {
     let filtered = celebrities.filter((celebrity: any) => {
       const matchesSearch = 
         celebrity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         celebrity.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        celebrity.country.toLowerCase().includes(searchQuery.toLowerCase());
+        celebrity.country?.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesProfession = selectedProfession === "all" || celebrity.profession === selectedProfession;
       const matchesCountry = selectedCountry === "all" || celebrity.country === selectedCountry;
       
       let matchesMonth = true;
-      if (selectedMonth !== "all") {
+      if (selectedMonth !== "all" && celebrity.birthdate) {
         const birthMonth = format(new Date(celebrity.birthdate), "MMMM");
         matchesMonth = birthMonth === selectedMonth;
       }
@@ -62,7 +157,7 @@ const FamousBirthdays: React.FC = () => {
         filtered.sort((a: any, b: any) => a.name.localeCompare(b.name));
         break;
       case "recent":
-        filtered.sort((a: any, b: any) => b.id.localeCompare(a.id));
+        filtered.sort((a: any, b: any) => (b.id || '').toString().localeCompare((a.id || '').toString()));
         break;
     }
 
@@ -71,7 +166,7 @@ const FamousBirthdays: React.FC = () => {
 
   const trendingCelebrities = useMemo(() => {
     return celebrities
-      .filter((c: any) => c.trending)
+      .filter((c: any) => c.trending || c.today_trending)
       .sort((a: any, b: any) => (b.popularity_score || 0) - (a.popularity_score || 0))
       .slice(0, 8);
   }, [celebrities]);
@@ -157,7 +252,7 @@ const FamousBirthdays: React.FC = () => {
                   "birthPlace": `${celebrity.birthplace}, ${celebrity.country}`,
                   "jobTitle": celebrity.profession,
                   "description": celebrity.excerpt,
-                  "image": celebrity.image,
+                  "image": celebrity.image || celebrity.image_url,
                   "url": `https://aiagecalc.com/celebrity/${celebrity.slug}`
                 }
               }))
@@ -203,6 +298,29 @@ const FamousBirthdays: React.FC = () => {
               </p>
             </div>
 
+            {/* Migration Alert */}
+            {needsMigration && (
+              <div className="max-w-2xl mx-auto mb-6">
+                <Card className="border-warning bg-warning/10">
+                  <CardContent className="pt-6">
+                    <p className="text-sm text-foreground mb-3">
+                      Database needs to be populated with celebrity data. Click below to migrate.
+                    </p>
+                    <Button onClick={handleMigration} disabled={isLoading} size="sm" variant="default">
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Migrating...
+                        </>
+                      ) : (
+                        'Migrate Data to Database'
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             {/* Search Bar with Autocomplete */}
             <div className="max-w-2xl mx-auto">
               <AutocompleteSearch
@@ -217,16 +335,8 @@ const FamousBirthdays: React.FC = () => {
           </div>
         </header>
 
-        {/* Top Ad Banner */}
-        {/* <div className="container mx-auto px-4 py-4 max-w-7xl" id="ad-top">
-          <AdSenseBanner 
-            adSlot="1234567890"
-            format="horizontal"
-          />
-        </div> */}
-
         {/* Trending Section */}
-        {trendingCelebrities.length > 0 && (
+        {!isLoading && trendingCelebrities.length > 0 && (
           <div className="container mx-auto px-4 py-8 max-w-7xl">
             <Card>
               <CardHeader>
@@ -238,18 +348,21 @@ const FamousBirthdays: React.FC = () => {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {trendingCelebrities.map((celebrity: any) => {
-                    const age = calculateAge(celebrity.birthdate);
+                    const age = celebrity.birthdate ? calculateAge(celebrity.birthdate) : null;
                     return (
                       <Link key={celebrity.id} to={`/celebrity/${celebrity.slug}`}>
                         <Card className="overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
                           <div className="relative">
                             <img 
-                              src={celebrity.image} 
+                              src={celebrity.image || celebrity.image_url || '/placeholder.svg'} 
                               alt={`${celebrity.name}`}
                               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                               loading="lazy"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder.svg';
+                              }}
                             />
-                            {celebrity.trending && <TrendingBadge />}
+                            {(celebrity.trending || celebrity.today_trending) && <TrendingBadge />}
                             {celebrity.popularity_score && <PopularityBadge score={celebrity.popularity_score} />}
                           </div>
                           <CardContent className="p-4">
@@ -261,7 +374,7 @@ const FamousBirthdays: React.FC = () => {
                                 {celebrity.profession}
                               </Badge>
                             </div>
-                            <p className="text-xs text-muted-foreground">Age: {age} years</p>
+                            {age && <p className="text-xs text-muted-foreground">Age: {age} years</p>}
                           </CardContent>
                         </Card>
                       </Link>
@@ -275,6 +388,11 @@ const FamousBirthdays: React.FC = () => {
 
         {/* Main Content with Sidebar */}
         <div className="container mx-auto px-4 py-6 max-w-7xl">
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Left Sidebar - Category Navigation */}
             <aside className="lg:w-64 space-y-4" role="navigation" aria-label="Category filters">
@@ -390,76 +508,97 @@ const FamousBirthdays: React.FC = () => {
               ) : (
                 <>
                   <ul className="space-y-4 mb-6">
-                    {paginatedCelebrities.map((celebrity: any, index) => {
-                      const age = calculateAge(celebrity.birthdate);
-                      const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
+                    {paginatedCelebrities.map((celebrity: any) => {
+                      const age = celebrity.birthdate ? calculateAge(celebrity.birthdate) : null;
+                      const socialLinks = celebrity.social_links || {};
                       
                       return (
-                        <li key={celebrity.id}>
-                          <Link to={`/celebrity/${celebrity.slug}`}>
-                            <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer">
-                              <CardContent className="p-0">
-                                <article className="flex flex-col sm:flex-row gap-4 p-4">
-                                  <div className="relative w-full sm:w-40 h-40 flex-shrink-0 overflow-hidden rounded-md">
-                                    <img 
-                                      src={celebrity.image} 
-                                      alt={`${celebrity.name} profile picture`}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                      loading="lazy"
-                                      width="160"
-                                      height="160"
-                                    />
-                                    {celebrity.trending && <TrendingBadge />}
-                                    {celebrity.popularity_score && <PopularityBadge score={celebrity.popularity_score} />}
-                                  </div>
-                                  
-                                  <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">
-                                      {celebrity.name}
-                                    </h3>
-                                    
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                      <Badge variant="secondary" className="text-xs">
-                                        {celebrity.profession}
-                                      </Badge>
-                                      <Badge variant="outline" className="text-xs">
-                                        {celebrity.country}
-                                      </Badge>
+                        <li key={celebrity.id || celebrity.slug}>
+                          <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                            <div className="flex flex-col sm:flex-row gap-4 p-4">
+                              {/* Image */}
+                              <Link to={`/celebrity/${celebrity.slug}`} className="flex-shrink-0">
+                                <div className="relative w-full sm:w-32 h-32 rounded-lg overflow-hidden group">
+                                  <img 
+                                    src={celebrity.image || celebrity.image_url || '/placeholder.svg'} 
+                                    alt={celebrity.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    loading="lazy"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/placeholder.svg';
+                                    }}
+                                  />
+                                  {(celebrity.trending || celebrity.today_trending) && (
+                                    <div className="absolute top-2 left-2">
+                                      <TrendingBadge />
                                     </div>
-                                    
-                                    <div className="space-y-1 text-sm text-muted-foreground mb-2">
-                                      <div className="flex items-center gap-2">
-                                        <Calendar className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-                                        <span>{birthDate} • Age: {age} years • {celebrity.birth_sign}</span>
-                                      </div>
-                                      <div className="flex items-center gap-2">
-                                        <MapPin className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-                                        <span className="line-clamp-1">{celebrity.birthplace}</span>
-                                      </div>
-                                    </div>
-                                    
-                                    <p className="text-sm text-muted-foreground line-clamp-2">
-                                      {celebrity.excerpt}
-                                    </p>
+                                  )}
+                                </div>
+                              </Link>
 
-                                    {celebrity.social_links && Object.keys(celebrity.social_links).length > 0 && (
-                                      <div className="flex gap-3 mt-3">
-                                        {Object.entries(celebrity.social_links).map(([platform, url]) => (
-                                          <span
-                                            key={platform}
-                                            className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                                            aria-label={`${celebrity.name} on ${platform}`}
-                                          >
-                                            {getSocialIcon(platform)}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    )}
+                              {/* Content */}
+                              <div className="flex-1 min-w-0">
+                                <Link to={`/celebrity/${celebrity.slug}`}>
+                                  <h3 className="text-lg font-bold text-foreground hover:text-primary transition-colors mb-2 line-clamp-1">
+                                    {celebrity.name}
+                                  </h3>
+                                </Link>
+                                
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {celebrity.profession}
+                                  </Badge>
+                                  {celebrity.popularity_score && celebrity.popularity_score >= 80 && (
+                                    <Badge variant="default" className="text-xs bg-yellow-500 hover:bg-yellow-600">
+                                      ⭐ Popular
+                                    </Badge>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1 text-sm text-muted-foreground mb-3">
+                                  {celebrity.birthdate && (
+                                    <div className="flex items-center gap-2">
+                                      <Calendar className="w-4 h-4" />
+                                      <span>
+                                        {format(new Date(celebrity.birthdate), "MMMM d, yyyy")}
+                                        {age && ` (${age} years old)`}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {celebrity.birthplace && celebrity.country && (
+                                    <div className="flex items-center gap-2">
+                                      <MapPin className="w-4 h-4" />
+                                      <span>{celebrity.birthplace}, {celebrity.country}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {celebrity.excerpt && (
+                                  <p className="text-sm text-foreground mb-3 line-clamp-2">
+                                    {celebrity.excerpt}
+                                  </p>
+                                )}
+
+                                {/* Social Links */}
+                                {Object.keys(socialLinks).length > 0 && (
+                                  <div className="flex gap-2 flex-wrap">
+                                    {Object.entries(socialLinks).map(([platform, url]) => (
+                                      <a 
+                                        key={platform}
+                                        href={url as string}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-muted-foreground hover:text-primary transition-colors"
+                                        aria-label={`${celebrity.name} on ${platform}`}
+                                      >
+                                        {getSocialIcon(platform)}
+                                      </a>
+                                    ))}
                                   </div>
-                                </article>
-                              </CardContent>
-                            </Card>
-                          </Link>
+                                )}
+                              </div>
+                            </div>
+                          </Card>
                         </li>
                       );
                     })}
@@ -467,79 +606,61 @@ const FamousBirthdays: React.FC = () => {
 
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <nav aria-label="Pagination">
-                      <Pagination>
-                        <PaginationContent>
-                          <PaginationItem>
-                            <PaginationPrevious 
-                              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                              aria-label="Go to previous page"
-                            />
-                          </PaginationItem>
-                          
-                          {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                              pageNum = totalPages - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
-                            }
-                            
-                            return (
-                              <PaginationItem key={pageNum}>
+                    <Pagination className="mt-8">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                        
+                        {[...Array(Math.min(5, totalPages))].map((_, idx) => {
+                          const pageNum = idx + 1;
+                          return (
+                            <PaginationItem key={pageNum}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(pageNum)}
+                                isActive={currentPage === pageNum}
+                                className="cursor-pointer"
+                              >
+                                {pageNum}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        })}
+
+                        {totalPages > 5 && (
+                          <>
+                            {currentPage > 3 && <span className="px-2">...</span>}
+                            {currentPage > 5 && (
+                              <PaginationItem>
                                 <PaginationLink
-                                  onClick={() => setCurrentPage(pageNum)}
-                                  isActive={currentPage === pageNum}
+                                  onClick={() => setCurrentPage(totalPages)}
                                   className="cursor-pointer"
-                                  aria-label={`Go to page ${pageNum}`}
-                                  aria-current={currentPage === pageNum ? "page" : undefined}
                                 >
-                                  {pageNum}
+                                  {totalPages}
                                 </PaginationLink>
                               </PaginationItem>
-                            );
-                          })}
-                          
-                          <PaginationItem>
-                            <PaginationNext 
-                              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                              aria-label="Go to next page"
-                            />
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    </nav>
+                            )}
+                          </>
+                        )}
+
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   )}
                 </>
               )}
             </div>
-
-            {/* Right Sidebar - Ads */}
-            <aside className="lg:w-80 space-y-4" id="ad-side">
-              {/* <Card className="p-4 sticky top-4">
-                <h3 className="font-bold text-sm mb-3 text-foreground">Sponsored</h3>
-                <AdSenseBanner 
-                  adSlot="0987654321"
-                  format="vertical"
-                />
-              </Card> */}
-            </aside>
           </div>
+          )}
         </div>
-
-        {/* Bottom Ad Banner */}
-        {/* <div className="container mx-auto px-4 py-4 max-w-7xl">
-          <AdSenseBanner 
-            adSlot="1122334455"
-            format="large-horizontal" 
-          />
-        </div> */}
       </main>
     </React.Fragment>
   );

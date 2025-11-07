@@ -1,5 +1,8 @@
 project_id = "ryetajignnzczcybyggr"
 
+[functions.migrate-celebrities-to-db]
+verify_jwt = false
+
 [functions.generate-birthday-wish]
 verify_jwt = false
 
