@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import celebritiesData from "@/../data/explore_famous_birthdays.json";
+import celebritiesData from "@/data/explore_famous_birthdays.json";
 
 const CelebrityDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();

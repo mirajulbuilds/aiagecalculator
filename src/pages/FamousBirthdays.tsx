@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import celebrityData from "../../data/explore_famous_birthdays.json";
+import celebritiesData from "@/data/explore_famous_birthdays.json";
 
 const ITEMS_PER_PAGE = 50;
 
@@ -20,8 +20,8 @@ const FamousBirthdays: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const celebrities = celebrityData.celebrities;
-  const categories = celebrityData.categories;
+  const celebrities = celebritiesData.celebrities;
+  const categories = celebritiesData.categories;
 
   const filteredCelebrities = useMemo(() => {
     let filtered = celebrities.filter((celebrity) => {
