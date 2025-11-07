@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Calendar, MapPin, Briefcase, TrendingUp, ExternalLink, Instagram, Twitter, Youtube, Globe, Facebook } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Briefcase, Users, Star, Sparkles, Instagram, Twitter, Globe, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import { PopularityRankCard } from "@/components/PopularityRankCard";
+import { PopularityMetricsTable } from "@/components/PopularityMetricsTable";
+import { CategoryMemberBadge } from "@/components/CategoryMemberBadge";
+import { RelatedCelebrityCard } from "@/components/RelatedCelebrityCard";
+import { CelebritySection } from "@/components/CelebritySection";
 import celebritiesData from "@/data/explore_famous_birthdays.json";
 
 const CelebrityDetail: React.FC = () => {
@@ -35,7 +40,46 @@ const CelebrityDetail: React.FC = () => {
 
   const age = differenceInYears(new Date(), new Date(celebrity.birthdate));
   const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
+  const birthMonth = format(new Date(celebrity.birthdate), 'MMMM');
+  const birthDay = format(new Date(celebrity.birthdate), 'd');
   const socialLinks = celebrity.social_links;
+
+  // Get related celebrities
+  const relatedCelebrities = useMemo(() => {
+    if (!celebrity.fans_also_viewed) return [];
+    return celebrity.fans_also_viewed
+      .map((slug: string) => celebritiesData.celebrities.find((c: any) => c.slug === slug))
+      .filter(Boolean)
+      .slice(0, 4);
+  }, [celebrity]);
+
+  // Get same birthday celebrities
+  const sameBirthdayCelebrities = useMemo(() => {
+    return celebritiesData.celebrities
+      .filter((c: any) => {
+        const cBirthDate = format(new Date(c.birthdate), 'MMMM d');
+        const currentBirthDate = format(new Date(celebrity.birthdate), 'MMMM d');
+        return c.id !== celebrity.id && cBirthDate === currentBirthDate;
+      })
+      .slice(0, 6);
+  }, [celebrity]);
+
+  // Get same zodiac sign celebrities
+  const sameZodiacCelebrities = useMemo(() => {
+    return celebritiesData.celebrities
+      .filter((c: any) => c.id !== celebrity.id && c.birth_sign === celebrity.birth_sign)
+      .slice(0, 6);
+  }, [celebrity]);
+
+  // Popularity metrics
+  const popularityMetrics = [
+    { label: "Most Popular", rank: celebrity.popularity_rank_overall || 0 },
+    { label: celebrity.profession, rank: celebrity.popularity_rank_profession || 0 },
+    { label: `Born in ${celebrity.country}`, rank: celebrity.popularity_rank_country || 0 },
+    { label: `Born on ${birthMonth} ${birthDay}`, rank: celebrity.popularity_rank_birthdate || 0 },
+    { label: `${age} Year Olds`, rank: celebrity.popularity_rank_age || 0 },
+    { label: celebrity.birth_sign, rank: celebrity.popularity_rank_zodiac || 0 },
+  ];
 
   return (
     <React.Fragment>
@@ -249,6 +293,11 @@ const CelebrityDetail: React.FC = () => {
                 </div>
               </Card>
 
+              {/* Popularity Rank Card */}
+              {celebrity.popularity_rank_overall && (
+                <PopularityRankCard rank={celebrity.popularity_rank_overall} className="mb-8" />
+              )}
+
               {/* Full Profile Article */}
               {celebrity.profile_html && (
                 <Card className="mb-8">
@@ -259,6 +308,71 @@ const CelebrityDetail: React.FC = () => {
                     />
                   </CardContent>
                 </Card>
+              )}
+
+              {/* Popularity Metrics */}
+              <PopularityMetricsTable metrics={popularityMetrics} className="mb-8" />
+
+              {/* Category Memberships */}
+              {celebrity.category_memberships && celebrity.category_memberships.length > 0 && (
+                <CelebritySection title="IS A MEMBER OF" icon={Users} className="mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {celebrity.category_memberships.map((category: string) => (
+                      <CategoryMemberBadge key={category} category={category} />
+                    ))}
+                  </div>
+                </CelebritySection>
+              )}
+
+              {/* Fans Also Viewed */}
+              {relatedCelebrities.length > 0 && (
+                <CelebritySection title="FANS ALSO VIEWED" icon={Star} className="mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {relatedCelebrities.map((c: any) => (
+                      <RelatedCelebrityCard
+                        key={c.slug}
+                        slug={c.slug}
+                        name={c.name}
+                        profession={c.profession}
+                        image={c.image}
+                      />
+                    ))}
+                  </div>
+                </CelebritySection>
+              )}
+
+              {/* Same Birthday */}
+              {sameBirthdayCelebrities.length > 0 && (
+                <CelebritySection title={`MORE ${birthMonth.toUpperCase()} ${birthDay} BIRTHDAYS`} icon={Calendar} className="mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {sameBirthdayCelebrities.map((c: any) => (
+                      <RelatedCelebrityCard
+                        key={c.slug}
+                        slug={c.slug}
+                        name={c.name}
+                        profession={c.profession}
+                        image={c.image}
+                      />
+                    ))}
+                  </div>
+                </CelebritySection>
+              )}
+
+              {/* Same Zodiac */}
+              {sameZodiacCelebrities.length > 0 && (
+                <CelebritySection title={`MORE ${celebrity.birth_sign.toUpperCase()}`} icon={Sparkles} className="mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {sameZodiacCelebrities.map((c: any) => (
+                      <RelatedCelebrityCard
+                        key={c.slug}
+                        slug={c.slug}
+                        name={c.name}
+                        profession={c.profession}
+                        image={c.image}
+                      />
+                    ))}
+                  </div>
+                </CelebritySection>
               )}
 
               {/* Quick Facts */}

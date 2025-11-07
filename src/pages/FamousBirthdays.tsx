@@ -1,14 +1,16 @@
 import React, { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { Search, ArrowLeft, Calendar, MapPin, Instagram, Twitter, Youtube, Facebook, Globe, Filter } from "lucide-react";
+import { Search, ArrowLeft, Calendar, MapPin, Instagram, Twitter, Youtube, Facebook, Globe, Filter, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import { PopularityBadge } from "@/components/PopularityBadge";
+import { TrendingBadge } from "@/components/TrendingBadge";
 import celebritiesData from "@/data/explore_famous_birthdays.json";
 
 const ITEMS_PER_PAGE = 50;
@@ -18,13 +20,14 @@ const FamousBirthdays: React.FC = () => {
   const [selectedProfession, setSelectedProfession] = useState<string>("all");
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"popular" | "trending" | "az" | "recent">("popular");
   const [currentPage, setCurrentPage] = useState(1);
 
   const celebrities = celebritiesData.celebrities;
   const categories = celebritiesData.categories;
 
   const filteredCelebrities = useMemo(() => {
-    let filtered = celebrities.filter((celebrity) => {
+    let filtered = celebrities.filter((celebrity: any) => {
       const matchesSearch = 
         celebrity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         celebrity.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -42,11 +45,35 @@ const FamousBirthdays: React.FC = () => {
       return matchesSearch && matchesProfession && matchesCountry && matchesMonth;
     });
 
-    // Sort by name A-Z
-    filtered.sort((a, b) => a.name.localeCompare(b.name));
+    // Sort based on selected option
+    switch (sortBy) {
+      case "popular":
+        filtered.sort((a: any, b: any) => (b.popularity_score || 0) - (a.popularity_score || 0));
+        break;
+      case "trending":
+        filtered.sort((a: any, b: any) => {
+          if (a.trending && !b.trending) return -1;
+          if (!a.trending && b.trending) return 1;
+          return (b.popularity_score || 0) - (a.popularity_score || 0);
+        });
+        break;
+      case "az":
+        filtered.sort((a: any, b: any) => a.name.localeCompare(b.name));
+        break;
+      case "recent":
+        filtered.sort((a: any, b: any) => b.id.localeCompare(a.id));
+        break;
+    }
 
     return filtered;
-  }, [searchQuery, selectedProfession, selectedCountry, selectedMonth, celebrities]);
+  }, [searchQuery, selectedProfession, selectedCountry, selectedMonth, sortBy, celebrities]);
+
+  const trendingCelebrities = useMemo(() => {
+    return celebrities
+      .filter((c: any) => c.trending)
+      .sort((a: any, b: any) => (b.popularity_score || 0) - (a.popularity_score || 0))
+      .slice(0, 8);
+  }, [celebrities]);
 
   const totalPages = Math.ceil(filteredCelebrities.length / ITEMS_PER_PAGE);
   const paginatedCelebrities = filteredCelebrities.slice(
@@ -76,6 +103,7 @@ const FamousBirthdays: React.FC = () => {
     setSelectedProfession("all");
     setSelectedCountry("all");
     setSelectedMonth("all");
+    setSortBy("popular");
     setCurrentPage(1);
   };
 
@@ -202,6 +230,54 @@ const FamousBirthdays: React.FC = () => {
           />
         </div>
 
+        {/* Trending Section */}
+        {trendingCelebrities.length > 0 && (
+          <div className="container mx-auto px-4 py-8 max-w-7xl">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-3xl flex items-center gap-2">
+                  <TrendingUp className="w-8 h-8 text-red-500" />
+                  Trending Now
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {trendingCelebrities.map((celebrity: any) => {
+                    const age = calculateAge(celebrity.birthdate);
+                    return (
+                      <Link key={celebrity.id} to={`/celebrity/${celebrity.slug}`}>
+                        <Card className="overflow-hidden hover:shadow-xl transition-all group cursor-pointer">
+                          <div className="relative">
+                            <img 
+                              src={celebrity.image} 
+                              alt={`${celebrity.name}`}
+                              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                            {celebrity.trending && <TrendingBadge />}
+                            {celebrity.popularity_score && <PopularityBadge score={celebrity.popularity_score} />}
+                          </div>
+                          <CardContent className="p-4">
+                            <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-1 mb-1">
+                              {celebrity.name}
+                            </h3>
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              <Badge variant="secondary" className="text-xs">
+                                {celebrity.profession}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">Age: {age} years</p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Main Content with Sidebar */}
         <div className="container mx-auto px-4 py-6 max-w-7xl">
           <div className="flex flex-col lg:flex-row gap-6">
@@ -286,15 +362,28 @@ const FamousBirthdays: React.FC = () => {
 
             {/* Center - Main Content */}
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
                 <h2 className="text-xl md:text-2xl font-bold text-foreground">
                   {searchQuery ? `Search Results (${filteredCelebrities.length})` : `All Celebrities (${filteredCelebrities.length})`}
                 </h2>
-                {totalPages > 0 && (
-                  <p className="text-sm text-muted-foreground" aria-live="polite">
-                    Page {currentPage} of {totalPages}
-                  </p>
-                )}
+                <div className="flex items-center gap-3">
+                  <label htmlFor="sort-by" className="text-sm font-medium whitespace-nowrap">Sort by:</label>
+                  <select
+                    id="sort-by"
+                    value={sortBy}
+                    onChange={(e) => {
+                      setSortBy(e.target.value as any);
+                      setCurrentPage(1);
+                    }}
+                    className="p-2 text-sm border rounded-md bg-background text-foreground"
+                    aria-label="Sort celebrities"
+                  >
+                    <option value="popular">Most Popular</option>
+                    <option value="trending">Trending</option>
+                    <option value="az">A-Z</option>
+                    <option value="recent">Recently Added</option>
+                  </select>
+                </div>
               </div>
 
               {filteredCelebrities.length === 0 ? (
@@ -306,7 +395,7 @@ const FamousBirthdays: React.FC = () => {
               ) : (
                 <>
                   <ul className="space-y-4 mb-6">
-                    {paginatedCelebrities.map((celebrity, index) => {
+                    {paginatedCelebrities.map((celebrity: any, index) => {
                       const age = calculateAge(celebrity.birthdate);
                       const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
                       
@@ -318,15 +407,17 @@ const FamousBirthdays: React.FC = () => {
                             <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer">
                               <CardContent className="p-0">
                                 <article className="flex flex-col sm:flex-row gap-4 p-4">
-                                  <div className="relative w-full sm:w-32 h-32 flex-shrink-0 overflow-hidden rounded-md">
+                                  <div className="relative w-full sm:w-40 h-40 flex-shrink-0 overflow-hidden rounded-md">
                                     <img 
                                       src={celebrity.image} 
                                       alt={`${celebrity.name} profile picture`}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                       loading="lazy"
-                                      width="128"
-                                      height="128"
+                                      width="160"
+                                      height="160"
                                     />
+                                    {celebrity.trending && <TrendingBadge />}
+                                    {celebrity.popularity_score && <PopularityBadge score={celebrity.popularity_score} />}
                                   </div>
                                   
                                   <div className="flex-1 min-w-0">
@@ -363,7 +454,7 @@ const FamousBirthdays: React.FC = () => {
                                         {Object.entries(celebrity.social_links).map(([platform, url]) => (
                                           <a
                                             key={platform}
-                                            href={url}
+                                            href={url as string}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-muted-foreground hover:text-primary transition-colors"
