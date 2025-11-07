@@ -21,7 +21,7 @@ export const featuredCelebrities: Celebrity[] = [
     placeOfBirth: "Concord, California, USA",
     profession: "Actor, Producer, Director",
     zodiacSign: "Cancer",
-    photoUrl: "/src/assets/celebrities/tom-hanks.jpg",
+    photoUrl: "/celebrities/tom-hanks.jpg",
     biography: `Tom Hanks is an American actor and filmmaker widely regarded as one of the greatest actors of all time. Known for his compelling performances and remarkable versatility, Hanks has become a cultural icon through his roles in some of cinema's most beloved films. Born in Concord, California, Hanks developed an early interest in acting during his high school years. After studying theater at California State University, Sacramento, he moved to New York City to pursue his acting career professionally.
 
 Hanks first gained national attention with the television sitcom "Bosom Buddies" (1980-1982) and the comedy film "Splash" (1984), which established him as a talented comedic actor. However, it was his dramatic turn in "Philadelphia" (1993) that showcased his dramatic range, earning him his first Academy Award for Best Actor. He won his second consecutive Oscar the following year for his iconic performance in "Forrest Gump" (1994), cementing his status as one of Hollywood's most respected actors.
@@ -48,7 +48,7 @@ Hanks is known not only for his professional achievements but also for his genui
     placeOfBirth: "West Reading, Pennsylvania, USA",
     profession: "Singer-Songwriter, Producer",
     zodiacSign: "Sagittarius",
-    photoUrl: "/src/assets/celebrities/taylor-swift.jpg",
+    photoUrl: "/celebrities/taylor-swift.jpg",
     biography: `Taylor Swift is an American singer-songwriter who has become one of the most influential and successful artists of her generation. Born in West Reading, Pennsylvania, Swift showed an early interest in music and began performing in local talent competitions and events as a child. At age 14, she moved with her family to Nashville, Tennessee, to pursue a career in country music, making her the youngest artist ever signed by Sony/ATV Music publishing house.
 
 Swift released her self-titled debut album in 2006 at age 16, which was met with critical and commercial success. Her ability to write deeply personal, narrative-driven songs resonated with audiences, particularly young women, and established her as a fresh voice in country music. Albums like "Fearless" (2008) and "Speak Now" (2010) cemented her status as a country music star, with "Fearless" winning the Grammy for Album of the Year.
@@ -75,7 +75,7 @@ Beyond her musical accomplishments, Swift has become known for her business acum
     placeOfBirth: "Pretoria, South Africa",
     profession: "Entrepreneur, Engineer, Inventor",
     zodiacSign: "Cancer",
-    photoUrl: "/src/assets/celebrities/elon-musk.jpg",
+    photoUrl: "/celebrities/elon-musk.jpg",
     biography: `Elon Musk is a business magnate, entrepreneur, and engineer who has become one of the most influential and controversial figures in technology and business. Born in Pretoria, South Africa, Musk displayed an early aptitude for technology and entrepreneurship. At age 12, he created and sold a video game called Blastar. He moved to Canada at age 17 and later to the United States, where he attended the University of Pennsylvania, earning degrees in economics and physics.
 
 Musk's entrepreneurial journey began in the mid-1990s with Zip2, a web software company he co-founded with his brother Kimbal. After selling Zip2, he co-founded X.com, which later became PayPal and was sold to eBay for $1.5 billion in 2002. These early successes provided the capital for Musk's more ambitious ventures. In 2002, he founded SpaceX with the goal of reducing space transportation costs and enabling the colonization of Mars. Despite initial setbacks, SpaceX has achieved numerous milestones, including the first privately funded spacecraft to reach orbit and the development of reusable rockets.
@@ -102,7 +102,7 @@ Musk is known for his ambitious vision of the future, including sustainable ener
     placeOfBirth: "Los Angeles, California, USA",
     profession: "Actor, Producer, Environmental Activist",
     zodiacSign: "Scorpio",
-    photoUrl: "/src/assets/celebrities/leonardo-dicaprio.jpg",
+    photoUrl: "/celebrities/leonardo-dicaprio.jpg",
     biography: `Leonardo DiCaprio is an American actor and film producer who has become one of the most acclaimed and recognizable actors of his generation. Born in Los Angeles, California, DiCaprio began his career appearing in television commercials and educational films before landing recurring roles on television shows. His breakthrough came with his performance in "This Boy's Life" (1993) alongside Robert De Niro, followed by critical acclaim for "What's Eating Gilbert Grape" (1993), which earned him his first Academy Award nomination at age 19.
 
 DiCaprio achieved global superstardom with his role as Jack Dawson in James Cameron's "Titanic" (1997), which became the highest-grossing film of its time and made him one of the most famous actors in the world. Rather than pursuing typical leading man roles, DiCaprio chose to work with respected directors on challenging projects. His collaborations with Martin Scorsese have been particularly fruitful, including films like "Gangs of New York" (2002), "The Aviator" (2004), "The Departed" (2006), "Shutter Island" (2010), and "The Wolf of Wall Street" (2013).
@@ -129,7 +129,7 @@ Beyond acting, DiCaprio is a dedicated environmental activist. He established th
     placeOfBirth: "Grand Prairie, Texas, USA",
     profession: "Singer, Actress, Producer, Entrepreneur",
     zodiacSign: "Cancer",
-    photoUrl: "/src/assets/celebrities/selena-gomez.jpg",
+    photoUrl: "/celebrities/selena-gomez.jpg",
     biography: `Selena Gomez is an American singer, actress, producer, and businesswoman who has built a multifaceted career spanning music, television, film, and business. Born in Grand Prairie, Texas, Gomez began her entertainment career at a young age, appearing on the children's television series "Barney & Friends" alongside Demi Lovato. Her breakthrough came when Disney Channel cast her as the lead in "Wizards of Waverly Place" (2007-2012), which became one of the network's most successful series and launched her to stardom among young audiences.
 
 While achieving success as an actress, Gomez simultaneously pursued a music career. She formed the band Selena Gomez & the Scene, releasing three albums between 2009 and 2011. As a solo artist, she has released albums including "Stars Dance" (2013), "Revival" (2015), and "Rare" (2020), showcasing her evolution from teen pop to more mature pop and dance music. Her songs have topped charts worldwide, and she has become one of the most-followed people on social media, using her platform to connect with fans and advocate for important causes.
@@ -156,7 +156,7 @@ Beyond entertainment, Gomez has expanded into business and production. She launc
     placeOfBirth: "Funchal, Madeira, Portugal",
     profession: "Professional Footballer",
     zodiacSign: "Aquarius",
-    photoUrl: "/src/assets/celebrities/cristiano-ronaldo.jpg",
+    photoUrl: "/celebrities/cristiano-ronaldo.jpg",
     biography: `Cristiano Ronaldo dos Santos Aveiro is a Portuguese professional footballer widely regarded as one of the greatest players of all time. Born in Funchal, Madeira, Portugal, Ronaldo grew up in a working-class family and showed exceptional football talent from a young age. At age 12, he left his family to join Sporting CP's academy in Lisbon, sacrificing a normal childhood to pursue his football dreams. His dedication and natural ability quickly became evident, and by age 16, he was promoted to Sporting's first team.
 
 Ronaldo's professional career took off when Manchester United signed him in 2003 at age 18. Under the management of Sir Alex Ferguson, he developed from a tricky winger into one of the world's most complete and deadly forwards. During six seasons at Manchester United, he won three Premier League titles, one UEFA Champions League, and his first Ballon d'Or in 2008. His time in England transformed him into a global superstar and established his work ethic and competitive mentality that would define his career.
@@ -183,7 +183,7 @@ Beyond his club success, Ronaldo has led Portugal to historic achievements, incl
     placeOfBirth: "Houston, Texas, USA",
     profession: "Singer, Songwriter, Actress, Producer",
     zodiacSign: "Virgo",
-    photoUrl: "/src/assets/celebrities/beyonce.jpg",
+    photoUrl: "/celebrities/beyonce.jpg",
     biography: `Beyoncé Giselle Knowles-Carter is an American singer, songwriter, actress, and businesswoman who has become one of the most influential and successful artists in music history. Born in Houston, Texas, Beyoncé displayed singing and dancing talent from an early age, competing in various talent shows as a child. She rose to fame in the late 1990s as the lead singer of Destiny's Child, one of the best-selling girl groups of all time. The group's success provided the foundation for what would become one of the most remarkable solo careers in music.
 
 Beyoncé launched her solo career with the album "Dangerously in Love" (2003), which debuted at number one and won five Grammy Awards. The album established her as a solo superstar and showcased her vocal abilities and artistic vision. She continued to evolve as an artist with subsequent albums including "B'Day" (2006), "I Am... Sasha Fierce" (2008), and "4" (2011), each demonstrating her growth and willingness to experiment with different musical styles while maintaining commercial success.
@@ -210,7 +210,7 @@ Beyond music, Beyoncé has succeeded in film, fashion, and business. She has sta
     placeOfBirth: "Seattle, Washington, USA",
     profession: "Business Magnate, Software Developer, Philanthropist",
     zodiacSign: "Scorpio",
-    photoUrl: "/src/assets/celebrities/bill-gates.jpg",
+    photoUrl: "/celebrities/bill-gates.jpg",
     biography: `William Henry Gates III, known as Bill Gates, is an American business magnate, software developer, investor, and philanthropist who co-founded Microsoft Corporation and became one of the most influential figures in the personal computer revolution. Born in Seattle, Washington, Gates showed an early aptitude for mathematics and logic. At age 13, he began programming computers and wrote his first software program. He attended Harvard University but dropped out in 1975 to pursue his vision of putting "a computer on every desk and in every home."
 
 In 1975, Gates and his childhood friend Paul Allen founded Microsoft, initially developing software for the Altair 8800, an early personal computer. The company's breakthrough came in 1980 when IBM selected Microsoft to provide an operating system for its first personal computer. Gates bought an existing operating system, modified it, and licensed it to IBM as MS-DOS. Crucially, Microsoft retained the rights to license the system to other manufacturers, a decision that proved instrumental to the company's success as the PC industry exploded.
@@ -237,7 +237,7 @@ In 2000, Gates and his then-wife Melinda French Gates established the Bill & Mel
     placeOfBirth: "Hayward, California, USA",
     profession: "Actor, Producer, Former Professional Wrestler",
     zodiacSign: "Taurus",
-    photoUrl: "/src/assets/celebrities/dwayne-johnson.jpg",
+    photoUrl: "/celebrities/dwayne-johnson.jpg",
     biography: `Dwayne Douglas Johnson, also known by his ring name "The Rock," is an American actor, producer, businessman, and former professional wrestler who has become one of the most recognizable and bankable stars in entertainment. Born into a family of wrestlers in Hayward, California, Johnson initially pursued a career in football, playing at the University of Miami where he was part of the 1991 national championship team. After a brief stint in professional football, he followed his family's legacy and entered professional wrestling.
 
 Johnson joined the WWE (then WWF) in 1996 and quickly became one of the most charismatic and popular performers in the company's history. As "The Rock," he won multiple championships and became known for his electrifying persona, catchphrases ("Can you smell what The Rock is cooking?"), and exceptional mic skills. His larger-than-life personality and natural charisma made him a crossover star who transcended wrestling. During his wrestling career from 1996 to 2004 (with occasional returns afterward), he became one of the biggest draws in WWE history and helped usher in the "Attitude Era," the company's most successful period.
@@ -264,7 +264,7 @@ Beyond entertainment, Johnson has built a business empire including his producti
     placeOfBirth: "Paris, France",
     profession: "Actress, Activist",
     zodiacSign: "Aries",
-    photoUrl: "/src/assets/celebrities/emma-watson.jpg",
+    photoUrl: "/celebrities/emma-watson.jpg",
     biography: `Emma Charlotte Duerre Watson is a British actress and activist who rose to worldwide fame as Hermione Granger in the Harry Potter film series and has since become a prominent advocate for women's rights and education. Born in Paris to English parents, Watson moved to England at age five. At age nine, with no professional acting experience, she was cast as Hermione Granger after eight auditions, beating thousands of other candidates. Her portrayal of the intelligent, brave, and loyal Hermione defined her childhood and adolescence, as she appeared in all eight Harry Potter films from 2001 to 2011.
 
 Growing up in the spotlight presented unique challenges, but Watson handled the transition from child star to adult actress with grace and intelligence. Despite her acting commitments, she prioritized education, attending Brown University and graduating with a degree in English literature in 2014. This commitment to education even while maintaining a successful acting career demonstrated her determination to remain grounded and intellectually engaged beyond Hollywood.
