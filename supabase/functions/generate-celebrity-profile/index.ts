@@ -29,23 +29,24 @@ Country: ${country}
 Generate ONLY valid JSON with this EXACT structure (no markdown, no code blocks, just pure JSON):
 
 {
-  "about": "A comprehensive 800-1000 word biography covering their career journey, major achievements, impact on their industry, notable works, awards, and cultural influence. Write in an engaging, encyclopedic style similar to Wikipedia. Include specific details about their rise to fame, breakthrough moments, and why they're significant in their field. Make it sound real and professional.",
-  "before_fame": "A 100-150 word paragraph about their early life, childhood, education, family background, and what they did before becoming famous. Include realistic details about their upbringing and early interests.",
+  "about": "A comprehensive biography covering their career journey, major achievements, impact on their industry, notable works, awards, and cultural influence. Write in an engaging, encyclopedic style similar to Wikipedia biographies. Include specific details about their rise to fame, breakthrough moments, collaborations, career evolution, controversies (if any), philanthropic work, and why they're significant in their field. Make it sound real and professional with concrete examples and chronological flow. THIS SECTION MUST BE EXACTLY 800-1000 WORDS - count carefully and ensure you write at least 800 words.",
+  "before_fame": "A detailed 100-150 word paragraph about their early life, childhood environment, education, family background, early struggles, and what they did before becoming famous. Include realistic details about their upbringing, early interests, and formative experiences that shaped their career.",
   "trivia": [
-    "Interesting fact 1 about their life, hobbies, or unusual achievements",
-    "Interesting fact 2 about their popularity, records, or fun incidents",
-    "Interesting fact 3 about awards, recognition, or unique characteristics"
+    "Interesting fact 1 about their life, hobbies, unusual achievements, or lesser-known talents",
+    "Interesting fact 2 about their popularity metrics, records broken, or memorable public incidents",
+    "Interesting fact 3 about awards, special recognition, unique characteristics, or surprising connections"
   ],
-  "family_life": "A 100-150 word paragraph describing their parents, siblings, relationships, marital status, and children. Make it realistic and respectful. Include family background and personal relationships.",
-  "associated_with": "A 100-150 word paragraph mentioning 3-4 other celebrities, directors, or industry figures they've collaborated with or are connected to. Explain the nature of these professional relationships and notable projects together."
+  "family_life": "A detailed 100-150 word paragraph describing their parents (names and occupations if relevant), siblings, romantic relationships, marital status, children, and family dynamics. Make it realistic and respectful. Include how family influenced their career and any notable family members.",
+  "associated_with": "A detailed 100-150 word paragraph mentioning 3-4 other celebrities, directors, producers, or industry figures they've collaborated with or are connected to. Explain the nature of these professional relationships, specific projects they worked on together, and the impact of these collaborations on their career."
 }
 
-IMPORTANT: 
-- The "about" section MUST be at least 800 words (aim for 800-1000 words)
-- All content must be original, realistic, and Google Ads-friendly
-- Use proper grammar and engaging storytelling
-- Make it sound like a real celebrity biography
-- Return ONLY the JSON object, no other text`;
+CRITICAL REQUIREMENTS: 
+- The "about" section MUST be MINIMUM 800 words, ideally 900-1000 words. Write multiple detailed paragraphs.
+- Break the about section into 4-5 substantial paragraphs covering: early career, breakthrough, peak success, recent work, legacy
+- All content must be original, realistic, and Google Ads-friendly (no controversial content)
+- Use proper grammar, varied sentence structure, and engaging storytelling
+- Make it sound like a real Wikipedia celebrity biography with specific examples
+- Return ONLY the JSON object, no markdown formatting, no code blocks`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -103,10 +104,13 @@ IMPORTANT:
       throw new Error("Generated profile is missing required fields");
     }
 
-    // Check word count of about section (rough estimate)
+    // Check word count of about section and REJECT if too short
     const wordCount = profileData.about.split(/\s+/).length;
-    if (wordCount < 700) {
-      console.warn(`About section only has ${wordCount} words, expected 800+`);
+    console.log(`Generated about section has ${wordCount} words`);
+    
+    if (wordCount < 750) {
+      console.error(`About section only has ${wordCount} words, expected minimum 800`);
+      throw new Error(`Generated profile is too short (${wordCount} words). The about section must be at least 800 words. Please try again.`);
     }
 
     return new Response(

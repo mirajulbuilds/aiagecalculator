@@ -299,7 +299,7 @@ const CelebrityDetail: React.FC = () => {
               )}
 
               {/* Full Profile Article */}
-              {((celebrity as any).about || celebrity.profile_html) && (
+              {(celebrity as any).about && (
                 <Card className="mb-8">
                   <CardContent className="pt-6">
                     <article className="space-y-8">
@@ -312,17 +312,6 @@ const CelebrityDetail: React.FC = () => {
                               <p key={index}>{paragraph}</p>
                             ))}
                           </div>
-                        </div>
-                      )}
-                      
-                      {/* Fallback to profile_html if no about field */}
-                      {!(celebrity as any).about && celebrity.profile_html && (
-                        <div>
-                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">About {celebrity.name.split(' ')[0]}</h2>
-                          <div 
-                            className="text-muted-foreground leading-relaxed prose prose-slate dark:prose-invert max-w-none"
-                            dangerouslySetInnerHTML={{ __html: celebrity.profile_html }}
-                          />
                         </div>
                       )}
                       
