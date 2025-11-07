@@ -528,7 +528,7 @@
       "related_celebrities": ["jennifer-lopez", "bad-bunny", "beyonce"]
     }
   ],
-  "filters": {
+  "categories": {
     "professions": [
       "Actor",
       "Singer",
