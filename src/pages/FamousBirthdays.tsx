@@ -218,12 +218,12 @@ const FamousBirthdays: React.FC = () => {
         </header>
 
         {/* Top Ad Banner */}
-        <div className="container mx-auto px-4 py-4 max-w-7xl" id="ad-top">
+        {/* <div className="container mx-auto px-4 py-4 max-w-7xl" id="ad-top">
           <AdSenseBanner 
             adSlot="1234567890"
             format="horizontal"
           />
-        </div>
+        </div> */}
 
         {/* Trending Section */}
         {trendingCelebrities.length > 0 && (
@@ -472,12 +472,12 @@ const FamousBirthdays: React.FC = () => {
                       // Add inline ad after 5th item on first page
                       if (index === 4 && currentPage === 1) {
                         items.push(
-                          <li key="inline-ad" id="ad-inline" className="my-4">
+                          {/* <li key="inline-ad" id="ad-inline" className="my-4">
                             <AdSenseBanner 
                               adSlot="5544332211"
-                              format="horizontal"
+                              format="horizontal" 
                             />
-                          </li>
+                          </li> */}
                         );
                       }
 
@@ -542,24 +542,24 @@ const FamousBirthdays: React.FC = () => {
 
             {/* Right Sidebar - Ads */}
             <aside className="lg:w-80 space-y-4" id="ad-side">
-              <Card className="p-4 sticky top-4">
+              {/* <Card className="p-4 sticky top-4">
                 <h3 className="font-bold text-sm mb-3 text-foreground">Sponsored</h3>
                 <AdSenseBanner 
                   adSlot="0987654321"
                   format="vertical"
                 />
-              </Card>
+              </Card> */}
             </aside>
           </div>
         </div>
 
         {/* Bottom Ad Banner */}
-        <div className="container mx-auto px-4 py-4 max-w-7xl">
+        {/* <div className="container mx-auto px-4 py-4 max-w-7xl">
           <AdSenseBanner 
             adSlot="1122334455"
-            format="large-horizontal"
+            format="large-horizontal" 
           />
-        </div>
+        </div> */}
       </main>
     </React.Fragment>
   );

@@ -160,9 +160,9 @@ const CelebrityDetail: React.FC = () => {
         </section>
 
         {/* Ad Banner Top */}
-        <div className="container mx-auto px-4 py-6 max-w-6xl">
+        {/* <div className="container mx-auto px-4 py-6 max-w-6xl">
           <AdSenseBanner adSlot="1234567890" format="horizontal" />
-        </div>
+        </div> */}
 
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="flex flex-col lg:flex-row gap-8">
@@ -417,18 +417,18 @@ const CelebrityDetail: React.FC = () => {
 
             {/* Sidebar */}
             <aside className="lg:w-80 space-y-6">
-              <Card className="p-6 sticky top-4">
+              {/* <Card className="p-6 sticky top-4">
                 <h3 className="font-bold text-lg mb-4">Sponsored</h3>
                 <AdSenseBanner adSlot="0987654321" format="vertical" />
-              </Card>
+              </Card> */}
             </aside>
           </div>
         </div>
 
         {/* Bottom Ad */}
-        <div className="container mx-auto px-4 py-6 max-w-6xl">
+        {/* <div className="container mx-auto px-4 py-6 max-w-6xl">
           <AdSenseBanner adSlot="1122334455" format="large-horizontal" />
-        </div>
+        </div> */}
       </main>
     </React.Fragment>
   );
