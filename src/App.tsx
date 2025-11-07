@@ -14,6 +14,7 @@ const Index = lazy(() => import("./pages/Index"));
 const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
 const CelebrityDetail = lazy(() => import("./pages/CelebrityDetail"));
 const CelebrityAdmin = lazy(() => import("./pages/CelebrityAdmin"));
+const CelebrityProfileGenerator = lazy(() => import("./pages/CelebrityProfileGenerator"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
@@ -50,6 +51,7 @@ const App = () => (
                     <Route path="/famous-birthdays" element={<FamousBirthdays />} />
                     <Route path="/celebrity/:slug" element={<CelebrityDetail />} />
                     <Route path="/celebrity-admin" element={<CelebrityAdmin />} />
+                    <Route path="/celebrity-generator" element={<CelebrityProfileGenerator />} />
                     <Route path="/famous-birthdays/tom-hanks" element={<TomHanks />} />
                     <Route path="/famous-birthdays/taylor-swift" element={<TaylorSwift />} />
                     <Route path="/famous-birthdays/elon-musk" element={<ElonMusk />} />

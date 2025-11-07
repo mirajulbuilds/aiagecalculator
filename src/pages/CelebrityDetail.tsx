@@ -299,23 +299,37 @@ const CelebrityDetail: React.FC = () => {
               )}
 
               {/* Full Profile Article */}
-              {celebrity.profile_html && (
+              {((celebrity as any).about || celebrity.profile_html) && (
                 <Card className="mb-8">
                   <CardContent className="pt-6">
-                    <article className="space-y-6">
+                    <article className="space-y-8">
                       {/* About Section */}
-                      <div>
-                        <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">About {celebrity.name.split(' ')[0]}</h2>
-                        <div 
-                          className="text-muted-foreground leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: celebrity.profile_html }}
-                        />
-                      </div>
+                      {(celebrity as any).about && (
+                        <div className="prose prose-slate dark:prose-invert max-w-none">
+                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">About {celebrity.name.split(' ')[0]}</h2>
+                          <div className="text-muted-foreground leading-relaxed space-y-4">
+                            {(celebrity as any).about.split('\n\n').map((paragraph: string, index: number) => (
+                              <p key={index}>{paragraph}</p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Fallback to profile_html if no about field */}
+                      {!(celebrity as any).about && celebrity.profile_html && (
+                        <div>
+                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">About {celebrity.name.split(' ')[0]}</h2>
+                          <div 
+                            className="text-muted-foreground leading-relaxed prose prose-slate dark:prose-invert max-w-none"
+                            dangerouslySetInnerHTML={{ __html: celebrity.profile_html }}
+                          />
+                        </div>
+                      )}
                       
                       {/* Before Fame Section */}
                       {celebrity.before_fame && (
                         <div>
-                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Before Fame</h2>
+                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">Before Fame</h2>
                           <p className="text-muted-foreground leading-relaxed">{celebrity.before_fame}</p>
                         </div>
                       )}
@@ -323,15 +337,23 @@ const CelebrityDetail: React.FC = () => {
                       {/* Trivia Section */}
                       {celebrity.trivia && (
                         <div>
-                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Trivia</h2>
-                          <p className="text-muted-foreground leading-relaxed">{celebrity.trivia}</p>
+                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">Trivia</h2>
+                          {Array.isArray(celebrity.trivia) ? (
+                            <ul className="space-y-3 text-muted-foreground leading-relaxed list-disc list-inside">
+                              {celebrity.trivia.map((fact: string, index: number) => (
+                                <li key={index} className="pl-2">{fact}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-muted-foreground leading-relaxed">{celebrity.trivia}</p>
+                          )}
                         </div>
                       )}
                       
                       {/* Family Life Section */}
                       {celebrity.family_life && (
                         <div>
-                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Family Life</h2>
+                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">Family Life</h2>
                           <p className="text-muted-foreground leading-relaxed">{celebrity.family_life}</p>
                         </div>
                       )}
@@ -339,7 +361,7 @@ const CelebrityDetail: React.FC = () => {
                       {/* Associated With Section */}
                       {celebrity.associated_with && (
                         <div>
-                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Associated With</h2>
+                          <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-2">Associated With</h2>
                           <p className="text-muted-foreground leading-relaxed">{celebrity.associated_with}</p>
                         </div>
                       )}

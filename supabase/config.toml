@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.seed-celebrities]
 verify_jwt = false
+
+[functions.generate-celebrity-profile]
+verify_jwt = false
