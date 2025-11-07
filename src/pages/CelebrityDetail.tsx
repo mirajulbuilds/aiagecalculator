@@ -1,7 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Calendar, MapPin, Briefcase, Users, Star, Sparkles, Instagram, Twitter, Globe, Facebook } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Briefcase, Users, Star, Sparkles, Instagram, Twitter, Globe, Facebook, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +13,56 @@ import { PopularityMetricsTable } from "@/components/PopularityMetricsTable";
 import { CategoryMemberBadge } from "@/components/CategoryMemberBadge";
 import { RelatedCelebrityCard } from "@/components/RelatedCelebrityCard";
 import { CelebritySection } from "@/components/CelebritySection";
+import { CelebrityAgeInfo } from "@/components/CelebrityAgeInfo";
+import { supabase } from "@/integrations/supabase/client";
 import celebritiesData from "@/data/explore_famous_birthdays.json";
 
 const CelebrityDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [dbCelebrity, setDbCelebrity] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Find celebrity by slug from static JSON data
-  const celebrity = celebritiesData.celebrities.find(c => c.slug === slug);
+  // Fetch celebrity from database
+  useEffect(() => {
+    const fetchCelebrity = async () => {
+      if (!slug) return;
+      
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('explore_famous_birthdays')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching celebrity:', error);
+        } else if (data) {
+          setDbCelebrity(data);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCelebrity();
+  }, [slug]);
+
+  // Use database celebrity if available, fallback to JSON
+  const celebrity = dbCelebrity || celebritiesData.celebrities.find(c => c.slug === slug);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading celebrity profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!celebrity) {
     return (
@@ -38,11 +81,17 @@ const CelebrityDetail: React.FC = () => {
     );
   }
 
-  const age = differenceInYears(new Date(), new Date(celebrity.birthdate));
-  const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
-  const birthMonth = format(new Date(celebrity.birthdate), 'MMMM');
-  const birthDay = format(new Date(celebrity.birthdate), 'd');
-  const socialLinks = celebrity.social_links;
+  const dateOfBirth = celebrity.dob || celebrity.birthdate;
+  const age = differenceInYears(new Date(), new Date(dateOfBirth));
+  const birthDate = format(new Date(dateOfBirth), 'MMMM d, yyyy');
+  const birthMonth = format(new Date(dateOfBirth), 'MMMM');
+  const birthDay = format(new Date(dateOfBirth), 'd');
+  const socialLinks = celebrity.social_links || {};
+  const birthplace = celebrity.birthplace || 'Unknown';
+  const country = celebrity.country || 'Unknown';
+  const profession = celebrity.profession || 'Celebrity';
+  const birthSign = celebrity.birth_sign || '';
+  const imageUrl = celebrity.image_url || celebrity.image;
 
   // Get related celebrities
   const relatedCelebrities = useMemo(() => {
@@ -173,16 +222,16 @@ const CelebrityDetail: React.FC = () => {
                 <div className="flex flex-col md:flex-row">
                   {/* Image */}
                   <div className="md:w-1/3 relative">
-                    {celebrity.image ? (
+                    {imageUrl ? (
                       <img 
-                        src={celebrity.image} 
-                        alt={`${celebrity.name} - ${celebrity.profession}`}
+                        src={imageUrl} 
+                        alt={`${celebrity.name} - ${profession}`}
                         className="w-full h-64 md:h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-64 md:h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
                         <span className="text-6xl font-bold text-primary/40">
-                          {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                          {celebrity.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                         </span>
                       </div>
                     )}
@@ -196,14 +245,14 @@ const CelebrityDetail: React.FC = () => {
                     
                     <div className="flex flex-wrap gap-2 mb-6">
                       <Badge variant="secondary" className="text-base px-4 py-1">
-                        {celebrity.profession}
+                        {profession}
                       </Badge>
                       <Badge variant="outline" className="text-base px-4 py-1">
-                        {celebrity.country}
+                        {country}
                       </Badge>
-                      {celebrity.birth_sign && (
+                      {birthSign && (
                         <Badge variant="outline" className="text-base px-4 py-1">
-                          {celebrity.birth_sign}
+                          {birthSign}
                         </Badge>
                       )}
                     </div>
@@ -229,7 +278,7 @@ const CelebrityDetail: React.FC = () => {
                         <MapPin className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm">Birthplace</p>
-                          <p className="font-semibold text-foreground text-lg">{celebrity.birthplace}, {celebrity.country}</p>
+                          <p className="font-semibold text-foreground text-lg">{birthplace}, {country}</p>
                         </div>
                       </div>
                     </div>
@@ -292,6 +341,9 @@ const CelebrityDetail: React.FC = () => {
                   </CardContent>
                 </div>
               </Card>
+
+              {/* Age Information Component */}
+              <CelebrityAgeInfo dateOfBirth={dateOfBirth} name={celebrity.name} />
 
               {/* Popularity Rank Card */}
               {celebrity.popularity_rank_overall && (

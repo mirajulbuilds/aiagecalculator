@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.generate-celebrity-profile]
 verify_jwt = false
+
+[functions.auto-complete-profiles]
+verify_jwt = false

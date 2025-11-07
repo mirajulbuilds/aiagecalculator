@@ -16,57 +16,108 @@ export type Database = {
     Tables: {
       explore_famous_birthdays: {
         Row: {
+          about_word_count: number | null
           ai_summary: string | null
+          associated_with: string | null
+          before_fame: string | null
           bio: string | null
+          birth_sign: string | null
+          birthplace: string | null
+          category_memberships: Json | null
           country: string | null
           created_at: string | null
           dob: string
+          excerpt: string | null
+          family_life: string | null
           famous_for: string | null
+          fans_also_viewed: Json | null
           id: string
           image_url: string | null
+          meta_description: string | null
           name: string
+          og_description: string | null
+          og_title: string | null
+          popularity_rank_overall: number | null
+          popularity_rank_profession: number | null
           popularity_score: number | null
           profession: string
+          profile_complete: boolean | null
           region_category: string | null
+          slug: string | null
           social_links: Json | null
           source_url: string | null
           today_trending: boolean | null
+          trivia: Json | null
           updated_at: string | null
         }
         Insert: {
+          about_word_count?: number | null
           ai_summary?: string | null
+          associated_with?: string | null
+          before_fame?: string | null
           bio?: string | null
+          birth_sign?: string | null
+          birthplace?: string | null
+          category_memberships?: Json | null
           country?: string | null
           created_at?: string | null
           dob: string
+          excerpt?: string | null
+          family_life?: string | null
           famous_for?: string | null
+          fans_also_viewed?: Json | null
           id?: string
           image_url?: string | null
+          meta_description?: string | null
           name: string
+          og_description?: string | null
+          og_title?: string | null
+          popularity_rank_overall?: number | null
+          popularity_rank_profession?: number | null
           popularity_score?: number | null
           profession: string
+          profile_complete?: boolean | null
           region_category?: string | null
+          slug?: string | null
           social_links?: Json | null
           source_url?: string | null
           today_trending?: boolean | null
+          trivia?: Json | null
           updated_at?: string | null
         }
         Update: {
+          about_word_count?: number | null
           ai_summary?: string | null
+          associated_with?: string | null
+          before_fame?: string | null
           bio?: string | null
+          birth_sign?: string | null
+          birthplace?: string | null
+          category_memberships?: Json | null
           country?: string | null
           created_at?: string | null
           dob?: string
+          excerpt?: string | null
+          family_life?: string | null
           famous_for?: string | null
+          fans_also_viewed?: Json | null
           id?: string
           image_url?: string | null
+          meta_description?: string | null
           name?: string
+          og_description?: string | null
+          og_title?: string | null
+          popularity_rank_overall?: number | null
+          popularity_rank_profession?: number | null
           popularity_score?: number | null
           profession?: string
+          profile_complete?: boolean | null
           region_category?: string | null
+          slug?: string | null
           social_links?: Json | null
           source_url?: string | null
           today_trending?: boolean | null
+          trivia?: Json | null
           updated_at?: string | null
         }
         Relationships: []
@@ -76,7 +127,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_about_word_count: {
+        Args: { bio_text: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
