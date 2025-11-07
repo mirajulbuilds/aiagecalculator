@@ -47,7 +47,7 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/famous-birthdays" element={<FamousBirthdays />} />
-                    <Route path="/celebrity/:id" element={<CelebrityDetail />} />
+                    <Route path="/celebrity/:slug" element={<CelebrityDetail />} />
                     <Route path="/famous-birthdays/tom-hanks" element={<TomHanks />} />
                     <Route path="/famous-birthdays/taylor-swift" element={<TaylorSwift />} />
                     <Route path="/famous-birthdays/elon-musk" element={<ElonMusk />} />
