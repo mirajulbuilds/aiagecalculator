@@ -1,45 +1,22 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Loader2, Calendar, MapPin, Briefcase, TrendingUp, ExternalLink, Instagram, Twitter, Youtube, Globe } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Briefcase, TrendingUp, ExternalLink, Instagram, Twitter, Youtube, Globe, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { differenceInYears, format } from "date-fns";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import celebritiesData from "@/../data/explore_famous_birthdays.json";
 
 const CelebrityDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
 
-  const { data: celebrity, isLoading, error } = useQuery({
-    queryKey: ['celebrity-detail', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('explore_famous_birthdays')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
-      
-      if (error) throw error;
-      if (!data) throw new Error('Celebrity not found');
-      
-      return data;
-    },
-    enabled: !!id,
-  });
+  // Find celebrity by slug from static JSON data
+  const celebrity = celebritiesData.celebrities.find(c => c.slug === slug);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (error || !celebrity) {
+  if (!celebrity) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md p-8 text-center">
@@ -56,45 +33,44 @@ const CelebrityDetail: React.FC = () => {
     );
   }
 
-  const age = differenceInYears(new Date(), new Date(celebrity.dob));
-  const birthDate = format(new Date(celebrity.dob), 'MMMM d, yyyy');
-  const socialLinks = celebrity.social_links as Record<string, string> || {};
+  const age = differenceInYears(new Date(), new Date(celebrity.birthdate));
+  const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
+  const socialLinks = celebrity.social_links;
 
   return (
     <React.Fragment>
       <Helmet>
-        <title>{celebrity.name} - Biography, Age & Career | AiAgeCalc.com</title>
+        <title>{`${celebrity.name} - Biography, Age & Career | AiAgeCalc.com`}</title>
         <meta 
           name="description" 
-          content={`${celebrity.name} is ${age} years old. Born on ${birthDate}. ${celebrity.profession}. ${celebrity.famous_for || 'Learn more about their career and achievements.'}`}
+          content={`${celebrity.name} is ${age} years old. Born on ${birthDate} in ${celebrity.birthplace}, ${celebrity.country}. ${celebrity.profession}. Learn more about their career and achievements.`}
         />
-        <meta name="keywords" content={`${celebrity.name}, ${celebrity.name} age, ${celebrity.name} birthday, ${celebrity.profession}, ${celebrity.country || 'celebrity'}, famous birthdays`} />
-        <link rel="canonical" href={`https://aiagecalc.com/celebrity/${id}`} />
+        <meta name="keywords" content={`${celebrity.name}, ${celebrity.name} age, ${celebrity.name} birthday, ${celebrity.profession}, ${celebrity.country}, famous birthdays, ${celebrity.birth_sign}`} />
+        <link rel="canonical" href={`https://aiagecalc.com/celebrity/${celebrity.slug}`} />
         
         <meta property="og:title" content={`${celebrity.name} - Biography & Career`} />
-        <meta property="og:description" content={`${celebrity.name} is ${age} years old. ${celebrity.profession}. ${celebrity.famous_for || ''}`} />
+        <meta property="og:description" content={`${celebrity.name} is ${age} years old. ${celebrity.profession}.`} />
         <meta property="og:type" content="profile" />
-        <meta property="og:url" content={`https://aiagecalc.com/celebrity/${id}`} />
-        {celebrity.image_url && <meta property="og:image" content={celebrity.image_url} />}
+        <meta property="og:url" content={`https://aiagecalc.com/celebrity/${celebrity.slug}`} />
+        <meta property="og:image" content={celebrity.image} />
         
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${celebrity.name} - Biography & Career`} />
         <meta name="twitter:description" content={`${celebrity.name} is ${age} years old. ${celebrity.profession}.`} />
-        {celebrity.image_url && <meta name="twitter:image" content={celebrity.image_url} />}
+        <meta name="twitter:image" content={celebrity.image} />
 
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
             "name": celebrity.name,
-            "birthDate": celebrity.dob,
+            "birthDate": celebrity.birthdate,
+            "birthPlace": `${celebrity.birthplace}, ${celebrity.country}`,
             "jobTitle": celebrity.profession,
-            "description": celebrity.bio || `${celebrity.name} - ${celebrity.profession}`,
-            "image": celebrity.image_url,
-            "url": celebrity.source_url,
+            "description": celebrity.excerpt,
+            "image": celebrity.image,
             "nationality": celebrity.country,
             "sameAs": Object.values(socialLinks).filter(Boolean),
-            "knowsAbout": celebrity.famous_for,
           })}
         </script>
 
@@ -113,13 +89,13 @@ const CelebrityDetail: React.FC = () => {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Famous Birthdays",
-                "item": "https://aiagecalc.com/famous-birthdays"
+                "item": "https://aiagecalc.com/explore-famous-birthdays"
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": celebrity.name,
-                "item": `https://aiagecalc.com/celebrity/${id}`
+                "item": `https://aiagecalc.com/celebrity/${celebrity.slug}`
               }
             ]
           })}
@@ -130,7 +106,7 @@ const CelebrityDetail: React.FC = () => {
         {/* Header */}
         <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-8 px-4 border-b">
           <div className="container mx-auto max-w-6xl">
-            <Link to="/famous-birthdays">
+            <Link to="/explore-famous-birthdays">
               <Button variant="ghost" className="mb-4 hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to All Celebrities
@@ -153,9 +129,9 @@ const CelebrityDetail: React.FC = () => {
                 <div className="flex flex-col md:flex-row">
                   {/* Image */}
                   <div className="md:w-1/3 relative">
-                    {celebrity.image_url ? (
+                    {celebrity.image ? (
                       <img 
-                        src={celebrity.image_url} 
+                        src={celebrity.image} 
                         alt={`${celebrity.name} - ${celebrity.profession}`}
                         className="w-full h-64 md:h-full object-cover"
                       />
@@ -165,12 +141,6 @@ const CelebrityDetail: React.FC = () => {
                           {celebrity.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </span>
                       </div>
-                    )}
-                    {celebrity.today_trending && (
-                      <Badge className="absolute top-4 right-4 bg-primary">
-                        <TrendingUp className="w-3 h-3 mr-1" />
-                        Trending
-                      </Badge>
                     )}
                   </div>
 
@@ -184,9 +154,12 @@ const CelebrityDetail: React.FC = () => {
                       <Badge variant="secondary" className="text-base px-4 py-1">
                         {celebrity.profession}
                       </Badge>
-                      {celebrity.region_category && (
+                      <Badge variant="outline" className="text-base px-4 py-1">
+                        {celebrity.country}
+                      </Badge>
+                      {celebrity.birth_sign && (
                         <Badge variant="outline" className="text-base px-4 py-1">
-                          {celebrity.region_category}
+                          {celebrity.birth_sign}
                         </Badge>
                       )}
                     </div>
@@ -208,15 +181,13 @@ const CelebrityDetail: React.FC = () => {
                         </div>
                       </div>
 
-                      {celebrity.country && (
-                        <div className="flex items-center gap-3">
-                          <MapPin className="w-5 h-5 text-primary" />
-                          <div>
-                            <p className="text-sm">Country</p>
-                            <p className="font-semibold text-foreground text-lg">{celebrity.country}</p>
-                          </div>
+                      <div className="flex items-center gap-3">
+                        <MapPin className="w-5 h-5 text-primary" />
+                        <div>
+                          <p className="text-sm">Birthplace</p>
+                          <p className="font-semibold text-foreground text-lg">{celebrity.birthplace}, {celebrity.country}</p>
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     {/* Social Links */}
@@ -237,31 +208,31 @@ const CelebrityDetail: React.FC = () => {
                                 <Instagram className="w-5 h-5 text-primary" />
                               </a>
                             )}
-                            {socialLinks.twitter && (
+                            {socialLinks.x && (
                               <a 
-                                href={socialLinks.twitter} 
+                                href={socialLinks.x} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors"
-                                aria-label="Twitter/X"
+                                aria-label="X (Twitter)"
                               >
                                 <Twitter className="w-5 h-5 text-primary" />
                               </a>
                             )}
-                            {socialLinks.youtube && (
+                            {socialLinks.facebook && (
                               <a 
-                                href={socialLinks.youtube} 
+                                href={socialLinks.facebook} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors"
-                                aria-label="YouTube"
+                                aria-label="Facebook"
                               >
-                                <Youtube className="w-5 h-5 text-primary" />
+                                <Facebook className="w-5 h-5 text-primary" />
                               </a>
                             )}
-                            {celebrity.source_url && (
+                            {socialLinks.website && (
                               <a 
-                                href={celebrity.source_url} 
+                                href={socialLinks.website} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors"
@@ -278,30 +249,14 @@ const CelebrityDetail: React.FC = () => {
                 </div>
               </Card>
 
-              {/* Biography */}
-              {(celebrity.bio || celebrity.ai_summary) && (
+              {/* Full Profile Article */}
+              {celebrity.profile_html && (
                 <Card className="mb-8">
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Biography</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                      {celebrity.bio || celebrity.ai_summary}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Famous For */}
-              {celebrity.famous_for && (
-                <Card className="mb-8">
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Known For</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {celebrity.famous_for}
-                    </p>
+                  <CardContent className="pt-6">
+                    <article 
+                      className="prose prose-slate dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{ __html: celebrity.profile_html }}
+                    />
                   </CardContent>
                 </Card>
               )}
@@ -329,33 +284,19 @@ const CelebrityDetail: React.FC = () => {
                       <dt className="text-sm text-muted-foreground mb-1">Current Age</dt>
                       <dd className="font-semibold text-foreground">{age} years</dd>
                     </div>
-                    {celebrity.country && (
-                      <div>
-                        <dt className="text-sm text-muted-foreground mb-1">Nationality</dt>
-                        <dd className="font-semibold text-foreground">{celebrity.country}</dd>
-                      </div>
-                    )}
-                    {celebrity.popularity_score && (
-                      <div>
-                        <dt className="text-sm text-muted-foreground mb-1">Popularity Score</dt>
-                        <dd className="font-semibold text-foreground">{celebrity.popularity_score}/100</dd>
-                      </div>
-                    )}
-                  </dl>
-
-                  {celebrity.source_url && (
-                    <div className="mt-6">
-                      <a 
-                        href={celebrity.source_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-primary hover:underline"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        View Official Source
-                      </a>
+                    <div>
+                      <dt className="text-sm text-muted-foreground mb-1">Nationality</dt>
+                      <dd className="font-semibold text-foreground">{celebrity.country}</dd>
                     </div>
-                  )}
+                    <div>
+                      <dt className="text-sm text-muted-foreground mb-1">Birth Sign</dt>
+                      <dd className="font-semibold text-foreground">{celebrity.birth_sign}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-muted-foreground mb-1">Birthplace</dt>
+                      <dd className="font-semibold text-foreground">{celebrity.birthplace}</dd>
+                    </div>
+                  </dl>
                 </CardContent>
               </Card>
             </article>
