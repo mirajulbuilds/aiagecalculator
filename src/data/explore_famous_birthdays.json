@@ -11,7 +11,7 @@
       "birthplace": "Reading, Pennsylvania",
       "birth_sign": "Sagittarius",
       "excerpt": "Multi-Grammy Award winning artist known for her narrative songwriting and record-breaking albums including 1989, Folklore, and Midnights.",
-      "image": "/src/assets/celebrities/taylor-swift.jpg",
+      "image": "/celebrities/taylor-swift.jpg",
       "social_links": {
         "instagram": "https://instagram.com/taylorswift",
         "x": "https://twitter.com/taylorswift13",
@@ -48,7 +48,7 @@
       "birthplace": "Los Angeles, California",
       "birth_sign": "Scorpio",
       "excerpt": "Academy Award-winning actor known for roles in Titanic, Inception, and The Revenant. He is also a dedicated environmental activist.",
-      "image": "/src/assets/celebrities/leonardo-dicaprio.jpg",
+      "image": "/celebrities/leonardo-dicaprio.jpg",
       "social_links": {
         "instagram": "https://instagram.com/leonardodicaprio",
         "facebook": "https://facebook.com/leonardodicaprio"
@@ -84,7 +84,7 @@
       "birthplace": "Paris, France",
       "birth_sign": "Aries",
       "excerpt": "Best known for playing Hermione Granger in the Harry Potter series. She is also a prominent advocate for women's rights.",
-      "image": "/src/assets/celebrities/emma-watson.jpg",
+      "image": "/celebrities/emma-watson.jpg",
       "social_links": {
         "instagram": "https://instagram.com/emmawatson",
         "x": "https://twitter.com/emmawatson"

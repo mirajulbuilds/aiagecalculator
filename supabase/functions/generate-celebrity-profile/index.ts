@@ -18,7 +18,8 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const prompt = `You are a professional celebrity biographer. Create a realistic, engaging, and ad-safe celebrity profile for a person with these details:
+    // Step 1: Generate profile text
+    const textPrompt = `You are a professional celebrity biographer. Create a realistic, engaging, and ad-safe celebrity profile for a person with these details:
 
 Name: ${name}
 Profession: ${profession}
@@ -48,7 +49,7 @@ CRITICAL REQUIREMENTS:
 - Make it sound like a real Wikipedia celebrity biography with specific examples
 - Return ONLY the JSON object, no markdown formatting, no code blocks`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const textResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${LOVABLE_API_KEY}`,
@@ -59,33 +60,33 @@ CRITICAL REQUIREMENTS:
         messages: [
           {
             role: "user",
-            content: prompt
+            content: textPrompt
           }
         ],
         temperature: 0.8,
       }),
     });
 
-    if (!response.ok) {
-      if (response.status === 429) {
+    if (!textResponse.ok) {
+      if (textResponse.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
+      if (textResponse.status === 402) {
         return new Response(
           JSON.stringify({ error: "Payment required. Please add credits to your workspace." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
-      throw new Error(`AI Gateway error: ${response.status}`);
+      const errorText = await textResponse.text();
+      console.error("AI Gateway error:", textResponse.status, errorText);
+      throw new Error(`AI Gateway error: ${textResponse.status}`);
     }
 
-    const data = await response.json();
-    const content = data.choices[0].message.content;
+    const textData = await textResponse.json();
+    const content = textData.choices[0].message.content;
     
     // Try to parse the JSON response
     let profileData;
@@ -113,8 +114,48 @@ CRITICAL REQUIREMENTS:
       throw new Error(`Generated profile is too short (${wordCount} words). The about section must be at least 800 words. Please try again.`);
     }
 
+    // Step 2: Generate profile image using Gemini 2.5 Flash Image
+    console.log(`Generating image for ${name}...`);
+    const imagePrompt = `Generate a high-quality, professional portrait photograph of ${name}, a ${profession} from ${country}. The image should be a realistic, professional headshot suitable for a celebrity biography page. The person should be well-lit, looking confident and professional, against a neutral or slightly blurred background. Style: professional photography, high resolution, portrait orientation.`;
+
+    const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image-preview",
+        messages: [
+          {
+            role: "user",
+            content: imagePrompt
+          }
+        ],
+        modalities: ["image", "text"]
+      }),
+    });
+
+    let imageBase64 = null;
+    if (imageResponse.ok) {
+      const imageData = await imageResponse.json();
+      const images = imageData.choices?.[0]?.message?.images;
+      if (images && images.length > 0) {
+        imageBase64 = images[0].image_url.url;
+        console.log(`Successfully generated image for ${name}`);
+      } else {
+        console.warn(`No image generated for ${name}, will use fallback`);
+      }
+    } else {
+      console.warn(`Image generation failed with status ${imageResponse.status}, continuing with text-only profile`);
+    }
+
     return new Response(
-      JSON.stringify(profileData),
+      JSON.stringify({
+        ...profileData,
+        image: imageBase64,
+        image_generated: !!imageBase64
+      }),
       { 
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" } 

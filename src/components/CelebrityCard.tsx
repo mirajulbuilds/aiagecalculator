@@ -40,16 +40,26 @@ export const CelebrityCard: React.FC<CelebrityCardProps> = ({
   popularityScore,
   className = ""
 }) => {
+  const [imageError, setImageError] = React.useState(false);
+  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
   return (
     <Link to={`/celebrity/${slug}`}>
       <Card className={`overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group cursor-pointer h-full ${className}`}>
         <div className="relative">
-          <img 
-            src={image} 
-            alt={`${name} - ${profession}`}
-            className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-            loading="lazy"
-          />
+          {imageError ? (
+            <div className="w-full h-64 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+              <span className="text-6xl font-bold text-primary/40">{initials}</span>
+            </div>
+          ) : (
+            <img 
+              src={image} 
+              alt={`${name} - ${profession}`}
+              className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
+              onError={() => setImageError(true)}
+            />
+          )}
           {trending && <TrendingBadge />}
           {popularityScore && <PopularityBadge score={popularityScore} />}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
