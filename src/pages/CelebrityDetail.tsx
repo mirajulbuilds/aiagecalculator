@@ -133,7 +133,7 @@ const CelebrityDetail: React.FC = () => {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Famous Birthdays",
-                "item": "https://aiagecalc.com/explore-famous-birthdays"
+                "item": "https://aiagecalc.com/famous-birthdays"
               },
               {
                 "@type": "ListItem",
@@ -150,7 +150,7 @@ const CelebrityDetail: React.FC = () => {
         {/* Header */}
         <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-8 px-4 border-b">
           <div className="container mx-auto max-w-6xl">
-            <Link to="/explore-famous-birthdays">
+            <Link to="/famous-birthdays">
               <Button variant="ghost" className="mb-4 hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to All Celebrities
