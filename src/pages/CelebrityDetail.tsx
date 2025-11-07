@@ -53,6 +53,35 @@ const CelebrityDetail: React.FC = () => {
   // Use database celebrity if available, fallback to JSON
   const celebrity = dbCelebrity || celebritiesData.celebrities.find(c => c.slug === slug);
 
+  // Get related celebrities - MUST be before conditional returns
+  const relatedCelebrities = useMemo(() => {
+    if (!celebrity?.fans_also_viewed) return [];
+    return celebrity.fans_also_viewed
+      .map((slug: string) => celebritiesData.celebrities.find((c: any) => c.slug === slug))
+      .filter(Boolean)
+      .slice(0, 4);
+  }, [celebrity]);
+
+  // Get same birthday celebrities - MUST be before conditional returns
+  const sameBirthdayCelebrities = useMemo(() => {
+    if (!celebrity?.birthdate) return [];
+    return celebritiesData.celebrities
+      .filter((c: any) => {
+        const cBirthDate = format(new Date(c.birthdate), 'MMMM d');
+        const currentBirthDate = format(new Date(celebrity.birthdate), 'MMMM d');
+        return c.id !== celebrity.id && cBirthDate === currentBirthDate;
+      })
+      .slice(0, 6);
+  }, [celebrity]);
+
+  // Get same zodiac sign celebrities - MUST be before conditional returns
+  const sameZodiacCelebrities = useMemo(() => {
+    if (!celebrity?.birth_sign) return [];
+    return celebritiesData.celebrities
+      .filter((c: any) => c.id !== celebrity.id && c.birth_sign === celebrity.birth_sign)
+      .slice(0, 6);
+  }, [celebrity]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -92,33 +121,6 @@ const CelebrityDetail: React.FC = () => {
   const profession = celebrity.profession || 'Celebrity';
   const birthSign = celebrity.birth_sign || '';
   const imageUrl = celebrity.image_url || celebrity.image;
-
-  // Get related celebrities
-  const relatedCelebrities = useMemo(() => {
-    if (!celebrity.fans_also_viewed) return [];
-    return celebrity.fans_also_viewed
-      .map((slug: string) => celebritiesData.celebrities.find((c: any) => c.slug === slug))
-      .filter(Boolean)
-      .slice(0, 4);
-  }, [celebrity]);
-
-  // Get same birthday celebrities
-  const sameBirthdayCelebrities = useMemo(() => {
-    return celebritiesData.celebrities
-      .filter((c: any) => {
-        const cBirthDate = format(new Date(c.birthdate), 'MMMM d');
-        const currentBirthDate = format(new Date(celebrity.birthdate), 'MMMM d');
-        return c.id !== celebrity.id && cBirthDate === currentBirthDate;
-      })
-      .slice(0, 6);
-  }, [celebrity]);
-
-  // Get same zodiac sign celebrities
-  const sameZodiacCelebrities = useMemo(() => {
-    return celebritiesData.celebrities
-      .filter((c: any) => c.id !== celebrity.id && c.birth_sign === celebrity.birth_sign)
-      .slice(0, 6);
-  }, [celebrity]);
 
   // Popularity metrics
   const popularityMetrics = [
