@@ -394,9 +394,7 @@ const FamousBirthdays: React.FC = () => {
                       const age = calculateAge(celebrity.birthdate);
                       const birthDate = format(new Date(celebrity.birthdate), 'MMMM d, yyyy');
                       
-                      // Insert inline ad after 5th item
-                      const items = [];
-                      items.push(
+                      return (
                         <li key={celebrity.id}>
                           <Link to={`/celebrity/${celebrity.slug}`}>
                             <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 group cursor-pointer">
@@ -447,17 +445,13 @@ const FamousBirthdays: React.FC = () => {
                                     {celebrity.social_links && Object.keys(celebrity.social_links).length > 0 && (
                                       <div className="flex gap-3 mt-3">
                                         {Object.entries(celebrity.social_links).map(([platform, url]) => (
-                                          <a
+                                          <span
                                             key={platform}
-                                            href={url as string}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-muted-foreground hover:text-primary transition-colors"
-                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                                             aria-label={`${celebrity.name} on ${platform}`}
                                           >
                                             {getSocialIcon(platform)}
-                                          </a>
+                                          </span>
                                         ))}
                                       </div>
                                     )}
@@ -468,20 +462,6 @@ const FamousBirthdays: React.FC = () => {
                           </Link>
                         </li>
                       );
-
-                      // Add inline ad after 5th item on first page
-                      if (index === 4 && currentPage === 1) {
-                        items.push(
-                          {/* <li key="inline-ad" id="ad-inline" className="my-4">
-                            <AdSenseBanner 
-                              adSlot="5544332211"
-                              format="horizontal" 
-                            />
-                          </li> */}
-                        );
-                      }
-
-                      return items;
                     })}
                   </ul>
 
