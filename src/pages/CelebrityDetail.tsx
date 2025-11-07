@@ -302,10 +302,48 @@ const CelebrityDetail: React.FC = () => {
               {celebrity.profile_html && (
                 <Card className="mb-8">
                   <CardContent className="pt-6">
-                    <article 
-                      className="prose prose-slate dark:prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{ __html: celebrity.profile_html }}
-                    />
+                    <article className="space-y-6">
+                      {/* About Section */}
+                      <div>
+                        <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">About {celebrity.name.split(' ')[0]}</h2>
+                        <div 
+                          className="text-muted-foreground leading-relaxed"
+                          dangerouslySetInnerHTML={{ __html: celebrity.profile_html }}
+                        />
+                      </div>
+                      
+                      {/* Before Fame Section */}
+                      {celebrity.before_fame && (
+                        <div>
+                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Before Fame</h2>
+                          <p className="text-muted-foreground leading-relaxed">{celebrity.before_fame}</p>
+                        </div>
+                      )}
+                      
+                      {/* Trivia Section */}
+                      {celebrity.trivia && (
+                        <div>
+                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Trivia</h2>
+                          <p className="text-muted-foreground leading-relaxed">{celebrity.trivia}</p>
+                        </div>
+                      )}
+                      
+                      {/* Family Life Section */}
+                      {celebrity.family_life && (
+                        <div>
+                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Family Life</h2>
+                          <p className="text-muted-foreground leading-relaxed">{celebrity.family_life}</p>
+                        </div>
+                      )}
+                      
+                      {/* Associated With Section */}
+                      {celebrity.associated_with && (
+                        <div>
+                          <h2 className="text-sm font-bold text-foreground uppercase mb-3 tracking-wide">Associated With</h2>
+                          <p className="text-muted-foreground leading-relaxed">{celebrity.associated_with}</p>
+                        </div>
+                      )}
+                    </article>
                   </CardContent>
                 </Card>
               )}
