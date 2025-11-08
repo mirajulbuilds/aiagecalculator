@@ -6,15 +6,44 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Rate limiting storage (in-memory, resets on function cold start)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 10; // requests per window
+const RATE_WINDOW = 60000; // 1 minute in milliseconds
+
+function checkRateLimit(identifier: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Rate limiting check
+    const identifier = req.headers.get('x-forwarded-for') || 'unknown';
+    if (!checkRateLimit(identifier)) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { recipient, occasion, age, interests } = await req.json();
-    
-    console.log('Gift advisor request:', { recipient, occasion, age, interests });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -58,30 +87,30 @@ Format your response as a JSON array of objects with "name" and "description" fi
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI API error:', response.status, errorText);
+      console.error('AI API error:', response.status);
       
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }),
+          JSON.stringify({ error: 'Service is busy. Please try again in a moment.' }),
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: 'Payment required. Please add credits to continue.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ error: 'Service temporarily unavailable. Please try again later.' }),
+          { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       
-      throw new Error(`AI API error: ${response.status}`);
+      return new Response(
+        JSON.stringify({ error: 'Failed to generate gift suggestions. Please try again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
-    
-    console.log('AI response:', aiResponse);
 
     // Try to parse the JSON response
     let giftIdeas;
@@ -105,10 +134,9 @@ Format your response as a JSON array of objects with "name" and "description" fi
     );
 
   } catch (error) {
-    console.error('Error in ai-gift-advisor function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    console.error('Error in ai-gift-advisor function');
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'Failed to process your request. Please try again.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

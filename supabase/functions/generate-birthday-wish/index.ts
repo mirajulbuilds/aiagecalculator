@@ -5,6 +5,28 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Rate limiting storage (in-memory, resets on function cold start)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 10; // requests per window
+const RATE_WINDOW = 60000; // 1 minute in milliseconds
+
+function checkRateLimit(identifier: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -12,6 +34,15 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting check
+    const identifier = req.headers.get('x-forwarded-for') || 'unknown';
+    if (!checkRateLimit(identifier)) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { name, birthDate, age, customPrompt } = await req.json();
     
     // Input validation
@@ -112,8 +143,6 @@ serve(async (req) => {
       Make sure the text is clearly visible and beautifully styled.`
       : defaultPrompt;
 
-    console.log('Calling Gemini 2.5 Flash Image API with prompt...');
-
     const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent", {
       method: "POST",
       headers: {
@@ -130,12 +159,11 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Gemini API error:', response.status, errorText);
+      console.error('AI API error:', response.status);
       
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+          JSON.stringify({ error: "Service is busy. Please try again later." }),
           { 
             status: 429,
             headers: { ...corsHeaders, "Content-Type": "application/json" } 
@@ -145,36 +173,39 @@ serve(async (req) => {
       
       if (response.status === 403 || response.status === 401) {
         return new Response(
-          JSON.stringify({ error: "Invalid API key. Please check your Gemini API key." }),
+          JSON.stringify({ error: "Authentication failed. Please try again later." }),
           { 
-            status: 403,
+            status: 503,
             headers: { ...corsHeaders, "Content-Type": "application/json" } 
           }
         );
       }
       
-      throw new Error(`Gemini API error: ${response.status} ${errorText}`);
+      return new Response(
+        JSON.stringify({ error: "Failed to generate birthday wish. Please try again." }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
 
     const data = await response.json();
-    console.log('Received response from Gemini API');
 
     // Extract the base64 image from the response
     const imageData = data.candidates?.[0]?.content?.parts?.find((part: any) => part.inlineData)?.inlineData?.data;
     
     if (!imageData) {
-      console.error('No image in response:', JSON.stringify(data));
+      console.error('No image in response');
       throw new Error("No image generated in response");
     }
     
     const imageUrl = `data:image/png;base64,${imageData}`;
     
     if (!imageUrl) {
-      console.error('No image in response:', JSON.stringify(data));
+      console.error('No image in response');
       throw new Error("No image generated in response");
     }
-
-    console.log('Successfully generated birthday wish image');
 
     return new Response(
       JSON.stringify({ imageUrl }),
@@ -186,10 +217,9 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in generate-birthday-wish function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error in generate-birthday-wish function');
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'Failed to process your request. Please try again.' }),
       { 
         status: 500,
         headers: { 
