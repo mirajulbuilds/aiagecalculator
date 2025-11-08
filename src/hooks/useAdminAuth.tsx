@@ -28,7 +28,7 @@ export const useAdminAuth = () => {
           console.error("Error checking admin status:", error);
           setIsAdmin(false);
           toast.error("Unable to verify admin access");
-          navigate("/auth");
+          navigate("/admin-secure-x7k2m9p");
           return;
         }
 
@@ -37,13 +37,13 @@ export const useAdminAuth = () => {
 
         if (!hasAdminRole) {
           toast.error("Admin access required");
-          navigate("/auth");
+          navigate("/admin-secure-x7k2m9p");
         }
       } catch (error) {
         console.error("Error in checkAdminStatus:", error);
         if (mounted) {
           setIsAdmin(false);
-          navigate("/auth");
+          navigate("/admin-secure-x7k2m9p");
         }
       }
     };
@@ -58,12 +58,12 @@ export const useAdminAuth = () => {
           setUser(session.user);
           await checkAdminStatus(session.user.id);
         } else {
-          navigate("/auth");
+          navigate("/admin-secure-x7k2m9p");
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
         if (mounted) {
-          navigate("/auth");
+          navigate("/admin-secure-x7k2m9p");
         }
       } finally {
         if (mounted) {
@@ -85,7 +85,7 @@ export const useAdminAuth = () => {
       } else {
         setUser(null);
         setIsAdmin(false);
-        navigate("/auth");
+        navigate("/admin-secure-x7k2m9p");
       }
     });
 
@@ -99,7 +99,7 @@ export const useAdminAuth = () => {
     try {
       await supabase.auth.signOut();
       toast.success("Signed out successfully");
-      navigate("/auth");
+      navigate("/admin-secure-x7k2m9p");
     } catch (error: any) {
       toast.error(error.message || "Failed to sign out");
     }

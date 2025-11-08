@@ -71,7 +71,7 @@ const App = () => (
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/seed-database" element={<SeedDatabase />} />
                     <Route path="/profile-manager" element={<ProfileManager />} />
-                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/admin-secure-x7k2m9p" element={<Auth />} />
                     <Route path="/admin/celebrities" element={<AdminDashboard />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
