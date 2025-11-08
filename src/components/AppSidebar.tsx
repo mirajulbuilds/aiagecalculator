@@ -1,4 +1,4 @@
-import { Home, Users, BookOpen, Calendar } from "lucide-react";
+import { Home, BookOpen, Calendar } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -15,7 +15,6 @@ import { AdSenseBanner } from "@/components/AdSenseBanner";
 
 const navigationItems = [
   { title: "Age Calculator", url: "/", icon: Home },
-  { title: "Famous Birthdays", url: "/famous-birthdays", icon: Users },
   { title: "Blog", url: "/blog", icon: BookOpen },
 ];
 

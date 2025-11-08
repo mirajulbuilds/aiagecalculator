@@ -11,29 +11,11 @@ import Footer from "./components/Footer";
 
 // Lazy load route components for code splitting
 const Index = lazy(() => import("./pages/Index"));
-const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
-const CelebrityDetail = lazy(() => import("./pages/CelebrityDetail"));
-const CelebrityAdmin = lazy(() => import("./pages/CelebrityAdmin"));
-const CelebrityProfileGenerator = lazy(() => import("./pages/CelebrityProfileGenerator"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const TomHanks = lazy(() => import("./pages/celebrity/TomHanks"));
-const TaylorSwift = lazy(() => import("./pages/celebrity/TaylorSwift"));
-const ElonMusk = lazy(() => import("./pages/celebrity/ElonMusk"));
-const LeonardoDiCaprio = lazy(() => import("./pages/celebrity/LeonardoDiCaprio"));
-const SelenaGomez = lazy(() => import("./pages/celebrity/SelenaGomez"));
-const CristianoRonaldo = lazy(() => import("./pages/celebrity/CristianoRonaldo"));
-const Beyonce = lazy(() => import("./pages/celebrity/Beyonce"));
-const BillGates = lazy(() => import("./pages/celebrity/BillGates"));
-const DwayneJohnson = lazy(() => import("./pages/celebrity/DwayneJohnson"));
-const EmmaWatson = lazy(() => import("./pages/celebrity/EmmaWatson"));
-const SeedDatabase = lazy(() => import("./pages/SeedDatabase"));
-const ProfileManager = lazy(() => import("./pages/ProfileManager"));
-const Auth = lazy(() => import("./pages/Auth"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -51,28 +33,10 @@ const App = () => (
                 <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
                   <Routes>
                     <Route path="/" element={<Index />} />
-                    <Route path="/famous-birthdays" element={<FamousBirthdays />} />
-                    <Route path="/celebrity/:slug" element={<CelebrityDetail />} />
-                    <Route path="/celebrity-admin" element={<CelebrityAdmin />} />
-                    <Route path="/celebrity-generator" element={<CelebrityProfileGenerator />} />
-                    <Route path="/famous-birthdays/tom-hanks" element={<TomHanks />} />
-                    <Route path="/famous-birthdays/taylor-swift" element={<TaylorSwift />} />
-                    <Route path="/famous-birthdays/elon-musk" element={<ElonMusk />} />
-                    <Route path="/famous-birthdays/leonardo-dicaprio" element={<LeonardoDiCaprio />} />
-                    <Route path="/famous-birthdays/selena-gomez" element={<SelenaGomez />} />
-                    <Route path="/famous-birthdays/cristiano-ronaldo" element={<CristianoRonaldo />} />
-                    <Route path="/famous-birthdays/beyonce" element={<Beyonce />} />
-                    <Route path="/famous-birthdays/bill-gates" element={<BillGates />} />
-                    <Route path="/famous-birthdays/dwayne-johnson" element={<DwayneJohnson />} />
-                    <Route path="/famous-birthdays/emma-watson" element={<EmmaWatson />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/seed-database" element={<SeedDatabase />} />
-                    <Route path="/profile-manager" element={<ProfileManager />} />
-                    <Route path="/admin-secure-x7k2m9p" element={<Auth />} />
-                    <Route path="/admin/celebrities" element={<AdminDashboard />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

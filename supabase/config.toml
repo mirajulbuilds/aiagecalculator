@@ -1,8 +1,5 @@
 project_id = "ryetajignnzczcybyggr"
 
-[functions.migrate-celebrities-to-db]
-verify_jwt = false
-
 [functions.generate-birthday-wish]
 verify_jwt = false
 
@@ -13,16 +10,4 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.birthday-facts]
-verify_jwt = false
-
-[functions.explore-famous-birthdays]
-verify_jwt = false
-
-[functions.seed-celebrities]
-verify_jwt = false
-
-[functions.generate-celebrity-profile]
-verify_jwt = false
-
-[functions.auto-complete-profiles]
 verify_jwt = false

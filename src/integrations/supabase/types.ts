@@ -14,163 +14,16 @@ export type Database = {
   }
   public: {
     Tables: {
-      explore_famous_birthdays: {
-        Row: {
-          about_word_count: number | null
-          ai_summary: string | null
-          associated_with: string | null
-          before_fame: string | null
-          bio: string | null
-          birth_sign: string | null
-          birthplace: string | null
-          category_memberships: Json | null
-          country: string | null
-          created_at: string | null
-          created_by: string | null
-          dob: string
-          excerpt: string | null
-          family_life: string | null
-          famous_for: string | null
-          fans_also_viewed: Json | null
-          id: string
-          image_url: string | null
-          meta_description: string | null
-          name: string
-          og_description: string | null
-          og_title: string | null
-          popularity_rank_overall: number | null
-          popularity_rank_profession: number | null
-          popularity_score: number | null
-          profession: string
-          profile_complete: boolean | null
-          published: boolean | null
-          region_category: string | null
-          slug: string | null
-          social_links: Json | null
-          source_url: string | null
-          today_trending: boolean | null
-          trivia: Json | null
-          updated_at: string | null
-          updated_by: string | null
-        }
-        Insert: {
-          about_word_count?: number | null
-          ai_summary?: string | null
-          associated_with?: string | null
-          before_fame?: string | null
-          bio?: string | null
-          birth_sign?: string | null
-          birthplace?: string | null
-          category_memberships?: Json | null
-          country?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          dob: string
-          excerpt?: string | null
-          family_life?: string | null
-          famous_for?: string | null
-          fans_also_viewed?: Json | null
-          id?: string
-          image_url?: string | null
-          meta_description?: string | null
-          name: string
-          og_description?: string | null
-          og_title?: string | null
-          popularity_rank_overall?: number | null
-          popularity_rank_profession?: number | null
-          popularity_score?: number | null
-          profession: string
-          profile_complete?: boolean | null
-          published?: boolean | null
-          region_category?: string | null
-          slug?: string | null
-          social_links?: Json | null
-          source_url?: string | null
-          today_trending?: boolean | null
-          trivia?: Json | null
-          updated_at?: string | null
-          updated_by?: string | null
-        }
-        Update: {
-          about_word_count?: number | null
-          ai_summary?: string | null
-          associated_with?: string | null
-          before_fame?: string | null
-          bio?: string | null
-          birth_sign?: string | null
-          birthplace?: string | null
-          category_memberships?: Json | null
-          country?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          dob?: string
-          excerpt?: string | null
-          family_life?: string | null
-          famous_for?: string | null
-          fans_also_viewed?: Json | null
-          id?: string
-          image_url?: string | null
-          meta_description?: string | null
-          name?: string
-          og_description?: string | null
-          og_title?: string | null
-          popularity_rank_overall?: number | null
-          popularity_rank_profession?: number | null
-          popularity_score?: number | null
-          profession?: string
-          profile_complete?: boolean | null
-          published?: boolean | null
-          region_category?: string | null
-          slug?: string | null
-          social_links?: Json | null
-          source_url?: string | null
-          today_trending?: boolean | null
-          trivia?: Json | null
-          updated_at?: string | null
-          updated_by?: string | null
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      calculate_about_word_count: {
-        Args: { bio_text: string }
-        Returns: number
-      }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -297,8 +150,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "moderator", "user"],
-    },
+    Enums: {},
   },
 } as const
