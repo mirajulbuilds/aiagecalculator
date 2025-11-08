@@ -45,13 +45,67 @@ serve(async (req) => {
 
     const { occasion, date, customPrompt } = await req.json();
 
+    // Input validation
+    if (!occasion || typeof occasion !== 'string' || occasion.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Occasion is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (occasion.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Occasion must be less than 100 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate date if provided
+    if (date) {
+      if (typeof date !== 'string') {
+        return new Response(
+          JSON.stringify({ error: 'Date must be a string' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      if (date.length > 50) {
+        return new Response(
+          JSON.stringify({ error: 'Date must be less than 50 characters' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // Validate custom prompt if provided
+    if (customPrompt) {
+      if (typeof customPrompt !== 'string') {
+        return new Response(
+          JSON.stringify({ error: 'Custom prompt must be a string' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (customPrompt.length > 500) {
+        return new Response(
+          JSON.stringify({ error: 'Custom prompt must be less than 500 characters' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // Sanitize inputs
+    const sanitizedOccasion = occasion.trim();
+    const sanitizedDate = date ? date.trim() : null;
+    const sanitizedPrompt = customPrompt ? customPrompt.trim() : '';
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     // Build enhanced prompt based on occasion and user input
-    let enhancedPrompt = customPrompt;
+    let enhancedPrompt = sanitizedPrompt;
     
     // Add occasion-specific context
     const occasionContext: Record<string, string> = {
@@ -66,13 +120,13 @@ serve(async (req) => {
       "General Anniversary": "Create an elegant, celebratory anniversary themed image."
     };
 
-    if (occasionContext[occasion]) {
-      enhancedPrompt = `${occasionContext[occasion]} ${customPrompt}`;
+    if (occasionContext[sanitizedOccasion]) {
+      enhancedPrompt = `${occasionContext[sanitizedOccasion]} ${sanitizedPrompt}`;
     }
 
     // Add date information if provided
-    if (date) {
-      enhancedPrompt += ` Include the date ${date} in a tasteful way.`;
+    if (sanitizedDate) {
+      enhancedPrompt += ` Include the date ${sanitizedDate} in a tasteful way.`;
     }
 
     // Add quality suffix

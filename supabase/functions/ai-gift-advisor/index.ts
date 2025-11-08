@@ -45,6 +45,61 @@ serve(async (req) => {
 
     const { recipient, occasion, age, interests } = await req.json();
 
+    // Input validation
+    if (!recipient || typeof recipient !== 'string' || recipient.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Recipient name is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (recipient.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Recipient name must be less than 100 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!occasion || typeof occasion !== 'string' || occasion.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Occasion is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (occasion.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Occasion must be less than 100 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (typeof age !== 'number' || age < 0 || age > 150) {
+      return new Response(
+        JSON.stringify({ error: 'Age must be a number between 0 and 150' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!interests || typeof interests !== 'string' || interests.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Interests are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (interests.length > 500) {
+      return new Response(
+        JSON.stringify({ error: 'Interests must be less than 500 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize inputs by trimming
+    const sanitizedRecipient = recipient.trim();
+    const sanitizedOccasion = occasion.trim();
+    const sanitizedInterests = interests.trim();
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
@@ -52,10 +107,10 @@ serve(async (req) => {
 
     const prompt = `You are a creative gift advisor. Generate 5 unique and thoughtful gift ideas for the following person:
 
-Recipient: ${recipient}
-Occasion: ${occasion}
+Recipient: ${sanitizedRecipient}
+Occasion: ${sanitizedOccasion}
 Age: ${age}
-Interests: ${interests}
+Interests: ${sanitizedInterests}
 
 Please provide 5 specific gift suggestions. For each gift:
 - Give it a creative name

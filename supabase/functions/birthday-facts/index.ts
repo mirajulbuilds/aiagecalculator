@@ -45,14 +45,41 @@ serve(async (req) => {
 
     const { birthDate } = await req.json();
     
-    if (!birthDate) {
+    // Input validation
+    if (!birthDate || typeof birthDate !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'Birth date is required' }),
+        JSON.stringify({ error: 'Birth date is required and must be a string' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Validate date format (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(birthDate)) {
+      return new Response(
+        JSON.stringify({ error: 'Birth date must be in YYYY-MM-DD format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate that the date is valid and within reasonable range
     const date = new Date(birthDate);
+    if (isNaN(date.getTime())) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid birth date' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check date is not in the future and not too far in the past (1800-01-01)
+    const now = new Date();
+    const minDate = new Date('1800-01-01');
+    if (date > now || date < minDate) {
+      return new Response(
+        JSON.stringify({ error: 'Birth date must be between 1800 and today' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     const month = date.toLocaleString('en-US', { month: 'long' });
     const day = date.getDate();
     const year = date.getFullYear();
