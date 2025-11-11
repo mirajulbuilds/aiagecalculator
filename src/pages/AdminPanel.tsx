@@ -136,7 +136,7 @@ const AdminPanel = () => {
     sessionStorage.setItem("temp_profile_preview", JSON.stringify(previewData));
     
     // Open preview in new tab
-    window.open(`/celebrities/${currentSlug}`, "_blank");
+    window.open(`/people/${currentSlug}`, "_blank");
   };
 
   const onSubmit = async (data: CelebrityFormData) => {
