@@ -42,6 +42,8 @@ const AdminPanel = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [zodiacSign, setZodiacSign] = useState<string>("");
+  const [popularityRanks, setPopularityRanks] = useState<any>(null);
 
   const {
     register,
@@ -125,6 +127,10 @@ const AdminPanel = () => {
         setImagePreview(data.profile_image_url);
       }
 
+      // Set additional AI-generated fields
+      setZodiacSign(data.zodiac_sign || "");
+      setPopularityRanks(data.popularity_ranks || null);
+
       toast.success("AI content generated successfully! Review and edit as needed.");
     } catch (error) {
       console.error("Error generating content:", error);
@@ -183,8 +189,11 @@ const AdminPanel = () => {
         } = supabase.storage.from("celebrity-profiles").getPublicUrl(filePath);
 
         imageUrl = publicUrl;
+      } else if (imagePreview) {
+        // Use AI-generated image URL
+        imageUrl = imagePreview;
       } else {
-        // Placeholder for AI image generation
+        // Fallback placeholder
         imageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
       }
 
@@ -199,6 +208,8 @@ const AdminPanel = () => {
         meta_title: data.metaTitle,
         meta_description: data.metaDescription,
         profile_image_url: imageUrl,
+        zodiac_sign: zodiacSign || null,
+        popularity_ranks: popularityRanks || null,
       });
 
       if (insertError) {
@@ -207,8 +218,22 @@ const AdminPanel = () => {
         return;
       }
 
-      toast.success("Celebrity profile saved successfully!");
-      // Reset form or redirect
+      toast.success("Success! The profile has been published.");
+      
+      // Reset form
+      setValue("name", "");
+      setValue("profileSlug", "");
+      setValue("mainContent", "");
+      setValue("metaTitle", "");
+      setValue("metaDescription", "");
+      setValue("profession", "");
+      setValue("placeOfBirth", "");
+      setValue("dateOfBirth", undefined as any);
+      setValue("aiHint", "");
+      setProfileImage(null);
+      setImagePreview("");
+      setZodiacSign("");
+      setPopularityRanks(null);
     } catch (error) {
       console.error("Error saving celebrity:", error);
       toast.error("An unexpected error occurred");
