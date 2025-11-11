@@ -141,22 +141,41 @@ const AdminPanel = () => {
   };
 
   const handlePreview = () => {
-    const formData = {
-      name: watch("name"),
-      date_of_birth: watch("dateOfBirth")?.toISOString().split('T')[0],
-      profession: watch("profession"),
-      place_of_birth: watch("placeOfBirth"),
-      zodiac_sign: zodiacSign,
-      profile_slug: watch("profileSlug"),
+    // Validate required fields before preview
+    const currentName = watch("name");
+    const currentSlug = watch("profileSlug");
+    
+    if (!currentName || currentName.trim().length === 0) {
+      toast.error("Please enter a celebrity name before previewing");
+      return;
+    }
+
+    if (!currentSlug || currentSlug.trim().length === 0) {
+      toast.error("Please generate content or add a profile slug before previewing");
+      return;
+    }
+
+    // Create preview data object with all current form values
+    const previewData = {
+      name: currentName,
+      date_of_birth: watch("dateOfBirth")?.toISOString().split('T')[0] || "",
+      profession: watch("profession") || "Unknown",
+      place_of_birth: watch("placeOfBirth") || "",
+      zodiac_sign: zodiacSign || "",
+      profile_slug: currentSlug,
       profile_image_url: imagePreview || "https://via.placeholder.com/400x400?text=Celebrity+Photo",
-      main_content: watch("mainContent"),
-      meta_title: watch("metaTitle"),
-      meta_description: watch("metaDescription"),
+      main_content: watch("mainContent") || "<p>No content available</p>",
+      meta_title: watch("metaTitle") || currentName,
+      meta_description: watch("metaDescription") || `Learn about ${currentName}`,
       popularity_ranks: popularityRanks,
+      is_preview: true, // Flag to indicate this is preview data
     };
 
-    sessionStorage.setItem("celebrityPreview", JSON.stringify(formData));
-    window.open(`/celebrities/${watch("profileSlug") || "preview"}`, "_blank");
+    // Save to sessionStorage (persists across new tabs)
+    sessionStorage.setItem("temp_profile_preview", JSON.stringify(previewData));
+    
+    // Open preview in new tab
+    window.open(`/celebrities/${currentSlug}`, "_blank");
   };
 
   const onSubmit = async (data: CelebrityFormData) => {

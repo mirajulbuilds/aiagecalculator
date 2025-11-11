@@ -30,19 +30,34 @@ const CelebrityProfile = () => {
 
   useEffect(() => {
     const loadCelebrity = async () => {
-      // Check if this is a preview (data in sessionStorage)
-      const previewData = sessionStorage.getItem("celebrityPreview");
+      // STEP 1: Check for preview data first (App State via sessionStorage)
+      const tempPreview = sessionStorage.getItem("temp_profile_preview");
       
-      if (previewData) {
-        const parsed = JSON.parse(previewData);
-        setCelebrity(parsed);
-        sessionStorage.removeItem("celebrityPreview");
+      if (tempPreview) {
+        try {
+          const parsed = JSON.parse(tempPreview);
+          
+          // Verify this is valid preview data
+          if (parsed.is_preview === true) {
+            console.log("Loading preview data:", parsed.name);
+            setCelebrity(parsed as CelebrityData);
+            
+            // Clear preview data after loading (prevents stale previews)
+            sessionStorage.removeItem("temp_profile_preview");
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          console.error("Error parsing preview data:", e);
+          sessionStorage.removeItem("temp_profile_preview");
+        }
+      }
+
+      // STEP 2: If no preview data, load from database (live user flow)
+      if (!profileSlug) {
         setLoading(false);
         return;
       }
-
-      // Load from database
-      if (!profileSlug) return;
 
       const { data, error } = await supabase
         .from("celebrities")
@@ -57,6 +72,7 @@ const CelebrityProfile = () => {
       }
 
       if (data) {
+        console.log("Loading from database:", data.name);
         setCelebrity(data as CelebrityData);
       }
       setLoading(false);
