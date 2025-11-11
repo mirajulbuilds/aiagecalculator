@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, MapPin, Calendar, Star } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Star, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { AgeDisplayFormats } from "@/components/AgeDisplayFormats";
-import { AdditionalAgeInfo } from "@/components/AdditionalAgeInfo";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, addYears } from "date-fns";
 
@@ -27,6 +26,7 @@ const CelebrityProfile = () => {
   const [celebrity, setCelebrity] = useState<CelebrityData | null>(null);
   const [loading, setLoading] = useState(true);
   const [ageData, setAgeData] = useState<any>(null);
+  const [relatedCelebrities, setRelatedCelebrities] = useState<CelebrityData[]>([]);
 
   useEffect(() => {
     const loadCelebrity = async () => {
@@ -74,6 +74,18 @@ const CelebrityProfile = () => {
       if (data) {
         console.log("Loading from database:", data.name);
         setCelebrity(data as CelebrityData);
+        
+        // Load related celebrities (same profession)
+        const { data: related } = await supabase
+          .from("celebrities")
+          .select("*")
+          .eq("profession", data.profession)
+          .neq("id", data.id)
+          .limit(8);
+        
+        if (related) {
+          setRelatedCelebrities(related as CelebrityData[]);
+        }
       }
       setLoading(false);
     };
@@ -138,7 +150,7 @@ const CelebrityProfile = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Celebrity Not Found</h1>
-          <Link to="/" className="text-primary hover:underline flex items-center justify-center gap-2">
+          <Link to="/famous-birthdays" className="text-primary hover:underline flex items-center justify-center gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Directory
           </Link>
@@ -146,6 +158,8 @@ const CelebrityProfile = () => {
       </div>
     );
   }
+
+  const popularityRanks = celebrity.popularity_ranks || {};
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -171,7 +185,7 @@ const CelebrityProfile = () => {
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-4 py-4">
             <Link 
-              to="/" 
+              to="/famous-birthdays" 
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -180,120 +194,208 @@ const CelebrityProfile = () => {
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="container mx-auto px-4 py-8 max-w-5xl">
-          {/* Hero Section */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-                {celebrity.name}
-              </h1>
-              
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Star className="w-5 h-5 text-primary" />
-                  <span className="text-lg">{celebrity.profession}</span>
-                </div>
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Calendar className="w-5 h-5 text-primary" />
-                  <span>{new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}</span>
-                </div>
-                {celebrity.place_of_birth && (
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    <span>{celebrity.place_of_birth}</span>
-                  </div>
-                )}
+        {/* Main Two-Column Layout */}
+        <main className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="grid lg:grid-cols-[1fr_400px] gap-8">
+            {/* LEFT COLUMN: Main Content */}
+            <div className="space-y-8">
+              {/* Main Profile Image */}
+              <div className="w-full">
+                <img 
+                  src={celebrity.profile_image_url} 
+                  alt={celebrity.name}
+                  className="w-full max-w-2xl mx-auto rounded-2xl shadow-lg object-cover"
+                />
               </div>
 
-              {/* Popularity Ranks */}
-              {celebrity.popularity_ranks && (
-                <div className="flex flex-wrap gap-3">
-                  {celebrity.popularity_ranks.most_popular && (
-                    <div className="bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 px-4 py-2 rounded-full text-sm font-medium">
-                      Most Popular #{celebrity.popularity_ranks.most_popular}
+              {/* Main Biography Content */}
+              <Card>
+                <CardContent className="p-6 md:p-8">
+                  <div 
+                    className="prose prose-lg dark:prose-invert max-w-none [&_h2]:text-primary [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:mb-4 [&_h2]:mt-6"
+                    dangerouslySetInnerHTML={{ __html: celebrity.main_content }}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Known For Section - Placeholder for future implementation */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-primary" />
+                    Known For
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
+                    {/* Placeholder - will be populated with career highlights */}
+                    <p className="text-muted-foreground text-sm">Career highlights coming soon</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AdSense Banner */}
+              <div className="my-8">
+                <AdSenseBanner 
+                  adSlot="in-article"
+                  format="horizontal"
+                />
+              </div>
+
+              {/* Fans Also Viewed Section */}
+              {relatedCelebrities.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Fans Also Viewed</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {relatedCelebrities.map((celeb) => (
+                        <Link
+                          key={celeb.profile_slug}
+                          to={`/people/${celeb.profile_slug}`}
+                          className="group"
+                        >
+                          <div className="aspect-square overflow-hidden rounded-lg mb-2">
+                            <img 
+                              src={celeb.profile_image_url} 
+                              alt={celeb.name}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+                          <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+                            {celeb.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground">{celeb.profession}</p>
+                        </Link>
+                      ))}
                     </div>
-                  )}
-                  {celebrity.popularity_ranks.age_rank && (
-                    <div className="bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 px-4 py-2 rounded-full text-sm font-medium">
-                      Age Rank #{celebrity.popularity_ranks.age_rank}
-                    </div>
-                  )}
-                </div>
+                  </CardContent>
+                </Card>
               )}
             </div>
 
-            <div className="flex items-start justify-center">
-              <img 
-                src={celebrity.profile_image_url} 
-                alt={celebrity.name}
-                className="w-full max-w-md rounded-2xl shadow-lg object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Age Counter */}
-          {ageData && (
-            <div className="mb-12">
-              <div className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6">
-                <h2 className="text-3xl font-bold text-center text-foreground mb-2">
-                  Current Age
-                </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                  <div className="text-center">
-                    <div className="text-4xl md:text-5xl font-bold text-primary tabular-nums">
-                      {ageData.years}
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">Years</div>
+            {/* RIGHT COLUMN: Sidebar */}
+            <div className="space-y-6">
+              {/* Fact Sheet */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-3xl">{celebrity.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <Star className="w-5 h-5 text-primary" />
+                    <span>{celebrity.profession}</span>
                   </div>
-                  <div className="text-center">
-                    <div className="text-4xl md:text-5xl font-bold text-primary tabular-nums">
-                      {ageData.months}
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">Months</div>
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    <span>{new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</span>
                   </div>
-                  <div className="text-center">
-                    <div className="text-4xl md:text-5xl font-bold text-primary tabular-nums">
-                      {ageData.days}
+                  {celebrity.place_of_birth && (
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <MapPin className="w-5 h-5 text-primary" />
+                      <span>{celebrity.place_of_birth}</span>
                     </div>
-                    <div className="text-sm text-muted-foreground mt-1">Days</div>
-                  </div>
-                </div>
-              </div>
+                  )}
+                  {celebrity.zodiac_sign && (
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <Star className="w-5 h-5 text-primary" />
+                      <span>{celebrity.zodiac_sign}</span>
+                    </div>
+                  )}
+                  {ageData && (
+                    <div className="pt-4 border-t border-border">
+                      <div className="text-center">
+                        <div className="text-4xl font-bold text-primary mb-1">
+                          {ageData.years}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Years Old</div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
-              <AdditionalAgeInfo
-                nextBirthdayDays={ageData.nextBirthdayDays}
-                zodiacSign={celebrity.zodiac_sign || ""}
-                zodiacSymbol=""
-              />
+              {/* Main Popularity Rank */}
+              {popularityRanks.most_popular && (
+                <Card className="bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <TrendingUp className="w-6 h-6 text-primary" />
+                      <span className="text-lg font-semibold text-foreground">Most Popular</span>
+                    </div>
+                    <div className="text-5xl font-bold text-primary">
+                      #{popularityRanks.most_popular}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-              <div className="mt-6">
-                <AgeDisplayFormats 
-                  result={ageData} 
-                  timezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
+              {/* Popularity Grid */}
+              {Object.keys(popularityRanks).length > 1 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Popularity Rankings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-3">
+                      {popularityRanks.age_rank && (
+                        <div className="bg-muted rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-primary">
+                            #{popularityRanks.age_rank}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Age Rank
+                          </div>
+                        </div>
+                      )}
+                      {popularityRanks.profession_rank && (
+                        <div className="bg-muted rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-primary">
+                            #{popularityRanks.profession_rank}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {celebrity.profession}
+                          </div>
+                        </div>
+                      )}
+                      {popularityRanks.birthplace_rank && (
+                        <div className="bg-muted rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-primary">
+                            #{popularityRanks.birthplace_rank}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Birthplace
+                          </div>
+                        </div>
+                      )}
+                      {popularityRanks.zodiac_rank && (
+                        <div className="bg-muted rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold text-primary">
+                            #{popularityRanks.zodiac_rank}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {celebrity.zodiac_sign}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* AdSense Vertical Banner */}
+              <div className="sticky top-4">
+                <AdSenseBanner 
+                  adSlot="sidebar"
+                  format="vertical"
                 />
               </div>
             </div>
-          )}
-
-          {/* Main Biography Content */}
-          <div className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-8">
-            <div 
-              className="prose prose-lg dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: celebrity.main_content }}
-            />
-          </div>
-
-          {/* AdSense Placeholder */}
-          <div className="my-8">
-            <AdSenseBanner 
-              adSlot="in-article"
-              format="horizontal"
-            />
           </div>
         </main>
       </div>
