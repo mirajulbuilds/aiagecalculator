@@ -36,6 +36,21 @@ const celebritySchema = z.object({
 
 type CelebrityFormData = z.infer<typeof celebritySchema>;
 
+interface CelebrityData {
+  id: string;
+  name: string;
+  profile_slug: string;
+  date_of_birth: string;
+  profession: string;
+  place_of_birth: string | null;
+  main_content: string;
+  meta_title: string;
+  meta_description: string;
+  profile_image_url: string;
+  zodiac_sign: string | null;
+  popularity_ranks: any;
+}
+
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
@@ -53,6 +68,11 @@ const AdminPanel = () => {
   // Tab 1: Scrape state
   const [sourceType, setSourceType] = useState<string>("famousbirthdays");
   const [profileUrl, setProfileUrl] = useState<string>("");
+
+  // Search & Edit state
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<CelebrityData[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const {
     register,
@@ -339,6 +359,68 @@ const AdminPanel = () => {
     }
   };
 
+  const handleSearchProfiles = async () => {
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      toast.error("Please enter a celebrity name to search");
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const { data, error } = await supabase
+        .from("celebrities")
+        .select("*")
+        .ilike("name", `%${searchQuery}%`)
+        .order("name");
+
+      if (error) {
+        console.error("Search error:", error);
+        toast.error("Failed to search profiles");
+        setSearchResults([]);
+        return;
+      }
+
+      setSearchResults(data || []);
+      
+      if (data && data.length === 0) {
+        toast.info("No profiles found matching your search");
+      } else if (data) {
+        toast.success(`Found ${data.length} profile(s)`);
+      }
+    } catch (error) {
+      console.error("Error searching profiles:", error);
+      toast.error("An unexpected error occurred");
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleLoadProfile = (profile: CelebrityData) => {
+    // Populate all form fields with the loaded profile data
+    setValue("name", profile.name);
+    setValue("profileSlug", profile.profile_slug);
+    setValue("mainContent", profile.main_content);
+    setValue("metaTitle", profile.meta_title);
+    setValue("metaDescription", profile.meta_description);
+    setValue("profession", profile.profession);
+    setValue("placeOfBirth", profile.place_of_birth || "");
+    setValue("dateOfBirth", new Date(profile.date_of_birth));
+    
+    // Set profile image
+    setImagePreview(profile.profile_image_url);
+    
+    // Set additional fields
+    setZodiacSign(profile.zodiac_sign || "");
+    setPopularityRanks(profile.popularity_ranks || null);
+    
+    // Clear search results after loading
+    setSearchResults([]);
+    setSearchQuery("");
+    
+    toast.success(`Loaded profile: ${profile.name}`);
+  };
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
@@ -403,6 +485,78 @@ const AdminPanel = () => {
 
           {/* TAB 2: MANUAL EDITOR / REVIEW DRAFTS */}
           <TabsContent value="manual" className="space-y-6">
+            {/* SEARCH & EDIT SECTION */}
+            <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4">
+              <h2 className="text-2xl font-semibold text-foreground">
+                Find an Existing Profile to Edit
+              </h2>
+              
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <Label htmlFor="searchQuery">Search by Celebrity Name</Label>
+                  <Input
+                    id="searchQuery"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Type a celebrity name..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSearchProfiles();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    type="button"
+                    onClick={handleSearchProfiles}
+                    disabled={isSearching}
+                    className="min-w-[120px]"
+                  >
+                    {isSearching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Search
+                  </Button>
+                </div>
+              </div>
+
+              {/* Search Results */}
+              {searchResults.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Search Results ({searchResults.length})
+                  </h3>
+                  <div className="max-h-[400px] overflow-y-auto space-y-2">
+                    {searchResults.map((profile) => (
+                      <div
+                        key={profile.id}
+                        className="flex items-center justify-between p-4 border border-border rounded-lg bg-background hover:bg-accent/5 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <p className="font-semibold text-foreground">{profile.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {profile.profession} • {new Date(profile.date_of_birth).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Slug: {profile.profile_slug}
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => handleLoadProfile(profile)}
+                          variant="default"
+                          size="sm"
+                        >
+                          Load for Editing
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="p-6 border border-border rounded-lg bg-card space-y-6">
                 <h2 className="text-2xl font-semibold text-foreground">
