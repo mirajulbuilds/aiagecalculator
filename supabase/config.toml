@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.birthday-facts]
 verify_jwt = false
+
+[functions.generate-celebrity-profile]
+verify_jwt = false

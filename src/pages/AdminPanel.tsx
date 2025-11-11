@@ -90,9 +90,48 @@ const AdminPanel = () => {
   };
 
   const handleGenerateContent = async () => {
+    const name = watch("name");
+    const aiHint = watch("aiHint");
+
+    if (!name || name.trim().length === 0) {
+      toast.error("Please enter a celebrity name first");
+      return;
+    }
+
     setIsGenerating(true);
-    toast.info("AI content generation will be implemented in the next phase");
-    setIsGenerating(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-celebrity-profile", {
+        body: {
+          celebrityName: name,
+          optionalHint: aiHint,
+          manualImageBase64: imagePreview || null,
+        },
+      });
+
+      if (error) throw error;
+
+      // Auto-fill all fields with generated data
+      setValue("profileSlug", data.profile_slug);
+      setValue("mainContent", data.main_content);
+      setValue("metaTitle", data.meta_title);
+      setValue("metaDescription", data.meta_description);
+      setValue("profession", data.profession);
+      setValue("placeOfBirth", data.place_of_birth);
+      setValue("dateOfBirth", new Date(data.date_of_birth));
+
+      // Set the image if no manual image was provided
+      if (!imagePreview && data.profile_image_url) {
+        setImagePreview(data.profile_image_url);
+      }
+
+      toast.success("AI content generated successfully! Review and edit as needed.");
+    } catch (error) {
+      console.error("Error generating content:", error);
+      toast.error("Failed to generate content. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handlePreview = () => {
