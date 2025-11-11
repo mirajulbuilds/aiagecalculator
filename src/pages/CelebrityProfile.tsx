@@ -226,18 +226,18 @@ const CelebrityProfile = () => {
 
         {/* Main Two-Column Layout */}
         <main className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-            {/* Main Content - Shows SECOND on mobile, FIRST (left) on desktop */}
-            <div className="order-2 lg:order-1 lg:flex-[2] space-y-8">
-              {/* Main Profile Image */}
-              <div className="w-full">
-                <img 
-                  src={celebrity.profile_image_url} 
-                  alt={celebrity.name}
-                  className="w-full max-w-2xl max-h-[450px] mx-auto rounded-2xl shadow-lg object-cover"
-                />
-              </div>
+          <div className="profile-layout-container">
+            {/* Profile Image Block */}
+            <div id="profile-image-block" className="w-full">
+              <img 
+                src={celebrity.profile_image_url} 
+                alt={celebrity.name}
+                className="w-full max-w-2xl max-h-[450px] mx-auto rounded-2xl shadow-lg object-cover"
+              />
+            </div>
 
+            {/* Main Content Block */}
+            <div id="profile-main-content-block" className="space-y-8">
               {/* Main Biography Content */}
               <Card>
                 <CardContent className="p-6 md:p-8">
@@ -379,8 +379,8 @@ const CelebrityProfile = () => {
               )}
             </div>
 
-            {/* Sidebar - Shows FIRST on mobile, SECOND (right) on desktop */}
-            <div className="order-1 lg:order-2 lg:flex-1 space-y-6 lg:sticky lg:top-5">
+            {/* Sidebar Block */}
+            <div id="profile-sidebar-block" className="space-y-6">
               {/* Fact Sheet */}
               <Card>
                 <CardHeader>
