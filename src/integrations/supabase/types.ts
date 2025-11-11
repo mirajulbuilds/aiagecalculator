@@ -70,7 +70,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_celebrities_by_birthday: {
+        Args: { birth_day: number; birth_month: number }
+        Returns: {
+          created_at: string
+          date_of_birth: string
+          id: string
+          main_content: string
+          meta_description: string
+          meta_title: string
+          name: string
+          place_of_birth: string
+          popularity_ranks: Json
+          profession: string
+          profile_image_url: string
+          profile_slug: string
+          updated_at: string
+          zodiac_sign: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

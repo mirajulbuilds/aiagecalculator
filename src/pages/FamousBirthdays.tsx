@@ -31,15 +31,15 @@ const FamousBirthdays = () => {
   const loadCelebrities = async () => {
     setLoading(true);
 
-    // Get current date info
+    // Get visitor's local date
     const today = new Date();
-    const todayMonth = today.getMonth() + 1;
-    const todayDay = today.getDate();
+    const localTodayMonth = today.getMonth() + 1;
+    const localTodayDay = today.getDate();
 
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowMonth = tomorrow.getMonth() + 1;
-    const tomorrowDay = tomorrow.getDate();
+    const localTomorrowMonth = tomorrow.getMonth() + 1;
+    const localTomorrowDay = tomorrow.getDate();
 
     try {
       // Fetch trending celebrities (top 12 by popularity)
@@ -56,11 +56,12 @@ const FamousBirthdays = () => {
         setTrendingCelebrities(trending || []);
       }
 
-      // Fetch celebrities born today
+      // Fetch celebrities born today using proper date extraction
       const { data: todayData, error: todayError } = await supabase
-        .from("celebrities")
-        .select("*")
-        .filter("date_of_birth", "like", `%-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`);
+        .rpc("get_celebrities_by_birthday", {
+          birth_month: localTodayMonth,
+          birth_day: localTodayDay,
+        });
 
       if (todayError) {
         console.error("Error fetching today's birthdays:", todayError);
@@ -68,11 +69,12 @@ const FamousBirthdays = () => {
         setBornToday(todayData || []);
       }
 
-      // Fetch celebrities born tomorrow
+      // Fetch celebrities born tomorrow using proper date extraction
       const { data: tomorrowData, error: tomorrowError } = await supabase
-        .from("celebrities")
-        .select("*")
-        .filter("date_of_birth", "like", `%-${String(tomorrowMonth).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`);
+        .rpc("get_celebrities_by_birthday", {
+          birth_month: localTomorrowMonth,
+          birth_day: localTomorrowDay,
+        });
 
       if (tomorrowError) {
         console.error("Error fetching tomorrow's birthdays:", tomorrowError);
@@ -188,12 +190,12 @@ const FamousBirthdays = () => {
             )}
           </section>
 
-          {/* Born Today Section */}
+          {/* Today's Birthdays Section */}
           <section>
             <div className="flex items-center gap-3 mb-8">
               <Cake className="w-8 h-8 text-primary" />
               <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                Born Today
+                Today's Birthdays
               </h2>
             </div>
 
