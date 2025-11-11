@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Cake, Calendar, Sparkles } from "lucide-react";
+import { Cake, Sparkles } from "lucide-react";
 
 const About = () => {
   return (
@@ -19,7 +19,6 @@ const About = () => {
             <CardHeader className="text-center pb-8">
               <div className="flex justify-center gap-4 mb-4">
                 <Cake className="w-12 h-12 text-primary" />
-                <Calendar className="w-12 h-12 text-primary" />
                 <Sparkles className="w-12 h-12 text-primary" />
               </div>
               <CardTitle className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -32,7 +31,7 @@ const About = () => {
                 AiAgeCalc.com is your fun and informative destination for exploring everything related to age, birthdays, and celebrations. From calculating your age on other planets to generating unique AI greetings, we offer a variety of tools to spark your curiosity. Our blog provides interesting articles on related topics. Enjoy exploring!
               </p>
 
-              <div className="grid md:grid-cols-3 gap-6 mt-8">
+              <div className="grid md:grid-cols-2 gap-6 mt-8">
                 <Card className="border">
                   <CardHeader>
                     <Cake className="w-8 h-8 text-primary mx-auto mb-2" />
@@ -41,18 +40,6 @@ const About = () => {
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
                       Calculate your exact age and discover fun facts about your birthday
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border">
-                  <CardHeader>
-                    <Calendar className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <CardTitle className="text-xl">Famous Birthdays</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Find out which celebrities share your birthday
                     </p>
                   </CardContent>
                 </Card>

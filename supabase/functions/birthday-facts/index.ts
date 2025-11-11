@@ -96,8 +96,7 @@ serve(async (req) => {
 {
   "topSong": "The #1 song on the Billboard Hot 100 chart on or during the week of ${fullDate}. Include song name and artist. If exact data is unavailable for this specific date, say 'The charts from that day are lost to time!'",
   "topMovie": "One of the highest-grossing or most popular movies released in ${year}. Just the movie title.",
-  "historicalEvents": ["Two important or interesting historical events that occurred on ${month} ${day} in any year throughout history"],
-  "famousBirthdays": ["Two to three well-known famous people who were born on ${month} ${day}"]
+  "historicalEvents": ["Two important or interesting historical events that occurred on ${month} ${day} in any year throughout history"]
 }
 
 Be factual and accurate. If you don't have specific data for a field, use the fallback message provided.`;

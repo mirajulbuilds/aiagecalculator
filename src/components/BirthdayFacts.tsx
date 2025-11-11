@@ -1,11 +1,10 @@
-import { Music, Film, History, Users, Loader2 } from "lucide-react";
+import { Music, Film, History, Loader2 } from "lucide-react";
 
 interface BirthdayFactsProps {
   facts: {
     topSong?: string;
     topMovie?: string;
     historicalEvents?: string[];
-    famousBirthdays?: string[];
   } | null;
   loading: boolean;
   error?: string;
@@ -82,28 +81,6 @@ export const BirthdayFacts = ({ facts, loading, error }: BirthdayFactsProps) => 
                   <li key={index} className="flex gap-2">
                     <span className="text-primary">•</span>
                     <span>{event}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground">Data not available.</p>
-            )}
-          </div>
-
-          {/* Famous Birthdays */}
-          <div className="bg-gradient-to-br from-accent/20 via-primary/10 to-accent/10 rounded-xl p-6 border border-accent/30">
-            <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">
-                You Share a Birthday With
-              </h3>
-            </div>
-            {facts.famousBirthdays && facts.famousBirthdays.length > 0 ? (
-              <ul className="space-y-2 text-muted-foreground">
-                {facts.famousBirthdays.map((person, index) => (
-                  <li key={index} className="flex gap-2">
-                    <span className="text-primary">•</span>
-                    <span>{person}</span>
                   </li>
                 ))}
               </ul>
