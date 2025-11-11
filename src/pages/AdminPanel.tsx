@@ -245,18 +245,37 @@ const AdminPanel = () => {
     setIsGenerating(true);
 
     try {
+      console.log("Calling scrape function with URL:", profileUrl, "Source:", sourceType);
+      
+      // Convert image preview to base64 if it's a file
+      let imageBase64 = null;
+      if (profileImage) {
+        const reader = new FileReader();
+        imageBase64 = await new Promise<string>((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(profileImage);
+        });
+      } else if (imagePreview && imagePreview.startsWith('data:')) {
+        imageBase64 = imagePreview;
+      }
+
       const { data, error } = await supabase.functions.invoke("generate-celebrity-profile", {
         body: {
-          celebrityName: profileUrl,
-          optionalHint: "",
-          manualImageBase64: imagePreview || null,
+          profileURL: profileUrl,
+          sourceType: sourceType,
+          manualImageBase64: imageBase64,
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Function error:", error);
+        throw error;
+      }
 
-      // Auto-fill all fields with generated data
-      setValue("name", data.name || profileUrl);
+      console.log("Generated data:", data);
+
+      // Auto-fill all fields with generated data in Tab 2
+      setValue("name", data.name);
       setValue("profileSlug", data.profile_slug);
       setValue("mainContent", data.main_content);
       setValue("metaTitle", data.meta_title);
@@ -265,7 +284,7 @@ const AdminPanel = () => {
       setValue("placeOfBirth", data.place_of_birth);
       setValue("dateOfBirth", new Date(data.date_of_birth));
 
-      // Set the profile image URL from the backend (handles all 3 tiers)
+      // Set the profile image URL (null if no image found)
       if (data.profile_image_url) {
         setImagePreview(data.profile_image_url);
       }

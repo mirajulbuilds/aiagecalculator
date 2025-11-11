@@ -6,39 +6,91 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Helper function to scrape website content
+async function scrapeWebsite(url: string) {
+  console.log("Scraping URL:", url);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch URL: ${response.status}`);
+  }
+  const html = await response.text();
+  return html;
+}
+
+// Helper function to extract data based on source type
+function extractDataFromHTML(html: string, sourceType: string) {
+  console.log("Extracting data for source type:", sourceType);
+  
+  // Simple text extraction - remove HTML tags
+  const textContent = html
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Extract celebrity name from title or first heading
+  const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  const name = titleMatch?.[1]?.split('|')[0]?.trim() || h1Match?.[1]?.trim() || "Unknown";
+
+  // Try to extract image URL
+  let imageUrl = null;
+  const imgMatch = html.match(/<img[^>]*src=["']([^"']+)["'][^>]*>/i);
+  if (imgMatch?.[1]) {
+    imageUrl = imgMatch[1];
+    // Make absolute URL if relative
+    if (imageUrl.startsWith('/')) {
+      const urlObj = new URL(html.match(/<base[^>]*href=["']([^"']+)["']/i)?.[1] || sourceType);
+      imageUrl = urlObj.origin + imageUrl;
+    }
+  }
+
+  return {
+    name,
+    rawText: textContent.substring(0, 5000), // Limit to 5000 chars
+    imageUrl,
+  };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { celebrityName, optionalHint, manualImageBase64 } = await req.json();
+    const { profileURL, sourceType, manualImageBase64 } = await req.json();
 
-    if (!celebrityName) {
+    if (!profileURL) {
       return new Response(
-        JSON.stringify({ error: "Celebrity name is required" }),
+        JSON.stringify({ error: "Profile URL is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log("Generating profile for:", celebrityName);
+    console.log("Scraping and generating profile for:", profileURL, "Source:", sourceType);
+
+    // Step 1: Scrape the website
+    const html = await scrapeWebsite(profileURL);
+    const { name: celebrityName, rawText, imageUrl: scrapedImageUrl } = extractDataFromHTML(html, sourceType);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    let profileImageUrl = "";
+    let profileImageUrl = null;
 
-    // TIER 1: Manual Image Upload
+    // Step 2: Handle images with 2-tier logic
+    // TIER 1: Manual Image Upload (highest priority)
     if (manualImageBase64) {
       console.log("TIER 1: Using manual image provided by user");
       try {
         const base64Data = manualImageBase64.split(",")[1] || manualImageBase64;
         const imageBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-        const fileName = `${celebrityName.toLowerCase().replace(/\s+/g, "-")}-manual-${Date.now()}.png`;
+        const fileName = `${profileURL.replace(/[^a-z0-9]/gi, '-')}-manual-${Date.now()}.png`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("celebrity-profiles")
           .upload(fileName, imageBuffer, {
             contentType: "image/png",
@@ -46,85 +98,52 @@ serve(async (req) => {
 
         if (uploadError) {
           console.error("Manual image upload failed:", uploadError);
-          throw new Error("Manual image upload failed");
+        } else {
+          const { data: { publicUrl } } = supabase.storage
+            .from("celebrity-profiles")
+            .getPublicUrl(fileName);
+          profileImageUrl = publicUrl;
+          console.log("Manual image uploaded successfully:", profileImageUrl);
         }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from("celebrity-profiles")
-          .getPublicUrl(fileName);
-        profileImageUrl = publicUrl;
-        console.log("Manual image uploaded successfully:", profileImageUrl);
       } catch (error) {
         console.error("Manual image processing error:", error);
-        // Fall through to TIER 3 on failure
       }
     }
 
-    // TIER 2: AI Search for Real Image (skipped - requires external image search API)
-    // This tier would use a service like Google Image Search API or Unsplash API
-    // to find real photos, but is not implemented in this version
-
-    // TIER 3: AI Generate Image (Fallback)
-    if (!profileImageUrl) {
-      console.log("TIER 3: Generating AI image for celebrity");
+    // TIER 2: Try to download and upload scraped image
+    if (!profileImageUrl && scrapedImageUrl) {
+      console.log("TIER 2: Downloading image from scraped URL:", scrapedImageUrl);
       try {
-        const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-2.5-flash-image-preview",
-            messages: [
-              {
-                role: "user",
-                content: `Generate a professional, high-quality, realistic portrait photograph of ${celebrityName}. The image should look like a professional headshot suitable for a celebrity biography page. Style: photorealistic, well-lit, professional photography. ${optionalHint || ""}`,
-              },
-            ],
-            modalities: ["image", "text"],
-          }),
-        });
+        const imageResponse = await fetch(scrapedImageUrl);
+        if (imageResponse.ok) {
+          const imageBuffer = new Uint8Array(await imageResponse.arrayBuffer());
+          const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+          const ext = contentType.split("/")[1] || "jpg";
+          const fileName = `${profileURL.replace(/[^a-z0-9]/gi, '-')}-scraped-${Date.now()}.${ext}`;
 
-        if (!imageResponse.ok) {
-          throw new Error(`Image generation failed: ${imageResponse.status}`);
-        }
-
-        const imageData = await imageResponse.json();
-        const generatedImageBase64 = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-
-        if (generatedImageBase64) {
-          const base64Data = generatedImageBase64.split(",")[1];
-          const imageBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-          const fileName = `${celebrityName.toLowerCase().replace(/\s+/g, "-")}-ai-${Date.now()}.png`;
-
-          const { data: uploadData, error: uploadError } = await supabase.storage
+          const { error: uploadError } = await supabase.storage
             .from("celebrity-profiles")
             .upload(fileName, imageBuffer, {
-              contentType: "image/png",
+              contentType,
             });
 
-          if (uploadError) {
-            console.error("Failed to upload generated image:", uploadError);
-            profileImageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
-          } else {
+          if (!uploadError) {
             const { data: { publicUrl } } = supabase.storage
               .from("celebrity-profiles")
               .getPublicUrl(fileName);
             profileImageUrl = publicUrl;
-            console.log("AI image generated and uploaded:", profileImageUrl);
+            console.log("Scraped image uploaded successfully:", profileImageUrl);
           }
-        } else {
-          profileImageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
         }
       } catch (error) {
-        console.error("Image generation error:", error);
-        profileImageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
+        console.error("Failed to download/upload scraped image:", error);
       }
     }
 
-    // Generate all content using AI with structured output
-    console.log("Generating content with AI");
+    // If no image found, profileImageUrl remains null (no fake images)
+
+    // Step 3: Use AI to rewrite and generate structured content
+    console.log("Generating content with AI using scraped data");
     const contentResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -140,16 +159,18 @@ serve(async (req) => {
           },
           {
             role: "user",
-            content: `Write a comprehensive, engaging profile for ${celebrityName}. ${optionalHint ? `Additional context: ${optionalHint}` : ""}
+            content: `I've scraped content about ${celebrityName} from ${profileURL}. Here's the raw text:
 
-Write in a compelling, journalistic style - NOT a dry list of facts. The biography should flow naturally and tell the story of this person's life and career.
+${rawText}
+
+Please rewrite this information into a comprehensive, engaging profile. Write in a compelling, journalistic style - NOT a dry list of facts. The biography should flow naturally and tell the story of this person's life and career.
 
 Required content:
-1. A rich, detailed 500+ word biography (minimum 250 words, aim for 500+) with these sections:
+1. A rich, detailed 250+ word biography (minimum 250 words, aim for 500+) with these sections:
    - <h2>About</h2>: Opening overview and current status
    - <h2>Before Fame</h2>: Early life, childhood, education
    - <h2>Career Highlights</h2>: Major achievements and notable works
-   - <h2>Trivia</h2>: Interesting facts and lesser-known details
+   - <h2>Trivia</h2>: Interesting facts and lesser-known details (use <ul> and <li> tags)
    - <h2>Family Life</h2>: Personal relationships and family background
    
 2. Their profession/occupation (be specific, e.g., "Academy Award-winning actress" not just "actress")
@@ -158,7 +179,7 @@ Required content:
 5. Zodiac sign
 6. Popularity rankings (generate realistic numbers between 1-10000)
 7. SEO-optimized meta title (max 60 chars, include name and key achievement)
-8. SEO-optimized meta description (max 160 chars, compelling and informative)
+8. SEO-optimized meta description (CRITICAL: max 160 chars, compelling and informative)
 9. URL-friendly slug (lowercase, hyphenated)
 
 Make the writing feel human, warm, and professionally crafted.`,
@@ -175,7 +196,11 @@ Make the writing feel human, warm, and professionally crafted.`,
                 properties: {
                   main_content: {
                     type: "string",
-                    description: "Minimum 250 words, ideally 500+ word HTML-formatted biography written in engaging, human-like journalistic style with <h2> section headings for: About, Before Fame, Career Highlights, Trivia, and Family Life",
+                    description: "Minimum 250 words HTML-formatted biography written in engaging, human-like journalistic style with <h2> section headings for: About, Before Fame, Career Highlights, Trivia (with <ul> and <li>), and Family Life",
+                  },
+                  name: {
+                    type: "string",
+                    description: "Celebrity's full name",
                   },
                   profession: { type: "string" },
                   date_of_birth: {
@@ -193,11 +218,15 @@ Make the writing feel human, warm, and professionally crafted.`,
                     },
                   },
                   meta_title: { type: "string" },
-                  meta_description: { type: "string" },
+                  meta_description: { 
+                    type: "string",
+                    description: "CRITICAL: Must be 160 characters or less for SEO"
+                  },
                   profile_slug: { type: "string" },
                 },
                 required: [
                   "main_content",
+                  "name",
                   "profession",
                   "date_of_birth",
                   "place_of_birth",
@@ -234,6 +263,11 @@ Make the writing feel human, warm, and professionally crafted.`,
     }
 
     const generatedProfile = JSON.parse(toolCall.function.arguments);
+
+    // Ensure meta_description is 160 chars or less
+    if (generatedProfile.meta_description && generatedProfile.meta_description.length > 160) {
+      generatedProfile.meta_description = generatedProfile.meta_description.substring(0, 157) + "...";
+    }
 
     // Return complete profile data
     const completeProfile = {
