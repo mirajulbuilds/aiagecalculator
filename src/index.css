@@ -189,32 +189,48 @@ All colors MUST be HSL.
   /* Celebrity Profile CSS Grid Layout */
   .profile-layout-container {
     display: grid;
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+    
+    /* MOBILE LAYOUT (DEFAULT) */
     grid-template-columns: 1fr;
-    gap: 24px;
     grid-template-areas:
       "image"
       "sidebar"
       "content";
+    gap: 24px;
   }
   
   #profile-image-block {
     grid-area: image;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   #profile-sidebar-block {
     grid-area: sidebar;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   #profile-main-content-block {
     grid-area: content;
+    width: 100%;
+    box-sizing: border-box;
   }
   
-  @media (min-width: 1024px) {
+  /* DESKTOP LAYOUT */
+  @media (min-width: 992px) {
     .profile-layout-container {
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "image   sidebar"
         "content sidebar";
+      gap: 32px;
+      padding: 0 24px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     
     #profile-sidebar-block {
