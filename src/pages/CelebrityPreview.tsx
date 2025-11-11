@@ -36,10 +36,13 @@ const CelebrityPreview = () => {
     );
   }
 
-  const birthDate = new Date(previewData.dateOfBirth);
-  const age = Math.floor(
-    (new Date().getTime() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
-  );
+  // Safely parse the date and check if it's valid
+  const birthDate = previewData.dateOfBirth ? new Date(previewData.dateOfBirth) : null;
+  const isValidDate = birthDate && !isNaN(birthDate.getTime());
+  
+  const age = isValidDate 
+    ? Math.floor((new Date().getTime() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,13 +72,22 @@ const CelebrityPreview = () => {
                   {previewData.profession}
                 </p>
                 <div className="space-y-2 text-sm">
-                  <p className="text-foreground">
-                    <span className="font-semibold">Age:</span> {age} years old
-                  </p>
-                  <p className="text-foreground">
-                    <span className="font-semibold">Born:</span>{" "}
-                    {format(birthDate, "MMMM d, yyyy")}
-                  </p>
+                  {isValidDate && age !== null && (
+                    <>
+                      <p className="text-foreground">
+                        <span className="font-semibold">Age:</span> {age} years old
+                      </p>
+                      <p className="text-foreground">
+                        <span className="font-semibold">Born:</span>{" "}
+                        {format(birthDate!, "MMMM d, yyyy")}
+                      </p>
+                    </>
+                  )}
+                  {!isValidDate && (
+                    <p className="text-muted-foreground italic">
+                      Date of birth not set
+                    </p>
+                  )}
                   {previewData.placeOfBirth && (
                     <p className="text-foreground">
                       <span className="font-semibold">Birthplace:</span>{" "}
