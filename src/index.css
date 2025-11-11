@@ -38,39 +38,39 @@ All colors MUST be HSL.
   }
 
   :root {
-    --background: 270 55% 96%;
-    --foreground: 249 38% 22%;
+    --background: 200 25% 97%;
+    --foreground: 205 45% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 249 38% 22%;
+    --card-foreground: 205 45% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 249 38% 22%;
+    --popover-foreground: 205 45% 15%;
 
-    --primary: 264 70% 74%;
+    --primary: 200 70% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 280 65% 65%;
+    --secondary: 170 60% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 270 40% 94%;
-    --muted-foreground: 217 19% 35%;
+    --muted: 200 20% 94%;
+    --muted-foreground: 205 20% 45%;
 
-    --accent: 290 80% 68%;
+    --accent: 30 90% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 30% 88%;
-    --input: 270 30% 90%;
-    --ring: 264 70% 74%;
+    --border: 200 20% 88%;
+    --input: 200 20% 88%;
+    --ring: 200 70% 50%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
     
-    --gradient-primary: linear-gradient(135deg, hsl(264 70% 74%), hsl(280 65% 65%));
+    --gradient-primary: linear-gradient(135deg, hsl(200 70% 50%), hsl(170 60% 45%));
     
-    --shadow-card: 0 4px 12px 0 rgb(167 139 250 / 0.1);
+    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -92,37 +92,37 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 260 40% 12%;
-    --foreground: 270 20% 92%;
+    --background: 205 30% 10%;
+    --foreground: 200 15% 92%;
 
-    --card: 260 35% 16%;
-    --card-foreground: 270 20% 92%;
+    --card: 205 25% 14%;
+    --card-foreground: 200 15% 92%;
 
-    --popover: 260 35% 16%;
-    --popover-foreground: 270 20% 92%;
+    --popover: 205 25% 14%;
+    --popover-foreground: 200 15% 92%;
 
-    --primary: 264 70% 74%;
+    --primary: 200 75% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 280 65% 65%;
+    --secondary: 170 65% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 260 25% 22%;
-    --muted-foreground: 270 10% 65%;
+    --muted: 205 20% 20%;
+    --muted-foreground: 200 10% 65%;
 
-    --accent: 290 80% 68%;
+    --accent: 30 95% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 260 25% 24%;
-    --input: 260 25% 22%;
-    --ring: 264 70% 74%;
+    --border: 205 20% 22%;
+    --input: 205 20% 20%;
+    --ring: 200 75% 55%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(264 70% 74%), hsl(280 65% 65%));
-    --gradient-accent: linear-gradient(135deg, hsl(290 80% 68%), hsl(280 65% 65%));
-    --gradient-bg: linear-gradient(180deg, hsl(260 40% 12%), hsl(270 35% 14%));
+    --gradient-primary: linear-gradient(135deg, hsl(200 75% 55%), hsl(170 65% 50%));
+    --gradient-accent: linear-gradient(135deg, hsl(30 95% 60%), hsl(170 65% 50%));
+    --gradient-bg: linear-gradient(180deg, hsl(205 30% 10%), hsl(200 35% 12%));
     
     --shadow-elegant: 0 10px 40px -10px hsl(200 75% 55% / 0.4);
     --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.3);
@@ -144,10 +144,13 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    /* Soft lavender gradient background */
-    background: linear-gradient(180deg, hsl(270 55% 96%), hsl(265 50% 92%));
-    min-height: 100vh;
-    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+    /* Interactive gradient background */
+    background-image: radial-gradient(
+      circle 400px at var(--x, 50%) var(--y, 50%), 
+      hsl(var(--primary) / 0.15),
+      transparent 80%
+    );
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, background 0.2s linear;
   }
 }
 
@@ -173,51 +176,13 @@ All colors MUST be HSL.
   
   /* Universal Hover Animation for All Tabs and Buttons */
   .interactive-element {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, filter, box-shadow;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    will-change: transform, filter;
   }
 
   .interactive-element:hover {
-    filter: brightness(1.1);
-    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.15);
+    transform: scale(1.03);
     cursor: pointer;
-  }
-
-  .interactive-element:active {
-    transform: translateY(0) scale(0.98);
-  }
-  
-  /* Purple Glow Utilities */
-  .glow-purple-sm {
-    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
-  }
-
-  .glow-purple-md {
-    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.5);
-  }
-
-  .glow-purple-lg {
-    box-shadow: 0 12px 35px rgba(167, 139, 250, 0.6);
-  }
-
-  .glow-purple-pulse {
-    animation: purple-pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes purple-pulse {
-    0%, 100% {
-      box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
-    }
-    50% {
-      box-shadow: 0 8px 30px rgba(167, 139, 250, 0.6);
-    }
-  }
-  
-  /* Enhanced Input Focus States */
-  input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3),
-                0 4px 12px rgba(167, 139, 250, 0.2);
   }
 }
