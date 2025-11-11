@@ -218,7 +218,7 @@ const CelebrityProfile = () => {
                 </CardContent>
               </Card>
 
-              {/* Known For Section - Placeholder for future implementation */}
+              {/* Known For Section */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -289,22 +289,33 @@ const CelebrityProfile = () => {
                   </div>
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <Calendar className="w-5 h-5 text-primary" />
-                    <span>{new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}</span>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">🎂 Birthday</div>
+                      <div className="font-medium text-foreground">
+                        {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </div>
+                    </div>
                   </div>
                   {celebrity.place_of_birth && (
                     <div className="flex items-center gap-3 text-muted-foreground">
                       <MapPin className="w-5 h-5 text-primary" />
-                      <span>{celebrity.place_of_birth}</span>
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">📍 Birthplace</div>
+                        <div className="font-medium text-foreground">{celebrity.place_of_birth}</div>
+                      </div>
                     </div>
                   )}
                   {celebrity.zodiac_sign && (
                     <div className="flex items-center gap-3 text-muted-foreground">
                       <Star className="w-5 h-5 text-primary" />
-                      <span>{celebrity.zodiac_sign}</span>
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">✨ Birth Sign</div>
+                        <div className="font-medium text-foreground">{celebrity.zodiac_sign}</div>
+                      </div>
                     </div>
                   )}
                   {ageData && (
@@ -330,6 +341,57 @@ const CelebrityProfile = () => {
                     </div>
                     <div className="text-5xl font-bold text-primary">
                       #{popularityRanks.most_popular}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Live Age Counter */}
+              {ageData && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Live Age Counter</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Traditional Age Breakdown */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-muted rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-primary">{ageData.years}</div>
+                        <div className="text-xs text-muted-foreground">Years</div>
+                      </div>
+                      <div className="bg-muted rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-primary">{ageData.months}</div>
+                        <div className="text-xs text-muted-foreground">Months</div>
+                      </div>
+                      <div className="bg-muted rounded-lg p-3 text-center">
+                        <div className="text-2xl font-bold text-primary">{ageData.days}</div>
+                        <div className="text-xs text-muted-foreground">Days</div>
+                      </div>
+                    </div>
+
+                    {/* Total Time Lived */}
+                    <div className="space-y-2 pt-2 border-t border-border">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Total Days:</span>
+                        <span className="font-semibold text-foreground">{ageData.totalDays.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Total Hours:</span>
+                        <span className="font-semibold text-foreground">{ageData.totalHours.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Total Minutes:</span>
+                        <span className="font-semibold text-foreground">{ageData.totalMinutes.toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    {/* Next Birthday */}
+                    <div className="pt-2 border-t border-border">
+                      <div className="bg-primary/10 rounded-lg p-3 text-center">
+                        <div className="text-sm text-muted-foreground mb-1">Next Birthday</div>
+                        <div className="text-2xl font-bold text-primary">{ageData.nextBirthdayDays}</div>
+                        <div className="text-xs text-muted-foreground">Days Away</div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
