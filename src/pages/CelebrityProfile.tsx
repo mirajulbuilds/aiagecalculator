@@ -27,6 +27,8 @@ const CelebrityProfile = () => {
   const [loading, setLoading] = useState(true);
   const [ageData, setAgeData] = useState<any>(null);
   const [relatedCelebrities, setRelatedCelebrities] = useState<CelebrityData[]>([]);
+  const [sameBirthdayCelebrities, setSameBirthdayCelebrities] = useState<CelebrityData[]>([]);
+  const [sameZodiacCelebrities, setSameZodiacCelebrities] = useState<CelebrityData[]>([]);
 
   useEffect(() => {
     const loadCelebrity = async () => {
@@ -85,6 +87,34 @@ const CelebrityProfile = () => {
         
         if (related) {
           setRelatedCelebrities(related as CelebrityData[]);
+        }
+
+        // Load celebrities with same birthday (month and day)
+        const birthDate = new Date(data.date_of_birth);
+        const birthMonth = birthDate.getMonth() + 1;
+        const birthDay = birthDate.getDate();
+        
+        const { data: sameBirthday } = await supabase.rpc(
+          'get_celebrities_by_birthday',
+          { birth_month: birthMonth, birth_day: birthDay }
+        );
+        
+        if (sameBirthday) {
+          setSameBirthdayCelebrities((sameBirthday as CelebrityData[]).filter(c => c.profile_slug !== profileSlug).slice(0, 3));
+        }
+
+        // Load celebrities with same zodiac sign
+        if (data.zodiac_sign) {
+          const { data: sameZodiac } = await supabase
+            .from("celebrities")
+            .select("*")
+            .eq("zodiac_sign", data.zodiac_sign)
+            .neq("profile_slug", profileSlug)
+            .limit(3);
+          
+          if (sameZodiac) {
+            setSameZodiacCelebrities(sameZodiac as CelebrityData[]);
+          }
         }
       }
       setLoading(false);
@@ -204,7 +234,7 @@ const CelebrityProfile = () => {
                 <img 
                   src={celebrity.profile_image_url} 
                   alt={celebrity.name}
-                  className="w-full max-w-2xl mx-auto rounded-2xl shadow-lg object-cover"
+                  className="w-full max-w-2xl max-h-[450px] mx-auto rounded-2xl shadow-lg object-cover"
                 />
               </div>
 
@@ -241,6 +271,80 @@ const CelebrityProfile = () => {
                   format="horizontal"
                 />
               </div>
+
+              {/* More Birthdays Section */}
+              {sameBirthdayCelebrities.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      More {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} Birthdays
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {sameBirthdayCelebrities.map((celeb) => (
+                        <Link
+                          key={celeb.profile_slug}
+                          to={`/people/${celeb.profile_slug}`}
+                          className="group"
+                        >
+                          <div className="aspect-square overflow-hidden rounded-full mb-2">
+                            <img 
+                              src={celeb.profile_image_url} 
+                              alt={celeb.name}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+                          <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">
+                            {celeb.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground text-center">{celeb.profession}</p>
+                        </Link>
+                      ))}
+                      <div className="flex flex-col items-center justify-center aspect-square rounded-full bg-muted cursor-pointer hover:bg-muted/80 transition-colors">
+                        <span className="text-2xl font-bold text-primary">+</span>
+                        <span className="text-xs text-muted-foreground mt-1">More</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* More Zodiac Section */}
+              {sameZodiacCelebrities.length > 0 && celebrity.zodiac_sign && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>More {celebrity.zodiac_sign}s</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {sameZodiacCelebrities.map((celeb) => (
+                        <Link
+                          key={celeb.profile_slug}
+                          to={`/people/${celeb.profile_slug}`}
+                          className="group"
+                        >
+                          <div className="aspect-square overflow-hidden rounded-full mb-2">
+                            <img 
+                              src={celeb.profile_image_url} 
+                              alt={celeb.name}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+                          <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">
+                            {celeb.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground text-center">{celeb.profession}</p>
+                        </Link>
+                      ))}
+                      <div className="flex flex-col items-center justify-center aspect-square rounded-full bg-muted cursor-pointer hover:bg-muted/80 transition-colors">
+                        <span className="text-2xl font-bold text-primary">+</span>
+                        <span className="text-xs text-muted-foreground mt-1">More</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Fans Also Viewed Section */}
               {relatedCelebrities.length > 0 && (
