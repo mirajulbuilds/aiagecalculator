@@ -143,18 +143,20 @@ const AdminPanel = () => {
   const handlePreview = () => {
     const formData = {
       name: watch("name"),
-      profileSlug: watch("profileSlug"),
-      dateOfBirth: watch("dateOfBirth")?.toISOString(),
+      date_of_birth: watch("dateOfBirth")?.toISOString().split('T')[0],
       profession: watch("profession"),
-      placeOfBirth: watch("placeOfBirth"),
-      mainContent: watch("mainContent"),
-      metaTitle: watch("metaTitle"),
-      metaDescription: watch("metaDescription"),
-      profileImageUrl: imagePreview || "https://via.placeholder.com/400x400?text=Celebrity+Photo",
+      place_of_birth: watch("placeOfBirth"),
+      zodiac_sign: zodiacSign,
+      profile_slug: watch("profileSlug"),
+      profile_image_url: imagePreview || "https://via.placeholder.com/400x400?text=Celebrity+Photo",
+      main_content: watch("mainContent"),
+      meta_title: watch("metaTitle"),
+      meta_description: watch("metaDescription"),
+      popularity_ranks: popularityRanks,
     };
 
     sessionStorage.setItem("celebrityPreview", JSON.stringify(formData));
-    window.open("/celebrity/preview", "_blank");
+    window.open(`/celebrities/${watch("profileSlug") || "preview"}`, "_blank");
   };
 
   const onSubmit = async (data: CelebrityFormData) => {

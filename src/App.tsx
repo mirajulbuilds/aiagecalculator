@@ -18,6 +18,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const AuthGateway = lazy(() => import("./pages/AuthGateway"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const CelebrityPreview = lazy(() => import("./pages/CelebrityPreview"));
+const CelebrityProfile = lazy(() => import("./pages/CelebrityProfile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
           <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
           <Route path="/celebrity/preview" element={<CelebrityPreview />} />
+          <Route path="/celebrities/:profileSlug" element={<CelebrityProfile />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
