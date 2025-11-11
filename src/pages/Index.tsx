@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -519,6 +519,19 @@ const Index = () => {
           <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
             Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
           </p>
+          
+          {/* Famous Birthdays CTA */}
+          <div className="mt-6">
+            <Link to="/famous-birthdays">
+              <Button 
+                size="lg" 
+                className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80"
+              >
+                <Star className="w-5 h-5" />
+                Explore Famous Birthdays
+              </Button>
+            </Link>
+          </div>
         </header>
 
         {/* Timezone Section */}

@@ -1,0 +1,263 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { Search, Calendar, Star, TrendingUp, Cake } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AdSenseBanner } from "@/components/AdSenseBanner";
+
+interface Celebrity {
+  id: string;
+  name: string;
+  profile_slug: string;
+  profession: string;
+  date_of_birth: string;
+  profile_image_url: string;
+  popularity_ranks: any;
+}
+
+const FamousBirthdays = () => {
+  const [trendingCelebrities, setTrendingCelebrities] = useState<Celebrity[]>([]);
+  const [bornToday, setBornToday] = useState<Celebrity[]>([]);
+  const [bornTomorrow, setBornTomorrow] = useState<Celebrity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    loadCelebrities();
+  }, []);
+
+  const loadCelebrities = async () => {
+    setLoading(true);
+
+    // Get current date info
+    const today = new Date();
+    const todayMonth = today.getMonth() + 1;
+    const todayDay = today.getDate();
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowMonth = tomorrow.getMonth() + 1;
+    const tomorrowDay = tomorrow.getDate();
+
+    try {
+      // Fetch trending celebrities (top 12 by popularity)
+      const { data: trending, error: trendingError } = await supabase
+        .from("celebrities")
+        .select("*")
+        .not("popularity_ranks", "is", null)
+        .order("popularity_ranks->most_popular", { ascending: true })
+        .limit(12);
+
+      if (trendingError) {
+        console.error("Error fetching trending celebrities:", trendingError);
+      } else {
+        setTrendingCelebrities(trending || []);
+      }
+
+      // Fetch celebrities born today
+      const { data: todayData, error: todayError } = await supabase
+        .from("celebrities")
+        .select("*")
+        .filter("date_of_birth", "like", `%-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`);
+
+      if (todayError) {
+        console.error("Error fetching today's birthdays:", todayError);
+      } else {
+        setBornToday(todayData || []);
+      }
+
+      // Fetch celebrities born tomorrow
+      const { data: tomorrowData, error: tomorrowError } = await supabase
+        .from("celebrities")
+        .select("*")
+        .filter("date_of_birth", "like", `%-${String(tomorrowMonth).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`);
+
+      if (tomorrowError) {
+        console.error("Error fetching tomorrow's birthdays:", tomorrowError);
+      } else {
+        setBornTomorrow(tomorrowData || []);
+      }
+    } catch (error) {
+      console.error("Error loading celebrities:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => (
+    <Link
+      to={`/people/${celebrity.profile_slug}`}
+      className="group bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element"
+    >
+      <div className="aspect-square overflow-hidden">
+        <img
+          src={celebrity.profile_image_url}
+          alt={celebrity.name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        />
+      </div>
+      <div className="p-4">
+        <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
+          {celebrity.name}
+        </h3>
+        <p className="text-sm text-muted-foreground">{celebrity.profession}</p>
+      </div>
+    </Link>
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading celebrities...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Helmet>
+        <title>Famous Birthdays - Discover Celebrity Ages & Birthdays</title>
+        <meta
+          name="description"
+          content="Explore famous birthdays, celebrity ages, and trending stars. Discover who was born today and learn about your favorite celebrities."
+        />
+      </Helmet>
+
+      <div className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-b from-primary/10 to-background py-12 md:py-16 border-b border-border">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center text-foreground mb-6">
+              Discover Famous Birthdays
+            </h1>
+            <p className="text-lg md:text-xl text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Explore celebrity ages, birthdays, and fascinating facts about your favorite stars
+            </p>
+
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search for a celebrity..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-4 py-6 text-lg"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground text-center mt-3">
+                Search functionality coming soon
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* AdSense Banner */}
+        <div className="container mx-auto px-4 max-w-6xl my-8">
+          <AdSenseBanner format="horizontal" adSlot="leaderboard" />
+        </div>
+
+        <div className="container mx-auto px-4 max-w-6xl py-12 space-y-16">
+          {/* Trending Celebrities Section */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <TrendingUp className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Trending Celebrities This Week
+              </h2>
+            </div>
+            
+            {trendingCelebrities.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {trendingCelebrities.map((celebrity) => (
+                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-card rounded-2xl shadow-card p-8 text-center">
+                <p className="text-muted-foreground">
+                  No trending celebrities available yet. Check back soon!
+                </p>
+              </div>
+            )}
+          </section>
+
+          {/* Born Today Section */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <Cake className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Born Today
+              </h2>
+            </div>
+
+            {bornToday.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {bornToday.map((celebrity) => (
+                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-card rounded-2xl shadow-card p-8 text-center">
+                <p className="text-muted-foreground">
+                  No celebrities found for today. Check back tomorrow!
+                </p>
+              </div>
+            )}
+          </section>
+
+          {/* Born Tomorrow Section */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <Calendar className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Tomorrow's Birthdays
+              </h2>
+            </div>
+
+            {bornTomorrow.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {bornTomorrow.map((celebrity) => (
+                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-card rounded-2xl shadow-card p-8 text-center">
+                <p className="text-muted-foreground">
+                  No celebrities found for tomorrow. Check back later!
+                </p>
+              </div>
+            )}
+          </section>
+
+          {/* Browse by Profession - Placeholder */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <Star className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Browse by Profession
+              </h2>
+            </div>
+
+            <div className="bg-card rounded-2xl shadow-card p-12 text-center">
+              <p className="text-muted-foreground text-lg mb-4">
+                Browse celebrities by profession - Coming Soon!
+              </p>
+              <p className="text-sm text-muted-foreground">
+                We're building an amazing way to explore celebrities by their professions. Stay tuned!
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default FamousBirthdays;
