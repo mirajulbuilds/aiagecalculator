@@ -95,6 +95,23 @@ const AdminPanel = () => {
     setIsGenerating(false);
   };
 
+  const handlePreview = () => {
+    const formData = {
+      name: watch("name"),
+      profileSlug: watch("profileSlug"),
+      dateOfBirth: watch("dateOfBirth")?.toISOString(),
+      profession: watch("profession"),
+      placeOfBirth: watch("placeOfBirth"),
+      mainContent: watch("mainContent"),
+      metaTitle: watch("metaTitle"),
+      metaDescription: watch("metaDescription"),
+      profileImageUrl: imagePreview || "https://via.placeholder.com/400x400?text=Celebrity+Photo",
+    };
+
+    sessionStorage.setItem("celebrityPreview", JSON.stringify(formData));
+    window.open("/celebrity/preview", "_blank");
+  };
+
   const onSubmit = async (data: CelebrityFormData) => {
     if (!session) {
       toast.error("You must be logged in");
@@ -194,74 +211,6 @@ const AdminPanel = () => {
             )}
           </div>
 
-          {/* Profile Slug */}
-          <div className="space-y-2">
-            <Label htmlFor="profileSlug">Profile URL Slug (Unique) *</Label>
-            <Input
-              id="profileSlug"
-              {...register("profileSlug")}
-              placeholder="e.g., charli-d-amelio (no spaces, all lowercase)"
-            />
-            {errors.profileSlug && (
-              <p className="text-sm text-destructive">{errors.profileSlug.message}</p>
-            )}
-          </div>
-
-          {/* Date of Birth */}
-          <div className="space-y-2">
-            <Label>Date of Birth *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !dateOfBirth && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateOfBirth}
-                  onSelect={(date) => setValue("dateOfBirth", date as Date)}
-                  disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
-            {errors.dateOfBirth && (
-              <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
-            )}
-          </div>
-
-          {/* Profession */}
-          <div className="space-y-2">
-            <Label htmlFor="profession">Profession *</Label>
-            <Input
-              id="profession"
-              {...register("profession")}
-              placeholder="e.g., TikTok Star"
-            />
-            {errors.profession && (
-              <p className="text-sm text-destructive">{errors.profession.message}</p>
-            )}
-          </div>
-
-          {/* Place of Birth */}
-          <div className="space-y-2">
-            <Label htmlFor="placeOfBirth">Place of Birth</Label>
-            <Input
-              id="placeOfBirth"
-              {...register("placeOfBirth")}
-              placeholder="e.g., Ashland, Kentucky"
-            />
-          </div>
-
           {/* Manual Image Upload */}
           <div className="space-y-2">
             <Label htmlFor="profileImage">Manual Profile Image (Optional)</Label>
@@ -292,6 +241,9 @@ const AdminPanel = () => {
               placeholder="Provide specific details or links if the AI struggles to find the correct celebrity."
               rows={3}
             />
+            <p className="text-sm text-muted-foreground">
+              Provide specific details or links if the AI struggles to find the correct celebrity.
+            </p>
           </div>
 
           {/* AI Generate Button */}
@@ -306,14 +258,33 @@ const AdminPanel = () => {
             Generate AI Content (Step 1)
           </Button>
 
+          {/* Profile Slug */}
+          <div className="space-y-2">
+            <Label htmlFor="profileSlug">Profile URL Slug *</Label>
+            <Input
+              id="profileSlug"
+              {...register("profileSlug")}
+              placeholder="e.g., charli-d-amelio"
+            />
+            <p className="text-sm text-muted-foreground">
+              The AI will generate this automatically. You can edit it if needed.
+            </p>
+            {errors.profileSlug && (
+              <p className="text-sm text-destructive">{errors.profileSlug.message}</p>
+            )}
+          </div>
+
           {/* Rich Text Editor */}
           <div className="space-y-2">
             <Label>Main Content (Biography, Trivia, etc.) *</Label>
             <RichTextEditor
               value={mainContent}
               onChange={(value) => setValue("mainContent", value)}
-              placeholder="Click 'Generate AI Content' to fill this, or write manually."
+              placeholder="The AI will generate the 500+ word article here."
             />
+            <p className="text-sm text-muted-foreground">
+              The AI will generate the 500+ word article here. You can edit it manually.
+            </p>
             {errors.mainContent && (
               <p className="text-sm text-destructive">{errors.mainContent.message}</p>
             )}
@@ -328,6 +299,9 @@ const AdminPanel = () => {
               placeholder="Max 60 characters"
               maxLength={60}
             />
+            <p className="text-sm text-muted-foreground">
+              The AI will generate this automatically. You can edit it if needed.
+            </p>
             {errors.metaTitle && (
               <p className="text-sm text-destructive">{errors.metaTitle.message}</p>
             )}
@@ -343,6 +317,9 @@ const AdminPanel = () => {
               rows={3}
               maxLength={160}
             />
+            <p className="text-sm text-muted-foreground">
+              The AI will generate this automatically. You can edit it if needed.
+            </p>
             {errors.metaDescription && (
               <p className="text-sm text-destructive">
                 {errors.metaDescription.message}
@@ -350,11 +327,86 @@ const AdminPanel = () => {
             )}
           </div>
 
-          {/* Save Button */}
-          <Button type="submit" disabled={isSaving} className="w-full" size="lg">
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save & Publish Profile (Step 2)
-          </Button>
+          {/* Date of Birth */}
+          <div className="space-y-2">
+            <Label>Date of Birth *</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !dateOfBirth && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dateOfBirth}
+                  onSelect={(date) => setValue("dateOfBirth", date as Date)}
+                  disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+            <p className="text-sm text-muted-foreground">
+              The AI will auto-fill this. You can correct it if needed.
+            </p>
+            {errors.dateOfBirth && (
+              <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
+            )}
+          </div>
+
+          {/* Profession */}
+          <div className="space-y-2">
+            <Label htmlFor="profession">Profession *</Label>
+            <Input
+              id="profession"
+              {...register("profession")}
+              placeholder="e.g., TikTok Star"
+            />
+            <p className="text-sm text-muted-foreground">
+              The AI will auto-fill this. You can correct it if needed.
+            </p>
+            {errors.profession && (
+              <p className="text-sm text-destructive">{errors.profession.message}</p>
+            )}
+          </div>
+
+          {/* Place of Birth */}
+          <div className="space-y-2">
+            <Label htmlFor="placeOfBirth">Place of Birth</Label>
+            <Input
+              id="placeOfBirth"
+              {...register("placeOfBirth")}
+              placeholder="e.g., Ashland, Kentucky"
+            />
+            <p className="text-sm text-muted-foreground">
+              The AI will auto-fill this. You can correct it if needed.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-4">
+            <Button
+              type="button"
+              onClick={handlePreview}
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              Preview Changes
+            </Button>
+            <Button type="submit" disabled={isSaving} className="flex-1" size="lg">
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save & Publish Profile
+            </Button>
+          </div>
         </form>
       </div>
     </div>
