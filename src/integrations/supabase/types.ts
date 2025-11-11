@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      celebrities: {
+        Row: {
+          created_at: string
+          date_of_birth: string
+          id: string
+          main_content: string
+          meta_description: string
+          meta_title: string
+          name: string
+          place_of_birth: string | null
+          popularity_ranks: Json | null
+          profession: string
+          profile_image_url: string
+          profile_slug: string
+          updated_at: string
+          zodiac_sign: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth: string
+          id?: string
+          main_content: string
+          meta_description: string
+          meta_title: string
+          name: string
+          place_of_birth?: string | null
+          popularity_ranks?: Json | null
+          profession: string
+          profile_image_url: string
+          profile_slug: string
+          updated_at?: string
+          zodiac_sign?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string
+          id?: string
+          main_content?: string
+          meta_description?: string
+          meta_title?: string
+          name?: string
+          place_of_birth?: string | null
+          popularity_ranks?: Json | null
+          profession?: string
+          profile_image_url?: string
+          profile_slug?: string
+          updated_at?: string
+          zodiac_sign?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
