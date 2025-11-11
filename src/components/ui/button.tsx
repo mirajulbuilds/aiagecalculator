@@ -5,15 +5,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:shadow-[0_0_20px_rgba(167,139,250,0.6)] disabled:pointer-events-none disabled:opacity-50 active:scale-95 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-primary via-primary/80 to-primary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-primary-foreground",
-        destructive: "bg-gradient-to-r from-destructive via-destructive/80 to-destructive bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-destructive-foreground",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-gradient-to-r from-secondary via-secondary/80 to-secondary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-secondary-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        default: "bg-gradient-to-r from-primary via-primary/80 to-primary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-primary-foreground shadow-[0_4px_15px_rgba(167,139,250,0.3)] hover:shadow-[0_8px_25px_rgba(167,139,250,0.5)] hover:-translate-y-0.5",
+        destructive: "bg-gradient-to-r from-destructive via-destructive/80 to-destructive bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-destructive-foreground shadow-[0_4px_15px_rgba(220,38,38,0.3)] hover:shadow-[0_8px_25px_rgba(220,38,38,0.5)] hover:-translate-y-0.5",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground hover:shadow-[0_4px_15px_rgba(167,139,250,0.2)]",
+        secondary: "bg-gradient-to-r from-secondary via-secondary/80 to-secondary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-secondary-foreground shadow-[0_4px_15px_rgba(167,139,250,0.3)] hover:shadow-[0_8px_25px_rgba(167,139,250,0.5)] hover:-translate-y-0.5",
+        ghost: "hover:bg-accent hover:text-accent-foreground hover:shadow-[0_2px_8px_rgba(167,139,250,0.15)]",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

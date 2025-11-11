@@ -173,13 +173,51 @@ All colors MUST be HSL.
   
   /* Universal Hover Animation for All Tabs and Buttons */
   .interactive-element {
-    transition: transform 0.2s ease, filter 0.2s ease;
-    will-change: transform, filter;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, filter, box-shadow;
   }
 
   .interactive-element:hover {
-    filter: brightness(1.15);
-    transform: scale(1.03);
+    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.02);
     cursor: pointer;
+  }
+
+  .interactive-element:active {
+    transform: translateY(0) scale(0.98);
+  }
+  
+  /* Purple Glow Utilities */
+  .glow-purple-sm {
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+  }
+
+  .glow-purple-md {
+    box-shadow: 0 8px 25px rgba(167, 139, 250, 0.5);
+  }
+
+  .glow-purple-lg {
+    box-shadow: 0 12px 35px rgba(167, 139, 250, 0.6);
+  }
+
+  .glow-purple-pulse {
+    animation: purple-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes purple-pulse {
+    0%, 100% {
+      box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+    }
+    50% {
+      box-shadow: 0 8px 30px rgba(167, 139, 250, 0.6);
+    }
+  }
+  
+  /* Enhanced Input Focus States */
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3),
+                0 4px 12px rgba(167, 139, 250, 0.2);
   }
 }
