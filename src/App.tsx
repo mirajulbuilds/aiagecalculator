@@ -15,6 +15,8 @@ const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const AuthGateway = lazy(() => import("./pages/AuthGateway"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -37,6 +39,8 @@ const App = () => (
                     <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
+                    <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
