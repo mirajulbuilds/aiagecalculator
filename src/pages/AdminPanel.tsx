@@ -179,8 +179,20 @@ const AdminPanel = () => {
         imageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
       }
 
-      // Insert celebrity data
-      const { error: insertError } = await supabase.from("celebrities").insert({
+      // STEP 1: Check if profile already exists (UPSERT logic)
+      const { data: existingProfile, error: findError } = await supabase
+        .from("celebrities")
+        .select("id")
+        .eq("profile_slug", data.profileSlug)
+        .maybeSingle();
+
+      if (findError) {
+        toast.error("Error checking for existing profile: " + findError.message);
+        setIsSaving(false);
+        return;
+      }
+
+      const profileData = {
         name: data.name,
         profile_slug: data.profileSlug,
         date_of_birth: format(data.dateOfBirth, "yyyy-MM-dd"),
@@ -192,15 +204,37 @@ const AdminPanel = () => {
         profile_image_url: imageUrl,
         zodiac_sign: zodiacSign || null,
         popularity_ranks: popularityRanks || null,
-      });
+      };
 
-      if (insertError) {
-        toast.error("Failed to save celebrity: " + insertError.message);
-        setIsSaving(false);
-        return;
+      // STEP 2: Conditional Logic - CREATE or UPDATE
+      if (!existingProfile) {
+        // CREATE NEW PROFILE
+        const { error: insertError } = await supabase
+          .from("celebrities")
+          .insert(profileData);
+
+        if (insertError) {
+          toast.error("Failed to create profile: " + insertError.message);
+          setIsSaving(false);
+          return;
+        }
+
+        toast.success("Success! New profile has been CREATED.");
+      } else {
+        // UPDATE EXISTING PROFILE
+        const { error: updateError } = await supabase
+          .from("celebrities")
+          .update(profileData)
+          .eq("id", existingProfile.id);
+
+        if (updateError) {
+          toast.error("Failed to update profile: " + updateError.message);
+          setIsSaving(false);
+          return;
+        }
+
+        toast.success("Success! Profile has been UPDATED.");
       }
-
-      toast.success("Success! The profile has been published.");
       
       // Reset form
       setValue("name", "");
