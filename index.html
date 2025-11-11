@@ -171,6 +171,114 @@
     <!-- Google AdSense -->
     <script defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5207285694789831"
      crossorigin="anonymous"></script>
+
+    <!-- Global Design Theme v1 -->
+    <style>
+      /* 1. Root Variables (Our Color & Font Palette) */
+      :root {
+        --theme-primary: #A78BFA;      /* A modern, soft purple */
+        --theme-primary-dark: #5B21B6; /* A darker purple for active states */
+        --theme-bg: #F5F3FF;           /* A very light lavender background */
+        --theme-bg-card: #FFFFFF;      /* White for all cards */
+        --theme-text-dark: #1F2937;    /* Dark grey for text */
+        --theme-text-light: #6B7280;   /* Lighter grey for subtext */
+        --theme-border: #E5E7EB;       /* Light border for inputs */
+        --font-primary: 'Plus Jakarta Sans', sans-serif; /* Modern, clean font */
+      }
+
+      /* 2. Import the Google Font */
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+      /* 3. Global Body Styling */
+      body {
+        font-family: var(--font-primary);
+        background-color: var(--theme-bg);
+        color: var(--theme-text-dark);
+      }
+
+      /* 4. Heading & Text Styling */
+      h1, h2, h3, h4, h5, h6 {
+        font-weight: 800;
+        color: var(--theme-text-dark);
+      }
+      p {
+        color: var(--theme-text-light);
+        line-height: 1.6;
+      }
+
+      /* 5. Main Action Button Styling */
+      .main-action-button, button {
+        background-color: var(--theme-primary);
+        color: var(--theme-bg-card);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(167, 139, 250, 0.2);
+      }
+
+      .main-action-button:hover, button:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+        box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+      }
+
+      /* 6. Main Tab Navigation Styling */
+      .tab-navigation-container {
+        display: flex;
+        flex-wrap: wrap; /* Fix for mobile stacking bug */
+        gap: 10px;
+        border-bottom: 2px solid var(--theme-border);
+      }
+
+      .tab-item {
+        background: transparent;
+        color: var(--theme-text-light);
+        padding: 10px 15px;
+        border: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .tab-item.active {
+        color: var(--theme-primary-dark);
+        border-bottom-color: var(--theme-primary-dark);
+      }
+
+      .tab-item:not(.active):hover {
+        color: var(--theme-text-dark);
+        background-color: var(--theme-bg);
+      }
+
+      /* 7. Card & Container Styling */
+      .content-card {
+        background-color: var(--theme-bg-card);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      }
+
+      /* 8. Input Field Styling */
+      input[type="text"], input[type="url"], input[type="email"], input[type="password"], textarea, select {
+        background-color: var(--theme-bg-card);
+        border: 1px solid var(--theme-border);
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-family: var(--font-primary);
+        color: var(--theme-text-dark);
+        width: 100%;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      input[type="text"]:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: var(--theme-primary);
+        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
+      }
+    </style>
   </head>
 
   <body>
