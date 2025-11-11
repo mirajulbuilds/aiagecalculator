@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -47,9 +47,12 @@ const AdminPanel = () => {
   const [zodiacSign, setZodiacSign] = useState<string>("");
   const [popularityRanks, setPopularityRanks] = useState<any>(null);
   
-  // Step 1: Generate state
-  const [dataSource, setDataSource] = useState<string>("famousbirthdays");
-  const [inputValue, setInputValue] = useState<string>("");
+  // Tab state
+  const [activeTab, setActiveTab] = useState<string>("scrape");
+  
+  // Tab 1: Scrape state
+  const [sourceType, setSourceType] = useState<string>("famousbirthdays");
+  const [profileUrl, setProfileUrl] = useState<string>("");
 
   const {
     register,
@@ -234,11 +237,8 @@ const AdminPanel = () => {
   }
 
   const handleGenerateContent = async () => {
-    const name = watch("name");
-    const aiHint = watch("aiHint");
-
-    if (!inputValue || inputValue.trim().length === 0) {
-      toast.error("Please provide a URL or celebrity name");
+    if (!profileUrl || profileUrl.trim().length === 0) {
+      toast.error("Please provide a profile URL");
       return;
     }
 
@@ -247,8 +247,8 @@ const AdminPanel = () => {
     try {
       const { data, error } = await supabase.functions.invoke("generate-celebrity-profile", {
         body: {
-          celebrityName: inputValue,
-          optionalHint: aiHint,
+          celebrityName: profileUrl,
+          optionalHint: "",
           manualImageBase64: imagePreview || null,
         },
       });
@@ -256,7 +256,7 @@ const AdminPanel = () => {
       if (error) throw error;
 
       // Auto-fill all fields with generated data
-      setValue("name", inputValue);
+      setValue("name", data.name || profileUrl);
       setValue("profileSlug", data.profile_slug);
       setValue("mainContent", data.main_content);
       setValue("metaTitle", data.meta_title);
@@ -274,7 +274,10 @@ const AdminPanel = () => {
       setZodiacSign(data.zodiac_sign || "");
       setPopularityRanks(data.popularity_ranks || null);
 
-      toast.success("AI content generated successfully! Review and edit as needed.");
+      toast.success("Draft generated! Please review and edit in the Manual Editor tab.");
+      
+      // Auto-switch to Manual Editor tab
+      setActiveTab("manual");
     } catch (error) {
       console.error("Error generating content:", error);
       toast.error("Failed to generate content. Please try again.");
@@ -290,236 +293,256 @@ const AdminPanel = () => {
           Celebrity Profile Content Engine
         </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-          {/* STEP 1: GENERATE DATA */}
-          <div className="space-y-6 p-6 border border-border rounded-lg bg-card">
-            <h2 className="text-2xl font-semibold text-foreground">
-              STEP 1: GENERATE DATA
-            </h2>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="scrape">Scrape & Auto-Generate</TabsTrigger>
+            <TabsTrigger value="manual">Manual Editor / Review Drafts</TabsTrigger>
+          </TabsList>
 
-            {/* Select Data Source */}
-            <div className="space-y-2">
-              <Label htmlFor="dataSource">Select Data Source *</Label>
-              <Select value={dataSource} onValueChange={setDataSource}>
-                <SelectTrigger id="dataSource">
-                  <SelectValue placeholder="Select data source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="famousbirthdays">FamousBirthdays.com URL</SelectItem>
-                  <SelectItem value="wikipedia">Wikipedia.org URL</SelectItem>
-                  <SelectItem value="other">Other URL (General Article)</SelectItem>
-                  <SelectItem value="name">Generate by Name Only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* TAB 1: SCRAPE & AUTO-GENERATE */}
+          <TabsContent value="scrape" className="space-y-6">
+            <div className="p-6 border border-border rounded-lg bg-card space-y-6">
+              <h2 className="text-2xl font-semibold text-foreground">
+                Create Profile from URL (Automated)
+              </h2>
 
-            {/* Input */}
-            <div className="space-y-2">
-              <Label htmlFor="inputValue">Paste URL or Type Name Here *</Label>
-              <Input
-                id="inputValue"
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="https://www.famousbirthdays.com/... OR Tom Hanks"
-                required
-              />
-            </div>
+              {/* Select Source Type */}
+              <div className="space-y-2">
+                <Label htmlFor="sourceType">Select Source Type *</Label>
+                <Select value={sourceType} onValueChange={setSourceType}>
+                  <SelectTrigger id="sourceType">
+                    <SelectValue placeholder="Select source type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="famousbirthdays">FamousBirthdays.com</SelectItem>
+                    <SelectItem value="wikipedia">Wikipedia.org</SelectItem>
+                    <SelectItem value="other">Other (General Article)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Manual Image Upload */}
-            <div className="space-y-2">
-              <Label htmlFor="profileImage">Manual Profile Image (Optional Override)</Label>
-              <Input
-                id="profileImage"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-              <p className="text-sm text-muted-foreground">
-                Use this to add your own photo. If left empty, AI will find one.
-              </p>
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="mt-2 w-32 h-32 object-cover rounded"
+              {/* Profile URL */}
+              <div className="space-y-2">
+                <Label htmlFor="profileUrl">Profile URL *</Label>
+                <Input
+                  id="profileUrl"
+                  type="text"
+                  value={profileUrl}
+                  onChange={(e) => setProfileUrl(e.target.value)}
+                  placeholder="Paste the full URL here..."
+                  required
                 />
-              )}
-            </div>
+              </div>
 
-            {/* Generate Button */}
-            <Button
-              type="button"
-              onClick={handleGenerateContent}
-              disabled={isGenerating}
-              className="w-full"
-              size="lg"
-            >
-              {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Generate Content Draft
-            </Button>
-          </div>
-
-          {/* STEP 2: REVIEW & PUBLISH */}
-          <div className="space-y-6 p-6 border border-border rounded-lg bg-card">
-            <h2 className="text-2xl font-semibold text-foreground">
-              STEP 2: REVIEW & PUBLISH
-            </h2>
-
-            {/* Celebrity Name (Hidden but tracks data) */}
-            <input type="hidden" {...register("name")} />
-
-            {/* Profile Slug */}
-            <div className="space-y-2">
-              <Label htmlFor="profileSlug">Profile URL Slug *</Label>
-              <Input
-                id="profileSlug"
-                {...register("profileSlug")}
-                placeholder="e.g., charli-d-amelio"
-              />
-              <p className="text-sm text-muted-foreground">
-                AI will generate this. You can edit.
-              </p>
-              {errors.profileSlug && (
-                <p className="text-sm text-destructive">{errors.profileSlug.message}</p>
-              )}
-            </div>
-
-            {/* Rich Text Editor */}
-            <div className="space-y-2">
-              <Label>Main Article Content (250+ Words) *</Label>
-              <RichTextEditor
-                value={mainContent}
-                onChange={(value) => setValue("mainContent", value)}
-                placeholder="AI will generate the article here. You MUST review and edit this text."
-              />
-              <p className="text-sm text-muted-foreground">
-                AI will generate the article here. You MUST review and edit this text.
-              </p>
-              {errors.mainContent && (
-                <p className="text-sm text-destructive">{errors.mainContent.message}</p>
-              )}
-            </div>
-
-            {/* SEO Meta Title */}
-            <div className="space-y-2">
-              <Label htmlFor="metaTitle">SEO Meta Title *</Label>
-              <Input
-                id="metaTitle"
-                {...register("metaTitle")}
-                placeholder="Max 60 characters"
-                maxLength={60}
-              />
-              <p className="text-sm text-muted-foreground">
-                AI will generate this. You can edit.
-              </p>
-              {errors.metaTitle && (
-                <p className="text-sm text-destructive">{errors.metaTitle.message}</p>
-              )}
-            </div>
-
-            {/* SEO Meta Description */}
-            <div className="space-y-2">
-              <Label htmlFor="metaDescription">SEO Meta Description *</Label>
-              <Textarea
-                id="metaDescription"
-                {...register("metaDescription")}
-                placeholder="Max 160 characters"
-                rows={3}
-                maxLength={160}
-              />
-              <p className="text-sm text-muted-foreground">
-                AI will generate this. You can edit.
-              </p>
-              {errors.metaDescription && (
-                <p className="text-sm text-destructive">
-                  {errors.metaDescription.message}
-                </p>
-              )}
-            </div>
-
-            {/* Date of Birth */}
-            <div className="space-y-2">
-              <Label>Date of Birth *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !dateOfBirth && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dateOfBirth}
-                    onSelect={(date) => setValue("dateOfBirth", date as Date)}
-                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-              <p className="text-sm text-muted-foreground">
-                AI will auto-fill this. Please verify and correct if needed.
-              </p>
-              {errors.dateOfBirth && (
-                <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
-              )}
-            </div>
-
-            {/* Profession */}
-            <div className="space-y-2">
-              <Label htmlFor="profession">Profession *</Label>
-              <Input
-                id="profession"
-                {...register("profession")}
-                placeholder="e.g., TikTok Star"
-              />
-              <p className="text-sm text-muted-foreground">
-                AI will auto-fill this. Please verify and correct if needed.
-              </p>
-              {errors.profession && (
-                <p className="text-sm text-destructive">{errors.profession.message}</p>
-              )}
-            </div>
-
-            {/* Place of Birth */}
-            <div className="space-y-2">
-              <Label htmlFor="placeOfBirth">Place of Birth</Label>
-              <Input
-                id="placeOfBirth"
-                {...register("placeOfBirth")}
-                placeholder="e.g., Ashland, Kentucky"
-              />
-              <p className="text-sm text-muted-foreground">
-                AI will auto-fill this. Please verify and correct if needed.
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
+              {/* Generate Button */}
               <Button
                 type="button"
-                onClick={handlePreview}
-                variant="outline"
-                className="flex-1"
+                onClick={handleGenerateContent}
+                disabled={isGenerating}
+                className="w-full"
                 size="lg"
               >
-                Preview Changes
-              </Button>
-              <Button type="submit" disabled={isSaving} className="flex-1" size="lg">
-                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save & Publish Profile
+                {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Generate & Review Draft
               </Button>
             </div>
-          </div>
-        </form>
+          </TabsContent>
+
+          {/* TAB 2: MANUAL EDITOR / REVIEW DRAFTS */}
+          <TabsContent value="manual" className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="p-6 border border-border rounded-lg bg-card space-y-6">
+                <h2 className="text-2xl font-semibold text-foreground">
+                  Create or Review Profile (Full Control)
+                </h2>
+
+                {/* Celebrity Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name">Celebrity Name *</Label>
+                  <Input
+                    id="name"
+                    {...register("name")}
+                    placeholder="e.g., Charli D'Amelio"
+                  />
+                  {errors.name && (
+                    <p className="text-sm text-destructive">{errors.name.message}</p>
+                  )}
+                </div>
+
+                {/* Manual Profile Image */}
+                <div className="space-y-2">
+                  <Label htmlFor="profileImage">Manual Profile Image (Optional)</Label>
+                  <Input
+                    id="profileImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Upload a photo if you want to override the AI.
+                  </p>
+                  {imagePreview && (
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="mt-2 w-32 h-32 object-cover rounded"
+                    />
+                  )}
+                </div>
+
+                {/* Profile Slug */}
+                <div className="space-y-2">
+                  <Label htmlFor="profileSlug">Profile URL Slug *</Label>
+                  <Input
+                    id="profileSlug"
+                    {...register("profileSlug")}
+                    placeholder="e.g., charli-d-amelio"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI will generate this. You can edit.
+                  </p>
+                  {errors.profileSlug && (
+                    <p className="text-sm text-destructive">{errors.profileSlug.message}</p>
+                  )}
+                </div>
+
+                {/* Rich Text Editor */}
+                <div className="space-y-2">
+                  <Label>Main Article Content (250+ Words) *</Label>
+                  <RichTextEditor
+                    value={mainContent}
+                    onChange={(value) => setValue("mainContent", value)}
+                    placeholder="AI will generate the article here. You MUST review and edit this text."
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI will generate the 250+ word article here. You MUST review and edit this text.
+                  </p>
+                  {errors.mainContent && (
+                    <p className="text-sm text-destructive">{errors.mainContent.message}</p>
+                  )}
+                </div>
+
+                {/* SEO Meta Title */}
+                <div className="space-y-2">
+                  <Label htmlFor="metaTitle">SEO Meta Title *</Label>
+                  <Input
+                    id="metaTitle"
+                    {...register("metaTitle")}
+                    placeholder="Max 60 characters"
+                    maxLength={60}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI will generate this. You can edit.
+                  </p>
+                  {errors.metaTitle && (
+                    <p className="text-sm text-destructive">{errors.metaTitle.message}</p>
+                  )}
+                </div>
+
+                {/* SEO Meta Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="metaDescription">SEO Meta Description *</Label>
+                  <Textarea
+                    id="metaDescription"
+                    {...register("metaDescription")}
+                    placeholder="Max 160 characters"
+                    rows={3}
+                    maxLength={160}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI will generate this. You can edit.
+                  </p>
+                  {errors.metaDescription && (
+                    <p className="text-sm text-destructive">
+                      {errors.metaDescription.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Date of Birth */}
+                <div className="space-y-2">
+                  <Label>Date of Birth *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dateOfBirth && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateOfBirth ? format(dateOfBirth, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateOfBirth}
+                        onSelect={(date) => setValue("dateOfBirth", date as Date)}
+                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-sm text-muted-foreground">
+                    AI will auto-fill this. Please verify and correct if needed.
+                  </p>
+                  {errors.dateOfBirth && (
+                    <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
+                  )}
+                </div>
+
+                {/* Profession */}
+                <div className="space-y-2">
+                  <Label htmlFor="profession">Profession *</Label>
+                  <Input
+                    id="profession"
+                    {...register("profession")}
+                    placeholder="e.g., TikTok Star"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI will auto-fill this. Please verify and correct if needed.
+                  </p>
+                  {errors.profession && (
+                    <p className="text-sm text-destructive">{errors.profession.message}</p>
+                  )}
+                </div>
+
+                {/* Place of Birth */}
+                <div className="space-y-2">
+                  <Label htmlFor="placeOfBirth">Place of Birth</Label>
+                  <Input
+                    id="placeOfBirth"
+                    {...register("placeOfBirth")}
+                    placeholder="e.g., Ashland, Kentucky"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI will auto-fill this. Please verify and correct if needed.
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    onClick={handlePreview}
+                    variant="outline"
+                    className="flex-1"
+                    size="lg"
+                  >
+                    Preview Changes
+                  </Button>
+                  <Button type="submit" disabled={isSaving} className="flex-1" size="lg">
+                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save & Publish Profile
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
