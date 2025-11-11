@@ -226,9 +226,9 @@ const CelebrityProfile = () => {
 
         {/* Main Two-Column Layout */}
         <main className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="grid lg:grid-cols-[1fr_400px] gap-8">
-            {/* LEFT COLUMN: Main Content */}
-            <div className="space-y-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+            {/* Main Content - Shows SECOND on mobile, FIRST (left) on desktop */}
+            <div className="order-2 lg:order-1 lg:flex-[2] space-y-8">
               {/* Main Profile Image */}
               <div className="w-full">
                 <img 
@@ -379,8 +379,8 @@ const CelebrityProfile = () => {
               )}
             </div>
 
-            {/* RIGHT COLUMN: Sidebar */}
-            <div className="space-y-6">
+            {/* Sidebar - Shows FIRST on mobile, SECOND (right) on desktop */}
+            <div className="order-1 lg:order-2 lg:flex-1 space-y-6 lg:sticky lg:top-5">
               {/* Fact Sheet */}
               <Card>
                 <CardHeader>
