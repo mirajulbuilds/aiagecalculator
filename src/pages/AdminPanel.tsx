@@ -122,8 +122,8 @@ const AdminPanel = () => {
       setValue("placeOfBirth", data.place_of_birth);
       setValue("dateOfBirth", new Date(data.date_of_birth));
 
-      // Set the image if no manual image was provided
-      if (!imagePreview && data.profile_image_url) {
+      // Set the profile image URL from the backend (handles all 3 tiers)
+      if (data.profile_image_url) {
         setImagePreview(data.profile_image_url);
       }
 

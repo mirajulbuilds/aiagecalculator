@@ -30,13 +30,43 @@ serve(async (req) => {
 
     let profileImageUrl = "";
 
-    // TIER 1: Manual Image
+    // TIER 1: Manual Image Upload
     if (manualImageBase64) {
-      console.log("Using manual image provided by user");
-      profileImageUrl = manualImageBase64; // Will be handled by client upload
-    } else {
-      // TIER 2 & 3: AI Find or Generate
-      console.log("Generating AI image for celebrity");
+      console.log("TIER 1: Using manual image provided by user");
+      try {
+        const base64Data = manualImageBase64.split(",")[1] || manualImageBase64;
+        const imageBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+        const fileName = `${celebrityName.toLowerCase().replace(/\s+/g, "-")}-manual-${Date.now()}.png`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("celebrity-profiles")
+          .upload(fileName, imageBuffer, {
+            contentType: "image/png",
+          });
+
+        if (uploadError) {
+          console.error("Manual image upload failed:", uploadError);
+          throw new Error("Manual image upload failed");
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("celebrity-profiles")
+          .getPublicUrl(fileName);
+        profileImageUrl = publicUrl;
+        console.log("Manual image uploaded successfully:", profileImageUrl);
+      } catch (error) {
+        console.error("Manual image processing error:", error);
+        // Fall through to TIER 3 on failure
+      }
+    }
+
+    // TIER 2: AI Search for Real Image (skipped - requires external image search API)
+    // This tier would use a service like Google Image Search API or Unsplash API
+    // to find real photos, but is not implemented in this version
+
+    // TIER 3: AI Generate Image (Fallback)
+    if (!profileImageUrl) {
+      console.log("TIER 3: Generating AI image for celebrity");
       try {
         const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -49,7 +79,7 @@ serve(async (req) => {
             messages: [
               {
                 role: "user",
-                content: `Generate a professional, high-quality portrait photograph of ${celebrityName}. The image should be realistic, well-lit, and suitable for a celebrity profile page. ${optionalHint || ""}`,
+                content: `Generate a professional, high-quality, realistic portrait photograph of ${celebrityName}. The image should look like a professional headshot suitable for a celebrity biography page. Style: photorealistic, well-lit, professional photography. ${optionalHint || ""}`,
               },
             ],
             modalities: ["image", "text"],
@@ -64,10 +94,9 @@ serve(async (req) => {
         const generatedImageBase64 = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
         if (generatedImageBase64) {
-          // Upload to Supabase Storage
           const base64Data = generatedImageBase64.split(",")[1];
           const imageBuffer = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-          const fileName = `${celebrityName.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.png`;
+          const fileName = `${celebrityName.toLowerCase().replace(/\s+/g, "-")}-ai-${Date.now()}.png`;
 
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from("celebrity-profiles")
@@ -76,13 +105,14 @@ serve(async (req) => {
             });
 
           if (uploadError) {
-            console.error("Failed to upload image:", uploadError);
+            console.error("Failed to upload generated image:", uploadError);
             profileImageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
           } else {
             const { data: { publicUrl } } = supabase.storage
               .from("celebrity-profiles")
               .getPublicUrl(fileName);
             profileImageUrl = publicUrl;
+            console.log("AI image generated and uploaded:", profileImageUrl);
           }
         } else {
           profileImageUrl = "https://via.placeholder.com/400x400?text=Celebrity+Photo";
@@ -102,26 +132,36 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-pro",
         messages: [
           {
             role: "system",
-            content: `You are a celebrity biography writer. Generate comprehensive, accurate, and engaging content about celebrities. Format the main content with proper HTML tags including <h2> for section headings, <p> for paragraphs, <ul> and <li> for lists, and <strong> for emphasis.`,
+            content: `You are a professional celebrity biographer and journalist. Write in an engaging, human-like style that reads like a well-researched magazine article or biography book. Use storytelling techniques, vivid descriptions, and maintain a professional yet personable tone. Format content with proper HTML tags: <h2> for section headings, <p> for paragraphs, <ul> and <li> for lists, <strong> for emphasis, and <em> for subtle emphasis.`,
           },
           {
             role: "user",
-            content: `Generate a complete profile for ${celebrityName}. ${optionalHint ? `Additional context: ${optionalHint}` : ""}
-            
-Include:
-1. A comprehensive 500+ word biography with sections: About, Before Fame, Career Highlights, Trivia, and Family Life (use <h2> tags for headings)
-2. Their profession/occupation
+            content: `Write a comprehensive, engaging profile for ${celebrityName}. ${optionalHint ? `Additional context: ${optionalHint}` : ""}
+
+Write in a compelling, journalistic style - NOT a dry list of facts. The biography should flow naturally and tell the story of this person's life and career.
+
+Required content:
+1. A rich, detailed 500+ word biography (minimum 250 words, aim for 500+) with these sections:
+   - <h2>About</h2>: Opening overview and current status
+   - <h2>Before Fame</h2>: Early life, childhood, education
+   - <h2>Career Highlights</h2>: Major achievements and notable works
+   - <h2>Trivia</h2>: Interesting facts and lesser-known details
+   - <h2>Family Life</h2>: Personal relationships and family background
+   
+2. Their profession/occupation (be specific, e.g., "Academy Award-winning actress" not just "actress")
 3. Date of birth (YYYY-MM-DD format)
-4. Place of birth
+4. Place of birth (city, state/region, country)
 5. Zodiac sign
-6. Popularity rankings (generate realistic numbers)
-7. SEO-optimized meta title (max 60 chars)
-8. SEO-optimized meta description (max 160 chars)
-9. URL-friendly slug`,
+6. Popularity rankings (generate realistic numbers between 1-10000)
+7. SEO-optimized meta title (max 60 chars, include name and key achievement)
+8. SEO-optimized meta description (max 160 chars, compelling and informative)
+9. URL-friendly slug (lowercase, hyphenated)
+
+Make the writing feel human, warm, and professionally crafted.`,
           },
         ],
         tools: [
@@ -135,7 +175,7 @@ Include:
                 properties: {
                   main_content: {
                     type: "string",
-                    description: "500+ word HTML-formatted biography with <h2> section headings",
+                    description: "Minimum 250 words, ideally 500+ word HTML-formatted biography written in engaging, human-like journalistic style with <h2> section headings for: About, Before Fame, Career Highlights, Trivia, and Family Life",
                   },
                   profession: { type: "string" },
                   date_of_birth: {
