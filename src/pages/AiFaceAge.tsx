@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SITE_CONFIG } from "@/lib/config";
 
 const AiFaceAge = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -180,7 +181,7 @@ const AiFaceAge = () => {
     if (!estimatedAge) return;
 
     const shareText = `The AI thinks I look ${estimatedAge} years old! Try it yourself at`;
-    const shareUrl = window.location.origin + '/ai-face-age';
+    const shareUrl = `${SITE_CONFIG.canonicalUrl}/ai-face-age`;
 
     try {
       if (navigator.share) {

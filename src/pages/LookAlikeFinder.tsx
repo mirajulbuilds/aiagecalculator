@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SITE_CONFIG } from "@/lib/config";
 
 interface CelebrityMatch {
   id: string;
@@ -224,7 +225,7 @@ const LookAlikeFinder = () => {
     if (!matchResult) return;
 
     const shareText = `I'm ${matchResult.bestMatch.similarityPercentage}% similar to ${matchResult.bestMatch.name}! Find your celebrity look-alike at`;
-    const shareUrl = window.location.origin + '/look-alike-finder';
+    const shareUrl = `${SITE_CONFIG.canonicalUrl}/look-alike-finder`;
 
     if (platform === 'facebook') {
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
