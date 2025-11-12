@@ -1,12 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, MapPin, Calendar, Star, TrendingUp } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Star, TrendingUp, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, addYears } from "date-fns";
 import PageTransition from "@/components/PageTransition";
+import { BackToTop } from "@/components/BackToTop";
+import { triggerNativeShare } from "@/lib/shareUtils";
+import { SITE_CONFIG } from "@/lib/config";
 
 interface CelebrityData {
   name: string;
@@ -237,6 +241,15 @@ const CelebrityProfile = () => {
   }
 
   const popularityRanks = celebrity.popularity_ranks || {};
+
+  const handleShare = async () => {
+    const shareUrl = `${SITE_CONFIG.canonicalUrl}/people/${celebrity.profile_slug}`;
+    await triggerNativeShare({
+      title: `${celebrity.name} Profile`,
+      text: `Check out this profile for ${celebrity.name} on Ai Age Calculator.`,
+      url: shareUrl,
+    });
+  };
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -471,7 +484,18 @@ const CelebrityProfile = () => {
               {/* Fact Sheet */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-3xl">{celebrity.name}</CardTitle>
+                  <div className="flex items-start justify-between gap-3">
+                    <CardTitle className="text-3xl flex-1">{celebrity.name}</CardTitle>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleShare}
+                      className="flex-shrink-0"
+                      aria-label="Share profile"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3 text-muted-foreground">
@@ -708,6 +732,9 @@ const CelebrityProfile = () => {
             </div>
           </div>
         </main>
+
+        {/* Back to Top Button */}
+        <BackToTop targetSelector="#profile-image-block" />
       </div>
     </>
     </PageTransition>

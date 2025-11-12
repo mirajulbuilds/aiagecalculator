@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
+import { triggerNativeShare } from "@/lib/shareUtils";
 
 interface CompatibilityResult {
   total_score: number;
@@ -108,30 +109,11 @@ const CompatibilityCalculator = () => {
   const handleShare = async () => {
     if (!result) return;
 
-    const shareText = `Our birthday compatibility is ${result.total_score}%! Find out yours at`;
-    const shareUrl = `${SITE_CONFIG.canonicalUrl}/compatibility-calculator`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Birthday Compatibility Calculator",
-          text: shareText,
-          url: shareUrl,
-        });
-        toast.success("Shared successfully!");
-      } else {
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success("Link copied to clipboard!");
-      }
-    } catch (error) {
-      console.error("Error sharing:", error);
-      try {
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success("Link copied to clipboard!");
-      } catch (clipboardError) {
-        toast.error("Failed to share");
-      }
-    }
+    await triggerNativeShare({
+      title: "Birthday Compatibility Calculator",
+      text: `Our birthday compatibility is ${result.total_score}%! Find out yours.`,
+      url: `${SITE_CONFIG.canonicalUrl}/compatibility-calculator`,
+    });
   };
 
   return (

@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
+import { triggerNativeShare } from "@/lib/shareUtils";
 
 interface CelebrityMatch {
   id: string;
@@ -222,17 +223,14 @@ const LookAlikeFinder = () => {
     }
   };
 
-  const handleShare = (platform: 'facebook' | 'twitter') => {
+  const handleShare = async () => {
     if (!matchResult) return;
 
-    const shareText = `I'm ${matchResult.bestMatch.similarityPercentage}% similar to ${matchResult.bestMatch.name}! Find your celebrity look-alike at`;
-    const shareUrl = `${SITE_CONFIG.canonicalUrl}/look-alike-finder`;
-
-    if (platform === 'facebook') {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
-    } else {
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-    }
+    await triggerNativeShare({
+      title: "Celebrity Look-Alike Finder",
+      text: `The AI says I look like ${matchResult.bestMatch.name}! Find your twin.`,
+      url: `${SITE_CONFIG.canonicalUrl}/look-alike-finder`,
+    });
   };
 
   return (
@@ -372,24 +370,14 @@ const LookAlikeFinder = () => {
                       </Button>
                     </Link>
 
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => handleShare('facebook')}
-                      >
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share on Facebook
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => handleShare('twitter')}
-                      >
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share on Twitter
-                      </Button>
-                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleShare}
+                    >
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share Your Match!
+                    </Button>
 
                     {matchResult.topMatches.length > 1 && (
                       <div className="mt-6 pt-6 border-t border-border">

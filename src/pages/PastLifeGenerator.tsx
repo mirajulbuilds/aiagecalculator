@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
+import { triggerNativeShare } from "@/lib/shareUtils";
 
 const PastLifeGenerator = () => {
   const [day, setDay] = useState<string>("");
@@ -86,30 +87,11 @@ const PastLifeGenerator = () => {
   const handleShare = async () => {
     if (!pastLifeStory) return;
 
-    const shareText = `My AI past life story is amazing! Find out yours at`;
-    const shareUrl = `${SITE_CONFIG.canonicalUrl}/past-life-generator`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Past Life Generator",
-          text: shareText,
-          url: shareUrl,
-        });
-        toast.success("Shared successfully!");
-      } else {
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success("Link copied to clipboard!");
-      }
-    } catch (error) {
-      console.error("Error sharing:", error);
-      try {
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success("Link copied to clipboard!");
-      } catch (clipboardError) {
-        toast.error("Failed to share");
-      }
-    }
+    await triggerNativeShare({
+      title: "Past Life Generator",
+      text: "My AI past life story is amazing! Find out yours.",
+      url: `${SITE_CONFIG.canonicalUrl}/past-life-generator`,
+    });
   };
 
   return (

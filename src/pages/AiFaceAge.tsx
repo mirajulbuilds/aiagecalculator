@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
+import { triggerNativeShare } from "@/lib/shareUtils";
 
 const AiFaceAge = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -181,32 +182,11 @@ const AiFaceAge = () => {
   const handleShare = async () => {
     if (!estimatedAge) return;
 
-    const shareText = `The AI thinks I look ${estimatedAge} years old! Try it yourself at`;
-    const shareUrl = `${SITE_CONFIG.canonicalUrl}/ai-face-age`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'AI Face Age Calculator',
-          text: shareText,
-          url: shareUrl
-        });
-        toast.success('Shared successfully!');
-      } else {
-        // Fallback: Copy to clipboard
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success('Link copied to clipboard!');
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-      // Fallback: Copy to clipboard
-      try {
-        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-        toast.success('Link copied to clipboard!');
-      } catch (clipboardError) {
-        toast.error('Failed to share');
-      }
-    }
+    await triggerNativeShare({
+      title: "AI Face Age Calculator",
+      text: `The AI thinks I look ${estimatedAge} years old! Try it yourself.`,
+      url: `${SITE_CONFIG.canonicalUrl}/ai-face-age`,
+    });
   };
 
   return (
