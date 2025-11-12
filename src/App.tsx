@@ -28,6 +28,7 @@ const LookAlikeFinder = lazy(() => import("./pages/LookAlikeFinder"));
 const BatchEmbeddingGenerator = lazy(() => import("./pages/BatchEmbeddingGenerator"));
 const AiFaceAge = lazy(() => import("./pages/AiFaceAge"));
 const CompatibilityCalculator = lazy(() => import("./pages/CompatibilityCalculator"));
+const PastLifeGenerator = lazy(() => import("./pages/PastLifeGenerator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -57,7 +58,8 @@ const App = () => (
                     <Route path="/zodiac/:signName" element={<ZodiacPage />} />
                     <Route path="/look-alike-finder" element={<LookAlikeFinder />} />
                     <Route path="/ai-face-age" element={<AiFaceAge />} />
-                    <Route path="/compatibility-calculator" element={<CompatibilityCalculator />} />
+            <Route path="/compatibility-calculator" element={<CompatibilityCalculator />} />
+            <Route path="/past-life-generator" element={<PastLifeGenerator />} />
           <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
           <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
           <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />

@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.birthday-compatibility]
 verify_jwt = false
+
+[functions.past-life-generator]
+verify_jwt = false
