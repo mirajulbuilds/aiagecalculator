@@ -22,6 +22,7 @@ const FamousBirthdays = () => {
   const [trendingCelebrities, setTrendingCelebrities] = useState<Celebrity[]>([]);
   const [bornToday, setBornToday] = useState<Celebrity[]>([]);
   const [bornTomorrow, setBornTomorrow] = useState<Celebrity[]>([]);
+  const [professions, setProfessions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -88,6 +89,20 @@ const FamousBirthdays = () => {
         console.error("Error fetching tomorrow's birthdays:", tomorrowError);
       } else {
         setBornTomorrow(tomorrowData || []);
+      }
+
+      // Fetch unique professions
+      const { data: professionsData, error: professionsError } = await supabase
+        .from("celebrities")
+        .select("profession")
+        .order("profession");
+
+      if (professionsError) {
+        console.error("Error fetching professions:", professionsError);
+      } else {
+        // Get unique professions
+        const uniqueProfessions = [...new Set(professionsData?.map(c => c.profession) || [])];
+        setProfessions(uniqueProfessions);
       }
     } catch (error) {
       console.error("Error loading celebrities:", error);
@@ -254,7 +269,7 @@ const FamousBirthdays = () => {
             )}
           </section>
 
-          {/* Browse by Profession - Placeholder */}
+          {/* Browse by Profession */}
           <section>
             <div className="flex items-center gap-3 mb-8">
               <Star className="w-8 h-8 text-primary" />
@@ -263,13 +278,50 @@ const FamousBirthdays = () => {
               </h2>
             </div>
 
-            <div className="bg-card rounded-2xl shadow-card p-12 text-center">
-              <p className="text-muted-foreground text-lg mb-4">
-                Browse celebrities by profession - Coming Soon!
-              </p>
-              <p className="text-sm text-muted-foreground">
-                We're building an amazing way to explore celebrities by their professions. Stay tuned!
-              </p>
+            {professions.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {professions.map((profession) => (
+                  <Link
+                    key={profession}
+                    to={`/profession/${profession.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center"
+                  >
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                      {profession}
+                    </h3>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-card rounded-2xl shadow-card p-8 text-center">
+                <p className="text-muted-foreground">
+                  Loading professions...
+                </p>
+              </div>
+            )}
+          </section>
+
+          {/* Browse by Zodiac Sign */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <Star className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Browse by Zodiac Sign
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"].map((sign) => (
+                <Link
+                  key={sign}
+                  to={`/zodiac/${sign.toLowerCase()}`}
+                  className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center"
+                >
+                  <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                    {sign}
+                  </h3>
+                </Link>
+              ))}
             </div>
           </section>
         </div>
