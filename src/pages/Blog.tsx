@@ -4,9 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { blogPosts } from "@/data/blogPosts";
 import { Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PageTransition from "@/components/PageTransition";
 
 const Blog = () => {
   return (
+    <PageTransition>
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Helmet>
         <title>Birthday & Age Calculator Blog | Insights, Traditions & Science</title>
@@ -78,6 +80,7 @@ const Blog = () => {
         </div>
       </main>
     </div>
+    </PageTransition>
   );
 };
 

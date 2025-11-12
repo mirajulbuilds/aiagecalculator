@@ -1,9 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cake, Sparkles } from "lucide-react";
+import PageTransition from "@/components/PageTransition";
 
 const About = () => {
   return (
+    <PageTransition>
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Helmet>
         <title>About Us | AiAgeCalc.com - Your Age & Birthday Companion</title>
@@ -61,6 +63,7 @@ const About = () => {
         </div>
       </main>
     </div>
+    </PageTransition>
   );
 };
 

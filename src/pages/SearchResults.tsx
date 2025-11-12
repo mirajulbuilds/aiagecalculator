@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Search, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import PageTransition from "@/components/PageTransition";
 
 interface Celebrity {
   id: string;
@@ -84,6 +85,7 @@ const SearchResults = () => {
   }
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>Search Results for "{query}" - Famous Birthdays</title>
@@ -142,6 +144,7 @@ const SearchResults = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 

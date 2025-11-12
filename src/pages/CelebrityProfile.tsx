@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, addYears } from "date-fns";
+import PageTransition from "@/components/PageTransition";
 
 interface CelebrityData {
   name: string;
@@ -206,6 +207,7 @@ const CelebrityProfile = () => {
   };
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>{celebrity.meta_title}</title>
@@ -612,6 +614,7 @@ const CelebrityProfile = () => {
         </main>
       </div>
     </>
+    </PageTransition>
   );
 };
 

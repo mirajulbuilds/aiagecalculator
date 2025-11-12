@@ -1,7 +1,9 @@
 import { Helmet } from "react-helmet-async";
+import PageTransition from "@/components/PageTransition";
 
 const PrivacyPolicy = () => {
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>Privacy Policy - aiagecalc.com</title>
@@ -196,6 +198,7 @@ const PrivacyPolicy = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 

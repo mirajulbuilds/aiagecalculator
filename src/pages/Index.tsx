@@ -17,6 +17,7 @@ import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { BirthdayFacts } from "@/components/BirthdayFacts";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
+import PageTransition from "@/components/PageTransition";
 import moonImg from '../assets/planets/moon.jpg';
 import mercuryImg from '../assets/planets/mercury.jpg';
 import venusImg from '../assets/planets/venus.jpg';
@@ -484,6 +485,7 @@ const Index = () => {
 
 
   return (
+    <PageTransition>
     <main className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-4 sm:py-8">
       {/* Structured Data for SEO */}
       <script type="application/ld+json">
@@ -1928,6 +1930,7 @@ const Index = () => {
         <AdSenseBanner format="large-horizontal" />
       </div> */}
     </main>
+    </PageTransition>
   );
 };
 

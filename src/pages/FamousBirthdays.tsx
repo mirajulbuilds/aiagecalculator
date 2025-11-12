@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import PageTransition from "@/components/PageTransition";
 
 interface Celebrity {
   id: string;
@@ -144,6 +145,7 @@ const FamousBirthdays = () => {
   }
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>Famous Birthdays - Discover Celebrity Ages & Birthdays</title>
@@ -370,6 +372,7 @@ const FamousBirthdays = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 

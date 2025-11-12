@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { SITE_CONFIG } from "@/lib/config";
+import PageTransition from "@/components/PageTransition";
 
 interface CompatibilityResult {
   total_score: number;
@@ -134,6 +135,7 @@ const CompatibilityCalculator = () => {
   };
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>Birthday Compatibility Calculator | Zodiac, Numerology & More</title>
@@ -392,6 +394,7 @@ const CompatibilityCalculator = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 

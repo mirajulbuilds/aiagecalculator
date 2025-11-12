@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
+import PageTransition from "@/components/PageTransition";
 
 const AiFaceAge = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -209,6 +210,7 @@ const AiFaceAge = () => {
   };
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>How Old Do I Look? AI Face Age Calculator</title>
@@ -414,6 +416,7 @@ const AiFaceAge = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 

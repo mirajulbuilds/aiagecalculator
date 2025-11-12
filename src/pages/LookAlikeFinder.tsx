@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
+import PageTransition from "@/components/PageTransition";
 
 interface CelebrityMatch {
   id: string;
@@ -235,6 +236,7 @@ const LookAlikeFinder = () => {
   };
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>Find Your Celebrity Look-Alike | AI Face Match Tool</title>
@@ -471,6 +473,7 @@ const LookAlikeFinder = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 

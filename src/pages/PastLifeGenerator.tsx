@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { SITE_CONFIG } from "@/lib/config";
+import PageTransition from "@/components/PageTransition";
 
 const PastLifeGenerator = () => {
   const [day, setDay] = useState<string>("");
@@ -112,6 +113,7 @@ const PastLifeGenerator = () => {
   };
 
   return (
+    <PageTransition>
     <>
       <Helmet>
         <title>What Was I in My Past Life? | AI Past Life Generator</title>
@@ -295,6 +297,7 @@ const PastLifeGenerator = () => {
         </div>
       </div>
     </>
+    </PageTransition>
   );
 };
 
