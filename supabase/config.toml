@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.generate-celebrity-profile]
 verify_jwt = false
+
+[functions.generate-face-embedding]
+verify_jwt = false
+
+[functions.find-celebrity-match]
+verify_jwt = false

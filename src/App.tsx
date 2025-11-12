@@ -24,6 +24,7 @@ const SearchResults = lazy(() => import("./pages/SearchResults"));
 const ProfessionPage = lazy(() => import("./pages/ProfessionPage"));
 const BirthMonthPage = lazy(() => import("./pages/BirthMonthPage"));
 const ZodiacPage = lazy(() => import("./pages/ZodiacPage"));
+const LookAlikeFinder = lazy(() => import("./pages/LookAlikeFinder"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => (
                     <Route path="/profession/:professionSlug" element={<ProfessionPage />} />
                     <Route path="/birth-month/:monthName" element={<BirthMonthPage />} />
                     <Route path="/zodiac/:signName" element={<ZodiacPage />} />
+                    <Route path="/look-alike-finder" element={<LookAlikeFinder />} />
           <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
           <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
           <Route path="/celebrity/preview" element={<CelebrityPreview />} />

@@ -50,6 +50,7 @@ interface CelebrityData {
   zodiac_sign: string | null;
   popularity_ranks: any;
   known_for_data: any;
+  face_embedding: any;
 }
 
 const AdminPanel = () => {
@@ -63,6 +64,7 @@ const AdminPanel = () => {
   const [zodiacSign, setZodiacSign] = useState<string>("");
   const [popularityRanks, setPopularityRanks] = useState<any>(null);
   const [knownForData, setKnownForData] = useState<string>("");
+  const [faceEmbedding, setFaceEmbedding] = useState<string>("");
   
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("scrape");
@@ -226,6 +228,18 @@ const AdminPanel = () => {
         }
       }
 
+      // Parse face_embedding JSON
+      let parsedFaceEmbedding = null;
+      if (faceEmbedding && faceEmbedding.trim()) {
+        try {
+          parsedFaceEmbedding = JSON.parse(faceEmbedding);
+        } catch (e) {
+          toast.error("Invalid JSON in Face Embedding field");
+          setIsSaving(false);
+          return;
+        }
+      }
+
       const profileData = {
         name: data.name,
         profile_slug: data.profileSlug,
@@ -239,6 +253,7 @@ const AdminPanel = () => {
         zodiac_sign: zodiacSign || null,
         popularity_ranks: popularityRanks || null,
         known_for_data: parsedKnownForData,
+        face_embedding: parsedFaceEmbedding,
       };
 
       // STEP 2: Conditional Logic - CREATE or UPDATE
@@ -364,6 +379,32 @@ const AdminPanel = () => {
       setPopularityRanks(data.popularity_ranks || null);
       setKnownForData(data.known_for_data ? JSON.stringify(data.known_for_data, null, 2) : "");
 
+      // Generate face embedding from profile image
+      if (data.profile_image_url) {
+        try {
+          console.log("Generating face embedding for profile image...");
+          const { data: embeddingData, error: embeddingError } = await supabase.functions.invoke(
+            'generate-face-embedding',
+            {
+              body: { imageUrl: data.profile_image_url }
+            }
+          );
+
+          if (embeddingError) {
+            console.error("Face embedding error:", embeddingError);
+            toast.warning("Profile generated but face embedding failed");
+          } else if (embeddingData && embeddingData.faceDetected) {
+            setFaceEmbedding(JSON.stringify(embeddingData, null, 2));
+            console.log("Face embedding generated successfully");
+          } else {
+            console.log("No face detected in image");
+            setFaceEmbedding("");
+          }
+        } catch (embeddingError) {
+          console.error("Error generating face embedding:", embeddingError);
+        }
+      }
+
       toast.success("Draft generated! Please review and edit in the Manual Editor tab.");
       
       // Auto-switch to Manual Editor tab
@@ -431,6 +472,7 @@ const AdminPanel = () => {
     setZodiacSign(profile.zodiac_sign || "");
     setPopularityRanks(profile.popularity_ranks || null);
     setKnownForData(profile.known_for_data ? JSON.stringify(profile.known_for_data, null, 2) : "");
+    setFaceEmbedding(profile.face_embedding ? JSON.stringify(profile.face_embedding, null, 2) : "");
     
     // Clear search results after loading
     setSearchResults([]);
@@ -761,6 +803,23 @@ const AdminPanel = () => {
                   />
                   <p className="text-sm text-muted-foreground">
                     The AI generates this automatically. It will be used to build the 'Known For' carousel. You can edit if needed.
+                  </p>
+                </div>
+
+                {/* Face Embedding (Auto-filled by AI) */}
+                <div className="space-y-2">
+                  <Label htmlFor="faceEmbedding">Face Embedding (AI Generated)</Label>
+                  <Textarea
+                    id="faceEmbedding"
+                    value={faceEmbedding}
+                    onChange={(e) => setFaceEmbedding(e.target.value)}
+                    placeholder='{"faceDetected": true, "embedding": [...], "confidence": 0.95}'
+                    rows={4}
+                    className="font-mono text-xs bg-muted"
+                    readOnly
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    AI-generated numerical representation of the celebrity's face for look-alike matching. Leave as is.
                   </p>
                 </div>
 
