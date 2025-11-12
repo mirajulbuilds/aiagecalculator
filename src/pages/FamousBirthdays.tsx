@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Search, Calendar, Star, TrendingUp, Cake } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,11 +18,19 @@ interface Celebrity {
 }
 
 const FamousBirthdays = () => {
+  const navigate = useNavigate();
   const [trendingCelebrities, setTrendingCelebrities] = useState<Celebrity[]>([]);
   const [bornToday, setBornToday] = useState<Celebrity[]>([]);
   const [bornTomorrow, setBornTomorrow] = useState<Celebrity[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   useEffect(() => {
     loadCelebrities();
@@ -143,19 +151,27 @@ const FamousBirthdays = () => {
 
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search for a celebrity..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-4 py-6 text-lg"
-                />
-              </div>
-              <p className="text-sm text-muted-foreground text-center mt-3">
-                Search functionality coming soon
-              </p>
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search for a celebrity..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    className="pl-12 pr-4 py-6 text-lg"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="px-8 py-6"
+                  disabled={!searchQuery.trim()}
+                >
+                  Search
+                </Button>
+              </form>
             </div>
           </div>
         </section>

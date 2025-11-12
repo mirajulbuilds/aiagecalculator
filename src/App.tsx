@@ -20,6 +20,7 @@ const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const CelebrityPreview = lazy(() => import("./pages/CelebrityPreview"));
 const CelebrityProfile = lazy(() => import("./pages/CelebrityProfile"));
 const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
+const SearchResults = lazy(() => import("./pages/SearchResults"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
                     <Route path="/about" element={<About />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/famous-birthdays" element={<FamousBirthdays />} />
+                    <Route path="/search" element={<SearchResults />} />
           <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
           <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
           <Route path="/celebrity/preview" element={<CelebrityPreview />} />
