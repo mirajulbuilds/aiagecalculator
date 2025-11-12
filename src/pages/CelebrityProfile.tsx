@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, MapPin, Calendar, Star, TrendingUp } from "lucide-react";
@@ -31,6 +31,8 @@ const CelebrityProfile = () => {
   const [relatedCelebrities, setRelatedCelebrities] = useState<CelebrityData[]>([]);
   const [sameBirthdayCelebrities, setSameBirthdayCelebrities] = useState<CelebrityData[]>([]);
   const [sameZodiacCelebrities, setSameZodiacCelebrities] = useState<CelebrityData[]>([]);
+  const [activeSection, setActiveSection] = useState<string>("about-section");
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     const loadCelebrity = async () => {
@@ -126,6 +128,47 @@ const CelebrityProfile = () => {
 
     loadCelebrity();
   }, [profileSlug]);
+
+  // Intersection Observer for active section highlighting
+  useEffect(() => {
+    if (!celebrity) return;
+
+    const sections = [
+      "about-section",
+      "before-fame-section",
+      "trivia-section",
+      "family-life-section",
+      "known-for-section",
+      "fans-viewed-section"
+    ];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -70% 0px",
+      threshold: 0
+    };
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (element && observerRef.current) {
+        observerRef.current.observe(element);
+      }
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [celebrity]);
 
   useEffect(() => {
     if (!celebrity?.date_of_birth) return;
@@ -247,15 +290,21 @@ const CelebrityProfile = () => {
               <Card>
                 <CardContent className="p-6 md:p-8">
                   <div 
-                    className="prose prose-lg dark:prose-invert max-w-none [&_h2]:text-primary [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:mb-4 [&_h2]:mt-6"
-                    dangerouslySetInnerHTML={{ __html: celebrity.main_content }}
+                    className="prose prose-lg dark:prose-invert max-w-none [&_h2]:text-primary [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:mb-4 [&_h2]:mt-6 [&_h2]:scroll-mt-20"
+                    dangerouslySetInnerHTML={{ 
+                      __html: celebrity.main_content
+                        .replace(/<h2>/g, '<h2 id="about-section">')
+                        .replace(/<h2([^>]*)>Before Fame<\/h2>/i, '<h2$1 id="before-fame-section">Before Fame</h2>')
+                        .replace(/<h2([^>]*)>Trivia<\/h2>/i, '<h2$1 id="trivia-section">Trivia</h2>')
+                        .replace(/<h2([^>]*)>Family Life<\/h2>/i, '<h2$1 id="family-life-section">Family Life</h2>')
+                    }}
                   />
                 </CardContent>
               </Card>
 
               {/* Known For Section */}
               {celebrity.known_for_data && celebrity.known_for_data.length > 0 && (
-                <Card className="bg-gradient-to-br from-card via-card to-primary/5">
+                <Card id="known-for-section" className="bg-gradient-to-br from-card via-card to-primary/5 scroll-mt-20">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-2xl">
                       <Star className="w-6 h-6 text-primary" />
@@ -384,7 +433,7 @@ const CelebrityProfile = () => {
 
               {/* Fans Also Viewed Section */}
               {relatedCelebrities.length > 0 && (
-                <Card>
+                <Card id="fans-viewed-section" className="scroll-mt-20">
                   <CardHeader>
                     <CardTitle>Fans Also Viewed</CardTitle>
                   </CardHeader>
@@ -601,6 +650,53 @@ const CelebrityProfile = () => {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Table of Contents */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">On This Page</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <nav className="space-y-1">
+                    <a 
+                      href="#about-section" 
+                      className={`on-page-menu-link ${activeSection === 'about-section' ? 'active-section' : ''}`}
+                    >
+                      About
+                    </a>
+                    <a 
+                      href="#before-fame-section" 
+                      className={`on-page-menu-link ${activeSection === 'before-fame-section' ? 'active-section' : ''}`}
+                    >
+                      Before Fame
+                    </a>
+                    <a 
+                      href="#trivia-section" 
+                      className={`on-page-menu-link ${activeSection === 'trivia-section' ? 'active-section' : ''}`}
+                    >
+                      Trivia
+                    </a>
+                    <a 
+                      href="#family-life-section" 
+                      className={`on-page-menu-link ${activeSection === 'family-life-section' ? 'active-section' : ''}`}
+                    >
+                      Family Life
+                    </a>
+                    <a 
+                      href="#known-for-section" 
+                      className={`on-page-menu-link ${activeSection === 'known-for-section' ? 'active-section' : ''}`}
+                    >
+                      Known For
+                    </a>
+                    <a 
+                      href="#fans-viewed-section" 
+                      className={`on-page-menu-link ${activeSection === 'fans-viewed-section' ? 'active-section' : ''}`}
+                    >
+                      Fans Also Viewed
+                    </a>
+                  </nav>
+                </CardContent>
+              </Card>
 
               {/* AdSense Vertical Banner */}
               <div className="sticky top-4">

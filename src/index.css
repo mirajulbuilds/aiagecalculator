@@ -142,6 +142,10 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
     /* Interactive gradient background */
@@ -419,4 +423,27 @@ All colors MUST be HSL.
     }
   }
   /* --- End of App-Style CSS --- */
+
+  /* Table of Contents Active Section Highlighting */
+  .on-page-menu-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+  }
+
+  .on-page-menu-link:hover {
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--muted) / 0.5);
+  }
+
+  .on-page-menu-link.active-section {
+    color: hsl(var(--primary));
+    font-weight: 700;
+    border-left: 3px solid hsl(var(--primary));
+    background-color: hsl(var(--primary) / 0.1);
+  }
 }
