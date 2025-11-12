@@ -9,9 +9,9 @@ const Header = () => {
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Click outside to close menu
+  // Click/Touch outside to close menu
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
@@ -19,10 +19,25 @@ const Header = () => {
 
     if (isMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  // Body scroll lock when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
     };
   }, [isMenuOpen]);
 
@@ -86,35 +101,40 @@ const Header = () => {
           </div>
 
           {/* Mobile Navigation with Backdrop */}
-          {isMenuOpen && (
-            <>
-              {/* Backdrop Overlay */}
-              <div 
-                className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40 md:hidden animate-fade-in"
-                onClick={() => setIsMenuOpen(false)}
-              />
-              
-              {/* Mobile Menu */}
-              <div className="md:hidden border-t border-white/10 dark:border-white/5 backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 py-4 relative z-50 animate-slide-down">
-                <div className="flex flex-col space-y-3">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setIsMenuOpen(false)}
-                      className={`px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${
-                        isActive(item.path)
-                          ? "text-primary bg-muted/50"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {item.title}
-                    </Link>
-                  ))}
-                </div>
+          <>
+            {/* Backdrop Overlay */}
+            <div 
+              className={`fixed inset-0 bg-black/20 dark:bg-black/40 z-40 md:hidden transition-opacity duration-300 ${
+                isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+              onTouchStart={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Mobile Menu */}
+            <div 
+              className={`md:hidden border-t border-white/10 dark:border-white/5 backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 py-4 relative z-50 transition-all duration-300 ${
+                isMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+              }`}
+            >
+              <div className="flex flex-col space-y-3">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${
+                      isActive(item.path)
+                        ? "text-primary bg-muted/50"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {item.title}
+                  </Link>
+                ))}
               </div>
-            </>
-          )}
+            </div>
+          </>
         </nav>
       </div>
     </header>
