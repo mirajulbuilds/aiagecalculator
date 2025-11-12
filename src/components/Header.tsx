@@ -89,48 +89,37 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Glassmorphism Menu */}
+      {/* Corner Pop-over Glass Menu */}
       <>
-        {/* Backdrop Overlay */}
+        {/* Transparent Backdrop (Click-outside to close) */}
         <div 
           id="menu-backdrop"
-          className={`fixed inset-0 bg-black/40 z-[99] md:hidden transition-opacity duration-300 ${
-            isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+          className={`fixed inset-0 z-[99] md:hidden ${
+            isMobileMenuOpen ? 'block' : 'hidden'
           }`}
           onClick={handleCloseMenu}
           onTouchStart={handleCloseMenu}
         />
         
-        {/* Glassmorphism Pop-up Menu Panel */}
+        {/* Corner-Anchored Glass Menu Panel */}
         <div 
-          id="mobile-menu-popup"
-          className={`fixed top-[15%] left-[5%] w-[90%] z-[100] md:hidden
-            bg-white/10 backdrop-blur-[20px] border border-white/20 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.1)]
-            p-6 transition-all duration-300 ease-out ${
+          id="mobile-menu-panel"
+          className={`fixed top-[80px] right-5 w-[300px] z-[100] md:hidden
+            bg-white/10 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.1)]
+            p-4 origin-top-right transition-all duration-200 ease-out ${
             isMobileMenuOpen 
-              ? 'opacity-100 translate-y-0 visible' 
-              : 'opacity-0 -translate-y-5 invisible'
+              ? 'scale-100 opacity-100 visible' 
+              : 'scale-95 opacity-0 invisible'
           }`}
         >
-          {/* Close Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleCloseMenu}
-            aria-label="Close menu"
-            className="absolute top-3 right-3 hover:bg-black/5 dark:hover:bg-white/10"
-          >
-            <X className="h-6 w-6" />
-          </Button>
-
           {/* Menu Links */}
-          <nav className="flex flex-col mt-8 space-y-2">
+          <nav className="flex flex-col space-y-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={handleCloseMenu}
-                className={`px-4 py-3 text-lg font-bold rounded-lg transition-all ${
+                className={`px-3 py-2.5 text-base font-bold rounded-lg transition-all ${
                   isActive(item.path)
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
