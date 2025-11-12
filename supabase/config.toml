@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.estimate-face-age]
 verify_jwt = false
+
+[functions.birthday-compatibility]
+verify_jwt = false

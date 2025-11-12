@@ -12,6 +12,7 @@ const Header = () => {
     { title: "Home", path: "/" },
     { title: "Look-Alike Finder", path: "/look-alike-finder" },
     { title: "AI Face Age", path: "/ai-face-age" },
+    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
     { title: "Blog", path: "/blog" },
     { title: "About", path: "/about" },
   ];
