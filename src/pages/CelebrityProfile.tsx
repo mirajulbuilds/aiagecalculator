@@ -77,13 +77,14 @@ const CelebrityProfile = () => {
         console.log("Loading from database:", data.name);
         setCelebrity(data as CelebrityData);
         
-        // Load related celebrities (same profession)
+        // Load related celebrities (same profession) - "Fans Also Viewed"
         const { data: related } = await supabase
           .from("celebrities")
           .select("*")
           .eq("profession", data.profession)
           .neq("id", data.id)
-          .limit(8);
+          .order("popularity_ranks->most_popular", { ascending: true })
+          .limit(4);
         
         if (related) {
           setRelatedCelebrities(related as CelebrityData[]);
