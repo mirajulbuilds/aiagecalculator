@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Search, Calendar, Star, TrendingUp, Cake } from "lucide-react";
+import { Search, Calendar, Star, TrendingUp, Cake, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -311,14 +311,57 @@ const FamousBirthdays = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"].map((sign) => (
+              {[
+                { name: "Aries", symbol: "♈" },
+                { name: "Taurus", symbol: "♉" },
+                { name: "Gemini", symbol: "♊" },
+                { name: "Cancer", symbol: "♋" },
+                { name: "Leo", symbol: "♌" },
+                { name: "Virgo", symbol: "♍" },
+                { name: "Libra", symbol: "♎" },
+                { name: "Scorpio", symbol: "♏" },
+                { name: "Sagittarius", symbol: "♐" },
+                { name: "Capricorn", symbol: "♑" },
+                { name: "Aquarius", symbol: "♒" },
+                { name: "Pisces", symbol: "♓" }
+              ].map((zodiac) => (
                 <Link
-                  key={sign}
-                  to={`/zodiac/${sign.toLowerCase()}`}
+                  key={zodiac.name}
+                  to={`/zodiac/${zodiac.name.toLowerCase()}`}
+                  className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center"
+                >
+                  <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+                    {zodiac.symbol}
+                  </div>
+                  <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                    {zodiac.name}
+                  </h3>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* Browse by Birth Month */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <Sparkles className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Browse by Birth Month
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {[
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+              ].map((month) => (
+                <Link
+                  key={month}
+                  to={`/birth-month/${month.toLowerCase()}`}
                   className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center"
                 >
                   <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
-                    {sign}
+                    {month}
                   </h3>
                 </Link>
               ))}
