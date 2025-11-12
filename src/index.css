@@ -282,6 +282,12 @@ All colors MUST be HSL.
     /* Collapsed state: 80px sidebar, 1fr content */
     grid-template-columns: 80px 1fr;
     gap: 24px;
+    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* CRITICAL FIX: Expand grid when hovering sidebar */
+  .tool-app-layout:has(#tool-sidebar:hover) {
+    grid-template-columns: 260px 1fr;
   }
 
   #tool-sidebar {
@@ -290,13 +296,6 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-card);
     padding: 16px;
     overflow: hidden; /* Hides text during collapse */
-    width: 80px; /* Default collapsed width */
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* CRITICAL FIX: Only expand when hovering the sidebar itself */
-  #tool-sidebar:hover {
-    width: 260px;
   }
 
     /* Sidebar Links (Icon + Label) */

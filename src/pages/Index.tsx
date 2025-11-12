@@ -505,6 +505,7 @@ const Index = () => {
         })}
       </script>
       
+      <div className="w-full max-w-[1200px] mx-auto px-6 box-border">
       <div className="max-w-5xl mx-auto flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
@@ -1920,6 +1921,7 @@ const Index = () => {
           </div>
         </div>
       </article>
+      </div>
       
       {/* Bottom Page Ad - Always visible */}
       {/* <div className="max-w-7xl mx-auto mt-6 mb-8">
