@@ -30,8 +30,73 @@ const LookAlikeFinder = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Client-side image compression utility
+  const compressImage = async (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          // Create canvas for resizing
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'));
+            return;
+          }
+
+          // Calculate new dimensions (max width 1920px, maintain aspect ratio)
+          const maxWidth = 1920;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          // Set canvas dimensions
+          canvas.width = width;
+          canvas.height = height;
+
+          // Draw resized image
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to JPEG blob at 0.8 quality
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                // Create a new File from the blob
+                const compressedFile = new File([blob], file.name.replace(/\.\w+$/, '.jpg'), {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                console.log(`Compressed: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+                resolve(compressedFile);
+              } else {
+                reject(new Error('Failed to compress image'));
+              }
+            },
+            'image/jpeg',
+            0.8
+          );
+        };
+
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = e.target?.result as string;
+      };
+
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -42,20 +107,39 @@ const LookAlikeFinder = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB');
-      return;
-    }
+    try {
+      setIsCompressing(true);
+      let finalFile = file;
 
-    setUploadedFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setUploadedImage(reader.result as string);
-      setMatchResult(null);
-      setError(null);
-    };
-    reader.readAsDataURL(file);
+      // Check if compression is needed (files > 4.5MB)
+      const compressionThreshold = 4.5 * 1024 * 1024; // 4.5MB
+      if (file.size > compressionThreshold) {
+        toast.info('Optimizing your image...');
+        finalFile = await compressImage(file);
+        toast.success('Image optimized successfully!');
+      }
+
+      // Final validation after compression
+      if (finalFile.size > 5 * 1024 * 1024) {
+        toast.error('Image is still too large after compression. Please try a smaller image.');
+        setIsCompressing(false);
+        return;
+      }
+
+      setUploadedFile(finalFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result as string);
+        setMatchResult(null);
+        setError(null);
+        setIsCompressing(false);
+      };
+      reader.readAsDataURL(finalFile);
+    } catch (error) {
+      console.error('Error processing image:', error);
+      toast.error('Failed to process image. Please try again.');
+      setIsCompressing(false);
+    }
   };
 
   const handleFindMatch = async () => {
@@ -202,7 +286,7 @@ const LookAlikeFinder = () => {
                           Click to upload or drag and drop
                         </p>
                         <p className="text-xs text-muted-foreground mt-2">
-                          JPG, JPEG, or PNG (max 5MB)
+                          JPG, JPEG, or PNG (auto-optimized if needed)
                         </p>
                       </>
                     )}
@@ -211,11 +295,16 @@ const LookAlikeFinder = () => {
 
                 <Button
                   onClick={handleFindMatch}
-                  disabled={!uploadedImage || isAnalyzing}
+                  disabled={!uploadedImage || isAnalyzing || isCompressing}
                   className="w-full"
                   size="lg"
                 >
-                  {isAnalyzing ? (
+                  {isCompressing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Optimizing Image...
+                    </>
+                  ) : isAnalyzing ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                       Analyzing Your Photo...
