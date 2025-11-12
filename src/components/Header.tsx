@@ -55,12 +55,12 @@ const Header = () => {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex md:items-center md:gap-6 relative z-10">
+              <div className="nav-links-container hidden md:flex md:items-center md:gap-6 relative z-10">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                    className={`nav-link text-sm font-medium transition-colors hover:text-primary ${
                       isActive(item.path)
                         ? "text-primary"
                         : "text-muted-foreground"
@@ -73,7 +73,7 @@ const Header = () => {
               </div>
 
               {/* Mobile Menu Button */}
-              <div className="flex items-center gap-2 md:hidden relative z-10">
+              <div className="mobile-menu-toggle-button flex items-center gap-2 md:hidden relative z-10">
                 <ThemeToggle />
                 <Button
                   variant="ghost"
