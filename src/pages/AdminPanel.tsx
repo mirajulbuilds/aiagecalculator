@@ -14,7 +14,17 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { CalendarIcon, Loader2, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -77,6 +87,10 @@ const AdminPanel = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<CelebrityData[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Delete confirmation state
+  const [profileToDelete, setProfileToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     register,
@@ -481,6 +495,43 @@ const AdminPanel = () => {
     toast.success(`Loaded profile: ${profile.name}`);
   };
 
+  const handleDeleteProfile = async () => {
+    if (!profileToDelete) return;
+
+    setIsDeleting(true);
+    
+    try {
+      const { error } = await supabase
+        .from("celebrities")
+        .delete()
+        .eq("id", profileToDelete.id);
+
+      if (error) {
+        console.error("Delete error:", error);
+        toast.error("Failed to delete profile: " + error.message);
+        return;
+      }
+
+      toast.success(`Profile "${profileToDelete.name}" has been permanently deleted`);
+      
+      // Remove from search results
+      setSearchResults(searchResults.filter(p => p.id !== profileToDelete.id));
+      
+      // Close modal and clear state
+      setProfileToDelete(null);
+      
+      // Optionally re-run search to refresh results
+      if (searchQuery.trim().length > 0) {
+        handleSearchProfiles();
+      }
+    } catch (error) {
+      console.error("Error deleting profile:", error);
+      toast.error("An unexpected error occurred while deleting");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
@@ -602,14 +653,25 @@ const AdminPanel = () => {
                             Slug: {profile.profile_slug}
                           </p>
                         </div>
-                        <Button
-                          type="button"
-                          onClick={() => handleLoadProfile(profile)}
-                          variant="default"
-                          size="sm"
-                        >
-                          Load for Editing
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            onClick={() => handleLoadProfile(profile)}
+                            variant="default"
+                            size="sm"
+                          >
+                            Load for Editing
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() => setProfileToDelete({ id: profile.id, name: profile.name })}
+                            variant="outline"
+                            size="sm"
+                            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -844,6 +906,34 @@ const AdminPanel = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Permanent Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this profile? This action cannot be undone.
+              {profileToDelete && (
+                <span className="block mt-2 font-semibold text-foreground">
+                  You are about to delete: {profileToDelete.name}
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteProfile}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Yes, Delete Permanently
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
