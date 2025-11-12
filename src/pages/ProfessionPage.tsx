@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Briefcase, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { CelebrityCard } from "@/components/CelebrityCard";
 
 interface Celebrity {
   id: string;
@@ -69,26 +70,6 @@ const ProfessionPage = () => {
     }
   };
 
-  const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => (
-    <Link
-      to={`/people/${celebrity.profile_slug}`}
-      className="group bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element"
-    >
-      <div className="aspect-square overflow-hidden">
-        <img
-          src={celebrity.profile_image_url}
-          alt={celebrity.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-        />
-      </div>
-      <div className="p-4">
-        <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
-          {celebrity.name}
-        </h3>
-        <p className="text-sm text-muted-foreground">{celebrity.profession}</p>
-      </div>
-    </Link>
-  );
 
   if (loading) {
     return (

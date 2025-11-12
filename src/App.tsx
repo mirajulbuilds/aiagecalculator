@@ -9,6 +9,8 @@ import { lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { ComparisonProvider } from "./contexts/ComparisonContext";
+import { FloatingCompareBar } from "./components/FloatingCompareBar";
 
 // Lazy load route components for code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -30,6 +32,7 @@ const BatchEmbeddingGenerator = lazy(() => import("./pages/BatchEmbeddingGenerat
 const AiFaceAge = lazy(() => import("./pages/AiFaceAge"));
 const CompatibilityCalculator = lazy(() => import("./pages/CompatibilityCalculator"));
 const PastLifeGenerator = lazy(() => import("./pages/PastLifeGenerator"));
+const Compare = lazy(() => import("./pages/Compare"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -54,6 +57,7 @@ const AnimatedRoutes = () => {
         <Route path="/ai-face-age" element={<AiFaceAge />} />
         <Route path="/compatibility-calculator" element={<CompatibilityCalculator />} />
         <Route path="/past-life-generator" element={<PastLifeGenerator />} />
+        <Route path="/compare" element={<Compare />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
         <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
@@ -71,19 +75,22 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="ai-age-calc-theme">
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-1">
-                <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-                  <AnimatedRoutes />
-                </Suspense>
-              </main>
-              <Footer />
-            </div>
-          </BrowserRouter>
+          <ComparisonProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1">
+                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+                    <AnimatedRoutes />
+                  </Suspense>
+                </main>
+                <Footer />
+                <FloatingCompareBar />
+              </div>
+            </BrowserRouter>
+          </ComparisonProvider>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
