@@ -521,7 +521,7 @@ const Index = () => {
           </p>
           
           {/* Famous Birthdays CTA */}
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center flex-wrap">
             <Link to="/famous-birthdays">
               <Button 
                 size="lg" 
@@ -539,6 +539,16 @@ const Index = () => {
               >
                 <Sparkles className="w-5 h-5" />
                 Find Your Celebrity Twin
+              </Button>
+            </Link>
+            <Link to="/ai-face-age">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10"
+              >
+                <Rocket className="w-5 h-5" />
+                AI Face Age Calculator
               </Button>
             </Link>
           </div>
