@@ -89,49 +89,51 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Slide-In Menu */}
+      {/* Mobile Glassmorphism Menu */}
       <>
         {/* Backdrop Overlay */}
         <div 
           id="menu-backdrop"
-          className={`fixed inset-0 bg-black/50 dark:bg-black/70 z-[99] md:hidden transition-opacity duration-300 ${
+          className={`fixed inset-0 bg-black/40 z-[99] md:hidden transition-opacity duration-300 ${
             isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
           onClick={handleCloseMenu}
           onTouchStart={handleCloseMenu}
         />
         
-        {/* Slide-In Menu Panel */}
+        {/* Glassmorphism Pop-up Menu Panel */}
         <div 
-          id="mobile-menu-panel"
-          className={`fixed top-0 right-0 w-[300px] h-screen bg-card/95 backdrop-blur-xl border-l border-border z-[100] md:hidden transition-transform duration-300 ease-out shadow-2xl ${
-            isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          id="mobile-menu-popup"
+          className={`fixed top-[15%] left-[5%] w-[90%] z-[100] md:hidden
+            bg-white/10 backdrop-blur-[20px] border border-white/20 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.1)]
+            p-6 transition-all duration-300 ease-out ${
+            isMobileMenuOpen 
+              ? 'opacity-100 translate-y-0 visible' 
+              : 'opacity-0 -translate-y-5 invisible'
           }`}
         >
           {/* Close Button */}
-          <div className="flex justify-end p-4 border-b border-border/50">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleCloseMenu}
-              aria-label="Close menu"
-              className="hover:bg-primary/10"
-            >
-              <X className="h-6 w-6" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCloseMenu}
+            aria-label="Close menu"
+            className="absolute top-3 right-3 hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <X className="h-6 w-6" />
+          </Button>
 
           {/* Menu Links */}
-          <nav className="flex flex-col p-4 space-y-2">
+          <nav className="flex flex-col mt-8 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={handleCloseMenu}
-                className={`px-4 py-3 text-base font-semibold rounded-lg transition-all ${
+                className={`px-4 py-3 text-lg font-bold rounded-lg transition-all ${
                   isActive(item.path)
                     ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground hover:bg-primary/10 hover:text-primary"
+                    : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
                 }`}
               >
                 {item.title}
