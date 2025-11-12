@@ -253,39 +253,44 @@ const CelebrityProfile = () => {
 
               {/* Known For Section */}
               {celebrity.known_for_data && celebrity.known_for_data.length > 0 && (
-                <Card>
+                <Card className="bg-gradient-to-br from-card via-card to-primary/5">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-primary" />
+                    <CardTitle className="flex items-center gap-3 text-2xl">
+                      <Star className="w-6 h-6 text-primary" />
                       Known For
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
-                      {celebrity.known_for_data.map((item, index) => (
+                    <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-2 px-2">
+                      {celebrity.known_for_data.map((item: any, index: number) => (
                         <div
                           key={index}
-                          className="flex-none w-[200px] snap-start group cursor-pointer"
+                          className="flex-none w-[220px] group cursor-pointer"
                         >
-                          <div className="aspect-[2/3] overflow-hidden rounded-lg bg-muted mb-2 relative">
-                            {item.imageURL ? (
-                              <img
-                                src={item.imageURL}
-                                alt={item.title}
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                                <Star className="w-12 h-12 text-primary/50" />
-                              </div>
-                            )}
+                          <div className="bg-card rounded-xl shadow-card overflow-hidden border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+                            <div className="aspect-[2/3] overflow-hidden bg-muted relative">
+                              {item.imageURL ? (
+                                <img
+                                  src={item.imageURL}
+                                  alt={item.title || 'Known for item'}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10">
+                                  <Star className="w-16 h-16 text-primary/60" />
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </div>
+                            <div className="p-4">
+                              <h3 className="font-bold text-foreground text-base mb-1 group-hover:text-primary transition-colors line-clamp-2 min-h-[3rem]">
+                                {item.title || 'Untitled'}
+                              </h3>
+                              {item.year && (
+                                <p className="text-sm text-muted-foreground font-medium">{item.year}</p>
+                              )}
+                            </div>
                           </div>
-                          <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                            {item.title}
-                          </h3>
-                          {item.year && (
-                            <p className="text-xs text-muted-foreground mt-1">{item.year}</p>
-                          )}
                         </div>
                       ))}
                     </div>
