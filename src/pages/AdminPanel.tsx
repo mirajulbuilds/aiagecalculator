@@ -49,6 +49,7 @@ interface CelebrityData {
   profile_image_url: string;
   zodiac_sign: string | null;
   popularity_ranks: any;
+  known_for_data: any;
 }
 
 const AdminPanel = () => {
@@ -61,6 +62,7 @@ const AdminPanel = () => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [zodiacSign, setZodiacSign] = useState<string>("");
   const [popularityRanks, setPopularityRanks] = useState<any>(null);
+  const [knownForData, setKnownForData] = useState<string>("");
   
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("scrape");
@@ -212,6 +214,18 @@ const AdminPanel = () => {
         return;
       }
 
+      // Parse known_for_data JSON
+      let parsedKnownForData = null;
+      if (knownForData && knownForData.trim()) {
+        try {
+          parsedKnownForData = JSON.parse(knownForData);
+        } catch (e) {
+          toast.error("Invalid JSON in Known For Data field");
+          setIsSaving(false);
+          return;
+        }
+      }
+
       const profileData = {
         name: data.name,
         profile_slug: data.profileSlug,
@@ -224,6 +238,7 @@ const AdminPanel = () => {
         profile_image_url: imageUrl,
         zodiac_sign: zodiacSign || null,
         popularity_ranks: popularityRanks || null,
+        known_for_data: parsedKnownForData,
       };
 
       // STEP 2: Conditional Logic - CREATE or UPDATE
@@ -270,6 +285,7 @@ const AdminPanel = () => {
       setImagePreview("");
       setZodiacSign("");
       setPopularityRanks(null);
+      setKnownForData("");
     } catch (error) {
       console.error("Error saving celebrity:", error);
       toast.error("An unexpected error occurred");
@@ -346,6 +362,7 @@ const AdminPanel = () => {
       // Set additional AI-generated fields
       setZodiacSign(data.zodiac_sign || "");
       setPopularityRanks(data.popularity_ranks || null);
+      setKnownForData(data.known_for_data ? JSON.stringify(data.known_for_data, null, 2) : "");
 
       toast.success("Draft generated! Please review and edit in the Manual Editor tab.");
       
@@ -413,6 +430,7 @@ const AdminPanel = () => {
     // Set additional fields
     setZodiacSign(profile.zodiac_sign || "");
     setPopularityRanks(profile.popularity_ranks || null);
+    setKnownForData(profile.known_for_data ? JSON.stringify(profile.known_for_data, null, 2) : "");
     
     // Clear search results after loading
     setSearchResults([]);
@@ -727,6 +745,22 @@ const AdminPanel = () => {
                   />
                   <p className="text-sm text-muted-foreground">
                     AI will auto-fill this. Please verify and correct if needed.
+                  </p>
+                </div>
+
+                {/* Known For Data (Auto-filled by AI) */}
+                <div className="space-y-2">
+                  <Label htmlFor="knownForData">Known For (JSON Data)</Label>
+                  <Textarea
+                    id="knownForData"
+                    value={knownForData}
+                    onChange={(e) => setKnownForData(e.target.value)}
+                    placeholder='[{"title": "Titanic", "imageURL": "...", "year": "1997"}]'
+                    rows={6}
+                    className="font-mono text-xs"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    The AI generates this automatically. It will be used to build the 'Known For' carousel. You can edit if needed.
                   </p>
                 </div>
 

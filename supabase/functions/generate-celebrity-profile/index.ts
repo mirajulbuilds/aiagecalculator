@@ -181,6 +181,11 @@ Required content:
 7. SEO-optimized meta title (max 60 chars, include name and key achievement)
 8. SEO-optimized meta description (CRITICAL: max 160 chars, compelling and informative)
 9. URL-friendly slug (lowercase, hyphenated)
+10. "Known For" data: Extract the most famous works, movies, TV shows, or achievements (3-6 items) as a JSON array with:
+    - "title": The name of the work/achievement
+    - "year": The year (if available)
+    - "imageURL": Leave empty string "" (we'll add images later)
+    Example: [{"title": "Titanic", "year": "1997", "imageURL": ""}, {"title": "Inception", "year": "2010", "imageURL": ""}]
 
 Make the writing feel human, warm, and professionally crafted.`,
           },
@@ -223,6 +228,18 @@ Make the writing feel human, warm, and professionally crafted.`,
                     description: "CRITICAL: Must be 160 characters or less for SEO"
                   },
                   profile_slug: { type: "string" },
+                  known_for_data: {
+                    type: "array",
+                    description: "Array of famous works/achievements with title, year, and imageURL",
+                    items: {
+                      type: "object",
+                      properties: {
+                        title: { type: "string" },
+                        year: { type: "string" },
+                        imageURL: { type: "string" }
+                      }
+                    }
+                  },
                 },
                 required: [
                   "main_content",
@@ -235,6 +252,7 @@ Make the writing feel human, warm, and professionally crafted.`,
                   "meta_title",
                   "meta_description",
                   "profile_slug",
+                  "known_for_data",
                 ],
                 additionalProperties: false,
               },

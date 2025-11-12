@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           date_of_birth: string
           id: string
+          known_for_data: Json | null
           main_content: string
           meta_description: string
           meta_title: string
@@ -35,6 +36,7 @@ export type Database = {
           created_at?: string
           date_of_birth: string
           id?: string
+          known_for_data?: Json | null
           main_content: string
           meta_description: string
           meta_title: string
@@ -51,6 +53,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string
           id?: string
+          known_for_data?: Json | null
           main_content?: string
           meta_description?: string
           meta_title?: string

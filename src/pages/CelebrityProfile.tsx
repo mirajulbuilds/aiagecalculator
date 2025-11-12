@@ -19,6 +19,7 @@ interface CelebrityData {
   meta_title: string;
   meta_description: string;
   popularity_ranks: any;
+  known_for_data?: any;
 }
 
 const CelebrityProfile = () => {
@@ -251,20 +252,46 @@ const CelebrityProfile = () => {
               </Card>
 
               {/* Known For Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-primary" />
-                    Known For
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
-                    {/* Placeholder - will be populated with career highlights */}
-                    <p className="text-muted-foreground text-sm">Career highlights coming soon</p>
-                  </div>
-                </CardContent>
-              </Card>
+              {celebrity.known_for_data && celebrity.known_for_data.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-primary" />
+                      Known For
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory">
+                      {celebrity.known_for_data.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex-none w-[200px] snap-start group cursor-pointer"
+                        >
+                          <div className="aspect-[2/3] overflow-hidden rounded-lg bg-muted mb-2 relative">
+                            {item.imageURL ? (
+                              <img
+                                src={item.imageURL}
+                                alt={item.title}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                                <Star className="w-12 h-12 text-primary/50" />
+                              </div>
+                            )}
+                          </div>
+                          <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                            {item.title}
+                          </h3>
+                          {item.year && (
+                            <p className="text-xs text-muted-foreground mt-1">{item.year}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* AdSense Banner */}
               <div className="my-8">
