@@ -10,10 +10,7 @@ const Header = () => {
 
   const navItems = [
     { title: "Home", path: "/" },
-    { title: "Look-Alike Finder", path: "/look-alike-finder" },
-    { title: "AI Face Age", path: "/ai-face-age" },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
-    { title: "Past Life Generator", path: "/past-life-generator" },
+    { title: "Famous Birthdays", path: "/famous-birthdays" },
     { title: "Blog", path: "/blog" },
   ];
 

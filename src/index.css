@@ -291,6 +291,7 @@ All colors MUST be HSL.
   }
 
   #tool-sidebar {
+    display: block; /* Show sidebar on desktop */
     background-color: hsl(var(--card));
     border-radius: 16px;
     box-shadow: var(--shadow-card);

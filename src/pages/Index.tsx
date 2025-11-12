@@ -521,38 +521,6 @@ const Index = () => {
             Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
           </p>
           
-          {/* Famous Birthdays CTA */}
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center flex-wrap">
-            <Link to="/famous-birthdays">
-              <Button 
-                size="lg" 
-                className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80"
-              >
-                <Star className="w-5 h-5" />
-                Explore Famous Birthdays
-              </Button>
-            </Link>
-            <Link to="/look-alike-finder">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10"
-              >
-                <Sparkles className="w-5 h-5" />
-                Find Your Celebrity Twin
-              </Button>
-            </Link>
-            <Link to="/ai-face-age">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10"
-              >
-                <Rocket className="w-5 h-5" />
-                AI Face Age Calculator
-              </Button>
-            </Link>
-          </div>
         </header>
 
         {/* Timezone Section */}
@@ -665,39 +633,6 @@ const Index = () => {
                     <span className="tool-icon">💡</span>
                     <span className="tool-label">AI Gift Advisor</span>
                   </button>
-                  
-                  {/* Separator */}
-                  <div className="border-t border-border my-2"></div>
-                  
-                  {/* External Tool Links */}
-                  <Link
-                    to="/look-alike-finder"
-                    className="tool-sidebar-link w-full"
-                  >
-                    <span className="tool-icon">👯</span>
-                    <span className="tool-label">Look-Alike Finder</span>
-                  </Link>
-                  <Link
-                    to="/ai-face-age"
-                    className="tool-sidebar-link w-full"
-                  >
-                    <span className="tool-icon">🤖</span>
-                    <span className="tool-label">AI Face Age</span>
-                  </Link>
-                  <Link
-                    to="/compatibility-calculator"
-                    className="tool-sidebar-link w-full"
-                  >
-                    <span className="tool-icon">💖</span>
-                    <span className="tool-label">Compatibility</span>
-                  </Link>
-                  <Link
-                    to="/past-life-generator"
-                    className="tool-sidebar-link w-full"
-                  >
-                    <span className="tool-icon">🌀</span>
-                    <span className="tool-label">Past Life</span>
-                  </Link>
                 </nav>
               </div>
 
