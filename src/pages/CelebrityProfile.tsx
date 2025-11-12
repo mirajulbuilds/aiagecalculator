@@ -389,7 +389,12 @@ const CelebrityProfile = () => {
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <Star className="w-5 h-5 text-primary" />
-                    <span>{celebrity.profession}</span>
+                    <Link 
+                      to={`/profession/${celebrity.profession.toLowerCase().replace(/\s+/g, "-")}`}
+                      className="hover:text-primary hover:underline transition-colors"
+                    >
+                      {celebrity.profession}
+                    </Link>
                   </div>
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <Calendar className="w-5 h-5 text-primary" />
@@ -418,7 +423,12 @@ const CelebrityProfile = () => {
                       <Star className="w-5 h-5 text-primary" />
                       <div>
                         <div className="text-xs text-muted-foreground mb-1">✨ Birth Sign</div>
-                        <div className="font-medium text-foreground">{celebrity.zodiac_sign}</div>
+                        <Link 
+                          to={`/zodiac/${celebrity.zodiac_sign.toLowerCase()}`}
+                          className="font-medium text-foreground hover:text-primary hover:underline transition-colors"
+                        >
+                          {celebrity.zodiac_sign}
+                        </Link>
                       </div>
                     </div>
                   )}
