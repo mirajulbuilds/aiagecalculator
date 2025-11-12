@@ -195,6 +195,12 @@ const LookAlikeFinder = () => {
         throw new Error('Failed to find celebrity matches. Please try again.');
       }
 
+      if (matchError?.message?.includes('No celebrities with face embeddings')) {
+        setError('Our celebrity database is being updated with facial recognition data. Please check back soon!');
+        setIsAnalyzing(false);
+        return;
+      }
+
       if (!matchData.bestMatch) {
         setError('Could not find any celebrity matches. Our database is still growing!');
         setIsAnalyzing(false);

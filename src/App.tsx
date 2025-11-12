@@ -25,6 +25,7 @@ const ProfessionPage = lazy(() => import("./pages/ProfessionPage"));
 const BirthMonthPage = lazy(() => import("./pages/BirthMonthPage"));
 const ZodiacPage = lazy(() => import("./pages/ZodiacPage"));
 const LookAlikeFinder = lazy(() => import("./pages/LookAlikeFinder"));
+const BatchEmbeddingGenerator = lazy(() => import("./pages/BatchEmbeddingGenerator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
                     <Route path="/look-alike-finder" element={<LookAlikeFinder />} />
           <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
           <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
+          <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
           <Route path="/celebrity/preview" element={<CelebrityPreview />} />
           <Route path="/people/:profileSlug" element={<CelebrityProfile />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
