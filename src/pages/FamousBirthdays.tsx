@@ -176,11 +176,6 @@ const FamousBirthdays = () => {
           </div>
         </section>
 
-        {/* AdSense Banner */}
-        <div className="container mx-auto px-4 max-w-6xl my-8">
-          <AdSenseBanner format="horizontal" adSlot="leaderboard" />
-        </div>
-
         <div className="container mx-auto px-4 max-w-6xl py-12 space-y-16">
           {/* Trending Celebrities Section */}
           <section>
@@ -205,6 +200,11 @@ const FamousBirthdays = () => {
               </div>
             )}
           </section>
+
+          {/* AdSense Banner */}
+          <div className="my-8">
+            <AdSenseBanner format="horizontal" adSlot="leaderboard" />
+          </div>
 
           {/* Today's Birthdays Section */}
           <section>
