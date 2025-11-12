@@ -77,17 +77,18 @@ const CelebrityProfile = () => {
         console.log("Loading from database:", data.name);
         setCelebrity(data as CelebrityData);
         
-        // Load related celebrities (same profession) - "Fans Also Viewed"
+        // Load related celebrities (same profession) - "Fans Also Viewed" with random results
         const { data: related } = await supabase
           .from("celebrities")
           .select("*")
           .eq("profession", data.profession)
           .neq("id", data.id)
-          .order("popularity_ranks->most_popular", { ascending: true })
-          .limit(4);
+          .limit(20); // Fetch more for randomization
         
-        if (related) {
-          setRelatedCelebrities(related as CelebrityData[]);
+        if (related && related.length > 0) {
+          // Randomly select 4 celebrities
+          const shuffled = [...related].sort(() => Math.random() - 0.5);
+          setRelatedCelebrities(shuffled.slice(0, 4) as CelebrityData[]);
         }
 
         // Load celebrities with same birthday (month and day)
@@ -359,19 +360,21 @@ const CelebrityProfile = () => {
                         <Link
                           key={celeb.profile_slug}
                           to={`/people/${celeb.profile_slug}`}
-                          className="group"
+                          className="group bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border"
                         >
-                          <div className="aspect-square overflow-hidden rounded-lg mb-2">
+                          <div className="aspect-square overflow-hidden">
                             <img 
                               src={celeb.profile_image_url} 
                               alt={celeb.name}
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                             />
                           </div>
-                          <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
-                            {celeb.name}
-                          </h3>
-                          <p className="text-xs text-muted-foreground">{celeb.profession}</p>
+                          <div className="p-4">
+                            <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
+                              {celeb.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">{celeb.profession}</p>
+                          </div>
                         </Link>
                       ))}
                     </div>
