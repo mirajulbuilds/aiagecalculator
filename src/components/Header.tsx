@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,24 @@ import ThemeToggle from "./ThemeToggle";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const navItems = [
     { title: "Home", path: "/" },
@@ -22,7 +40,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 dark:border-white/5">
       <div className="relative backdrop-blur-xl bg-white/60 dark:bg-gray-900/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
-        <nav className="container mx-auto px-4">
+        <nav ref={menuRef} className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo/Brand */}
             <Link to="/" className="flex items-center space-x-2 relative z-10">
