@@ -15,7 +15,6 @@ const Header = () => {
     { title: "Birthday Compatibility", path: "/compatibility-calculator" },
     { title: "Past Life Generator", path: "/past-life-generator" },
     { title: "Blog", path: "/blog" },
-    { title: "About", path: "/about" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
