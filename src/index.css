@@ -186,6 +186,25 @@ All colors MUST be HSL.
     cursor: pointer;
   }
   
+  /* Horizontally Scrollable Tool Tabs */
+  .tool-tab-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .tool-tab-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tool-tab-item {
+    flex: 0 0 auto;
+  }
+  
   /* Celebrity Profile CSS Grid Layout */
   .profile-layout-container {
     display: grid;
