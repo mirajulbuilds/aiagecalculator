@@ -257,4 +257,93 @@ All colors MUST be HSL.
       top: 20px;
     }
   }
+
+  /* --- App-Style Sidebar CSS --- */
+
+  /* 1. Mobile-First (Default) */
+  .mobile-tool-dropdown {
+    display: block; /* Show dropdown on mobile */
+    width: 100%;
+  }
+
+  .tool-app-layout {
+    display: none; /* Hide sidebar layout on mobile */
+  }
+
+  /* 2. Desktop Layout (e.g., screens wider than 768px) */
+  @media (min-width: 768px) {
+    
+    .mobile-tool-dropdown {
+      display: none; /* Hide dropdown on desktop */
+    }
+
+    .tool-app-layout {
+      display: grid;
+      /* Collapsed state: 80px sidebar, 1fr content */
+      grid-template-columns: 80px 1fr;
+      gap: 24px;
+      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Expanded state: On hover */
+    .tool-app-layout:hover {
+      grid-template-columns: 260px 1fr;
+    }
+
+    #tool-sidebar {
+      background-color: hsl(var(--card));
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      overflow: hidden; /* Hides text during collapse */
+    }
+
+    /* Sidebar Links (Icon + Label) */
+    .tool-sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: hsl(var(--muted-foreground));
+      font-weight: 600;
+      white-space: nowrap; /* Prevents text from wrapping */
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    
+    .tool-sidebar-link:hover {
+      background-color: hsl(var(--muted));
+    }
+    
+    .tool-sidebar-link .tool-icon {
+      font-size: 24px;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+    
+    .tool-sidebar-link .tool-label {
+      /* Hide label in collapsed state */
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    /* Show label in expanded state */
+    .tool-app-layout:hover .tool-sidebar-link .tool-label {
+      opacity: 1;
+    }
+    
+    /* Style for the active/selected tool */
+    .tool-sidebar-link.active {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+
+    #tool-content-area {
+      /* Content area takes up the rest of the space */
+    }
+  }
+  /* --- End of App-Style CSS --- */
 }

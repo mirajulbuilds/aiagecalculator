@@ -571,52 +571,137 @@ const Index = () => {
           aria-label="Age calculators"
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="mb-6">
-              <TabsList className="tool-tab-container w-full h-auto flex flex-nowrap gap-1 overflow-x-auto">
-                <TabsTrigger 
-                  value="calculator" 
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  Age Calculator
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="difference"
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  Age Difference
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="specific"
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  Specific Date
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="greetings"
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  AI Greetings
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="birthday"
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  On Your Birthday
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="milestones"
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  Life Milestones
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="gift-advisor"
-                  className="tool-tab-item bg-gradient-to-r from-muted via-muted/60 to-muted bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] data-[state=active]:from-primary data-[state=active]:via-primary/80 data-[state=active]:to-primary data-[state=active]:text-primary-foreground transition-all duration-500 flex-shrink-0 justify-center py-3 md:py-2 text-sm whitespace-nowrap px-4"
-                >
-                  AI Gift Advisor
-                </TabsTrigger>
-              </TabsList>
+            {/* Mobile-Only Dropdown */}
+            <div className="mobile-tool-dropdown mb-6 md:hidden">
+              <Select value={activeTab} onValueChange={setActiveTab}>
+                <SelectTrigger className="h-12 bg-muted">
+                  <SelectValue placeholder="Select a tool" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="calculator">📅 Age Calculator</SelectItem>
+                  <SelectItem value="difference">↔️ Age Difference</SelectItem>
+                  <SelectItem value="specific">🗓️ Specific Date</SelectItem>
+                  <SelectItem value="greetings">🎁 AI Greetings</SelectItem>
+                  <SelectItem value="birthday">🎂 On Your Birthday</SelectItem>
+                  <SelectItem value="milestones">🚩 Life Milestones</SelectItem>
+                  <SelectItem value="gift-advisor">💡 AI Gift Advisor</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Desktop Sidebar Layout */}
+            <div className="tool-app-layout">
+              {/* Sidebar */}
+              <div id="tool-sidebar">
+                <nav className="space-y-1">
+                  <button
+                    onClick={() => setActiveTab("calculator")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "calculator" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">📅</span>
+                    <span className="tool-label">Age Calculator</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("difference")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "difference" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">↔️</span>
+                    <span className="tool-label">Age Difference</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("specific")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "specific" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">🗓️</span>
+                    <span className="tool-label">Specific Date</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("greetings")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "greetings" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">🎁</span>
+                    <span className="tool-label">AI Greetings</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("birthday")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "birthday" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">🎂</span>
+                    <span className="tool-label">On Your Birthday</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("milestones")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "milestones" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">🚩</span>
+                    <span className="tool-label">Life Milestones</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("gift-advisor")}
+                    className={cn(
+                      "tool-sidebar-link w-full",
+                      activeTab === "gift-advisor" && "active"
+                    )}
+                  >
+                    <span className="tool-icon">💡</span>
+                    <span className="tool-label">AI Gift Advisor</span>
+                  </button>
+                  
+                  {/* Separator */}
+                  <div className="border-t border-border my-2"></div>
+                  
+                  {/* External Tool Links */}
+                  <Link
+                    to="/look-alike-finder"
+                    className="tool-sidebar-link w-full"
+                  >
+                    <span className="tool-icon">👯</span>
+                    <span className="tool-label">Look-Alike Finder</span>
+                  </Link>
+                  <Link
+                    to="/ai-face-age"
+                    className="tool-sidebar-link w-full"
+                  >
+                    <span className="tool-icon">🤖</span>
+                    <span className="tool-label">AI Face Age</span>
+                  </Link>
+                  <Link
+                    to="/compatibility-calculator"
+                    className="tool-sidebar-link w-full"
+                  >
+                    <span className="tool-icon">💖</span>
+                    <span className="tool-label">Compatibility</span>
+                  </Link>
+                  <Link
+                    to="/past-life-generator"
+                    className="tool-sidebar-link w-full"
+                  >
+                    <span className="tool-icon">🌀</span>
+                    <span className="tool-label">Past Life</span>
+                  </Link>
+                </nav>
+              </div>
+
+              {/* Content Area */}
+              <div id="tool-content-area">
 
             {/* Main Age Calculator Tab */}
             <TabsContent value="calculator" className="animate-fade-in space-y-0">
@@ -1536,6 +1621,8 @@ const Index = () => {
                 </p>
               </div>
             </TabsContent>
+              </div> {/* Close #tool-content-area */}
+            </div> {/* Close .tool-app-layout */}
           </Tabs>
         </section>
 
