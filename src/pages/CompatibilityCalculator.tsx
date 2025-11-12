@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, CalendarIcon, Share2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { SITE_CONFIG } from "@/lib/config";
 
 interface CompatibilityResult {
@@ -25,14 +22,51 @@ interface CompatibilityResult {
 }
 
 const CompatibilityCalculator = () => {
-  const [date1, setDate1] = useState<Date>();
-  const [date2, setDate2] = useState<Date>();
+  const [day1, setDay1] = useState<string>("");
+  const [month1, setMonth1] = useState<string>("");
+  const [year1, setYear1] = useState<string>("");
+  const [day2, setDay2] = useState<string>("");
+  const [month2, setMonth2] = useState<string>("");
+  const [year2, setYear2] = useState<string>("");
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CompatibilityResult | null>(null);
 
+  const months = [
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
+
   const handleCalculate = async () => {
-    if (!date1 || !date2) {
+    if (!day1 || !month1 || !year1 || !day2 || !month2 || !year2) {
       toast.error("Please select both birthdays");
+      return;
+    }
+
+    // Combine dropdown values into date objects for validation
+    const birthDate1 = new Date(parseInt(year1), parseInt(month1) - 1, parseInt(day1));
+    const birthDate2 = new Date(parseInt(year2), parseInt(month2) - 1, parseInt(day2));
+
+    if (isNaN(birthDate1.getTime()) || isNaN(birthDate2.getTime())) {
+      toast.error("Please select valid dates");
+      return;
+    }
+
+    if (birthDate1 > new Date() || birthDate2 > new Date()) {
+      toast.error("Birth dates cannot be in the future");
       return;
     }
 
@@ -40,10 +74,14 @@ const CompatibilityCalculator = () => {
     setResult(null);
 
     try {
+      // Format dates as YYYY-MM-DD strings for backend
+      const date1String = `${year1}-${month1.padStart(2, '0')}-${day1.padStart(2, '0')}`;
+      const date2String = `${year2}-${month2.padStart(2, '0')}-${day2.padStart(2, '0')}`;
+
       const { data, error } = await supabase.functions.invoke("birthday-compatibility", {
         body: {
-          date1: format(date1, "yyyy-MM-dd"),
-          date2: format(date2, "yyyy-MM-dd"),
+          date1: date1String,
+          date2: date2String,
         },
       });
 
@@ -138,64 +176,92 @@ const CompatibilityCalculator = () => {
                 {/* Your Birthday */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Your Birthday</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !date1 && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date1 ? format(date1, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={date1}
-                        onSelect={setDate1}
-                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Select value={day1} onValueChange={setDay1}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Day" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {days.map((day) => (
+                          <SelectItem key={day} value={day}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={month1} onValueChange={setMonth1}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {months.map((month) => (
+                          <SelectItem key={month.value} value={month.value}>
+                            {month.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={year1} onValueChange={setYear1}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {years.map((year) => (
+                          <SelectItem key={year} value={year}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Their Birthday */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Their Birthday</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !date2 && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date2 ? format(date2, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={date2}
-                        onSelect={setDate2}
-                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Select value={day2} onValueChange={setDay2}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Day" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {days.map((day) => (
+                          <SelectItem key={day} value={day}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={month2} onValueChange={setMonth2}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {months.map((month) => (
+                          <SelectItem key={month.value} value={month.value}>
+                            {month.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={year2} onValueChange={setYear2}>
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {years.map((year) => (
+                          <SelectItem key={year} value={year}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <Button
                   onClick={handleCalculate}
-                  disabled={!date1 || !date2 || isCalculating}
+                  disabled={!day1 || !month1 || !year1 || !day2 || !month2 || !year2 || isCalculating}
                   className="w-full main-action-button"
                   size="lg"
                 >
@@ -269,8 +335,12 @@ const CompatibilityCalculator = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          setDate1(undefined);
-                          setDate2(undefined);
+                          setDay1("");
+                          setMonth1("");
+                          setYear1("");
+                          setDay2("");
+                          setMonth2("");
+                          setYear2("");
                           setResult(null);
                         }}
                       >
