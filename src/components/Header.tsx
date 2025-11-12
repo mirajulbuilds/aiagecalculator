@@ -85,26 +85,35 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation with Backdrop */}
           {isMenuOpen && (
-            <div className="md:hidden border-t border-white/10 dark:border-white/5 backdrop-blur-xl bg-white/60 dark:bg-gray-900/60 py-4 relative z-10">
-              <div className="flex flex-col space-y-3">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${
-                      isActive(item.path)
-                        ? "text-primary bg-muted/50"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {item.title}
-                  </Link>
-                ))}
+            <>
+              {/* Backdrop Overlay */}
+              <div 
+                className="fixed inset-0 bg-black/20 dark:bg-black/40 z-40 md:hidden animate-fade-in"
+                onClick={() => setIsMenuOpen(false)}
+              />
+              
+              {/* Mobile Menu */}
+              <div className="md:hidden border-t border-white/10 dark:border-white/5 backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 py-4 relative z-50 animate-slide-down">
+                <div className="flex flex-col space-y-3">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`px-4 py-2 text-sm font-medium transition-colors hover:text-primary ${
+                        isActive(item.path)
+                          ? "text-primary bg-muted/50"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </nav>
       </div>
