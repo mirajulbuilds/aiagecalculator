@@ -10,6 +10,7 @@ const Header = () => {
 
   const navItems = [
     { title: "Home", path: "/" },
+    { title: "Look-Alike Finder", path: "/look-alike-finder" },
     { title: "Blog", path: "/blog" },
     { title: "About", path: "/about" },
   ];

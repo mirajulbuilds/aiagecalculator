@@ -521,7 +521,7 @@ const Index = () => {
           </p>
           
           {/* Famous Birthdays CTA */}
-          <div className="mt-6">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
             <Link to="/famous-birthdays">
               <Button 
                 size="lg" 
@@ -529,6 +529,16 @@ const Index = () => {
               >
                 <Star className="w-5 h-5" />
                 Explore Famous Birthdays
+              </Button>
+            </Link>
+            <Link to="/look-alike-finder">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10"
+              >
+                <Sparkles className="w-5 h-5" />
+                Find Your Celebrity Twin
               </Button>
             </Link>
           </div>
