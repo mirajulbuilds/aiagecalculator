@@ -277,26 +277,27 @@ All colors MUST be HSL.
       display: none; /* Hide dropdown on desktop */
     }
 
-    .tool-app-layout {
-      display: grid;
-      /* Collapsed state: 80px sidebar, 1fr content */
-      grid-template-columns: 80px 1fr;
-      gap: 24px;
-      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+  .tool-app-layout {
+    display: grid;
+    /* Collapsed state: 80px sidebar, 1fr content */
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+  }
 
-    /* Expanded state: On hover */
-    .tool-app-layout:hover {
-      grid-template-columns: 260px 1fr;
-    }
+  #tool-sidebar {
+    background-color: hsl(var(--card));
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+    overflow: hidden; /* Hides text during collapse */
+    width: 80px; /* Default collapsed width */
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-    #tool-sidebar {
-      background-color: hsl(var(--card));
-      border-radius: 16px;
-      box-shadow: var(--shadow-card);
-      padding: 16px;
-      overflow: hidden; /* Hides text during collapse */
-    }
+  /* CRITICAL FIX: Only expand when hovering the sidebar itself */
+  #tool-sidebar:hover {
+    width: 260px;
+  }
 
     /* Sidebar Links (Icon + Label) */
     .tool-sidebar-link {
@@ -324,16 +325,17 @@ All colors MUST be HSL.
       flex-shrink: 0;
     }
     
-    .tool-sidebar-link .tool-label {
-      /* Hide label in collapsed state */
-      opacity: 0;
-      transition: opacity 0.2s ease-in-out;
-    }
-    
-    /* Show label in expanded state */
-    .tool-app-layout:hover .tool-sidebar-link .tool-label {
-      opacity: 1;
-    }
+  .tool-sidebar-link .tool-label {
+    /* Hide label in collapsed state */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  /* Show label in expanded state */
+  #tool-sidebar:hover .tool-sidebar-link .tool-label {
+    opacity: 1;
+    transition-delay: 0.1s; /* Add a slight delay */
+  }
     
     /* Style for the active/selected tool */
     .tool-sidebar-link.active {
