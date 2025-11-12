@@ -260,43 +260,73 @@ All colors MUST be HSL.
 
   /* --- App-Style Sidebar CSS --- */
 
-  /* 1. Mobile-First (Default) */
-  .mobile-tool-dropdown {
-    display: block; /* Show dropdown on mobile */
-    width: 100%;
-  }
+  /* CRITICAL MOBILE BUG FIX:
+    This targets screen sizes 767px and smaller.
+  */
+  @media (max-width: 767px) {
 
-  .tool-app-layout {
-    display: none; /* Hide sidebar layout on mobile */
-  }
-
-  /* 2. Desktop Layout (e.g., screens wider than 768px) */
-  @media (min-width: 768px) {
-    
+    /* 1. Show the mobile dropdown */
     .mobile-tool-dropdown {
-      display: none; /* Hide dropdown on desktop */
+      display: block !important; 
     }
 
-  .tool-app-layout {
-    display: grid;
-    /* Collapsed state: 80px sidebar, 1fr content */
-    grid-template-columns: 80px 1fr;
-    gap: 24px;
-    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 2. Hide the desktop sidebar */
+    #tool-sidebar {
+      display: none !important;
+    }
+    
+    /* 3. CRITICAL FIX: Force the content area to be visible */
+    #tool-content-area {
+      display: block !important; 
+    }
+
+    /* 4. Ensure the parent layout is a simple column */
+    .tool-app-layout {
+      display: grid;
+      grid-template-columns: 1fr !important; /* Force 1-column layout */
+    }
   }
 
-  /* CRITICAL FIX: Expand grid when hovering sidebar */
-  .tool-app-layout:has(#tool-sidebar:hover) {
-    grid-template-columns: 260px 1fr;
-  }
+  /* Ensure the desktop layout is still correct.
+    This targets screens 768px and larger.
+  */
+  @media (min-width: 768px) {
 
-  #tool-sidebar {
-    background-color: hsl(var(--card));
-    border-radius: 16px;
-    box-shadow: var(--shadow-card);
-    padding: 16px;
-    overflow: hidden; /* Hides text during collapse */
-  }
+    /* 1. Hide the mobile dropdown on desktop */
+    .mobile-tool-dropdown {
+      display: none !important;
+    }
+
+    /* 2. Show the desktop sidebar */
+    #tool-sidebar {
+      display: block !important;
+    }
+    
+    /* 3. Show the content area on desktop */
+    #tool-content-area {
+      display: block !important;
+    }
+
+    .tool-app-layout {
+      display: grid;
+      /* Collapsed state: 80px sidebar, 1fr content */
+      grid-template-columns: 80px 1fr;
+      gap: 24px;
+      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* CRITICAL FIX: Expand grid when hovering sidebar */
+    .tool-app-layout:has(#tool-sidebar:hover) {
+      grid-template-columns: 260px 1fr;
+    }
+
+    #tool-sidebar {
+      background-color: hsl(var(--card));
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      overflow: hidden; /* Hides text during collapse */
+    }
 
     /* Sidebar Links (Icon + Label) */
     .tool-sidebar-link {
@@ -324,17 +354,17 @@ All colors MUST be HSL.
       flex-shrink: 0;
     }
     
-  .tool-sidebar-link .tool-label {
-    /* Hide label in collapsed state */
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-  
-  /* Show label in expanded state */
-  #tool-sidebar:hover .tool-sidebar-link .tool-label {
-    opacity: 1;
-    transition-delay: 0.1s; /* Add a slight delay */
-  }
+    .tool-sidebar-link .tool-label {
+      /* Hide label in collapsed state */
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+    }
+    
+    /* Show label in expanded state */
+    #tool-sidebar:hover .tool-sidebar-link .tool-label {
+      opacity: 1;
+      transition-delay: 0.1s; /* Add a slight delay */
+    }
     
     /* Style for the active/selected tool */
     .tool-sidebar-link.active {
