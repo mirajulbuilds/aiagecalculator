@@ -339,6 +339,8 @@ All colors MUST be HSL.
       grid-template-columns: 80px 1fr;
       gap: 24px;
       transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      /* CRITICAL FIX: Align content to the top, not center */
+      align-items: start;
     }
 
     /* CRITICAL FIX: Expand grid when hovering sidebar */

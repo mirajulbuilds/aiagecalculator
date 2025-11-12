@@ -57,6 +57,7 @@ const Index = () => {
   const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
   
   const [result, setResult] = useState<AgeResult | null>(null);
+  const [hasCalculatorResults, setHasCalculatorResults] = useState(false);
   const [timezone, setTimezone] = useState<string>("");
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
   const [planetAges, setPlanetAges] = useState<{ name: string; age: number; imageURL: string; group: string }[]>([]);
@@ -464,6 +465,8 @@ const Index = () => {
 
     setPlanetAges(calculatedPlanetAges);
 
+    setHasCalculatorResults(true);
+    
     setResult({
       years,
       months,
@@ -1883,8 +1886,9 @@ const Index = () => {
         </aside> */}
       </div>
       
-      {/* SEO Content for Age Calculator */}
-      <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border">
+      {/* SEO Content for Age Calculator - Hidden after results */}
+      {!hasCalculatorResults && (
+        <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border">
         <h2 className="text-3xl font-bold text-foreground mb-6">
           The Complete Guide to Understanding Your Age
         </h2>
@@ -1923,6 +1927,7 @@ const Index = () => {
           </div>
         </div>
       </article>
+      )}
       </div>
       
       {/* Bottom Page Ad - Always visible */}
