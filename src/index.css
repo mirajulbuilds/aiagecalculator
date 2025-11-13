@@ -578,4 +578,53 @@ All colors MUST be HSL.
       opacity: 0.7;
     }
   }
+
+  /* Particle Glow Effect for Menu Panel */
+  .menu-particle-glow {
+    position: relative;
+  }
+
+  .menu-particle-glow.is-open::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(
+      45deg,
+      hsl(var(--primary) / 0.4),
+      hsl(var(--secondary) / 0.4),
+      hsl(var(--accent) / 0.4),
+      hsl(var(--primary) / 0.4)
+    );
+    background-size: 300% 300%;
+    animation: particle-glow 4s ease infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    animation: particle-glow 4s ease infinite, fade-in-glow 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @keyframes particle-glow {
+    0%, 100% {
+      background-position: 0% 50%;
+      filter: blur(8px);
+    }
+    50% {
+      background-position: 100% 50%;
+      filter: blur(12px);
+    }
+  }
+
+  @keyframes fade-in-glow {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 }
