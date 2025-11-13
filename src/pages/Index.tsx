@@ -660,44 +660,44 @@ const Index = () => {
                 <SelectValue placeholder="Select a tool" />
               </div>
             </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="calculator">
+                <SelectContent className="mobile-select-content">
+                  <SelectItem value="calculator" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <Calculator className="select-item-icon" />
                       <span>Age Calculator</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="difference">
+                  <SelectItem value="difference" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <ArrowLeftRight className="select-item-icon" />
                       <span>Age Difference</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="specific">
+                  <SelectItem value="specific" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <CalendarCheck className="select-item-icon" />
                       <span>Specific Date</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="greetings">
+                  <SelectItem value="greetings" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <Gift className="select-item-icon" />
                       <span>AI Greetings</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="birthday">
+                  <SelectItem value="birthday" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <Cake className="select-item-icon" />
                       <span>On Your Birthday</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="milestones">
+                  <SelectItem value="milestones" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <Flag className="select-item-icon" />
                       <span>Life Milestones</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="gift-advisor">
+                  <SelectItem value="gift-advisor" className="mobile-select-item">
                     <div className="flex items-center gap-3">
                       <Lightbulb className="select-item-icon" />
                       <span>AI Gift Advisor</span>
