@@ -13,6 +13,12 @@ const Header = () => {
   const dropdownLinksRef = useRef<HTMLAnchorElement[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
+  // Calculate scrollbar width and set CSS variable
+  useEffect(() => {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+  }, []);
+
   // Scroll detection for sticky header effect
   useEffect(() => {
     const handleScroll = () => {
@@ -22,15 +28,15 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Body scroll lock for mobile menu
+  // Scrollbar-aware body scroll lock for mobile menu
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('mobile-menu-is-open');
     } else {
-      document.body.style.overflow = '';
+      document.body.classList.remove('mobile-menu-is-open');
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.classList.remove('mobile-menu-is-open');
     };
   }, [isMobileMenuOpen]);
 
@@ -68,6 +74,10 @@ const Header = () => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isDropdownOpen]);
+
+  const handleOpenMenu = () => {
+    setIsMobileMenuOpen(true);
+  };
 
   const handleCloseMenu = () => {
     setIsMobileMenuOpen(false);
@@ -205,15 +215,14 @@ const Header = () => {
                 <ThemeToggle />
               </div>
 
-              {/* Mobile Menu Button and Theme Toggle - Always visible */}
+              {/* Mobile Menu Button and Theme Toggle */}
               <div className="mobile-menu-toggle-button flex items-center gap-2 relative z-10">
                 <ThemeToggle />
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsMobileMenuOpen(true)}
+                  onClick={handleOpenMenu}
                   aria-label="Open menu"
-                  className="min-[1024px]:hidden"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
@@ -223,43 +232,55 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Full-Screen Mobile Menu Modal */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 z-[2000] bg-black/80 flex flex-col items-center justify-center"
-          onClick={handleCloseMenu}
-        >
-          {/* Close Button */}
-          <button
-            onClick={handleCloseMenu}
-            className="absolute top-6 right-6 rounded-full p-2 hover:bg-white/10 transition-colors text-white"
-            aria-label="Close menu"
-          >
-            <X className="h-8 w-8" />
-          </button>
+      {/* Menu Backdrop */}
+      <div 
+        id="menu-backdrop"
+        className={`fixed inset-0 z-[99] bg-transparent ${isMobileMenuOpen ? 'is-open' : ''}`}
+        onClick={handleCloseMenu}
+        style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
+      />
 
-          {/* Menu Links */}
-          <nav 
-            className="flex flex-col items-center space-y-8 w-full max-w-md px-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {mobileNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={handleCloseMenu}
-                className={`text-3xl font-bold transition-all duration-200 hover:scale-110 ${
-                  isActive(item.path)
-                    ? "text-primary"
-                    : "text-white hover:text-primary"
-                }`}
-              >
-                {item.title}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
+      {/* Glass Pop-over Menu Panel */}
+      <div 
+        id="mobile-menu-panel"
+        className={`fixed top-20 right-5 w-[300px] z-[101] bg-white/10 dark:bg-gray-900/10 backdrop-blur-[20px] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-200 ease-out ${
+          isMobileMenuOpen 
+            ? 'is-open scale-100 opacity-100 visible' 
+            : 'scale-95 opacity-0 invisible'
+        }`}
+        style={{ transformOrigin: 'top right' }}
+      >
+        <nav className="flex flex-col space-y-3">
+          {mobileNavItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={handleCloseMenu}
+              className={`text-base font-medium px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 ${
+                isActive(item.path)
+                  ? "text-primary bg-primary/10"
+                  : "text-foreground"
+              }`}
+            >
+              {item.title}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      {/* Separate Close Button (Not Blurred) */}
+      <button
+        id="menu-close-btn"
+        onClick={handleCloseMenu}
+        className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-200 ease-out hover:scale-110 ${
+          isMobileMenuOpen 
+            ? 'is-open opacity-100 visible' 
+            : 'opacity-0 invisible'
+        }`}
+        aria-label="Close menu"
+      >
+        <X className="h-4 w-4 text-gray-900 dark:text-white" />
+      </button>
     </>
   );
 };
