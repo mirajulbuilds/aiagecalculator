@@ -745,39 +745,6 @@ const Index = () => {
                     <span className="tool-icon">💡</span>
                     <span className="tool-label">AI Gift Advisor</span>
                   </button>
-                  
-                  {/* Separator */}
-                  <div className="border-t border-border my-2"></div>
-                  
-                  {/* External Tool Links */}
-                  <Link
-                    to="/look-alike-finder"
-                    className="tool-sidebar-link"
-                  >
-                    <span className="tool-icon">👯</span>
-                    <span className="tool-label">Look-Alike Finder</span>
-                  </Link>
-                  <Link
-                    to="/ai-face-age"
-                    className="tool-sidebar-link"
-                  >
-                    <span className="tool-icon">🤖</span>
-                    <span className="tool-label">AI Face Age</span>
-                  </Link>
-                  <Link
-                    to="/compatibility-calculator"
-                    className="tool-sidebar-link"
-                  >
-                    <span className="tool-icon">💖</span>
-                    <span className="tool-label">Compatibility</span>
-                  </Link>
-                  <Link
-                    to="/past-life-generator"
-                    className="tool-sidebar-link"
-                  >
-                    <span className="tool-icon">🌀</span>
-                    <span className="tool-label">Past Life</span>
-                  </Link>
                 </nav>
               </div>
 
