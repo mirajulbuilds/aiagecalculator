@@ -741,6 +741,7 @@ All colors MUST be HSL.
         0 0 0 2px rgba(139, 92, 246, 0.2);
       border: 1px solid rgba(139, 92, 246, 0.4);
       font-weight: 700;
+      animation: pulse-glow 2s ease-in-out infinite;
     }
     
     .tool-sidebar-link.active .tool-icon {
@@ -759,6 +760,7 @@ All colors MUST be HSL.
         0 6px 20px rgba(139, 92, 246, 0.4),
         inset 0 1px 1px rgba(139, 92, 246, 0.2),
         0 0 0 2px rgba(139, 92, 246, 0.3);
+      animation: pulse-glow-dark 2s ease-in-out infinite;
     }
 
     #tool-content-area {
@@ -895,6 +897,39 @@ All colors MUST be HSL.
     100% {
       transform: translateX(0);
       opacity: 1;
+    }
+  }
+  
+  /* Pulse Glow Animation for Active Tool Link */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 
+        0 6px 20px rgba(139, 92, 246, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15),
+        0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+    50% {
+      box-shadow: 
+        0 8px 30px rgba(139, 92, 246, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        0 0 0 3px rgba(139, 92, 246, 0.35),
+        0 0 20px rgba(139, 92, 246, 0.3);
+    }
+  }
+  
+  @keyframes pulse-glow-dark {
+    0%, 100% {
+      box-shadow: 
+        0 6px 20px rgba(139, 92, 246, 0.4),
+        inset 0 1px 1px rgba(139, 92, 246, 0.2),
+        0 0 0 2px rgba(139, 92, 246, 0.3);
+    }
+    50% {
+      box-shadow: 
+        0 8px 35px rgba(139, 92, 246, 0.6),
+        inset 0 1px 1px rgba(139, 92, 246, 0.3),
+        0 0 0 3px rgba(139, 92, 246, 0.5),
+        0 0 25px rgba(139, 92, 246, 0.4);
     }
   }
 
