@@ -490,28 +490,7 @@ const Index = () => {
 
   return (
     <PageTransition>
-    <main className="min-h-screen bg-background px-3 sm:px-6 md:px-8 py-4 sm:py-8 relative overflow-hidden">
-      {/* Parallax Background Layers */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Layer 1 - Slowest moving circles */}
-        <ParallaxSection speed={0.1} className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-40 right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-        </ParallaxSection>
-        
-        {/* Layer 2 - Medium speed gradients */}
-        <ParallaxSection speed={0.2} className="absolute inset-0">
-          <div className="absolute top-40 right-10 w-64 h-64 bg-secondary/10 rounded-full blur-2xl" />
-          <div className="absolute bottom-20 left-32 w-80 h-80 bg-primary/8 rounded-full blur-3xl" />
-        </ParallaxSection>
-        
-        {/* Layer 3 - Faster moving small elements */}
-        <ParallaxSection speed={0.35} className="absolute inset-0">
-          <div className="absolute top-60 left-1/4 w-48 h-48 bg-accent/8 rounded-full blur-2xl" />
-          <div className="absolute bottom-60 right-1/4 w-56 h-56 bg-primary/6 rounded-full blur-2xl" />
-        </ParallaxSection>
-      </div>
-      
+    <main className="min-h-screen bg-background px-3 sm:px-6 md:px-8 py-4 sm:py-8">
       {/* Structured Data for SEO */}
       <script type="application/ld+json">
         {JSON.stringify({
@@ -532,65 +511,57 @@ const Index = () => {
         })}
       </script>
       
-      <div className="w-full max-w-[1200px] mx-auto px-0 sm:px-4 box-border relative z-10">
+      <div className="w-full max-w-[1200px] mx-auto px-0 sm:px-4 box-border">
       <div className="max-w-5xl mx-auto flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
         {/* Top Banner Ad */}
         {/* <AdSenseBanner format="large-horizontal" className="mb-6" /> */}
         
-        {/* Hero Section with Enhanced Parallax */}
-        <div className="relative mb-8">
-          {/* Additional decorative parallax elements for hero */}
-          <ParallaxSection speed={0.15} className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-10 -left-10 w-32 h-32 border-2 border-primary/20 rounded-full" />
-            <div className="absolute -top-5 -right-5 w-24 h-24 border-2 border-accent/20 rounded-full" />
-          </ParallaxSection>
-          
-          <ParallaxSection speed={0.25}>
-            <header className="text-center relative z-10">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 animate-fade-in">
-                Unlock the Secrets of Your Birthday
-              </h1>
-              <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
-              </p>
-              
-              {/* Famous Birthdays CTA */}
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-stretch">
-                <Link to="/famous-birthdays" className="flex-1 sm:flex-initial">
-                  <Button 
-                    size="lg" 
-                    className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
-                  >
-                    <Star className="w-5 h-5 flex-shrink-0" />
-                    <span className="block sm:inline">Explore Famous Birthdays</span>
-                  </Button>
-                </Link>
-                <Link to="/look-alike-finder" className="flex-1 sm:flex-initial">
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
-                  >
-                    <Sparkles className="w-5 h-5 flex-shrink-0" />
-                    <span className="block sm:inline">Find Your Celebrity Twin</span>
-                  </Button>
-                </Link>
-                <Link to="/ai-face-age" className="flex-1 sm:flex-initial">
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
-                  >
-                    <Rocket className="w-5 h-5 flex-shrink-0" />
-                    <span className="block sm:inline">AI Face Age Calculator</span>
-                  </Button>
-                </Link>
-              </div>
-            </header>
-          </ParallaxSection>
-        </div>
+        {/* Header */}
+        <ParallaxSection speed={0.3}>
+          <header className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
+              Unlock the Secrets of Your Birthday
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+              Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
+            </p>
+            
+            {/* Famous Birthdays CTA */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-stretch">
+              <Link to="/famous-birthdays" className="flex-1 sm:flex-initial">
+                <Button 
+                  size="lg" 
+                  className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
+                >
+                  <Star className="w-5 h-5 flex-shrink-0" />
+                  <span className="block sm:inline">Explore Famous Birthdays</span>
+                </Button>
+              </Link>
+              <Link to="/look-alike-finder" className="flex-1 sm:flex-initial">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
+                >
+                  <Sparkles className="w-5 h-5 flex-shrink-0" />
+                  <span className="block sm:inline">Find Your Celebrity Twin</span>
+                </Button>
+              </Link>
+              <Link to="/ai-face-age" className="flex-1 sm:flex-initial">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
+                >
+                  <Rocket className="w-5 h-5 flex-shrink-0" />
+                  <span className="block sm:inline">AI Face Age Calculator</span>
+                </Button>
+              </Link>
+            </div>
+          </header>
+        </ParallaxSection>
 
         {/* Timezone Section */}
         {timezone && (
