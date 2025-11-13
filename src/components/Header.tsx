@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
@@ -22,21 +28,7 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Body scroll lock using overflow: hidden (prevents width shift)
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.documentElement.classList.add('mobile-menu-is-open');
-      document.body.classList.add('mobile-menu-is-open');
-    } else {
-      document.documentElement.classList.remove('mobile-menu-is-open');
-      document.body.classList.remove('mobile-menu-is-open');
-    }
-
-    return () => {
-      document.documentElement.classList.remove('mobile-menu-is-open');
-      document.body.classList.remove('mobile-menu-is-open');
-    };
-  }, [isMobileMenuOpen]);
+  // Dialog component handles scroll locking automatically
 
   // Keyboard navigation for AI Tools dropdown
   useEffect(() => {
@@ -73,8 +65,8 @@ const Header = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isDropdownOpen]);
 
-  const handleOpenMenu = () => {
-    setIsMobileMenuOpen(true);
+  const handleToggleMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const handleCloseMenu = () => {
@@ -219,8 +211,8 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleOpenMenu}
-                  aria-label="Open menu"
+                  onClick={handleToggleMenu}
+                  aria-label="Toggle menu"
                   aria-expanded={isMobileMenuOpen}
                 >
                   <Menu className="h-5 w-5" />
@@ -231,33 +223,15 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      <>
-        {/* Backdrop */}
-        <div 
-          id="menu-backdrop"
-          className={`fixed inset-0 z-[1050] bg-black/20 backdrop-blur-sm lg:hidden transition-opacity duration-200 ${
-            isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-          }`}
-          onClick={handleCloseMenu}
-          onTouchStart={handleCloseMenu}
-        />
-        
-        {/* Glass Pop-over Menu Panel */}
-        <div 
-          id="mobile-menu-panel"
-          className={`fixed top-[80px] right-5 w-[300px] max-w-[calc(100vw-40px)] z-[1100] lg:hidden
-            bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)]
-            p-4 origin-top-right transition-all duration-200 ease-out ${
-            isMobileMenuOpen 
-              ? 'scale-100 opacity-100 visible translate-y-0' 
-              : 'scale-95 opacity-0 invisible -translate-y-2'
-          }`}
-          role="dialog"
-          aria-label="Mobile navigation menu"
-        >
-          {/* Menu Links */}
-          <nav className="flex flex-col space-y-1">
+      {/* Mobile Menu Dialog */}
+      <Dialog open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Menu
+            </DialogTitle>
+          </DialogHeader>
+          <nav className="flex flex-col space-y-1 mt-4">
             {mobileNavItems.map((item) => (
               <Link
                 key={item.path}
@@ -273,16 +247,8 @@ const Header = () => {
               </Link>
             ))}
           </nav>
-        </div>
-      </>
-
-      {/* Global CSS for body scroll lock */}
-      <style>{`
-        html.mobile-menu-is-open,
-        body.mobile-menu-is-open {
-          overflow: hidden;
-        }
-      `}</style>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
