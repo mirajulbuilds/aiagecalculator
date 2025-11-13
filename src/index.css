@@ -654,11 +654,14 @@ All colors MUST be HSL.
     .tool-sidebar-link .tool-icon {
       font-size: 24px;
       flex-shrink: 0;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                  color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       display: block;
       text-align: center;
       line-height: 1;
+      color: inherit;
     }
     
     /* Only add margin when sidebar is expanded */
@@ -669,6 +672,7 @@ All colors MUST be HSL.
     .tool-sidebar-link:hover .tool-icon {
       transform: scale(1.15) rotate(5deg);
       filter: drop-shadow(0 3px 6px rgba(139, 92, 246, 0.2));
+      color: hsl(var(--primary));
     }
     
     .tool-sidebar-link .tool-label {
@@ -747,6 +751,7 @@ All colors MUST be HSL.
     .tool-sidebar-link.active .tool-icon {
       transform: scale(1.15);
       filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
+      color: hsl(var(--primary));
     }
     
     .dark .tool-sidebar-link.active {
