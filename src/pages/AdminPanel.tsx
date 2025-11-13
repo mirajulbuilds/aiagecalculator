@@ -28,6 +28,7 @@ import { CalendarIcon, Loader2, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 
 const celebritySchema = z.object({
   name: z.string().min(1, "Celebrity name is required").max(100),
@@ -65,8 +66,11 @@ interface CelebrityData {
 
 const AdminPanel = () => {
   const navigate = useNavigate();
+  
+  // Admin authentication check with proper role verification
+  const { isAdmin, isLoading: isCheckingAdmin } = useAdminCheck();
+  
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [profileImage, setProfileImage] = useState<File | null>(null);
@@ -108,19 +112,12 @@ const AdminPanel = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (!session) {
-        navigate("/auth-gateway-key-a1b2c3");
-      }
-      setIsLoading(false);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (!session) {
-        navigate("/auth-gateway-key-a1b2c3");
-      }
     });
 
     return () => subscription.unsubscribe();
@@ -323,16 +320,28 @@ const AdminPanel = () => {
     }
   };
 
-  if (isLoading) {
+  // Show loading while checking admin status
+  if (isCheckingAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading...</p>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying admin access...</p>
+        </div>
       </div>
     );
   }
 
-  if (!session) {
-    return null;
+  // Show access denied if not admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-destructive mb-4">Access Denied</h1>
+          <p className="text-muted-foreground">You do not have permission to access this page.</p>
+        </div>
+      </div>
+    );
   }
 
   const handleGenerateContent = async () => {

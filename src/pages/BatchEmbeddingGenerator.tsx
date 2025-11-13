@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { Sparkles, Play, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 
 interface ProcessingResult {
   id: string;
@@ -15,6 +16,9 @@ interface ProcessingResult {
 }
 
 const BatchEmbeddingGenerator = () => {
+  // Admin authentication check with proper role verification
+  const { isAdmin, isLoading: isCheckingAdmin } = useAdminCheck();
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<ProcessingResult[]>([]);
@@ -126,6 +130,30 @@ const BatchEmbeddingGenerator = () => {
       setIsProcessing(false);
     }
   };
+
+  // Show loading while checking admin status
+  if (isCheckingAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying admin access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-destructive mb-4">Access Denied</h1>
+          <p className="text-muted-foreground">You do not have permission to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
