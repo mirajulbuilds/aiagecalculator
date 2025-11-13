@@ -733,108 +733,124 @@ All colors MUST be HSL.
     .mobile-drawer-glass {
       background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.1),
-        rgba(255, 255, 255, 0.05)
+        rgba(245, 240, 255, 0.95),
+        rgba(237, 233, 254, 0.9)
       );
       backdrop-filter: blur(20px) saturate(150%);
       -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border-right: 1px solid rgba(255, 255, 255, 0.18);
+      border-left: 1px solid rgba(139, 92, 246, 0.2);
       box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.1),
-        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        -8px 0 32px rgba(139, 92, 246, 0.15),
+        inset 1px 0 1px rgba(255, 255, 255, 0.3);
     }
     
     .dark .mobile-drawer-glass {
       background: linear-gradient(
         135deg,
-        rgba(30, 30, 50, 0.6),
-        rgba(20, 20, 40, 0.4)
+        rgba(30, 27, 45, 0.95),
+        rgba(20, 18, 35, 0.9)
       );
-      border-right: 1px solid rgba(139, 92, 246, 0.2);
+      border-left: 1px solid rgba(139, 92, 246, 0.3);
       box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 1px rgba(139, 92, 246, 0.1);
+        -8px 0 32px rgba(0, 0, 0, 0.5),
+        inset 1px 0 1px rgba(139, 92, 246, 0.2);
     }
     
     .mobile-drawer-nav-link {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      padding: 16px 20px;
+      justify-content: center;
+      padding: 16px 24px;
+      margin-bottom: 8px;
       border-radius: 12px;
-      background: transparent;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(139, 92, 246, 0.2);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      animation: 
-        sidebar-wave 0.5s ease-out forwards,
-        dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      opacity: 0;
       text-decoration: none;
       color: hsl(var(--foreground));
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center;
+      animation: sidebar-wave 0.5s ease-out forwards;
+      opacity: 0;
+      position: relative;
+      overflow: hidden;
     }
     
     .mobile-drawer-nav-link:hover {
       background: linear-gradient(
         135deg,
-        rgba(167, 139, 250, 0.25),
+        rgba(139, 92, 246, 0.25),
         rgba(139, 92, 246, 0.15)
-      ) !important;
-      transform: scale(1.02);
+      );
+      transform: scale(1.03);
       box-shadow: 
-        0 4px 12px rgba(139, 92, 246, 0.2),
-        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        0 6px 20px rgba(139, 92, 246, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+    }
+    
+    .dark .mobile-drawer-nav-link {
+      background: rgba(30, 27, 45, 0.6);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+    
+    .dark .mobile-drawer-nav-link:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.35),
+        rgba(139, 92, 246, 0.2)
+      );
+      box-shadow: 
+        0 6px 20px rgba(139, 92, 246, 0.4),
+        inset 0 1px 1px rgba(139, 92, 246, 0.15);
     }
     
     .mobile-drawer-nav-link-active {
-      animation: pulse-glow 2s ease-in-out infinite;
       background: linear-gradient(
         135deg,
-        rgba(167, 139, 250, 0.3),
+        rgba(139, 92, 246, 0.3),
         rgba(139, 92, 246, 0.2)
       ) !important;
-    }
-    
-    .mobile-drawer-icon {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      color: hsl(var(--muted-foreground));
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-      animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      opacity: 0;
-    }
-    
-    .mobile-drawer-nav-link:hover .mobile-drawer-icon {
-      transform: scale(1.2) rotate(5deg);
       color: hsl(var(--primary));
-      filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.4));
+      font-weight: 700;
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      box-shadow: 
+        0 8px 24px rgba(139, 92, 246, 0.35),
+        inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      animation: pulse-glow 2s ease-in-out infinite, sidebar-wave 0.5s ease-out forwards;
     }
     
-    .mobile-drawer-nav-link-active .mobile-drawer-icon {
-      color: hsl(var(--primary));
-      filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.5));
-      transform: scale(1.15);
+    .dark .mobile-drawer-nav-link-active {
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.45),
+        rgba(139, 92, 246, 0.3)
+      ) !important;
+      box-shadow: 
+        0 8px 24px rgba(139, 92, 246, 0.5),
+        inset 0 1px 1px rgba(139, 92, 246, 0.2);
+    }
+    
+    /* Mobile drawer text styling */
+    .mobile-drawer-text {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .mobile-drawer-nav-link:hover .mobile-drawer-text {
+      letter-spacing: 0.5px;
     }
     
     /* Stagger animations for drawer items */
-    .mobile-drawer-nav-link:nth-child(1) { animation-delay: 0.05s, 0.05s; }
-    .mobile-drawer-nav-link:nth-child(2) { animation-delay: 0.1s, 0.1s; }
-    .mobile-drawer-nav-link:nth-child(3) { animation-delay: 0.15s, 0.15s; }
-    .mobile-drawer-nav-link:nth-child(4) { animation-delay: 0.2s, 0.2s; }
-    .mobile-drawer-nav-link:nth-child(5) { animation-delay: 0.25s, 0.25s; }
-    .mobile-drawer-nav-link:nth-child(6) { animation-delay: 0.3s, 0.3s; }
-    .mobile-drawer-nav-link:nth-child(7) { animation-delay: 0.35s, 0.35s; }
-    
-    .mobile-drawer-nav-link:nth-child(1) .mobile-drawer-icon { animation-delay: 0.1s; }
-    .mobile-drawer-nav-link:nth-child(2) .mobile-drawer-icon { animation-delay: 0.15s; }
-    .mobile-drawer-nav-link:nth-child(3) .mobile-drawer-icon { animation-delay: 0.2s; }
-    .mobile-drawer-nav-link:nth-child(4) .mobile-drawer-icon { animation-delay: 0.25s; }
-    .mobile-drawer-nav-link:nth-child(5) .mobile-drawer-icon { animation-delay: 0.3s; }
-    .mobile-drawer-nav-link:nth-child(6) .mobile-drawer-icon { animation-delay: 0.35s; }
-    .mobile-drawer-nav-link:nth-child(7) .mobile-drawer-icon { animation-delay: 0.4s; }
+    .mobile-drawer-nav-link:nth-child(1) { animation-delay: 0ms; }
+    .mobile-drawer-nav-link:nth-child(2) { animation-delay: 60ms; }
+    .mobile-drawer-nav-link:nth-child(3) { animation-delay: 120ms; }
+    .mobile-drawer-nav-link:nth-child(4) { animation-delay: 180ms; }
+    .mobile-drawer-nav-link:nth-child(5) { animation-delay: 240ms; }
+    .mobile-drawer-nav-link:nth-child(6) { animation-delay: 300ms; }
+    .mobile-drawer-nav-link:nth-child(7) { animation-delay: 360ms; }
     
     /* =========================
        AI TOOLS DROPDOWN GLASSMORPHISM

@@ -181,13 +181,13 @@ const Header = () => {
   ];
 
   const mobileNavItems = [
-    { title: "Home", path: "/", icon: Home },
-    { title: "Look-Alike Finder", path: "/look-alike-finder", icon: Sparkles },
-    { title: "AI Face Age", path: "/ai-face-age", icon: Camera },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator", icon: Heart },
-    { title: "Past Life Generator", path: "/past-life-generator", icon: Clock },
-    { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
-    { title: "Blog", path: "/blog", icon: BookOpen },
+    { title: "Home", path: "/" },
+    { title: "Look-Alike Finder", path: "/look-alike-finder" },
+    { title: "AI Face Age", path: "/ai-face-age" },
+    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
+    { title: "Past Life Generator", path: "/past-life-generator" },
+    { title: "Famous Birthdays", path: "/famous-birthdays" },
+    { title: "Blog", path: "/blog" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -340,7 +340,7 @@ const Header = () => {
 
       {/* Mobile Drawer Menu */}
       <Drawer open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <DrawerContent side="left" className="mobile-drawer-glass">
+        <DrawerContent side="right" className="mobile-drawer-glass">
           {/* Drawer Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10">
             <Link to="/" onClick={handleCloseMenu} className="flex items-center space-x-2">
@@ -362,10 +362,9 @@ const Header = () => {
           </div>
 
           {/* Drawer Navigation */}
-          <nav className="flex flex-col p-4 space-y-2 overflow-y-auto flex-1">
+          <nav className="flex flex-col p-4 space-y-2 overflow-y-auto flex-1" ref={mobileMenuRef}>
             {mobileNavItems.map((item, index) => {
               const isCurrentPage = isActive(item.path);
-              const Icon = item.icon;
               return (
                 <Link
                   key={item.path}
@@ -379,8 +378,7 @@ const Header = () => {
                     animationDelay: `${index * 50}ms`,
                   }}
                 >
-                  <Icon className="mobile-drawer-icon" />
-                  <span className="relative">{item.title}</span>
+                  <span className="mobile-drawer-text">{item.title}</span>
                 </Link>
               );
             })}

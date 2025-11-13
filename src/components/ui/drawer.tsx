@@ -23,7 +23,7 @@ const DrawerOverlay = React.forwardRef<
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 interface DrawerContentProps extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> {
-  side?: "left" | "bottom";
+  side?: "left" | "right" | "bottom";
 }
 
 const DrawerContent = React.forwardRef<
@@ -37,6 +37,7 @@ const DrawerContent = React.forwardRef<
       className={cn(
         "fixed z-50 flex flex-col bg-transparent",
         side === "left" && "inset-y-0 left-0 h-full w-80 animate-slide-in-left",
+        side === "right" && "inset-y-0 right-0 h-full w-80 animate-slide-in-right",
         side === "bottom" && "inset-x-0 bottom-0 mt-24 h-auto rounded-t-[10px] border bg-background",
         className,
       )}
