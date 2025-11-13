@@ -156,6 +156,12 @@ All colors MUST be HSL.
     );
     transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, background 0.2s linear;
   }
+
+  /* Scrollbar-aware body scroll lock (fixes width shift bug) */
+  body.mobile-menu-is-open {
+    overflow: hidden;
+    padding-right: var(--scrollbar-width, 0px);
+  }
 }
 
 @layer utilities {
@@ -458,5 +464,26 @@ All colors MUST be HSL.
   #back-to-top-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px hsl(var(--primary) / 0.35);
+  }
+
+  /* Desktop vs. Tablet/Mobile Navigation (Fixes Tablet Bug) */
+  @media (min-width: 1024px) {
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .mobile-menu-toggle-button {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .desktop-nav {
+      display: none;
+    }
+    .mobile-menu-toggle-button {
+      display: flex;
+    }
   }
 }
