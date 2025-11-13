@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star, Calculator, ArrowLeftRight, CalendarCheck, Gift, Cake, Flag, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -682,7 +682,7 @@ const Index = () => {
                       activeTab === "calculator" && "active"
                     )}
                   >
-                    <span className="tool-icon">📅</span>
+                    <Calculator className="tool-icon" size={20} />
                     <span className="tool-label">Age Calculator</span>
                   </button>
                   <button
@@ -692,7 +692,7 @@ const Index = () => {
                       activeTab === "difference" && "active"
                     )}
                   >
-                    <span className="tool-icon">↔️</span>
+                    <ArrowLeftRight className="tool-icon" size={20} />
                     <span className="tool-label">Age Difference</span>
                   </button>
                   <button
@@ -702,7 +702,7 @@ const Index = () => {
                       activeTab === "specific" && "active"
                     )}
                   >
-                    <span className="tool-icon">🗓️</span>
+                    <CalendarCheck className="tool-icon" size={20} />
                     <span className="tool-label">Specific Date</span>
                   </button>
                   <button
@@ -712,7 +712,7 @@ const Index = () => {
                       activeTab === "greetings" && "active"
                     )}
                   >
-                    <span className="tool-icon">🎁</span>
+                    <Gift className="tool-icon" size={20} />
                     <span className="tool-label">AI Greetings</span>
                   </button>
                   <button
@@ -722,7 +722,7 @@ const Index = () => {
                       activeTab === "birthday" && "active"
                     )}
                   >
-                    <span className="tool-icon">🎂</span>
+                    <Cake className="tool-icon" size={20} />
                     <span className="tool-label">On Your Birthday</span>
                   </button>
                   <button
@@ -732,7 +732,7 @@ const Index = () => {
                       activeTab === "milestones" && "active"
                     )}
                   >
-                    <span className="tool-icon">🚩</span>
+                    <Flag className="tool-icon" size={20} />
                     <span className="tool-label">Life Milestones</span>
                   </button>
                   <button
@@ -742,7 +742,7 @@ const Index = () => {
                       activeTab === "gift-advisor" && "active"
                     )}
                   >
-                    <span className="tool-icon">💡</span>
+                    <Lightbulb className="tool-icon" size={20} />
                     <span className="tool-label">AI Gift Advisor</span>
                   </button>
                 </nav>
