@@ -9,10 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-primary via-primary/80 to-primary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-primary-foreground",
-        destructive: "bg-gradient-to-r from-destructive via-destructive/80 to-destructive bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-destructive-foreground",
+        default: "bg-gradient-to-r from-primary via-primary/80 to-primary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-primary-foreground hover:shadow-[0_0_20px_hsl(var(--primary)/0.6)] hover:animate-pulse",
+        destructive: "bg-gradient-to-r from-destructive via-destructive/80 to-destructive bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-destructive-foreground hover:shadow-[0_0_20px_hsl(var(--destructive)/0.5)]",
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-gradient-to-r from-secondary via-secondary/80 to-secondary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-secondary-foreground",
+        secondary: "bg-gradient-to-r from-secondary via-secondary/80 to-secondary bg-[length:200%_auto] bg-[position:0%_center] hover:bg-[position:100%_center] text-secondary-foreground hover:shadow-[0_0_20px_hsl(var(--secondary)/0.5)]",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
