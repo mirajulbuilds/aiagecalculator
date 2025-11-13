@@ -12,6 +12,12 @@
   }
 }
 
+/* Body scroll lock for mobile menu */
+html.mobile-menu-is-open,
+body.mobile-menu-is-open {
+  overflow: hidden;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
