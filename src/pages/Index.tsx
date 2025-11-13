@@ -197,44 +197,25 @@ const Index = () => {
     }, 600);
   };
 
-  // Set up trail effect on sidebar links
+  // Set up global cursor trail effect
   useEffect(() => {
-    const sidebarLinks = document.querySelectorAll('.tool-sidebar-link');
-    let trailInterval: number | null = null;
+    let lastTrailTime = 0;
+    const throttleDelay = 30; // milliseconds between trail creation
     
-    const handleMouseEnter = (e: Event) => {
-      const element = e.currentTarget as HTMLElement;
-      
-      const handleMouseMove = (moveEvent: MouseEvent) => {
-        createTrail(moveEvent);
-      };
-      
-      // Create trail at lower frequency to avoid performance issues
-      trailInterval = window.setInterval(() => {
-        element.addEventListener('mousemove', handleMouseMove, { once: true });
-      }, 30);
-      
-      element.addEventListener('mouseleave', () => {
-        if (trailInterval !== null) {
-          clearInterval(trailInterval);
-        }
-        element.removeEventListener('mousemove', handleMouseMove);
-      }, { once: true });
+    const handleMouseMove = (event: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastTrailTime >= throttleDelay) {
+        createTrail(event);
+        lastTrailTime = now;
+      }
     };
     
-    sidebarLinks.forEach(link => {
-      link.addEventListener('mouseenter', handleMouseEnter);
-    });
+    document.addEventListener('mousemove', handleMouseMove);
     
     return () => {
-      if (trailInterval !== null) {
-        clearInterval(trailInterval);
-      }
-      sidebarLinks.forEach(link => {
-        link.removeEventListener('mouseenter', handleMouseEnter);
-      });
+      document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [activeTab]); // Re-run when active tab changes
+  }, []);
 
   // Share or download function
   const handleShareImage = async () => {
