@@ -956,6 +956,30 @@ All colors MUST be HSL.
     animation: particle-burst 0.8s ease-out forwards;
     box-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
   }
+  
+  /* Cursor Trail Effect */
+  @keyframes trail-fade {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  }
+  
+  .cursor-trail {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.9) 0%, rgba(139, 92, 246, 0.4) 100%);
+    pointer-events: none;
+    z-index: 9999;
+    animation: trail-fade 0.6s ease-out forwards;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+  }
 
   /* Animated Gradient Background for Menu Panel */
   .menu-gradient-animated {
