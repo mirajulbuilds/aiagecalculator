@@ -382,7 +382,7 @@ const Header = () => {
         id="menu-close-btn"
         ref={closeButtonRef}
         onClick={handleCloseMenuWithRipple}
-        className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 relative overflow-hidden ${
+        className={`fixed top-[76px] right-[16px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 relative overflow-hidden ${
           isMobileMenuOpen 
             ? 'is-open opacity-100 visible scale-100 animate-bounce-in' 
             : 'opacity-0 invisible scale-75'
