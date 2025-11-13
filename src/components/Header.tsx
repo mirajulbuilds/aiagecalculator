@@ -202,7 +202,7 @@ const Header = () => {
           <nav className="container mx-auto px-3 sm:px-4">
             <div className="flex h-16 items-center justify-between gap-2">
               {/* Logo/Brand */}
-              <Link to="/" className="flex items-center space-x-2 relative z-10 flex-shrink-0">
+              <Link to="/" className="flex items-center space-x-2 relative z-10 flex-shrink-0 logo-hover-glow">
                 <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent whitespace-nowrap">
                   Ai Age Calculator
                 </span>
@@ -257,11 +257,19 @@ const Header = () => {
                           if (el) dropdownLinksRef.current[index] = el;
                         }}
                         to={item.path}
-                        className={`block px-3 py-2.5 text-sm rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4 ${
+                        className={`block px-3 py-2.5 text-sm rounded-lg transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4 ${
+                          isDropdownOpen 
+                            ? 'opacity-100 translate-y-0' 
+                            : 'opacity-0 translate-y-[-10px]'
+                        } ${
                           isActive(item.path)
                             ? "text-primary font-semibold bg-primary/10"
                             : "text-foreground"
                         }`}
+                        style={{
+                          transitionDelay: isDropdownOpen ? `${index * 60}ms` : '0ms',
+                          transitionProperty: 'opacity, transform, background-color, padding'
+                        }}
                         role="menuitem"
                         tabIndex={isDropdownOpen ? 0 : -1}
                       >
