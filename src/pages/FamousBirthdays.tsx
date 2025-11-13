@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import PageTransition from "@/components/PageTransition";
 import { CelebrityCard } from "@/components/CelebrityCard";
+import ScrollFadeIn from "@/components/ScrollFadeIn";
 
 interface Celebrity {
   id: string;
@@ -186,8 +187,10 @@ const FamousBirthdays = () => {
             
             {trendingCelebrities.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {trendingCelebrities.map((celebrity) => (
-                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                {trendingCelebrities.map((celebrity, index) => (
+                  <ScrollFadeIn key={celebrity.id} delay={index * 100}>
+                    <CelebrityCard celebrity={celebrity} />
+                  </ScrollFadeIn>
                 ))}
               </div>
             ) : (
@@ -215,8 +218,10 @@ const FamousBirthdays = () => {
 
             {bornToday.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {bornToday.map((celebrity) => (
-                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                {bornToday.map((celebrity, index) => (
+                  <ScrollFadeIn key={celebrity.id} delay={index * 100}>
+                    <CelebrityCard celebrity={celebrity} />
+                  </ScrollFadeIn>
                 ))}
               </div>
             ) : (
@@ -239,8 +244,10 @@ const FamousBirthdays = () => {
 
             {bornTomorrow.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {bornTomorrow.map((celebrity) => (
-                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                {bornTomorrow.map((celebrity, index) => (
+                  <ScrollFadeIn key={celebrity.id} delay={index * 100}>
+                    <CelebrityCard celebrity={celebrity} />
+                  </ScrollFadeIn>
                 ))}
               </div>
             ) : (
@@ -263,16 +270,17 @@ const FamousBirthdays = () => {
 
             {professions.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {professions.map((profession) => (
-                  <Link
-                    key={profession}
-                    to={`/profession/${profession.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center"
-                  >
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
-                      {profession}
-                    </h3>
-                  </Link>
+                {professions.map((profession, index) => (
+                  <ScrollFadeIn key={profession} delay={index * 80}>
+                    <Link
+                      to={`/profession/${profession.toLowerCase().replace(/\s+/g, "-")}`}
+                      className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center block"
+                    >
+                      <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                        {profession}
+                      </h3>
+                    </Link>
+                  </ScrollFadeIn>
                 ))}
               </div>
             ) : (
