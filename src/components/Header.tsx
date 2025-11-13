@@ -13,7 +13,6 @@ const Header = () => {
   const dropdownLinksRef = useRef<HTMLAnchorElement[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Ripple effect handler
   const createRipple = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -122,10 +121,10 @@ const Header = () => {
     const focusableElements = menuElement.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled])'
     );
-    const firstElement = closeButtonRef.current || focusableElements[0];
+    const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
-    // Focus the close button when menu opens
+    // Focus the first menu link when menu opens
     firstElement?.focus();
 
     const handleTabKey = (e: KeyboardEvent) => {
@@ -158,14 +157,13 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const handleOpenMenuWithRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleToggleMenuWithRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
     createRipple(e);
-    handleOpenMenu();
-  };
-
-  const handleCloseMenuWithRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
-    createRipple(e);
-    handleCloseMenu();
+    if (isMobileMenuOpen) {
+      handleCloseMenu();
+    } else {
+      handleOpenMenu();
+    }
   };
 
   const mainNavItems = [
@@ -306,7 +304,7 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleOpenMenuWithRipple}
+                  onClick={handleToggleMenuWithRipple}
                   aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isMobileMenuOpen}
                   aria-controls="mobile-menu-panel"
@@ -376,21 +374,6 @@ const Header = () => {
           ))}
         </nav>
       </div>
-
-      {/* Separate Close Button (Not Blurred) */}
-      <button
-        id="menu-close-btn"
-        ref={closeButtonRef}
-        onClick={handleCloseMenuWithRipple}
-        className={`fixed top-[76px] right-[16px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 relative overflow-hidden ${
-          isMobileMenuOpen 
-            ? 'is-open opacity-100 visible scale-100 animate-bounce-in' 
-            : 'opacity-0 invisible scale-75'
-        }`}
-        aria-label="Close menu"
-      >
-        <X className="h-4 w-4 text-gray-900 dark:text-white" />
-      </button>
     </>
   );
 };
