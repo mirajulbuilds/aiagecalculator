@@ -307,12 +307,17 @@ const Header = () => {
                   variant="ghost"
                   size="icon"
                   onClick={handleOpenMenuWithRipple}
-                  aria-label="Open menu"
+                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isMobileMenuOpen}
                   aria-controls="mobile-menu-panel"
                   className={`relative overflow-hidden ${isMobileMenuOpen ? 'animate-pulse-slow' : ''}`}
                 >
-                  <Menu className="h-5 w-5" />
+                  <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`}>
+                    <Menu className="h-5 w-5 absolute inset-0 m-auto" />
+                  </div>
+                  <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'}`}>
+                    <X className="h-5 w-5 absolute inset-0 m-auto" />
+                  </div>
                 </Button>
               </div>
             </div>
@@ -336,7 +341,7 @@ const Header = () => {
       <div 
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated ${
+        className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated menu-particle-glow ${
           isMobileMenuOpen 
             ? 'is-open scale-100 opacity-100 visible translate-y-0' 
             : 'scale-90 opacity-0 invisible -translate-y-2'
