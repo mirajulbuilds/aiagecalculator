@@ -8,7 +8,6 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [scrollParallax, setScrollParallax] = useState(0);
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownLinksRef = useRef<HTMLAnchorElement[]>([]);
@@ -46,12 +45,10 @@ const Header = () => {
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
   }, []);
 
-  // Scroll detection for sticky header effect and parallax
+  // Scroll detection for sticky header effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-      // Parallax effect: move gradient slower than scroll
-      setScrollParallax(window.scrollY * 0.5);
+      setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -196,17 +193,12 @@ const Header = () => {
 
   return (
     <>
-      <header className={`global-header sticky top-0 z-[1000] w-full border-b transition-all duration-500 ease-out ${
+      <header className={`global-header sticky top-0 left-0 z-[1000] w-full border-b transition-all duration-500 ease-out ${
         isScrolled 
           ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-primary/20 shadow-[0_8px_30px_rgba(0,0,0,0.12)]' 
           : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-white/10 dark:border-white/5'
       }`}>
-        <div 
-          className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none before:transition-transform before:duration-100 before:ease-out"
-          style={{
-            transform: `translateY(${scrollParallax}px)`
-          }}
-        >
+        <div className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
           <nav className="container mx-auto px-3 sm:px-4">
             <div className="flex h-16 items-center justify-between gap-2">
               {/* Logo/Brand */}
