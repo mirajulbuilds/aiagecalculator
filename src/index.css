@@ -93,29 +93,29 @@ All colors MUST be HSL.
     /* Main background - very light purple for brand identity */
     --background: 265 85% 98%;
     /* Main text - deep purple for excellent readability */
-    --foreground: 265 45% 20%;
+    --foreground: 265 35% 18%;
 
     /* Card backgrounds - pure white */
     --card: 0 0% 100%;
     /* Card text - deep purple */
-    --card-foreground: 265 45% 20%;
+    --card-foreground: 265 35% 18%;
 
     /* Popover backgrounds - pure white */
     --popover: 0 0% 100%;
     /* Popover text - deep purple */
-    --popover-foreground: 265 45% 20%;
+    --popover-foreground: 265 35% 18%;
 
     /* Primary brand color - vibrant purple */
-    --primary: 265 70% 55%;
+    --primary: 265 55% 50%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary brand color - brighter purple */
-    --secondary: 265 75% 67%;
+    --secondary: 265 60% 62%;
     --secondary-foreground: 0 0% 100%;
 
     /* Muted backgrounds and text */
     --muted: 265 35% 96%;
-    --muted-foreground: 265 25% 35%;
+    --muted-foreground: 265 20% 32%;
 
     /* Accent color - warm orange/tan */
     --accent: 30 90% 55%;
@@ -128,12 +128,12 @@ All colors MUST be HSL.
     /* Borders and inputs */
     --border: 265 15% 91%;
     --input: 265 15% 91%;
-    --ring: 265 70% 55%;
+    --ring: 265 55% 50%;
 
     --radius: 0.75rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(265 70% 55%), hsl(265 70% 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(265 55% 50%), hsl(265 55% 40%));
     
     /* Shadows */
     --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1);
@@ -143,13 +143,13 @@ All colors MUST be HSL.
 
     /* Sidebar colors */
     --sidebar-background: 265 85% 98%;
-    --sidebar-foreground: 265 45% 20%;
-    --sidebar-primary: 265 70% 55%;
+    --sidebar-foreground: 265 35% 18%;
+    --sidebar-primary: 265 55% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 265 35% 96%;
-    --sidebar-accent-foreground: 265 45% 20%;
+    --sidebar-accent-foreground: 265 35% 18%;
     --sidebar-border: 265 15% 91%;
-    --sidebar-ring: 265 70% 55%;
+    --sidebar-ring: 265 55% 50%;
   }
 
   .dark {
