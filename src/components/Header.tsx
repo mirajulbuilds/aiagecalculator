@@ -352,7 +352,7 @@ const Header = () => {
               key={item.path}
               to={item.path}
               onClick={handleCloseMenu}
-              className={`text-base font-medium px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${
+              className={`text-base font-medium px-3 py-2.5 rounded-lg transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:text-primary ${
                 isActive(item.path)
                   ? "text-primary bg-primary/10"
                   : "text-foreground"
@@ -379,7 +379,7 @@ const Header = () => {
         onClick={handleCloseMenuWithRipple}
         className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 relative overflow-hidden ${
           isMobileMenuOpen 
-            ? 'is-open opacity-100 visible scale-100' 
+            ? 'is-open opacity-100 visible scale-100 animate-bounce-in' 
             : 'opacity-0 invisible scale-75'
         }`}
         aria-label="Close menu"
