@@ -25,7 +25,7 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
   };
 
   return (
-    <div className="group relative bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element">
+    <div className="group relative bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-500 ease-out hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] hover:-translate-y-2 hover:scale-[1.02] border border-border interactive-element">
       <Link to={`/people/${celebrity.profile_slug}`}>
         <div className="aspect-square overflow-hidden">
           <img
