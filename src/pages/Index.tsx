@@ -655,18 +655,9 @@ const Index = () => {
             {/* Mobile-Only Dropdown */}
             <div className="mobile-tool-dropdown mb-6 md:hidden">
               <Select value={activeTab} onValueChange={setActiveTab}>
-                <SelectTrigger className="h-12 bg-card text-foreground border-2 border-primary/20">
-                  <div className="flex items-center gap-3">
-                    {activeTab === "calculator" && <Calculator className="mobile-dropdown-icon" />}
-                    {activeTab === "difference" && <ArrowLeftRight className="mobile-dropdown-icon" />}
-                    {activeTab === "specific" && <CalendarCheck className="mobile-dropdown-icon" />}
-                    {activeTab === "greetings" && <Gift className="mobile-dropdown-icon" />}
-                    {activeTab === "birthday" && <Cake className="mobile-dropdown-icon" />}
-                    {activeTab === "milestones" && <Flag className="mobile-dropdown-icon" />}
-                    {activeTab === "gift-advisor" && <Lightbulb className="mobile-dropdown-icon" />}
-                    <SelectValue placeholder="Select a tool" />
-                  </div>
-                </SelectTrigger>
+            <SelectTrigger className="h-12 bg-card text-foreground border-2 border-primary/20">
+              <SelectValue placeholder="Select a tool" />
+            </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="calculator">
                     <div className="flex items-center gap-3">
