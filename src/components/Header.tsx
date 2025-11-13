@@ -199,18 +199,17 @@ const Header = () => {
           : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-white/10 dark:border-white/5'
       }`}>
         <div className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
-          <nav className="container mx-auto px-2 sm:px-3 md:px-4">
+          <nav className="container mx-auto px-3 sm:px-4">
             <div className="flex h-16 items-center justify-between gap-2">
               {/* Logo/Brand */}
               <Link to="/" className="flex items-center space-x-2 relative z-10 flex-shrink-0 logo-hover-glow">
-                <span className="text-sm sm:text-base md:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  <span className="hidden xs:inline">Ai Age Calculator</span>
-                  <span className="xs:hidden">AiAge</span>
+                <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent whitespace-nowrap">
+                  Ai Age Calculator
                 </span>
               </Link>
 
               {/* Desktop Navigation - Only visible on 1024px+ */}
-              <div className="desktop-nav relative z-10">
+              <div className="desktop-nav hidden min-[1024px]:flex min-[1024px]:items-center min-[1024px]:gap-6 relative z-10">
                 {/* Home Link */}
                 <Link
                   to="/"
@@ -237,12 +236,6 @@ const Header = () => {
                   <button 
                     className="ai-tools-dropdown-trigger flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setIsDropdownOpen(!isDropdownOpen);
-                      }
-                    }}
                     aria-expanded={isDropdownOpen}
                     aria-haspopup="true"
                   >
@@ -250,7 +243,7 @@ const Header = () => {
                     <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <div 
-                    className={`ai-tools-dropdown-panel absolute top-full left-0 mt-2 min-w-[200px] sm:min-w-[250px] w-max max-w-[90vw] bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 z-[1002] transition-all duration-200 ${
+                    className={`ai-tools-dropdown-panel absolute top-full left-0 mt-2 min-w-[250px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 z-[1001] transition-all duration-200 ${
                       isDropdownOpen 
                         ? 'opacity-100 visible scale-100 translate-y-0' 
                         : 'opacity-0 invisible scale-95 -translate-y-2'
@@ -313,10 +306,12 @@ const Header = () => {
                 >
                   Blog
                 </Link>
+
+                <ThemeToggle />
               </div>
 
               {/* Mobile Menu Button and Theme Toggle */}
-              <div className="mobile-menu-toggle-button items-center gap-2 relative z-10">
+              <div className="mobile-menu-toggle-button flex items-center gap-2 relative z-10">
                 <ThemeToggle />
                 <Button
                   variant="ghost"
@@ -343,7 +338,7 @@ const Header = () => {
       {/* Menu Backdrop */}
       <div 
         id="menu-backdrop"
-        className={`fixed inset-0 z-[999] transition-all duration-300 ease-out ${
+        className={`fixed inset-0 z-[99] transition-all duration-300 ease-out ${
           isMobileMenuOpen 
             ? 'is-open bg-black/10 backdrop-blur-sm' 
             : 'bg-transparent'
@@ -356,7 +351,7 @@ const Header = () => {
       <div 
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`fixed top-[4.5rem] right-4 sm:right-5 w-[min(300px,calc(100vw-2rem))] max-w-[300px] z-[1001] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated ${
+        className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated ${
           isMobileMenuOpen 
             ? 'is-open scale-100 opacity-100 visible translate-y-0 animate-[bounce-in_0.5s_ease-out]' 
             : 'scale-90 opacity-0 invisible -translate-y-2'

@@ -652,38 +652,22 @@ const Index = () => {
           aria-label="Age calculators"
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Mobile-Only Horizontal Scrollable Tabs */}
-            <div className="mobile-tool-tabs mb-6 md:hidden">
-              <TabsList className="mobile-tabs-list">
-                <TabsTrigger value="calculator" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">📅</span>
-                  <span className="whitespace-nowrap">Age Calculator</span>
-                </TabsTrigger>
-                <TabsTrigger value="difference" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">↔️</span>
-                  <span className="whitespace-nowrap">Age Difference</span>
-                </TabsTrigger>
-                <TabsTrigger value="specific" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">🗓️</span>
-                  <span className="whitespace-nowrap">Specific Date</span>
-                </TabsTrigger>
-                <TabsTrigger value="greetings" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">🎁</span>
-                  <span className="whitespace-nowrap">AI Greetings</span>
-                </TabsTrigger>
-                <TabsTrigger value="birthday" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">🎂</span>
-                  <span className="whitespace-nowrap">On Your Birthday</span>
-                </TabsTrigger>
-                <TabsTrigger value="milestones" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">🚩</span>
-                  <span className="whitespace-nowrap">Life Milestones</span>
-                </TabsTrigger>
-                <TabsTrigger value="gift-advisor" className="mobile-tab-trigger">
-                  <span className="text-lg mr-1.5">💡</span>
-                  <span className="whitespace-nowrap">AI Gift Advisor</span>
-                </TabsTrigger>
-              </TabsList>
+            {/* Mobile-Only Dropdown */}
+            <div className="mobile-tool-dropdown mb-6 md:hidden">
+              <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="h-12 bg-card text-foreground border-2 border-primary/20">
+                <SelectValue placeholder="Select a tool" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="calculator">📅 Age Calculator</SelectItem>
+                  <SelectItem value="difference">↔️ Age Difference</SelectItem>
+                  <SelectItem value="specific">🗓️ Specific Date</SelectItem>
+                  <SelectItem value="greetings">🎁 AI Greetings</SelectItem>
+                  <SelectItem value="birthday">🎂 On Your Birthday</SelectItem>
+                  <SelectItem value="milestones">🚩 Life Milestones</SelectItem>
+                  <SelectItem value="gift-advisor">💡 AI Gift Advisor</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Desktop Sidebar Layout */}
