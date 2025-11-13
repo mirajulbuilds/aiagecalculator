@@ -683,6 +683,11 @@ All colors MUST be HSL.
     
     /* Mobile dropdown styling with sidebar effects */
     @layer components {
+      /* Hide default Radix checkmark */
+      .mobile-select-item [data-radix-select-item-indicator] {
+        display: none !important;
+      }
+
       /* Base icon styling */
       .mobile-select-item .select-item-icon {
         width: 24px;
@@ -721,6 +726,14 @@ All colors MUST be HSL.
         transform: scale(1.15) rotate(5deg);
         filter: drop-shadow(0 3px 6px rgba(139, 92, 246, 0.2));
       }
+
+      /* Ensure text stays visible on hover/highlight */
+      .mobile-select-content [data-radix-select-item][data-highlighted] span,
+      .mobile-select-content [data-radix-select-item]:focus span,
+      .mobile-select-content [data-radix-select-item]:hover span {
+        color: hsl(var(--foreground)) !important;
+        opacity: 1 !important;
+      }
       
       /* Selected item styling */
       .mobile-select-item[data-state="checked"] .select-item-icon {
@@ -741,6 +754,7 @@ All colors MUST be HSL.
       .mobile-select-item {
         min-height: 48px !important;
         padding: 12px 16px !important;
+        padding-left: 16px !important; /* Override the pl-8 from select.tsx */
         cursor: pointer;
       }
       
