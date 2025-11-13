@@ -250,31 +250,45 @@ const Header = () => {
           
           {/* Menu Panel - Matching Desktop Dropdown Style */}
           <div 
-            className="mobile-menu-panel fixed top-16 left-0 right-0 z-[1050] lg:hidden transition-all duration-200"
-            style={{
-              maxHeight: 'calc(100vh - 4rem)',
-              overflowY: 'auto'
-            }}
+            className="mobile-menu-panel fixed top-16 left-0 right-0 z-[1050] lg:hidden"
           >
             <div className="container mx-auto px-3 sm:px-4 py-2">
-              <nav className="w-full max-w-md mx-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 animate-fade-in animate-scale-in">
-                <div className="flex flex-col space-y-1">
-                  {mobileNavItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`px-3 py-2.5 text-base rounded-lg transition-all duration-200 ${
-                        isActive(item.path)
-                          ? "text-primary font-semibold bg-primary/10"
-                          : "text-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </nav>
+              <div className="w-full max-w-md mx-auto relative">
+                {/* Close Button - Outside blurred container */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="absolute -top-2 right-2 z-[1051] p-2 bg-background border border-border rounded-full shadow-lg hover:bg-accent transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                
+                {/* Blurred Menu Content */}
+                <nav 
+                  className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 animate-fade-in animate-scale-in"
+                  style={{
+                    maxHeight: 'calc(100vh - 6rem)',
+                    overflowY: 'auto'
+                  }}
+                >
+                  <div className="flex flex-col space-y-1">
+                    {mobileNavItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`px-3 py-2.5 text-base rounded-lg transition-all duration-200 ${
+                          isActive(item.path)
+                            ? "text-primary font-semibold bg-primary/10"
+                            : "text-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </nav>
+              </div>
             </div>
           </div>
         </>
