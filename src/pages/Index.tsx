@@ -145,6 +145,43 @@ const Index = () => {
     });
   };
 
+  // Particle effect function
+  const createParticles = (event: React.MouseEvent<HTMLElement>) => {
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Create 12 particles
+    const particleCount = 12;
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      // Calculate random angle and distance
+      const angle = (i / particleCount) * Math.PI * 2;
+      const distance = 50 + Math.random() * 30;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      
+      // Set custom properties for animation
+      particle.style.setProperty('--tx', `${tx}px`);
+      particle.style.setProperty('--ty', `${ty}px`);
+      particle.style.left = `${centerX}px`;
+      particle.style.top = `${centerY}px`;
+      
+      // Add random delay
+      particle.style.animationDelay = `${Math.random() * 0.1}s`;
+      
+      document.body.appendChild(particle);
+      
+      // Remove particle after animation
+      setTimeout(() => {
+        particle.remove();
+      }, 900);
+    }
+  };
+
   // Share or download function
   const handleShareImage = async () => {
     if (!watermarkedGreeting) {
@@ -604,7 +641,7 @@ const Index = () => {
               <div id="tool-sidebar">
                 <nav className="space-y-1">
                   <button
-                    onClick={() => setActiveTab("calculator")}
+                    onClick={(e) => { createParticles(e); setActiveTab("calculator"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "calculator" && "active"
@@ -614,7 +651,7 @@ const Index = () => {
                     <span className="tool-label">Age Calculator</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("difference")}
+                    onClick={(e) => { createParticles(e); setActiveTab("difference"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "difference" && "active"
@@ -624,7 +661,7 @@ const Index = () => {
                     <span className="tool-label">Age Difference</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("specific")}
+                    onClick={(e) => { createParticles(e); setActiveTab("specific"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "specific" && "active"
@@ -634,7 +671,7 @@ const Index = () => {
                     <span className="tool-label">Specific Date</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("greetings")}
+                    onClick={(e) => { createParticles(e); setActiveTab("greetings"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "greetings" && "active"
@@ -644,7 +681,7 @@ const Index = () => {
                     <span className="tool-label">AI Greetings</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("birthday")}
+                    onClick={(e) => { createParticles(e); setActiveTab("birthday"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "birthday" && "active"
@@ -654,7 +691,7 @@ const Index = () => {
                     <span className="tool-label">On Your Birthday</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("milestones")}
+                    onClick={(e) => { createParticles(e); setActiveTab("milestones"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "milestones" && "active"
@@ -664,7 +701,7 @@ const Index = () => {
                     <span className="tool-label">Life Milestones</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("gift-advisor")}
+                    onClick={(e) => { createParticles(e); setActiveTab("gift-advisor"); }}
                     className={cn(
                       "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "gift-advisor" && "active"
