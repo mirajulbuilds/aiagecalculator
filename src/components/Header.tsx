@@ -143,7 +143,7 @@ const Header = () => {
         {/* Transparent Backdrop (Click-outside to close) */}
         <div 
           id="menu-backdrop"
-          className={`fixed inset-0 z-[99] md:hidden ${
+          className={`fixed inset-0 z-[1050] md:hidden ${
             isMobileMenuOpen ? 'block' : 'hidden'
           }`}
           onClick={handleCloseMenu}
