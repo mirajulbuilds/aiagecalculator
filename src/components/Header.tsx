@@ -44,22 +44,6 @@ const Header = () => {
     };
   }, [isMobileMenuOpen]);
 
-  // Body scroll lock when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.documentElement.classList.add('mobile-menu-is-open');
-      document.body.classList.add('mobile-menu-is-open');
-    } else {
-      document.documentElement.classList.remove('mobile-menu-is-open');
-      document.body.classList.remove('mobile-menu-is-open');
-    }
-    
-    return () => {
-      document.documentElement.classList.remove('mobile-menu-is-open');
-      document.body.classList.remove('mobile-menu-is-open');
-    };
-  }, [isMobileMenuOpen]);
-
   // Keyboard navigation for AI Tools dropdown
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
