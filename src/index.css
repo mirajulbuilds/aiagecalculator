@@ -701,16 +701,39 @@ All colors MUST be HSL.
       }
     }
     
+    /* Icon bounce animation */
+    @keyframes icon-bounce-in {
+      0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-10deg);
+      }
+      50% {
+        transform: scale(1.1) rotate(5deg);
+      }
+      70% {
+        transform: scale(0.95) rotate(-2deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
     .tool-sidebar-link.active .tool-icon {
       animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     
     /* Mobile dropdown styling with sidebar effects */
     @layer components {
-      /* Smooth fade-in animation for dropdown */
+      /* Smooth fade-in animation for dropdown with backdrop blur */
       .mobile-select-content {
         animation: dropdown-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
         transform-origin: top center;
+        backdrop-filter: blur(12px) saturate(180%) !important;
+        background: hsl(var(--popover) / 0.95) !important;
+        border: 1px solid hsl(var(--border) / 0.5) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 
+                    0 2px 8px rgba(0, 0, 0, 0.08) !important;
       }
       
       /* Staggered cascade animation for dropdown items */
@@ -757,7 +780,7 @@ All colors MUST be HSL.
         height: 0 !important;
       }
 
-      /* Base icon styling */
+      /* Base icon styling with bounce animation */
       .mobile-select-item .select-item-icon {
         width: 24px;
         height: 24px;
@@ -767,6 +790,37 @@ All colors MUST be HSL.
         color: hsl(var(--muted-foreground));
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         flex-shrink: 0;
+        opacity: 0;
+        animation: icon-bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      
+      /* Staggered icon animations */
+      .mobile-select-content .mobile-select-item:nth-child(1) .select-item-icon {
+        animation-delay: 0.1s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(2) .select-item-icon {
+        animation-delay: 0.15s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(3) .select-item-icon {
+        animation-delay: 0.2s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(4) .select-item-icon {
+        animation-delay: 0.25s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(5) .select-item-icon {
+        animation-delay: 0.3s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(6) .select-item-icon {
+        animation-delay: 0.35s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(7) .select-item-icon {
+        animation-delay: 0.4s;
       }
       
       /* Hover/highlight state - muted background (NOT accent/orange) */
