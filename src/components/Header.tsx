@@ -1,13 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, ChevronDown, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
@@ -28,7 +21,28 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Dialog component handles scroll locking automatically
+  // Close mobile menu on escape key or click outside
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (isMobileMenuOpen && !target.closest('.mobile-menu-panel') && !target.closest('.mobile-menu-button')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   // Keyboard navigation for AI Tools dropdown
   useEffect(() => {
@@ -69,42 +83,40 @@ const Header = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleCloseMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   const mainNavItems = [
-    { title: "Home", path: "/" },
-    { title: "Famous Birthdays", path: "/famous-birthdays" },
-    { title: "Blog", path: "/blog" },
+    { label: "Home", path: "/" },
+    { label: "Famous Birthdays", path: "/famous-birthdays" },
+    { label: "Blog", path: "/blog" },
   ];
 
   const aiToolsItems = [
-    { title: "Look-Alike Finder", path: "/look-alike-finder" },
-    { title: "AI Face Age", path: "/ai-face-age" },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
-    { title: "Past Life Generator", path: "/past-life-generator" },
+    { label: "Look-Alike Finder", path: "/look-alike-finder" },
+    { label: "AI Face Age", path: "/ai-face-age" },
+    { label: "Birthday Compatibility", path: "/compatibility-calculator" },
+    { label: "Past Life Generator", path: "/past-life-generator" },
   ];
 
   const mobileNavItems = [
-    { title: "Home", path: "/" },
-    { title: "Look-Alike Finder", path: "/look-alike-finder" },
-    { title: "AI Face Age", path: "/ai-face-age" },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
-    { title: "Past Life Generator", path: "/past-life-generator" },
-    { title: "Famous Birthdays", path: "/famous-birthdays" },
-    { title: "Blog", path: "/blog" },
+    { label: "Home", path: "/" },
+    { label: "Look-Alike Finder", path: "/look-alike-finder" },
+    { label: "AI Face Age", path: "/ai-face-age" },
+    { label: "Birthday Compatibility", path: "/compatibility-calculator" },
+    { label: "Past Life Generator", path: "/past-life-generator" },
+    { label: "Famous Birthdays", path: "/famous-birthdays" },
+    { label: "Blog", path: "/blog" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
-      <header className={`global-header sticky top-0 z-[1000] w-full border-b transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-white/20 shadow-[0_4px_15px_rgba(0,0,0,0.05)]' 
-          : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-white/10 dark:border-white/5'
-      }`}>
+      <header
+        className={`sticky top-0 z-[1000] w-full border-b transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-white/20 shadow-[0_4px_15px_rgba(0,0,0,0.05)]"
+            : "bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-white/10 dark:border-white/5"
+        }`}
+      >
         <div className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
           <nav className="container mx-auto px-3 sm:px-4">
             <div className="flex h-16 items-center justify-between gap-2">
@@ -172,7 +184,7 @@ const Header = () => {
                         role="menuitem"
                         tabIndex={isDropdownOpen ? 0 : -1}
                       >
-                        {item.title}
+                        {item.label}
                       </Link>
                     ))}
                   </div>
@@ -208,47 +220,65 @@ const Header = () => {
               {/* Mobile Menu Button */}
               <div className="mobile-menu-toggle-button flex items-center gap-2 lg:hidden relative z-10">
                 <ThemeToggle />
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <button
+                  className="mobile-menu-button p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
                   onClick={handleToggleMenu}
-                  aria-label="Toggle menu"
+                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                   aria-expanded={isMobileMenuOpen}
                 >
-                  <Menu className="h-5 w-5" />
-                </Button>
+                  {isMobileMenuOpen ? (
+                    <X className="h-5 w-5 transition-transform duration-200" />
+                  ) : (
+                    <Menu className="h-5 w-5 transition-transform duration-200" />
+                  )}
+                </button>
               </div>
             </div>
           </nav>
         </div>
       </header>
 
-      {/* Mobile Menu Dialog */}
-      <Dialog open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Menu
-            </DialogTitle>
-          </DialogHeader>
-          <nav className="flex flex-col space-y-1 mt-4">
-            {mobileNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={handleCloseMenu}
-                className={`px-3 py-2.5 text-base font-bold rounded-lg transition-all duration-200 ${
-                  isActive(item.path)
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4"
-                }`}
-              >
-                {item.title}
-              </Link>
-            ))}
-          </nav>
-        </DialogContent>
-      </Dialog>
+      {/* Mobile Menu Panel */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/40 z-[1040] lg:hidden transition-opacity duration-200"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          
+          {/* Menu Panel - Matching Desktop Dropdown Style */}
+          <div 
+            className="mobile-menu-panel fixed top-16 left-0 right-0 z-[1050] lg:hidden transition-all duration-200"
+            style={{
+              maxHeight: 'calc(100vh - 4rem)',
+              overflowY: 'auto'
+            }}
+          >
+            <div className="container mx-auto px-3 sm:px-4 py-2">
+              <nav className="w-full max-w-md mx-auto bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 animate-fade-in animate-scale-in">
+                <div className="flex flex-col space-y-1">
+                  {mobileNavItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`px-3 py-2.5 text-base rounded-lg transition-all duration-200 ${
+                        isActive(item.path)
+                          ? "text-primary font-semibold bg-primary/10"
+                          : "text-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };
