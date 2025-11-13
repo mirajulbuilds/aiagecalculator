@@ -2,11 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogClose,
-} from "@/components/ui/dialog";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
@@ -27,6 +22,17 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Body scroll lock for mobile menu
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   // Keyboard navigation for AI Tools dropdown
   useEffect(() => {
@@ -218,33 +224,42 @@ const Header = () => {
       </header>
 
       {/* Full-Screen Mobile Menu Modal */}
-      <Dialog open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <DialogContent className="fixed inset-0 max-w-none h-screen w-screen p-0 bg-background/95 backdrop-blur-lg border-0 rounded-none flex flex-col items-center justify-center z-[2000]">
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-[2000] bg-black/80 flex flex-col items-center justify-center"
+          onClick={handleCloseMenu}
+        >
           {/* Close Button */}
-          <DialogClose className="absolute top-6 right-6 rounded-full p-2 hover:bg-white/10 transition-colors z-[2001]">
-            <X className="h-6 w-6 text-foreground" />
-            <span className="sr-only">Close menu</span>
-          </DialogClose>
+          <button
+            onClick={handleCloseMenu}
+            className="absolute top-6 right-6 rounded-full p-2 hover:bg-white/10 transition-colors text-white"
+            aria-label="Close menu"
+          >
+            <X className="h-8 w-8" />
+          </button>
 
           {/* Menu Links */}
-          <nav className="flex flex-col items-center space-y-6 w-full max-w-md px-8">
+          <nav 
+            className="flex flex-col items-center space-y-8 w-full max-w-md px-8"
+            onClick={(e) => e.stopPropagation()}
+          >
             {mobileNavItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={handleCloseMenu}
-                className={`text-2xl font-bold transition-all duration-200 hover:scale-110 ${
+                className={`text-3xl font-bold transition-all duration-200 hover:scale-110 ${
                   isActive(item.path)
                     ? "text-primary"
-                    : "text-foreground hover:text-primary"
+                    : "text-white hover:text-primary"
                 }`}
               >
                 {item.title}
               </Link>
             ))}
           </nav>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </>
   );
 };
