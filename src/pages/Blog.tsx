@@ -5,6 +5,7 @@ import { blogPosts } from "@/data/blogPosts";
 import { Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "@/components/PageTransition";
+import ScrollFadeIn from "@/components/ScrollFadeIn";
 
 const Blog = () => {
   return (
@@ -42,40 +43,42 @@ const Blog = () => {
 
       <main className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {blogPosts.map((post) => (
-            <Link key={post.id} to={`/blog/${post.slug}`} className="group">
-              <Card className="h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-2 hover:border-primary/50">
-                <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
-                  <img 
-                    src={post.featuredImage} 
-                    alt={post.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                </div>
-                <CardHeader>
-                  <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                    {post.title}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-2 text-sm">
-                    <Calendar className="w-4 h-4" />
-                    {new Date(post.publishedDate).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground line-clamp-3">
-                    {post.summary}
-                  </p>
-                  <div className="mt-4 flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-                    Read More
-                    <ArrowRight className="w-4 h-4" />
+          {blogPosts.map((post, index) => (
+            <ScrollFadeIn key={post.id} delay={index * 100}>
+              <Link to={`/blog/${post.slug}`} className="group block h-full">
+                <Card className="h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-2 hover:border-primary/50">
+                  <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+                    <img 
+                      src={post.featuredImage} 
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
+                  <CardHeader>
+                    <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+                      {post.title}
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-2 text-sm">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(post.publishedDate).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground line-clamp-3">
+                      {post.summary}
+                    </p>
+                    <div className="mt-4 flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
+                      Read More
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </ScrollFadeIn>
           ))}
         </div>
       </main>
