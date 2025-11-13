@@ -20,11 +20,11 @@ const ScrollProgress = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/80 to-primary z-50 origin-left"
+      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary to-secondary z-[100] origin-left shadow-lg"
       style={{ scaleX: progress / 100 }}
       initial={{ scaleX: 0 }}
       animate={{ scaleX: progress / 100 }}
-      transition={{ duration: 0.1 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
     />
   );
 };
