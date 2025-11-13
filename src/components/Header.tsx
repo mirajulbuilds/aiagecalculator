@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogClose,
+} from "@/components/ui/dialog";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
@@ -22,21 +27,6 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Body scroll lock using overflow: hidden (prevents width shift)
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.documentElement.classList.add('mobile-menu-is-open');
-      document.body.classList.add('mobile-menu-is-open');
-    } else {
-      document.documentElement.classList.remove('mobile-menu-is-open');
-      document.body.classList.remove('mobile-menu-is-open');
-    }
-
-    return () => {
-      document.documentElement.classList.remove('mobile-menu-is-open');
-      document.body.classList.remove('mobile-menu-is-open');
-    };
-  }, [isMobileMenuOpen]);
 
   // Keyboard navigation for AI Tools dropdown
   useEffect(() => {
@@ -72,10 +62,6 @@ const Header = () => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isDropdownOpen]);
-
-  const handleOpenMenu = () => {
-    setIsMobileMenuOpen(true);
-  };
 
   const handleCloseMenu = () => {
     setIsMobileMenuOpen(false);
@@ -123,8 +109,8 @@ const Header = () => {
                 </span>
               </Link>
 
-              {/* Desktop Navigation */}
-              <div className="desktop-nav hidden lg:flex lg:items-center lg:gap-6 relative z-10">
+              {/* Desktop Navigation - Only visible on 1024px+ */}
+              <div className="desktop-nav hidden min-[1024px]:flex min-[1024px]:items-center min-[1024px]:gap-6 relative z-10">
                 {/* Home Link */}
                 <Link
                   to="/"
@@ -213,15 +199,15 @@ const Header = () => {
                 <ThemeToggle />
               </div>
 
-              {/* Mobile Menu Button */}
-              <div className="mobile-menu-toggle-button flex items-center gap-2 lg:hidden relative z-10">
+              {/* Mobile Menu Button and Theme Toggle - Always visible */}
+              <div className="mobile-menu-toggle-button flex items-center gap-2 relative z-10">
                 <ThemeToggle />
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleOpenMenu}
+                  onClick={() => setIsMobileMenuOpen(true)}
                   aria-label="Open menu"
-                  aria-expanded={isMobileMenuOpen}
+                  className="min-[1024px]:hidden"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
@@ -231,58 +217,34 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      <>
-        {/* Backdrop */}
-        <div 
-          id="menu-backdrop"
-          className={`fixed inset-0 z-[1050] bg-black/20 backdrop-blur-sm lg:hidden transition-opacity duration-200 ${
-            isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-          }`}
-          onClick={handleCloseMenu}
-          onTouchStart={handleCloseMenu}
-        />
-        
-        {/* Glass Pop-over Menu Panel */}
-        <div 
-          id="mobile-menu-panel"
-          className={`fixed top-[80px] right-5 w-[300px] max-w-[calc(100vw-40px)] z-[1100] lg:hidden
-            bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)]
-            p-4 origin-top-right transition-all duration-200 ease-out ${
-            isMobileMenuOpen 
-              ? 'scale-100 opacity-100 visible translate-y-0' 
-              : 'scale-95 opacity-0 invisible -translate-y-2'
-          }`}
-          role="dialog"
-          aria-label="Mobile navigation menu"
-        >
+      {/* Full-Screen Mobile Menu Modal */}
+      <Dialog open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <DialogContent className="fixed inset-0 max-w-none h-screen w-screen p-0 bg-background/95 backdrop-blur-lg border-0 rounded-none flex flex-col items-center justify-center z-[2000]">
+          {/* Close Button */}
+          <DialogClose className="absolute top-6 right-6 rounded-full p-2 hover:bg-white/10 transition-colors z-[2001]">
+            <X className="h-6 w-6 text-foreground" />
+            <span className="sr-only">Close menu</span>
+          </DialogClose>
+
           {/* Menu Links */}
-          <nav className="flex flex-col space-y-1">
+          <nav className="flex flex-col items-center space-y-6 w-full max-w-md px-8">
             {mobileNavItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={handleCloseMenu}
-                className={`px-3 py-2.5 text-base font-bold rounded-lg transition-all duration-200 ${
+                className={`text-2xl font-bold transition-all duration-200 hover:scale-110 ${
                   isActive(item.path)
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4"
+                    ? "text-primary"
+                    : "text-foreground hover:text-primary"
                 }`}
               >
                 {item.title}
               </Link>
             ))}
           </nav>
-        </div>
-      </>
-
-      {/* Global CSS for body scroll lock */}
-      <style>{`
-        html.mobile-menu-is-open,
-        body.mobile-menu-is-open {
-          overflow: hidden;
-        }
-      `}</style>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
