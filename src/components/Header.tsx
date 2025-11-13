@@ -328,10 +328,10 @@ const Header = () => {
       {/* Menu Backdrop */}
       <div 
         id="menu-backdrop"
-        className={`fixed inset-0 z-[99] transition-all duration-500 ease-out ${
+        className={`fixed inset-0 z-[99] transition-all duration-300 ease-out ${
           isMobileMenuOpen 
-            ? 'is-open bg-black/20 backdrop-blur-sm' 
-            : 'bg-transparent backdrop-blur-none'
+            ? 'is-open bg-black/10' 
+            : 'bg-transparent'
         }`}
         onClick={handleCloseMenu}
         style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
@@ -341,7 +341,7 @@ const Header = () => {
       <div 
         id="mobile-menu-panel"
         ref={mobileMenuRef}
-        className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated menu-particle-glow ${
+        className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated ${
           isMobileMenuOpen 
             ? 'is-open scale-100 opacity-100 visible translate-y-0' 
             : 'scale-90 opacity-0 invisible -translate-y-2'
