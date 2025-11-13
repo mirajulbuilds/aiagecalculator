@@ -22,15 +22,18 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Body scroll lock using position: fixed (prevents width shift)
+  // Body scroll lock using overflow: hidden (prevents width shift)
   useEffect(() => {
     if (isMobileMenuOpen) {
+      document.documentElement.classList.add('mobile-menu-is-open');
       document.body.classList.add('mobile-menu-is-open');
     } else {
+      document.documentElement.classList.remove('mobile-menu-is-open');
       document.body.classList.remove('mobile-menu-is-open');
     }
 
     return () => {
+      document.documentElement.classList.remove('mobile-menu-is-open');
       document.body.classList.remove('mobile-menu-is-open');
     };
   }, [isMobileMenuOpen]);
@@ -275,11 +278,8 @@ const Header = () => {
 
       {/* Global CSS for body scroll lock */}
       <style>{`
+        html.mobile-menu-is-open,
         body.mobile-menu-is-open {
-          position: fixed;
-          width: 100%;
-          top: 0;
-          left: 0;
           overflow: hidden;
         }
       `}</style>
