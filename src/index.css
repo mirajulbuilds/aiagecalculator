@@ -706,14 +706,17 @@ All colors MUST be HSL.
         flex-shrink: 0;
       }
       
-      /* Hover/highlight state - matching desktop's muted background */
+      /* Hover/highlight state - muted background (NOT accent/orange) */
       .mobile-select-content [data-radix-select-item][data-highlighted],
       .mobile-select-content [data-radix-select-item]:focus,
-      .mobile-select-content [data-radix-select-item]:hover {
+      .mobile-select-content [data-radix-select-item]:hover,
+      .mobile-select-content [role="option"][data-highlighted],
+      .mobile-select-content [role="option"]:focus {
         background: hsl(var(--muted) / 0.5) !important;
         border: 1px solid transparent !important;
         box-shadow: none !important;
         outline: none !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
       
       /* Icon colors for highlighted/focus/hover */
@@ -731,11 +734,14 @@ All colors MUST be HSL.
         opacity: 1 !important;
       }
       
-      /* Selected item - LIGHT purple background like desktop sidebar */
-      .mobile-select-item[data-state="checked"] {
+      /* Selected item - LIGHT purple (ultra-high specificity) */
+      .mobile-select-content .mobile-select-item[data-state="checked"],
+      .mobile-select-content [data-radix-select-item][data-state="checked"],
+      .mobile-select-content [role="option"][data-state="checked"] {
         background: rgba(139, 92, 246, 0.12) !important;
         border: 1px solid rgba(139, 92, 246, 0.2) !important;
         box-shadow: none !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
 
       /* Selected item text - DARK like desktop sidebar */
@@ -757,12 +763,20 @@ All colors MUST be HSL.
         filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
       }
       
-      /* Proper item padding */
+      /* Proper item padding - NO space for tick mark */
       .mobile-select-item {
         min-height: 48px !important;
         padding: 12px 16px !important;
         padding-left: 16px !important; /* Override the pl-8 from select.tsx */
         cursor: pointer;
+        transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+
+      /* Subtle hover scale effect like desktop */
+      .mobile-select-item:hover {
+        transform: translateX(2px);
       }
       
       /* Dark mode - same light purple as light mode */
