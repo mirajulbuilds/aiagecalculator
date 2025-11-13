@@ -689,6 +689,18 @@ All colors MUST be HSL.
       }
     }
     
+    /* Dropdown item cascade animation */
+    @keyframes dropdown-item-cascade {
+      0% {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
     .tool-sidebar-link.active .tool-icon {
       animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
@@ -699,6 +711,40 @@ All colors MUST be HSL.
       .mobile-select-content {
         animation: dropdown-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
         transform-origin: top center;
+      }
+      
+      /* Staggered cascade animation for dropdown items */
+      .mobile-select-content .mobile-select-item {
+        opacity: 0;
+        animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(5) {
+        animation-delay: 0.25s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(6) {
+        animation-delay: 0.3s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(7) {
+        animation-delay: 0.35s;
       }
       /* Hide checkmark/tick mark completely - target parent span and indicator */
       .mobile-select-item span[class*="absolute"],
