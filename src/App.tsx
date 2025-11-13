@@ -13,7 +13,6 @@ import { ComparisonProvider } from "./contexts/ComparisonContext";
 import { FloatingCompareBar } from "./components/FloatingCompareBar";
 import { BackToTop } from "./components/BackToTop";
 import ScrollProgress from "./components/ScrollProgress";
-import { FloatingActionMenu } from "./components/FloatingActionMenu";
 
 // Lazy load route components for code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -93,7 +92,6 @@ const App = () => (
                 <Footer />
                 <FloatingCompareBar />
                 <BackToTop />
-                <FloatingActionMenu />
               </div>
             </BrowserRouter>
           </ComparisonProvider>
