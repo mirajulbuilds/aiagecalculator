@@ -525,4 +525,57 @@ All colors MUST be HSL.
       opacity: 1;
     }
   }
+
+  /* Animated Gradient Background for Menu Panel */
+  .menu-gradient-animated {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(200, 235, 255, 0.15),
+      rgba(170, 210, 255, 0.1),
+      rgba(255, 255, 255, 0.1)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 8s ease infinite;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .dark .menu-gradient-animated {
+    background: linear-gradient(
+      135deg,
+      rgba(30, 35, 50, 0.4),
+      rgba(40, 60, 80, 0.5),
+      rgba(35, 50, 70, 0.45),
+      rgba(30, 35, 50, 0.4)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Slow Pulse Animation for Hamburger Button */
+  .animate-pulse-slow {
+    animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
 }
