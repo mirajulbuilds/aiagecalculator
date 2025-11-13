@@ -692,7 +692,7 @@ All colors MUST be HSL.
     /* Dropdown item cascade animation */
     @keyframes dropdown-item-cascade {
       0% {
-        opacity: 0;
+        opacity: 1;
         transform: translateX(-12px);
       }
       100% {
@@ -738,7 +738,6 @@ All colors MUST be HSL.
       
       /* Staggered cascade animation for dropdown items */
       .mobile-select-content .mobile-select-item {
-        opacity: 0;
         animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
       
@@ -780,7 +779,7 @@ All colors MUST be HSL.
         height: 0 !important;
       }
 
-      /* Base icon styling with bounce animation */
+      /* Base icon styling - no animation */
       .mobile-select-item .select-item-icon {
         width: 24px;
         height: 24px;
@@ -790,36 +789,6 @@ All colors MUST be HSL.
         color: hsl(var(--muted-foreground));
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         flex-shrink: 0;
-        animation: icon-bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      }
-      
-      /* Staggered icon animations */
-      .mobile-select-content .mobile-select-item:nth-child(1) .select-item-icon {
-        animation-delay: 0.1s;
-      }
-      
-      .mobile-select-content .mobile-select-item:nth-child(2) .select-item-icon {
-        animation-delay: 0.15s;
-      }
-      
-      .mobile-select-content .mobile-select-item:nth-child(3) .select-item-icon {
-        animation-delay: 0.2s;
-      }
-      
-      .mobile-select-content .mobile-select-item:nth-child(4) .select-item-icon {
-        animation-delay: 0.25s;
-      }
-      
-      .mobile-select-content .mobile-select-item:nth-child(5) .select-item-icon {
-        animation-delay: 0.3s;
-      }
-      
-      .mobile-select-content .mobile-select-item:nth-child(6) .select-item-icon {
-        animation-delay: 0.35s;
-      }
-      
-      .mobile-select-content .mobile-select-item:nth-child(7) .select-item-icon {
-        animation-delay: 0.4s;
       }
       
       /* Hover/highlight state - muted background (NOT accent/orange) */
