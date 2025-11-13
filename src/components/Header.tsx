@@ -75,6 +75,18 @@ const Header = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isDropdownOpen]);
 
+  // Escape key handler for mobile menu
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        handleCloseMenu();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, [isMobileMenuOpen]);
+
   const handleOpenMenu = () => {
     setIsMobileMenuOpen(true);
   };
@@ -256,7 +268,7 @@ const Header = () => {
               key={item.path}
               to={item.path}
               onClick={handleCloseMenu}
-              className={`text-base font-medium px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 ${
+              className={`text-base font-medium px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${
                 isActive(item.path)
                   ? "text-primary bg-primary/10"
                   : "text-foreground"
@@ -267,7 +279,7 @@ const Header = () => {
               }`}
               style={{
                 transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
-                transitionProperty: 'opacity, transform, background-color, color'
+                transitionProperty: 'opacity, transform, background-color, color, box-shadow'
               }}
             >
               {item.title}
