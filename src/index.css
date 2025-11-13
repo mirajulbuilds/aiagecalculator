@@ -725,48 +725,74 @@ All colors MUST be HSL.
     
     /* Mobile dropdown styling with sidebar effects */
     @layer components {
-      /* Smooth fade-in animation for dropdown with backdrop blur */
+      /* Enhanced glassmorphism for dropdown with multi-layer shadows */
       .mobile-select-content {
         animation: dropdown-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
         transform-origin: top center;
-        backdrop-filter: blur(12px) saturate(180%) !important;
-        background: hsl(var(--popover) / 0.95) !important;
+        backdrop-filter: blur(20px) saturate(150%) !important;
+        background: hsl(var(--popover) / 0.92) !important;
         border: 1px solid hsl(var(--border) / 0.5) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 
-                    0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 
+          0 12px 48px rgba(0, 0, 0, 0.15), 
+          0 4px 16px rgba(0, 0, 0, 0.1),
+          0 2px 8px rgba(139, 92, 246, 0.08) !important;
       }
       
-      /* Staggered cascade animation for dropdown items */
+      /* Dark mode enhancement */
+      .dark .mobile-select-content {
+        backdrop-filter: blur(20px) saturate(150%) !important;
+        background: hsl(var(--popover) / 0.85) !important;
+        box-shadow: 
+          0 12px 48px rgba(0, 0, 0, 0.4),
+          0 4px 16px rgba(0, 0, 0, 0.3),
+          inset 0 1px 1px rgba(139, 92, 246, 0.1) !important;
+      }
+      
+      /* Staggered cascade + wave animation for dropdown items */
       .mobile-select-content .mobile-select-item {
-        animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation: 
+          dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+          sidebar-wave 0.5s ease-out forwards;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(1) {
-        animation-delay: 0.05s;
+        animation-delay: 0.05s, 0.05s;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(2) {
-        animation-delay: 0.1s;
+        animation-delay: 0.1s, 0.1s;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(3) {
-        animation-delay: 0.15s;
+        animation-delay: 0.15s, 0.15s;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(4) {
-        animation-delay: 0.2s;
+        animation-delay: 0.2s, 0.2s;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(5) {
-        animation-delay: 0.25s;
+        animation-delay: 0.25s, 0.25s;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(6) {
-        animation-delay: 0.3s;
+        animation-delay: 0.3s, 0.3s;
       }
       
       .mobile-select-content .mobile-select-item:nth-child(7) {
-        animation-delay: 0.35s;
+        animation-delay: 0.35s, 0.35s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(8) {
+        animation-delay: 0.4s, 0.4s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(9) {
+        animation-delay: 0.45s, 0.45s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(10) {
+        animation-delay: 0.5s, 0.5s;
       }
       /* Hide checkmark/tick mark completely - target parent span and indicator */
       .mobile-select-item span[class*="absolute"],
@@ -779,7 +805,7 @@ All colors MUST be HSL.
         height: 0 !important;
       }
 
-      /* Base icon styling - no animation */
+      /* Base icon styling with spin animation */
       .mobile-select-item .select-item-icon {
         width: 24px;
         height: 24px;
@@ -789,19 +815,95 @@ All colors MUST be HSL.
         color: hsl(var(--muted-foreground));
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         flex-shrink: 0;
+        animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
       }
       
-      /* Hover/highlight state - muted background (NOT accent/orange) */
+      /* Staggered icon animations */
+      .mobile-select-content .mobile-select-item:nth-child(1) .select-item-icon {
+        animation-delay: 0.1s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(2) .select-item-icon {
+        animation-delay: 0.15s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(3) .select-item-icon {
+        animation-delay: 0.2s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(4) .select-item-icon {
+        animation-delay: 0.25s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(5) .select-item-icon {
+        animation-delay: 0.3s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(6) .select-item-icon {
+        animation-delay: 0.35s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(7) .select-item-icon {
+        animation-delay: 0.4s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(8) .select-item-icon {
+        animation-delay: 0.45s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(9) .select-item-icon {
+        animation-delay: 0.5s;
+      }
+      
+      .mobile-select-content .mobile-select-item:nth-child(10) .select-item-icon {
+        animation-delay: 0.55s;
+      }
+      
+      /* Icon hover micro-interactions */
+      .mobile-select-item:hover .select-item-icon {
+        transform: scale(1.2) rotate(5deg);
+        color: hsl(var(--primary));
+        filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.4));
+      }
+      
+      /* Hover/highlight state - gradient effect like desktop sidebar */
       .mobile-select-content [data-radix-select-item][data-highlighted],
       .mobile-select-content [data-radix-select-item]:focus,
       .mobile-select-content [data-radix-select-item]:hover,
       .mobile-select-content [role="option"][data-highlighted],
       .mobile-select-content [role="option"]:focus {
-        background: hsl(var(--muted) / 0.5) !important;
+        background: linear-gradient(
+          135deg,
+          rgba(167, 139, 250, 0.25),
+          rgba(139, 92, 246, 0.15)
+        ) !important;
+        transform: scale(1.02);
         border: 1px solid transparent !important;
-        box-shadow: none !important;
+        box-shadow: 
+          0 4px 12px rgba(139, 92, 246, 0.2),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
         outline: none !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+      
+      /* Active/selected state with pulse-glow animation */
+      .mobile-select-content [data-radix-select-item][data-state="checked"],
+      .mobile-select-content [data-radix-select-item][aria-selected="true"],
+      .mobile-select-content [role="option"][aria-selected="true"] {
+        animation: pulse-glow 2s ease-in-out infinite;
+        background: linear-gradient(
+          135deg,
+          rgba(167, 139, 250, 0.3),
+          rgba(139, 92, 246, 0.2)
+        ) !important;
+      }
+      
+      .mobile-select-content [data-radix-select-item][data-state="checked"] .select-item-icon,
+      .mobile-select-content [data-radix-select-item][aria-selected="true"] .select-item-icon,
+      .mobile-select-content [role="option"][aria-selected="true"] .select-item-icon {
+        color: hsl(var(--primary));
+        filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.5));
+        transform: scale(1.15);
       }
       
       /* Icon colors for highlighted/focus/hover */
