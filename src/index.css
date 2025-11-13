@@ -578,4 +578,22 @@ All colors MUST be HSL.
       opacity: 0.7;
     }
   }
+
+  /* Logo Hover Glow Animation */
+  @keyframes logo-glow-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
+    }
+    50% {
+      filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.8));
+    }
+  }
+
+  .logo-hover-glow {
+    transition: filter 0.3s ease;
+  }
+
+  .logo-hover-glow:hover {
+    animation: logo-glow-pulse 2s ease-in-out infinite;
+  }
 }
