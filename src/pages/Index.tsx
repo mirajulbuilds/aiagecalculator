@@ -655,17 +655,61 @@ const Index = () => {
             {/* Mobile-Only Dropdown */}
             <div className="mobile-tool-dropdown mb-6 md:hidden">
               <Select value={activeTab} onValueChange={setActiveTab}>
-              <SelectTrigger className="h-12 bg-card text-foreground border-2 border-primary/20">
-                <SelectValue placeholder="Select a tool" />
+                <SelectTrigger className="h-12 bg-card text-foreground border-2 border-primary/20">
+                  <div className="flex items-center gap-3">
+                    {activeTab === "calculator" && <Calculator className="mobile-dropdown-icon" />}
+                    {activeTab === "difference" && <ArrowLeftRight className="mobile-dropdown-icon" />}
+                    {activeTab === "specific" && <CalendarCheck className="mobile-dropdown-icon" />}
+                    {activeTab === "greetings" && <Gift className="mobile-dropdown-icon" />}
+                    {activeTab === "birthday" && <Cake className="mobile-dropdown-icon" />}
+                    {activeTab === "milestones" && <Flag className="mobile-dropdown-icon" />}
+                    {activeTab === "gift-advisor" && <Lightbulb className="mobile-dropdown-icon" />}
+                    <SelectValue placeholder="Select a tool" />
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="calculator">📅 Age Calculator</SelectItem>
-                  <SelectItem value="difference">↔️ Age Difference</SelectItem>
-                  <SelectItem value="specific">🗓️ Specific Date</SelectItem>
-                  <SelectItem value="greetings">🎁 AI Greetings</SelectItem>
-                  <SelectItem value="birthday">🎂 On Your Birthday</SelectItem>
-                  <SelectItem value="milestones">🚩 Life Milestones</SelectItem>
-                  <SelectItem value="gift-advisor">💡 AI Gift Advisor</SelectItem>
+                  <SelectItem value="calculator">
+                    <div className="flex items-center gap-3">
+                      <Calculator className="select-item-icon" />
+                      <span>Age Calculator</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="difference">
+                    <div className="flex items-center gap-3">
+                      <ArrowLeftRight className="select-item-icon" />
+                      <span>Age Difference</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="specific">
+                    <div className="flex items-center gap-3">
+                      <CalendarCheck className="select-item-icon" />
+                      <span>Specific Date</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="greetings">
+                    <div className="flex items-center gap-3">
+                      <Gift className="select-item-icon" />
+                      <span>AI Greetings</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="birthday">
+                    <div className="flex items-center gap-3">
+                      <Cake className="select-item-icon" />
+                      <span>On Your Birthday</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="milestones">
+                    <div className="flex items-center gap-3">
+                      <Flag className="select-item-icon" />
+                      <span>Life Milestones</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="gift-advisor">
+                    <div className="flex items-center gap-3">
+                      <Lightbulb className="select-item-icon" />
+                      <span>AI Gift Advisor</span>
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
