@@ -683,9 +683,15 @@ All colors MUST be HSL.
     
     /* Mobile dropdown styling with sidebar effects */
     @layer components {
-      /* Hide default Radix checkmark */
-      .mobile-select-item [data-radix-select-item-indicator] {
+      /* Hide checkmark/tick mark completely - target parent span and indicator */
+      .mobile-select-item span[class*="absolute"],
+      .mobile-select-item [data-radix-select-item-indicator],
+      .mobile-select-content span[class*="absolute"] {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
       }
 
       /* Base icon styling */
@@ -725,23 +731,23 @@ All colors MUST be HSL.
         opacity: 1 !important;
       }
       
-      /* Selected item - EXACT match to desktop sidebar */
+      /* Selected item - LIGHT purple background like desktop sidebar */
       .mobile-select-item[data-state="checked"] {
-        background: hsl(var(--primary)) !important;
-        border: 1px solid hsl(var(--primary)) !important;
+        background: rgba(139, 92, 246, 0.12) !important;
+        border: 1px solid rgba(139, 92, 246, 0.2) !important;
         box-shadow: none !important;
       }
 
-      /* Selected item text - WHITE like desktop */
+      /* Selected item text - DARK like desktop sidebar */
       .mobile-select-item[data-state="checked"] span {
-        color: hsl(var(--primary-foreground)) !important;
+        color: hsl(var(--foreground)) !important;
         opacity: 1 !important;
         font-weight: 500;
       }
 
-      /* Selected item icon - white to match text */
+      /* Selected item icon - purple colored like desktop */
       .mobile-select-item[data-state="checked"] .select-item-icon {
-        color: hsl(var(--primary-foreground)) !important;
+        color: hsl(var(--primary)) !important;
       }
       
       /* Style the selected value in closed trigger */
@@ -759,15 +765,24 @@ All colors MUST be HSL.
         cursor: pointer;
       }
       
-      /* Dark mode */
+      /* Dark mode - same light purple as light mode */
       .dark .mobile-select-content [data-radix-select-item][data-highlighted],
       .dark .mobile-select-content [data-radix-select-item]:focus,
       .dark .mobile-select-content [data-radix-select-item]:hover {
-        background: linear-gradient(
-          135deg,
-          rgba(139, 92, 246, 0.35),
-          rgba(139, 92, 246, 0.25)
-        ) !important;
+        background: hsl(var(--muted) / 0.5) !important;
+        border: 1px solid transparent !important;
+        box-shadow: none !important;
+      }
+      
+      /* Dark mode selected state */
+      .dark .mobile-select-content .mobile-select-item[data-state="checked"] {
+        background: rgba(139, 92, 246, 0.12) !important;
+        border: 1px solid rgba(139, 92, 246, 0.2) !important;
+        box-shadow: none !important;
+      }
+      
+      .dark .mobile-select-content .mobile-select-item[data-state="checked"] span {
+        color: hsl(var(--foreground)) !important;
       }
     }
     
