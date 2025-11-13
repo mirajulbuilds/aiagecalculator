@@ -516,7 +516,10 @@ All colors MUST be HSL.
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      width: 50px;
+      height: 50px;
+      padding: 0;
+      margin-bottom: 10px;
       border-radius: 12px;
       text-decoration: none;
       color: hsl(var(--foreground));
@@ -529,6 +532,13 @@ All colors MUST be HSL.
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       transform-origin: center;
       position: relative;
+    }
+    
+    /* Expanded state: full width and left-aligned */
+    #tool-sidebar:hover .tool-sidebar-link {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 0 12px;
     }
     
     .tool-sidebar-link::before {
