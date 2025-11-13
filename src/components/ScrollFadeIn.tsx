@@ -33,8 +33,8 @@ const ScrollFadeIn = ({ children, className = "", delay = 0 }: ScrollFadeInProps
       ref={elementRef}
       className={`transition-all duration-700 ease-out ${
         isVisible 
-          ? "opacity-100 translate-y-0" 
-          : "opacity-0 translate-y-8"
+          ? "opacity-100 translate-y-0 scale-100" 
+          : "opacity-0 translate-y-8 scale-95"
       } ${className}`}
     >
       {children}

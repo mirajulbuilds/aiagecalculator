@@ -5,6 +5,7 @@ import { Star, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
+import ScrollFadeIn from "@/components/ScrollFadeIn";
 
 interface Celebrity {
   id: string;
@@ -103,8 +104,10 @@ const ZodiacPage = () => {
           {/* Results Grid */}
           {celebrities.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {celebrities.map((celebrity) => (
-                <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+              {celebrities.map((celebrity, index) => (
+                <ScrollFadeIn key={celebrity.id} delay={index * 80}>
+                  <CelebrityCard celebrity={celebrity} />
+                </ScrollFadeIn>
               ))}
             </div>
           ) : (
