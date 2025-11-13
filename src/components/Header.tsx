@@ -243,10 +243,10 @@ const Header = () => {
       {/* Glass Pop-over Menu Panel */}
       <div 
         id="mobile-menu-panel"
-        className={`fixed top-20 right-5 w-[300px] z-[101] bg-white/10 dark:bg-gray-900/10 backdrop-blur-[20px] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-200 ease-out ${
+        className={`fixed top-20 right-5 w-[300px] z-[101] bg-white/10 dark:bg-gray-900/10 backdrop-blur-[20px] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
           isMobileMenuOpen 
-            ? 'is-open scale-100 opacity-100 visible' 
-            : 'scale-95 opacity-0 invisible'
+            ? 'is-open scale-100 opacity-100 visible translate-y-0' 
+            : 'scale-90 opacity-0 invisible -translate-y-2'
         }`}
         style={{ transformOrigin: 'top right' }}
       >
@@ -272,10 +272,10 @@ const Header = () => {
       <button
         id="menu-close-btn"
         onClick={handleCloseMenu}
-        className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-200 ease-out hover:scale-110 ${
+        className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 ${
           isMobileMenuOpen 
-            ? 'is-open opacity-100 visible' 
-            : 'opacity-0 invisible'
+            ? 'is-open opacity-100 visible scale-100' 
+            : 'opacity-0 invisible scale-75'
         }`}
         aria-label="Close menu"
       >
