@@ -583,8 +583,8 @@ const Index = () => {
             {/* Mobile-Only Dropdown */}
             <div className="mobile-tool-dropdown mb-6 md:hidden">
               <Select value={activeTab} onValueChange={setActiveTab}>
-                <SelectTrigger className="h-12 bg-muted">
-                  <SelectValue placeholder="Select a tool" />
+              <SelectTrigger className="h-12 bg-card text-foreground border-2 border-primary/20">
+                <SelectValue placeholder="Select a tool" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="calculator">📅 Age Calculator</SelectItem>
