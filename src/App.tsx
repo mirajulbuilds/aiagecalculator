@@ -12,6 +12,7 @@ import Footer from "./components/Footer";
 import { ComparisonProvider } from "./contexts/ComparisonContext";
 import { FloatingCompareBar } from "./components/FloatingCompareBar";
 import { BackToTop } from "./components/BackToTop";
+import ScrollProgress from "./components/ScrollProgress";
 
 // Lazy load route components for code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -80,6 +81,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollProgress />
               <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-1">
