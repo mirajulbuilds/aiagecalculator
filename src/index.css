@@ -782,10 +782,6 @@ All colors MUST be HSL.
       padding: 0.5rem 0.75rem;
       white-space: nowrap;
     }
-
-    .mobile-menu-toggle-button {
-      display: none !important;
-    }
   }
   /* --- End of App-Style CSS --- */
 
