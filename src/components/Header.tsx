@@ -8,31 +8,32 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [scrollParallax, setScrollParallax] = useState(0);
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownLinksRef = useRef<HTMLAnchorElement[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Ripple effect handler
-  const createRipple = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const button = event.currentTarget;
+  // Ripple effect handler for any element
+  const createRipple = (event: React.MouseEvent<HTMLElement>) => {
+    const element = event.currentTarget;
     const ripple = document.createElement('span');
-    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const diameter = Math.max(element.clientWidth, element.clientHeight);
     const radius = diameter / 2;
 
-    const rect = button.getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
     ripple.style.width = ripple.style.height = `${diameter}px`;
     ripple.style.left = `${event.clientX - rect.left - radius}px`;
     ripple.style.top = `${event.clientY - rect.top - radius}px`;
     ripple.classList.add('ripple');
 
-    const existingRipple = button.querySelector('.ripple');
+    const existingRipple = element.querySelector('.ripple');
     if (existingRipple) {
       existingRipple.remove();
     }
 
-    button.appendChild(ripple);
+    element.appendChild(ripple);
 
     setTimeout(() => {
       ripple.remove();
@@ -45,10 +46,12 @@ const Header = () => {
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
   }, []);
 
-  // Scroll detection for sticky header effect
+  // Scroll detection for sticky header effect and parallax
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+      // Parallax effect: move gradient slower than scroll
+      setScrollParallax(window.scrollY * 0.5);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -198,7 +201,12 @@ const Header = () => {
           ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-primary/20 shadow-[0_8px_30px_rgba(0,0,0,0.12)]' 
           : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-white/10 dark:border-white/5'
       }`}>
-        <div className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
+        <div 
+          className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none before:transition-transform before:duration-100 before:ease-out"
+          style={{
+            transform: `translateY(${scrollParallax}px)`
+          }}
+        >
           <nav className="container mx-auto px-3 sm:px-4">
             <div className="flex h-16 items-center justify-between gap-2">
               {/* Logo/Brand */}
@@ -213,7 +221,8 @@ const Header = () => {
                 {/* Home Link */}
                 <Link
                   to="/"
-                  className={`nav-link text-sm font-medium transition-colors hover:text-primary ${
+                  onClick={createRipple}
+                  className={`nav-link text-sm font-medium transition-colors hover:text-primary relative overflow-hidden ${
                     isActive("/")
                       ? "text-primary"
                       : "text-muted-foreground"
@@ -257,7 +266,8 @@ const Header = () => {
                           if (el) dropdownLinksRef.current[index] = el;
                         }}
                         to={item.path}
-                        className={`block px-3 py-2.5 text-sm rounded-lg transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4 ${
+                        onClick={createRipple}
+                        className={`block px-3 py-2.5 text-sm rounded-lg transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4 relative overflow-hidden ${
                           isDropdownOpen 
                             ? 'opacity-100 translate-y-0' 
                             : 'opacity-0 translate-y-[-10px]'
@@ -282,7 +292,8 @@ const Header = () => {
                 {/* Famous Birthdays Link */}
                 <Link
                   to="/famous-birthdays"
-                  className={`nav-link text-sm font-medium transition-colors hover:text-primary ${
+                  onClick={createRipple}
+                  className={`nav-link text-sm font-medium transition-colors hover:text-primary relative overflow-hidden ${
                     isActive("/famous-birthdays")
                       ? "text-primary"
                       : "text-muted-foreground"
@@ -294,7 +305,8 @@ const Header = () => {
                 {/* Blog Link */}
                 <Link
                   to="/blog"
-                  className={`nav-link text-sm font-medium transition-colors hover:text-primary ${
+                  onClick={createRipple}
+                  className={`nav-link text-sm font-medium transition-colors hover:text-primary relative overflow-hidden ${
                     isActive("/blog")
                       ? "text-primary"
                       : "text-muted-foreground"
@@ -364,7 +376,10 @@ const Header = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={handleCloseMenu}
+                onClick={(e) => {
+                  createRipple(e);
+                  handleCloseMenu();
+                }}
                 className={`text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden group ${
                   isCurrentPage
                     ? "text-primary bg-primary/10 shadow-sm font-semibold"
