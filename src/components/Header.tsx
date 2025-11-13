@@ -193,9 +193,9 @@ const Header = () => {
 
   return (
     <>
-      <header className={`global-header sticky top-0 z-[1000] w-full border-b transition-all duration-300 ${
+      <header className={`global-header sticky top-0 z-[1000] w-full border-b transition-all duration-500 ease-out ${
         isScrolled 
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-white/20 shadow-[0_4px_15px_rgba(0,0,0,0.05)]' 
+          ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-primary/20 shadow-[0_8px_30px_rgba(0,0,0,0.12)]' 
           : 'bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-white/10 dark:border-white/5'
       }`}>
         <div className="relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
@@ -341,7 +341,7 @@ const Header = () => {
         ref={mobileMenuRef}
         className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated ${
           isMobileMenuOpen 
-            ? 'is-open scale-100 opacity-100 visible translate-y-0' 
+            ? 'is-open scale-100 opacity-100 visible translate-y-0 animate-[bounce-in_0.5s_ease-out]' 
             : 'scale-90 opacity-0 invisible -translate-y-2'
         }`}
         style={{ transformOrigin: 'top right' }}
