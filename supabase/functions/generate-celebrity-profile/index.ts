@@ -6,6 +6,69 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Whitelist of allowed domains for scraping
+const ALLOWED_DOMAINS = [
+  'famousbirthdays.com',
+  'www.famousbirthdays.com',
+  'wikipedia.org',
+  'en.wikipedia.org',
+  'www.wikipedia.org'
+];
+
+// Validate URL to prevent SSRF attacks
+function validateUrl(urlString: string): { valid: boolean; error?: string; url?: URL } {
+  try {
+    const url = new URL(urlString);
+    
+    // Only allow HTTP/HTTPS protocols
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return { valid: false, error: 'Only HTTP and HTTPS protocols are allowed' };
+    }
+    
+    // Check if domain is whitelisted
+    const hostname = url.hostname.toLowerCase();
+    const isAllowed = ALLOWED_DOMAINS.some(domain => 
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
+    
+    if (!isAllowed) {
+      return { 
+        valid: false, 
+        error: `Domain not allowed. Supported sources: ${ALLOWED_DOMAINS.join(', ')}` 
+      };
+    }
+    
+    // Block internal/private IP addresses
+    const ipv4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (ipv4Pattern.test(hostname)) {
+      const parts = hostname.split('.').map(Number);
+      
+      // Check for localhost (127.0.0.0/8)
+      if (parts[0] === 127) {
+        return { valid: false, error: 'Access to localhost is not allowed' };
+      }
+      
+      // Check for private networks
+      if (
+        parts[0] === 10 || // 10.0.0.0/8
+        (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) || // 172.16.0.0/12
+        (parts[0] === 192 && parts[1] === 168) // 192.168.0.0/16
+      ) {
+        return { valid: false, error: 'Access to private networks is not allowed' };
+      }
+    }
+    
+    // Block localhost variations
+    if (hostname === 'localhost' || hostname.endsWith('.local')) {
+      return { valid: false, error: 'Access to localhost is not allowed' };
+    }
+    
+    return { valid: true, url };
+  } catch (error) {
+    return { valid: false, error: 'Invalid URL format' };
+  }
+}
+
 // Helper function to scrape website content
 async function scrapeWebsite(url: string) {
   console.log("Scraping URL:", url);
@@ -64,6 +127,16 @@ serve(async (req) => {
     if (!profileURL) {
       return new Response(
         JSON.stringify({ error: "Profile URL is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate the URL before proceeding
+    const validation = validateUrl(profileURL);
+    if (!validation.valid) {
+      console.error("URL validation failed:", validation.error);
+      return new Response(
+        JSON.stringify({ error: validation.error }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

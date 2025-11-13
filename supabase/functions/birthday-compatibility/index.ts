@@ -5,6 +5,28 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Rate limiting
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 10; // requests per window
+const RATE_WINDOW = 60000; // 1 minute in milliseconds
+
+function checkRateLimit(identifier: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(identifier);
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+
+  if (record.count >= RATE_LIMIT) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
 // Calculate Western Zodiac sign
 function getWesternZodiac(month: number, day: number): string {
   if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "Aries";
@@ -45,6 +67,15 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting check
+    const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
+    if (!checkRateLimit(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { date1, date2 } = await req.json();
 
     if (!date1 || !date2) {

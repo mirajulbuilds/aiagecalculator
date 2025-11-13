@@ -7,6 +7,28 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Rate limiting
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 10; // requests per window
+const RATE_WINDOW = 60000; // 1 minute in milliseconds
+
+function checkRateLimit(identifier: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(identifier);
+
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+
+  if (record.count >= RATE_LIMIT) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
 // Calculate cosine similarity between two vectors
 function cosineSimilarity(vec1: number[], vec2: number[]): number {
   if (vec1.length !== vec2.length) {
@@ -39,11 +61,28 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting check
+    const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
+    if (!checkRateLimit(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { userEmbedding } = await req.json();
 
-    if (!userEmbedding || !Array.isArray(userEmbedding)) {
+    if (!userEmbedding || !Array.isArray(userEmbedding) || userEmbedding.length !== 128) {
       return new Response(
-        JSON.stringify({ error: 'Valid user embedding array is required' }),
+        JSON.stringify({ error: 'Valid 128-dimensional embedding array is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate that all values are numbers
+    if (!userEmbedding.every(val => typeof val === 'number' && !isNaN(val))) {
+      return new Response(
+        JSON.stringify({ error: 'Embedding must contain only valid numbers' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
