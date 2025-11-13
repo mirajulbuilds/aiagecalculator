@@ -606,7 +606,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("calculator")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "calculator" && "active"
                     )}
                   >
@@ -616,7 +616,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("difference")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "difference" && "active"
                     )}
                   >
@@ -626,7 +626,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("specific")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "specific" && "active"
                     )}
                   >
@@ -636,7 +636,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("greetings")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "greetings" && "active"
                     )}
                   >
@@ -646,7 +646,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("birthday")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "birthday" && "active"
                     )}
                   >
@@ -656,7 +656,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("milestones")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "milestones" && "active"
                     )}
                   >
@@ -666,7 +666,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("gift-advisor")}
                     className={cn(
-                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
+                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
                       activeTab === "gift-advisor" && "active"
                     )}
                   >
@@ -680,28 +680,28 @@ const Index = () => {
                   {/* External Tool Links */}
                   <Link
                     to="/look-alike-finder"
-                    className="tool-sidebar-link w-full"
+                    className="tool-sidebar-link"
                   >
                     <span className="tool-icon">👯</span>
                     <span className="tool-label">Look-Alike Finder</span>
                   </Link>
                   <Link
                     to="/ai-face-age"
-                    className="tool-sidebar-link w-full"
+                    className="tool-sidebar-link"
                   >
                     <span className="tool-icon">🤖</span>
                     <span className="tool-label">AI Face Age</span>
                   </Link>
                   <Link
                     to="/compatibility-calculator"
-                    className="tool-sidebar-link w-full"
+                    className="tool-sidebar-link"
                   >
                     <span className="tool-icon">💖</span>
                     <span className="tool-label">Compatibility</span>
                   </Link>
                   <Link
                     to="/past-life-generator"
-                    className="tool-sidebar-link w-full"
+                    className="tool-sidebar-link"
                   >
                     <span className="tool-icon">🌀</span>
                     <span className="tool-label">Past Life</span>
