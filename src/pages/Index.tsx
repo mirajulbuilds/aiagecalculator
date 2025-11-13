@@ -673,7 +673,7 @@ const Index = () => {
             {/* Desktop Sidebar Layout */}
             <div className="tool-app-layout">
               {/* Sidebar */}
-              <div id="tool-sidebar" className="md:hidden lg:block">
+              <div id="tool-sidebar" className="hidden md:block">
                 <nav className="space-y-1">
                   <button
                     onClick={(e) => { createParticles(e); setActiveTab("calculator"); }}
