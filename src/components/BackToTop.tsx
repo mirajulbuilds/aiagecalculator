@@ -44,10 +44,11 @@ export const BackToTop = ({ targetSelector }: BackToTopProps) => {
     } else {
       // Fallback: Simple scroll listener (show button after 400px scroll)
       const handleScroll = () => {
-        setIsVisible(window.scrollY > 400);
+        setIsVisible(window.scrollY > 300);
       };
 
       window.addEventListener("scroll", handleScroll);
+      handleScroll(); // Check initial position
       return () => window.removeEventListener("scroll", handleScroll);
     }
   }, [targetSelector]);
@@ -63,13 +64,13 @@ export const BackToTop = ({ targetSelector }: BackToTopProps) => {
     <Button
       id="back-to-top-btn"
       onClick={scrollToTop}
-      className={`fixed bottom-5 right-5 z-[98] w-12 h-12 rounded-full shadow-lg transition-all duration-300 ${
-        isVisible ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-2"
+      className={`fixed bottom-8 right-8 z-[98] w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-500 ease-out bg-primary hover:bg-primary/90 ${
+        isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-75 translate-y-4 pointer-events-none"
       }`}
       size="icon"
       aria-label="Back to top"
     >
-      <ArrowUp className="w-5 h-5" />
+      <ArrowUp className="w-6 h-6" />
     </Button>
   );
 };
