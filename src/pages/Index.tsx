@@ -489,7 +489,7 @@ const Index = () => {
 
   return (
     <PageTransition>
-    <main className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-4 sm:py-8">
+    <main className="min-h-screen bg-background px-3 sm:px-6 md:px-8 py-4 sm:py-8">
       {/* Structured Data for SEO */}
       <script type="application/ld+json">
         {JSON.stringify({
@@ -510,7 +510,7 @@ const Index = () => {
         })}
       </script>
       
-      <div className="w-full max-w-[1200px] mx-auto px-6 box-border">
+      <div className="w-full max-w-[1200px] mx-auto px-0 sm:px-4 box-border">
       <div className="max-w-5xl mx-auto flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
@@ -527,34 +527,34 @@ const Index = () => {
           </p>
           
           {/* Famous Birthdays CTA */}
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center flex-wrap">
-            <Link to="/famous-birthdays">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-stretch">
+            <Link to="/famous-birthdays" className="flex-1 sm:flex-initial">
               <Button 
                 size="lg" 
-                className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80"
+                className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center"
               >
-                <Star className="w-5 h-5" />
-                Explore Famous Birthdays
+                <Star className="w-5 h-5 flex-shrink-0" />
+                <span className="block sm:inline">Explore Famous Birthdays</span>
               </Button>
             </Link>
-            <Link to="/look-alike-finder">
+            <Link to="/look-alike-finder" className="flex-1 sm:flex-initial">
               <Button 
                 size="lg" 
                 variant="outline"
-                className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10"
+                className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center"
               >
-                <Sparkles className="w-5 h-5" />
-                Find Your Celebrity Twin
+                <Sparkles className="w-5 h-5 flex-shrink-0" />
+                <span className="block sm:inline">Find Your Celebrity Twin</span>
               </Button>
             </Link>
-            <Link to="/ai-face-age">
+            <Link to="/ai-face-age" className="flex-1 sm:flex-initial">
               <Button 
                 size="lg" 
                 variant="outline"
-                className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10"
+                className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center"
               >
-                <Rocket className="w-5 h-5" />
-                AI Face Age Calculator
+                <Rocket className="w-5 h-5 flex-shrink-0" />
+                <span className="block sm:inline">AI Face Age Calculator</span>
               </Button>
             </Link>
           </div>

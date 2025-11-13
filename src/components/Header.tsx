@@ -45,17 +45,17 @@ const Header = () => {
     <>
       <header className="sticky top-0 z-50 w-full border-b border-white/10 dark:border-white/5">
         <div className="relative backdrop-blur-xl bg-white/60 dark:bg-gray-900/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-shimmer before:bg-[length:200%_100%] before:pointer-events-none">
-          <nav className="container mx-auto px-4">
-            <div className="flex h-16 items-center justify-between">
+          <nav className="container mx-auto px-3 sm:px-4">
+            <div className="flex h-16 items-center justify-between gap-2">
               {/* Logo/Brand */}
-              <Link to="/" className="flex items-center space-x-2 relative z-10">
-                <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <Link to="/" className="flex items-center space-x-2 relative z-10 flex-shrink-0">
+                <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent whitespace-nowrap">
                   Ai Age Calculator
                 </span>
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="nav-links-container hidden md:flex md:items-center md:gap-6 relative z-10">
+              <div className="nav-links-container hidden md:flex md:items-center md:gap-6 relative z-10 overflow-hidden">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
