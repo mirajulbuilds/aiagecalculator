@@ -533,7 +533,7 @@ const Index = () => {
               <Link to="/famous-birthdays" className="flex-1 sm:flex-initial">
                 <Button 
                   size="lg" 
-                  className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center"
+                  className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
                 >
                   <Star className="w-5 h-5 flex-shrink-0" />
                   <span className="block sm:inline">Explore Famous Birthdays</span>
@@ -543,7 +543,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center"
+                  className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
                 >
                   <Sparkles className="w-5 h-5 flex-shrink-0" />
                   <span className="block sm:inline">Find Your Celebrity Twin</span>
@@ -553,7 +553,7 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center"
+                  className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
                 >
                   <Rocket className="w-5 h-5 flex-shrink-0" />
                   <span className="block sm:inline">AI Face Age Calculator</span>
@@ -576,7 +576,7 @@ const Index = () => {
 
         {/* Tabbed Calculator Interface */}
         <section 
-          className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6"
+          className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 hover-lift"
           aria-label="Age calculators"
         >
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -606,7 +606,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("calculator")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "calculator" && "active"
                     )}
                   >
@@ -616,7 +616,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("difference")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "difference" && "active"
                     )}
                   >
@@ -626,7 +626,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("specific")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "specific" && "active"
                     )}
                   >
@@ -636,7 +636,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("greetings")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "greetings" && "active"
                     )}
                   >
@@ -646,7 +646,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("birthday")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "birthday" && "active"
                     )}
                   >
@@ -656,7 +656,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("milestones")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "milestones" && "active"
                     )}
                   >
@@ -666,7 +666,7 @@ const Index = () => {
                   <button
                     onClick={() => setActiveTab("gift-advisor")}
                     className={cn(
-                      "tool-sidebar-link w-full",
+                      "tool-sidebar-link w-full transition-all duration-200 hover:scale-105",
                       activeTab === "gift-advisor" && "active"
                     )}
                   >
@@ -909,7 +909,7 @@ const Index = () => {
               <AgeAtDateCalculator />
               
               {/* SEO Content for Specific Date */}
-              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border hover-lift">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Travel Through Time and Space
                 </h2>
@@ -1147,7 +1147,7 @@ const Index = () => {
               </div>
               
               {/* SEO Content for AI Greetings */}
-              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border hover-lift">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Create Unique AI-Powered Greeting Images
                 </h2>
@@ -1270,7 +1270,7 @@ const Index = () => {
               </div>
 
               {/* SEO Content */}
-              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border hover-lift">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Explore Your Birthday History
                 </h2>
@@ -1621,7 +1621,7 @@ const Index = () => {
               </div>
 
               {/* SEO Content */}
-              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border">
+              <div className="mt-20 p-6 bg-accent/20 rounded-xl border border-border hover-lift">
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   AI-Powered Gift Recommendations
                 </h2>
@@ -1638,7 +1638,7 @@ const Index = () => {
         {/* Traditional Age Section */}
         {result && activeTab === "calculator" && (
           <section 
-            className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in"
+            className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift"
             aria-label="Traditional age"
           >
             <div className="flex items-center justify-center gap-2 mb-6">
@@ -1690,7 +1690,7 @@ const Index = () => {
 
         {/* Planet Ages Section - Dynamic Rendering */}
         {planetAges.length > 0 && activeTab === "calculator" && (
-          <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in">
+          <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift">
             <div className="flex items-center gap-2 mb-4">
               <Rocket className="w-5 h-5 text-primary" />
               <h3 className="text-xl font-semibold text-foreground">My Age in the Universe</h3>
@@ -1739,7 +1739,7 @@ const Index = () => {
             <div className="flex justify-center mb-6">
               <button
                 onClick={() => setShowMorePlanets(!showMorePlanets)}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 font-medium"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2 font-medium"
               >
                 {showMorePlanets ? (
                   <>
@@ -1807,7 +1807,7 @@ const Index = () => {
         {/* Live Age Display */}
         {liveAge && activeTab === "calculator" && (
           <section 
-            className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground"
+            className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground hover-glow"
             aria-label="Live age counter"
           >
             <div className="text-center mb-4">
@@ -1891,7 +1891,7 @@ const Index = () => {
       
       {/* SEO Content for Age Calculator - Hidden after results */}
       {!hasCalculatorResults && (
-        <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border">
+        <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border hover-lift">
         <h2 className="text-3xl font-bold text-foreground mb-6">
           The Complete Guide to Understanding Your Age
         </h2>
