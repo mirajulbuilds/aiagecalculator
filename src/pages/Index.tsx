@@ -913,7 +913,7 @@ const Index = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Travel Through Time and Space
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-foreground leading-relaxed">
                   What was your exact age during a historic event? How old will you be in 2050? Our <strong>Age at a Specific Date</strong> tool lets you find out instantly. Plus, take an interstellar journey with our <strong>Age on Other Planets calculator</strong>. Discover your age on Mars, Jupiter, the Moon, and more in a stunning visual experience. It's a fun and educational tool for space enthusiasts of all ages.
                 </p>
               </div>
@@ -1151,7 +1151,7 @@ const Index = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Create Unique AI-Powered Greeting Images
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-foreground leading-relaxed">
                   Say goodbye to generic wishes! With our <strong>AI Greetings Image Generator</strong>, you can create beautiful, custom images for any occasion. Generate personalized <strong>birthday wishes</strong>, romantic wedding anniversary cards, Eid Mubarak greetings, or festive Christmas images. Just choose an occasion, describe your idea, and let our AI bring your vision to life.
                 </p>
               </div>
@@ -1274,7 +1274,7 @@ const Index = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   Explore Your Birthday History
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-foreground leading-relaxed">
                   Discover fascinating facts about the day you were born! Find out what was the <strong>#1 song</strong>, top movie, famous people who share your birthday, and <strong>historical events</strong> that happened on your special day. It's a fun way to connect with history and see what made your birthday unique.
                 </p>
               </div>
@@ -1625,7 +1625,7 @@ const Index = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-3">
                   AI-Powered Gift Recommendations
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-foreground leading-relaxed">
                   Struggling to find the perfect gift? Let our <strong>AI Gift Advisor</strong> help! Simply provide details about the recipient, occasion, and their interests, and get <strong>personalized gift recommendations</strong> tailored to their unique personality. From birthdays to anniversaries, find thoughtful and creative gift ideas in seconds.
                 </p>
               </div>
@@ -1896,7 +1896,7 @@ const Index = () => {
           The Complete Guide to Understanding Your Age
         </h2>
         
-        <div className="space-y-6 text-muted-foreground leading-relaxed">
+        <div className="space-y-6 text-foreground leading-relaxed">
           <p>
             Age is more than just a number—it's a fascinating journey through time that tells the story of your existence. While most people know their age in years, our comprehensive age calculator reveals the incredible details of your life's timeline in ways you've never imagined.
           </p>
