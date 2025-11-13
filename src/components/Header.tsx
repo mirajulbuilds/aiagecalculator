@@ -350,28 +350,37 @@ const Header = () => {
         aria-label="Mobile navigation menu"
       >
         <nav className="flex flex-col space-y-3">
-          {mobileNavItems.map((item, index) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={handleCloseMenu}
-              className={`text-base font-medium px-3 py-2.5 rounded-lg transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:text-primary ${
-                isActive(item.path)
-                  ? "text-primary bg-primary/10"
-                  : "text-foreground"
-              } ${
-                isMobileMenuOpen 
-                  ? 'opacity-100 translate-x-0' 
-                  : 'opacity-0 translate-x-4'
-              }`}
-              style={{
-                transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
-                transitionProperty: 'opacity, transform, background-color, color, box-shadow'
-              }}
-            >
-              {item.title}
-            </Link>
-          ))}
+          {mobileNavItems.map((item, index) => {
+            const isCurrentPage = isActive(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={handleCloseMenu}
+                className={`text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden group ${
+                  isCurrentPage
+                    ? "text-primary bg-primary/10 shadow-sm font-semibold"
+                    : "text-foreground hover:text-primary"
+                } ${
+                  isMobileMenuOpen 
+                    ? 'opacity-100 translate-x-0 scale-100' 
+                    : 'opacity-0 translate-x-8 scale-95'
+                } hover:bg-primary/5 hover:scale-[1.02] hover:shadow-md hover:-translate-x-1`}
+                style={{
+                  transitionDelay: isMobileMenuOpen ? `${index * 80}ms` : '0ms',
+                  transitionProperty: 'opacity, transform, background-color, color, box-shadow'
+                }}
+              >
+                {/* Active indicator */}
+                {isCurrentPage && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full animate-fade-in" />
+                )}
+                {/* Hover gradient effect */}
+                <span className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative">{item.title}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </>
