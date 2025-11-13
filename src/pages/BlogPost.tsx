@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ReactMarkdown from "react-markdown";
 import PageTransition from "@/components/PageTransition";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -27,6 +28,7 @@ const BlogPost = () => {
   return (
     <PageTransition>
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <ScrollProgress />
       <Helmet>
         <title>{post.title} | Birthday & Age Calculator Blog</title>
         <meta name="description" content={post.metaDescription} />
