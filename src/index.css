@@ -521,11 +521,15 @@ All colors MUST be HSL.
   /* Back to Top Button Styling */
   #back-to-top-btn {
     /* Inherits Button styles but adds specific positioning */
+    position: fixed !important;
+    right: 2rem !important;
+    left: auto !important;
+    bottom: 2rem !important;
     box-shadow: 0 4px 12px hsl(var(--primary) / 0.25);
   }
 
   #back-to-top-btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) !important;
     box-shadow: 0 6px 16px hsl(var(--primary) / 0.35);
   }
 

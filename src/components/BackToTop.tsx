@@ -64,7 +64,7 @@ export const BackToTop = ({ targetSelector }: BackToTopProps) => {
     <Button
       id="back-to-top-btn"
       onClick={scrollToTop}
-      className={`fixed bottom-8 right-8 z-[98] w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-500 ease-out bg-primary hover:bg-primary/90 ${
+      className={`fixed bottom-8 !right-8 !left-auto z-[999] w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-500 ease-out bg-primary hover:bg-primary/90 ${
         isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-75 translate-y-4 pointer-events-none"
       }`}
       size="icon"
