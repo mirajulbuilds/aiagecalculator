@@ -181,13 +181,13 @@ const Header = () => {
   ];
 
   const mobileNavItems = [
-    { title: "Home", path: "/" },
-    { title: "Look-Alike Finder", path: "/look-alike-finder" },
-    { title: "AI Face Age", path: "/ai-face-age" },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
-    { title: "Past Life Generator", path: "/past-life-generator" },
-    { title: "Famous Birthdays", path: "/famous-birthdays" },
-    { title: "Blog", path: "/blog" },
+    { title: "Home", path: "/", icon: Home },
+    { title: "Look-Alike Finder", path: "/look-alike-finder", icon: Sparkles },
+    { title: "AI Face Age", path: "/ai-face-age", icon: Camera },
+    { title: "Birthday Compatibility", path: "/compatibility-calculator", icon: Heart },
+    { title: "Past Life Generator", path: "/past-life-generator", icon: Clock },
+    { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
+    { title: "Blog", path: "/blog", icon: BookOpen },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -364,6 +364,7 @@ const Header = () => {
           {/* Drawer Navigation */}
           <nav className="flex flex-col p-4 space-y-2 overflow-y-auto flex-1" ref={mobileMenuRef}>
             {mobileNavItems.map((item, index) => {
+              const Icon = item.icon;
               const isCurrentPage = isActive(item.path);
               return (
                 <Link
@@ -373,12 +374,10 @@ const Header = () => {
                     createRipple(e);
                     handleCloseMenu();
                   }}
-                  className={`mobile-drawer-nav-link ${isCurrentPage ? "mobile-drawer-nav-link-active" : ""}`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
+                  className={`mobile-menu-link ${isCurrentPage ? "mobile-menu-active" : ""}`}
                 >
-                  <span className="mobile-drawer-text">{item.title}</span>
+                  <Icon className="mobile-menu-icon" />
+                  <span>{item.title}</span>
                 </Link>
               );
             })}
