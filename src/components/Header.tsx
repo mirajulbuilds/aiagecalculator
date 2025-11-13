@@ -251,7 +251,7 @@ const Header = () => {
         style={{ transformOrigin: 'top right' }}
       >
         <nav className="flex flex-col space-y-3">
-          {mobileNavItems.map((item) => (
+          {mobileNavItems.map((item, index) => (
             <Link
               key={item.path}
               to={item.path}
@@ -260,7 +260,15 @@ const Header = () => {
                 isActive(item.path)
                   ? "text-primary bg-primary/10"
                   : "text-foreground"
+              } ${
+                isMobileMenuOpen 
+                  ? 'opacity-100 translate-x-0' 
+                  : 'opacity-0 translate-x-4'
               }`}
+              style={{
+                transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms',
+                transitionProperty: 'opacity, transform, background-color, color'
+              }}
             >
               {item.title}
             </Link>
