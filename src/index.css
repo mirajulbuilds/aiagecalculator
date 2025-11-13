@@ -756,146 +756,137 @@ All colors MUST be HSL.
         inset 1px 0 1px rgba(139, 92, 246, 0.2);
     }
     
-    .mobile-drawer-nav-link {
+    /* Mobile Menu Link - Combines desktop sidebar + mobile dropdown design */
+    .mobile-menu-link {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 18px 24px;
-      margin-bottom: 12px;
-      border-radius: 16px;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.85),
-        rgba(237, 233, 254, 0.75)
-      );
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border: 2px solid rgba(139, 92, 246, 0.35);
-      box-shadow: 
-        0 4px 16px rgba(139, 92, 246, 0.2),
-        inset 0 1px 2px rgba(255, 255, 255, 0.4);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 12px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      background: transparent;
       text-decoration: none;
       color: hsl(var(--foreground));
       font-weight: 600;
       font-size: 15px;
-      text-align: center;
-      animation: sidebar-wave 0.5s ease-out forwards;
-      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
+      border: 1px solid transparent;
+      
+      /* Wave animation with stagger */
+      opacity: 0;
+      animation: sidebar-wave 0.5s ease-out forwards;
     }
     
-    .mobile-drawer-nav-link::before {
+    /* Stagger delays for cascade effect */
+    .mobile-menu-link:nth-child(1) { animation-delay: 0.05s; }
+    .mobile-menu-link:nth-child(2) { animation-delay: 0.1s; }
+    .mobile-menu-link:nth-child(3) { animation-delay: 0.15s; }
+    .mobile-menu-link:nth-child(4) { animation-delay: 0.2s; }
+    .mobile-menu-link:nth-child(5) { animation-delay: 0.25s; }
+    .mobile-menu-link:nth-child(6) { animation-delay: 0.3s; }
+    .mobile-menu-link:nth-child(7) { animation-delay: 0.35s; }
+    
+    /* Before pseudo-element for depth (like desktop sidebar) */
+    .mobile-menu-link::before {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 14px;
-      padding: 1px;
-      background: linear-gradient(
-        135deg,
-        rgba(139, 92, 246, 0.4),
-        transparent,
-        rgba(139, 92, 246, 0.2)
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
       opacity: 0;
       transition: opacity 0.3s ease;
     }
     
-    .mobile-drawer-nav-link:hover::before {
+    /* Hover state - purple gradient like desktop sidebar */
+    .mobile-menu-link:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(139, 92, 246, 0.15),
+        rgba(139, 92, 246, 0.08)
+      );
+      transform: scale(1.02);
+      box-shadow: 
+        0 4px 12px rgba(139, 92, 246, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .mobile-menu-link:hover::before {
       opacity: 1;
     }
     
-    .mobile-drawer-nav-link:hover {
+    /* Dark mode hover */
+    .dark .mobile-menu-link:hover {
       background: linear-gradient(
         135deg,
-        rgba(139, 92, 246, 0.45),
-        rgba(167, 139, 250, 0.35)
+        rgba(139, 92, 246, 0.25),
+        rgba(139, 92, 246, 0.15)
       );
-      transform: scale(1.05) translateY(-2px);
       box-shadow: 
-        0 8px 28px rgba(139, 92, 246, 0.4),
-        0 0 20px rgba(139, 92, 246, 0.3),
-        inset 0 1px 2px rgba(255, 255, 255, 0.5);
-      border: 2px solid rgba(139, 92, 246, 0.6);
+        0 4px 16px rgba(139, 92, 246, 0.3),
+        inset 0 1px 1px rgba(139, 92, 246, 0.15);
     }
     
-    .dark .mobile-drawer-nav-link {
-      background: linear-gradient(
-        135deg,
-        rgba(30, 27, 45, 0.9),
-        rgba(20, 18, 35, 0.85)
-      );
-      border: 2px solid rgba(139, 92, 246, 0.4);
-      box-shadow: 
-        0 4px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 2px rgba(139, 92, 246, 0.15);
-    }
-    
-    .dark .mobile-drawer-nav-link:hover {
-      background: linear-gradient(
-        135deg,
-        rgba(139, 92, 246, 0.5),
-        rgba(167, 139, 250, 0.4)
-      );
-      transform: scale(1.05) translateY(-2px);
-      box-shadow: 
-        0 8px 28px rgba(139, 92, 246, 0.5),
-        0 0 24px rgba(139, 92, 246, 0.4),
-        inset 0 1px 2px rgba(139, 92, 246, 0.25);
-      border: 2px solid rgba(139, 92, 246, 0.7);
-    }
-    
-    .mobile-drawer-nav-link-active {
-      background: linear-gradient(
-        135deg,
-        rgba(139, 92, 246, 0.55),
-        rgba(167, 139, 250, 0.45)
-      ) !important;
+    /* Icon styling */
+    .mobile-menu-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
       color: hsl(var(--primary));
-      font-weight: 700;
-      border: 2px solid rgba(139, 92, 246, 0.7) !important;
-      box-shadow: 
-        0 10px 32px rgba(139, 92, 246, 0.45),
-        0 0 24px rgba(139, 92, 246, 0.35),
-        inset 0 2px 4px rgba(255, 255, 255, 0.3);
-      animation: pulse-glow 2s ease-in-out infinite, sidebar-wave 0.5s ease-out forwards;
-      transform: scale(1.02);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.2));
+      /* Spin-in animation like mobile dropdown */
+      animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     
-    .dark .mobile-drawer-nav-link-active {
+    /* Stagger icon animations */
+    .mobile-menu-link:nth-child(1) .mobile-menu-icon { animation-delay: 0.1s; }
+    .mobile-menu-link:nth-child(2) .mobile-menu-icon { animation-delay: 0.15s; }
+    .mobile-menu-link:nth-child(3) .mobile-menu-icon { animation-delay: 0.2s; }
+    .mobile-menu-link:nth-child(4) .mobile-menu-icon { animation-delay: 0.25s; }
+    .mobile-menu-link:nth-child(5) .mobile-menu-icon { animation-delay: 0.3s; }
+    .mobile-menu-link:nth-child(6) .mobile-menu-icon { animation-delay: 0.35s; }
+    .mobile-menu-link:nth-child(7) .mobile-menu-icon { animation-delay: 0.4s; }
+    
+    /* Icon hover effect - scale and rotate like mobile dropdown */
+    .mobile-menu-link:hover .mobile-menu-icon {
+      transform: scale(1.2) rotate(5deg);
+      filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.4));
+      color: hsl(var(--primary));
+    }
+    
+    /* Active/current page state - purple gradient + pulse-glow like mobile dropdown */
+    .mobile-menu-active {
       background: linear-gradient(
         135deg,
-        rgba(139, 92, 246, 0.65),
-        rgba(167, 139, 250, 0.5)
+        rgba(167, 139, 250, 0.3),
+        rgba(139, 92, 246, 0.2)
+      ) !important;
+      animation: pulse-glow 2s ease-in-out infinite, sidebar-wave 0.5s ease-out forwards !important;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      box-shadow: 
+        0 4px 12px rgba(139, 92, 246, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+    
+    .mobile-menu-active .mobile-menu-icon {
+      filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.5));
+      transform: scale(1.15);
+      color: hsl(var(--primary));
+    }
+    
+    .dark .mobile-menu-active {
+      background: linear-gradient(
+        135deg,
+        rgba(167, 139, 250, 0.35),
+        rgba(139, 92, 246, 0.25)
       ) !important;
       box-shadow: 
-        0 10px 32px rgba(139, 92, 246, 0.6),
-        0 0 28px rgba(139, 92, 246, 0.45),
-        inset 0 2px 4px rgba(139, 92, 246, 0.3);
+        0 4px 16px rgba(139, 92, 246, 0.35),
+        inset 0 1px 1px rgba(139, 92, 246, 0.2);
     }
-    
-    /* Mobile drawer text styling */
-    .mobile-drawer-text {
-      position: relative;
-      transition: all 0.3s ease;
-    }
-    
-    .mobile-drawer-nav-link:hover .mobile-drawer-text {
-      letter-spacing: 0.5px;
-    }
-    
-    /* Stagger animations for drawer items */
-    .mobile-drawer-nav-link:nth-child(1) { animation-delay: 0ms; }
-    .mobile-drawer-nav-link:nth-child(2) { animation-delay: 60ms; }
-    .mobile-drawer-nav-link:nth-child(3) { animation-delay: 120ms; }
-    .mobile-drawer-nav-link:nth-child(4) { animation-delay: 180ms; }
-    .mobile-drawer-nav-link:nth-child(5) { animation-delay: 240ms; }
-    .mobile-drawer-nav-link:nth-child(6) { animation-delay: 300ms; }
-    .mobile-drawer-nav-link:nth-child(7) { animation-delay: 360ms; }
     
     /* =========================
        AI TOOLS DROPDOWN GLASSMORPHISM
