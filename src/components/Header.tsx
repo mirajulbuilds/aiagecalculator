@@ -310,11 +310,11 @@ const Header = () => {
                   aria-controls="mobile-menu-panel"
                   className={`relative overflow-hidden ${isMobileMenuOpen ? 'animate-pulse-slow' : ''}`}
                 >
-                  <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`}>
-                    <Menu className="h-5 w-5 absolute inset-0 m-auto" />
+                  <div className={`flex items-center justify-center absolute inset-0 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'}`}>
+                    <Menu className="h-5 w-5 text-primary" />
                   </div>
-                  <div className={`transition-all duration-300 ${isMobileMenuOpen ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'}`}>
-                    <X className="h-5 w-5 absolute inset-0 m-auto" />
+                  <div className={`flex items-center justify-center absolute inset-0 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'}`}>
+                    <X className="h-5 w-5 text-primary" />
                   </div>
                 </Button>
               </div>
@@ -328,7 +328,7 @@ const Header = () => {
         id="menu-backdrop"
         className={`fixed inset-0 z-[99] transition-all duration-300 ease-out ${
           isMobileMenuOpen 
-            ? 'is-open bg-black/10' 
+            ? 'is-open bg-black/10 backdrop-blur-sm' 
             : 'bg-transparent'
         }`}
         onClick={handleCloseMenu}
