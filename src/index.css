@@ -18,22 +18,6 @@ body.mobile-menu-is-open {
   overflow: hidden;
 }
 
-/* Mobile menu slide-in animation from top */
-.mobile-menu-slide-in {
-  animation: slideInFromTop 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes slideInFromTop {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

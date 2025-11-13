@@ -11,9 +11,6 @@ const Header = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownLinksRef = useRef<HTMLAnchorElement[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const firstFocusableElementRef = useRef<HTMLElement | null>(null);
-  const lastFocusableElementRef = useRef<HTMLElement | null>(null);
 
   // Scroll detection for sticky header effect
   useEffect(() => {
@@ -61,45 +58,6 @@ const Header = () => {
       document.documentElement.classList.remove('mobile-menu-is-open');
       document.body.classList.remove('mobile-menu-is-open');
     };
-  }, [isMobileMenuOpen]);
-
-  // Focus trap for mobile menu
-  useEffect(() => {
-    if (!isMobileMenuOpen || !mobileMenuRef.current) return;
-
-    const menuElement = mobileMenuRef.current;
-    const focusableElements = menuElement.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-
-    if (focusableElements.length === 0) return;
-
-    firstFocusableElementRef.current = focusableElements[0];
-    lastFocusableElementRef.current = focusableElements[focusableElements.length - 1];
-
-    // Focus first element when menu opens
-    firstFocusableElementRef.current?.focus();
-
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-
-      if (e.shiftKey) {
-        // Shift + Tab
-        if (document.activeElement === firstFocusableElementRef.current) {
-          e.preventDefault();
-          lastFocusableElementRef.current?.focus();
-        }
-      } else {
-        // Tab
-        if (document.activeElement === lastFocusableElementRef.current) {
-          e.preventDefault();
-          firstFocusableElementRef.current?.focus();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleTabKey);
-    return () => document.removeEventListener('keydown', handleTabKey);
   }, [isMobileMenuOpen]);
 
   // Keyboard navigation for AI Tools dropdown
@@ -308,7 +266,7 @@ const Header = () => {
           
           {/* Menu Panel - Matching Desktop Dropdown Style */}
           <div 
-            className="mobile-menu-panel fixed top-16 left-0 right-0 z-[1050] lg:hidden mobile-menu-slide-in"
+            className="mobile-menu-panel fixed top-16 left-0 right-0 z-[1050] lg:hidden"
           >
             <div className="container mx-auto px-3 sm:px-4 py-2">
               <div className="w-full max-w-md mx-auto relative">
@@ -323,15 +281,11 @@ const Header = () => {
                 
                 {/* Blurred Menu Content */}
                 <nav 
-                  ref={mobileMenuRef}
-                  className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3"
+                  className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 animate-fade-in animate-scale-in"
                   style={{
                     maxHeight: 'calc(100vh - 6rem)',
                     overflowY: 'auto'
                   }}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Mobile navigation menu"
                 >
                   <div className="flex flex-col space-y-1">
                     {mobileNavItems.map((item) => (
