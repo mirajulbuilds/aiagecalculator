@@ -677,12 +677,29 @@ All colors MUST be HSL.
       }
     }
     
+    /* Dropdown fade-in animation */
+    @keyframes dropdown-fade-in {
+      0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
     .tool-sidebar-link.active .tool-icon {
       animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
     
     /* Mobile dropdown styling with sidebar effects */
     @layer components {
+      /* Smooth fade-in animation for dropdown */
+      .mobile-select-content {
+        animation: dropdown-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+        transform-origin: top center;
+      }
       /* Hide checkmark/tick mark completely - target parent span and indicator */
       .mobile-select-item span[class*="absolute"],
       .mobile-select-item [data-radix-select-item-indicator],
