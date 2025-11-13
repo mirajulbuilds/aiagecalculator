@@ -15,6 +15,31 @@ const Header = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Ripple effect handler
+  const createRipple = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const button = event.currentTarget;
+    const ripple = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+
+    const rect = button.getBoundingClientRect();
+    ripple.style.width = ripple.style.height = `${diameter}px`;
+    ripple.style.left = `${event.clientX - rect.left - radius}px`;
+    ripple.style.top = `${event.clientY - rect.top - radius}px`;
+    ripple.classList.add('ripple');
+
+    const existingRipple = button.querySelector('.ripple');
+    if (existingRipple) {
+      existingRipple.remove();
+    }
+
+    button.appendChild(ripple);
+
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
+  };
+
   // Calculate scrollbar width and set CSS variable
   useEffect(() => {
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
@@ -131,6 +156,16 @@ const Header = () => {
 
   const handleCloseMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleOpenMenuWithRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
+    createRipple(e);
+    handleOpenMenu();
+  };
+
+  const handleCloseMenuWithRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
+    createRipple(e);
+    handleCloseMenu();
   };
 
   const mainNavItems = [
@@ -271,10 +306,11 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleOpenMenu}
+                  onClick={handleOpenMenuWithRipple}
                   aria-label="Open menu"
                   aria-expanded={isMobileMenuOpen}
                   aria-controls="mobile-menu-panel"
+                  className="relative overflow-hidden"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
@@ -287,7 +323,11 @@ const Header = () => {
       {/* Menu Backdrop */}
       <div 
         id="menu-backdrop"
-        className={`fixed inset-0 z-[99] bg-transparent ${isMobileMenuOpen ? 'is-open' : ''}`}
+        className={`fixed inset-0 z-[99] transition-all duration-500 ease-out ${
+          isMobileMenuOpen 
+            ? 'is-open bg-black/20 backdrop-blur-sm' 
+            : 'bg-transparent backdrop-blur-none'
+        }`}
         onClick={handleCloseMenu}
         style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
       />
@@ -336,8 +376,8 @@ const Header = () => {
       <button
         id="menu-close-btn"
         ref={closeButtonRef}
-        onClick={handleCloseMenu}
-        className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 ${
+        onClick={handleCloseMenuWithRipple}
+        className={`fixed top-[85px] right-[25px] z-[102] w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-110 relative overflow-hidden ${
           isMobileMenuOpen 
             ? 'is-open opacity-100 visible scale-100' 
             : 'opacity-0 invisible scale-75'
