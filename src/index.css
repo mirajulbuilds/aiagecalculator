@@ -682,70 +682,78 @@ All colors MUST be HSL.
     }
     
     /* Mobile dropdown styling with sidebar effects */
-    /* Base icon styling */
-    .mobile-select-item .select-item-icon {
-      width: 24px;
-      height: 24px;
-      transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                  transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                  filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      color: hsl(var(--muted-foreground));
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-      flex-shrink: 0;
-    }
-    
-    /* Override default Radix Select focus styles */
-    .mobile-select-item[data-highlighted] {
-      background: linear-gradient(
-        135deg,
-        rgba(139, 92, 246, 0.25),
-        rgba(139, 92, 246, 0.15)
-      ) !important;
-      box-shadow: 
-        0 6px 20px rgba(139, 92, 246, 0.25),
-        inset 0 1px 1px rgba(255, 255, 255, 0.15),
-        0 0 0 2px rgba(139, 92, 246, 0.2) !important;
-      border: 1px solid rgba(139, 92, 246, 0.4) !important;
-      outline: none !important;
-      animation: pulse-glow 2s ease-in-out infinite;
-    }
-    
-    /* Hover icon effect */
-    .mobile-select-item[data-highlighted] .select-item-icon {
-      color: hsl(var(--primary)) !important;
-      transform: scale(1.15) rotate(5deg);
-      filter: drop-shadow(0 3px 6px rgba(139, 92, 246, 0.2));
-    }
-    
-    /* Selected item styling */
-    .mobile-select-item[data-state="checked"] .select-item-icon {
-      color: hsl(var(--primary));
-      animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      transform: scale(1.15);
-      filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
-    }
-    
-    /* Style the selected value in closed trigger */
-    .mobile-tool-dropdown [data-state="closed"] .select-item-icon {
-      color: hsl(var(--primary));
-      transform: scale(1.15);
-      filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
-    }
-    
-    /* Proper item padding */
-    .mobile-select-item {
-      min-height: 48px !important;
-      padding: 12px 16px !important;
-      cursor: pointer;
-    }
-    
-    /* Dark mode */
-    .dark .mobile-select-item[data-highlighted] {
-      background: linear-gradient(
-        135deg,
-        rgba(139, 92, 246, 0.35),
-        rgba(139, 92, 246, 0.25)
-      ) !important;
+    @layer components {
+      /* Base icon styling */
+      .mobile-select-item .select-item-icon {
+        width: 24px;
+        height: 24px;
+        transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: hsl(var(--muted-foreground));
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        flex-shrink: 0;
+      }
+      
+      /* Override Radix Select with maximum specificity */
+      .mobile-select-content [data-radix-select-item][data-highlighted],
+      .mobile-select-content [data-radix-select-item]:focus,
+      .mobile-select-content [data-radix-select-item]:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.25),
+          rgba(139, 92, 246, 0.15)
+        ) !important;
+        box-shadow: 
+          0 6px 20px rgba(139, 92, 246, 0.25),
+          inset 0 1px 1px rgba(255, 255, 255, 0.15),
+          0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+        border: 1px solid rgba(139, 92, 246, 0.4) !important;
+        outline: none !important;
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
+      
+      /* Icon colors for highlighted/focus/hover */
+      .mobile-select-content [data-radix-select-item][data-highlighted] .select-item-icon,
+      .mobile-select-content [data-radix-select-item]:focus .select-item-icon,
+      .mobile-select-content [data-radix-select-item]:hover .select-item-icon {
+        color: hsl(var(--primary)) !important;
+        transform: scale(1.15) rotate(5deg);
+        filter: drop-shadow(0 3px 6px rgba(139, 92, 246, 0.2));
+      }
+      
+      /* Selected item styling */
+      .mobile-select-item[data-state="checked"] .select-item-icon {
+        color: hsl(var(--primary));
+        animation: icon-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        transform: scale(1.15);
+        filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
+      }
+      
+      /* Style the selected value in closed trigger */
+      .mobile-tool-dropdown [data-state="closed"] .select-item-icon {
+        color: hsl(var(--primary));
+        transform: scale(1.15);
+        filter: drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
+      }
+      
+      /* Proper item padding */
+      .mobile-select-item {
+        min-height: 48px !important;
+        padding: 12px 16px !important;
+        cursor: pointer;
+      }
+      
+      /* Dark mode */
+      .dark .mobile-select-content [data-radix-select-item][data-highlighted],
+      .dark .mobile-select-content [data-radix-select-item]:focus,
+      .dark .mobile-select-content [data-radix-select-item]:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.35),
+          rgba(139, 92, 246, 0.25)
+        ) !important;
+      }
     }
     
     /* Only add margin when sidebar is expanded */
