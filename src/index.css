@@ -621,13 +621,16 @@ All colors MUST be HSL.
     }
     
     .tool-sidebar-link .tool-label {
+      display: none;
       opacity: 0;
       transform: translateX(-10px);
       transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      white-space: nowrap;
     }
     
     /* Show label in expanded state */
     #tool-sidebar:hover .tool-sidebar-link .tool-label {
+      display: inline-block;
       opacity: 1;
       transform: translateX(0);
       transition-delay: 0.1s;
