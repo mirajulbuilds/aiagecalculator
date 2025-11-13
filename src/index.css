@@ -562,6 +562,47 @@ All colors MUST be HSL.
       padding: 0 16px !important;
     }
     
+    /* Stagger animation delays for each link */
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(1) {
+      transition-delay: 0.05s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(2) {
+      transition-delay: 0.1s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(3) {
+      transition-delay: 0.15s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(4) {
+      transition-delay: 0.2s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(5) {
+      transition-delay: 0.25s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(6) {
+      transition-delay: 0.3s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(7) {
+      transition-delay: 0.35s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(8) {
+      transition-delay: 0.4s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(9) {
+      transition-delay: 0.45s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(10) {
+      transition-delay: 0.5s;
+    }
+    
     .tool-sidebar-link::before {
       content: '';
       position: absolute;
@@ -633,7 +674,47 @@ All colors MUST be HSL.
       display: inline-block;
       opacity: 1;
       transform: translateX(0);
-      transition-delay: 0.1s;
+    }
+    
+    /* Stagger label animations */
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(1) .tool-label {
+      transition-delay: 0.15s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(2) .tool-label {
+      transition-delay: 0.2s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(3) .tool-label {
+      transition-delay: 0.25s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(4) .tool-label {
+      transition-delay: 0.3s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(5) .tool-label {
+      transition-delay: 0.35s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(6) .tool-label {
+      transition-delay: 0.4s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(7) .tool-label {
+      transition-delay: 0.45s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(8) .tool-label {
+      transition-delay: 0.5s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(9) .tool-label {
+      transition-delay: 0.55s;
+    }
+    
+    #tool-sidebar:hover .tool-sidebar-link:nth-child(10) .tool-label {
+      transition-delay: 0.6s;
     }
     
     /* Style for the active/selected tool */
