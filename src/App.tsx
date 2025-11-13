@@ -9,6 +9,7 @@ import { lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Breadcrumbs from "./components/Breadcrumbs";
 import { ComparisonProvider } from "./contexts/ComparisonContext";
 import { FloatingCompareBar } from "./components/FloatingCompareBar";
 
@@ -81,6 +82,7 @@ const App = () => (
             <BrowserRouter>
               <div className="flex flex-col min-h-screen">
                 <Header />
+                <Breadcrumbs />
                 <main className="flex-1">
                   <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
                     <AnimatedRoutes />
