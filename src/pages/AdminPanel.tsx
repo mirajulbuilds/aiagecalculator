@@ -86,6 +86,7 @@ const AdminPanel = () => {
   // Tab 1: Scrape state
   const [sourceType, setSourceType] = useState<string>("famousbirthdays");
   const [profileUrl, setProfileUrl] = useState<string>("");
+  const [selectedEngine, setSelectedEngine] = useState<string>("lovable-ai");
 
   // Search & Edit state
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -372,6 +373,7 @@ const AdminPanel = () => {
           profileURL: profileUrl,
           sourceType: sourceType,
           manualImageBase64: imageBase64,
+          engine_choice: selectedEngine,
         },
       });
 
@@ -587,6 +589,25 @@ const AdminPanel = () => {
                   placeholder="Paste the full URL here..."
                   required
                 />
+              </div>
+
+              {/* AI Engine Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="aiEngine">Select AI Engine *</Label>
+                <Select value={selectedEngine} onValueChange={setSelectedEngine}>
+                  <SelectTrigger id="aiEngine">
+                    <SelectValue placeholder="Select AI engine" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lovable-ai">Lovable AI (Uses Project Credits)</SelectItem>
+                    <SelectItem value="gemini-api">My Gemini API (Uses My API Key)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {selectedEngine === "lovable-ai" 
+                    ? "Uses built-in AI credits from your Lovable project" 
+                    : "Uses your personal Google Gemini API key for direct API access"}
+                </p>
               </div>
 
               {/* Generate Button */}

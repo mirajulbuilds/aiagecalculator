@@ -122,7 +122,7 @@ serve(async (req) => {
   }
 
   try {
-    const { profileURL, sourceType, manualImageBase64 } = await req.json();
+    const { profileURL, sourceType, manualImageBase64, engine_choice } = await req.json();
 
     if (!profileURL) {
       return new Response(
@@ -216,23 +216,92 @@ serve(async (req) => {
     // If no image found, profileImageUrl remains null (no fake images)
 
     // Step 3: Use AI to rewrite and generate structured content
-    console.log("Generating content with AI using scraped data");
-    const contentResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [
-          {
-            role: "system",
-            content: `You are a professional celebrity biographer and journalist. Write in an engaging, human-like style that reads like a well-researched magazine article or biography book. Use storytelling techniques, vivid descriptions, and maintain a professional yet personable tone. Format content with proper HTML tags: <h2> for section headings, <p> for paragraphs, <ul> and <li> for lists, <strong> for emphasis, and <em> for subtle emphasis.`,
+    console.log("Generating content with AI using scraped data, engine:", engine_choice || "lovable-ai");
+    
+    let contentResponse;
+    
+    // Conditional Logic: Choose between Lovable AI or Direct Gemini API
+    if (engine_choice === "gemini-api") {
+      // OPTION 2: Use Direct Gemini API with user's API key
+      console.log("Using Direct Gemini API");
+      const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+      
+      if (!GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY is not configured in secrets");
+      }
+      
+      contentResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=" + GEMINI_API_KEY,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-          {
-            role: "user",
-            content: `I've scraped content about ${celebrityName} from ${profileURL}. Here's the raw text:
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  {
+                    text: `You are a professional celebrity biographer and journalist. I've scraped content about ${celebrityName} from ${profileURL}. Here's the raw text:
+
+${rawText}
+
+Please generate a comprehensive celebrity profile with the following structure (return ONLY valid JSON, no markdown):
+
+{
+  "main_content": "Minimum 250 words HTML-formatted biography with sections: <h2>About</h2>, <h2>Before Fame</h2>, <h2>Career Highlights</h2>, <h2>Trivia</h2> (with <ul> and <li>), <h2>Family Life</h2>",
+  "name": "Celebrity's full name",
+  "profession": "Specific profession (e.g., 'Academy Award-winning actress')",
+  "date_of_birth": "YYYY-MM-DD format",
+  "place_of_birth": "City, state/region, country",
+  "zodiac_sign": "Zodiac sign",
+  "popularity_ranks": {
+    "most_popular": number between 1-10000,
+    "age_rank": number between 1-10000,
+    "name_rank": number between 1-10000
+  },
+  "meta_title": "SEO title max 60 chars with name and achievement",
+  "meta_description": "CRITICAL: max 160 chars, compelling and informative",
+  "profile_slug": "url-friendly-slug-lowercase-hyphenated",
+  "known_for_data": [
+    {"title": "Work title", "year": "Year", "imageURL": ""}
+  ]
+}
+
+Return ONLY the JSON object, no other text.`
+                  }
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.8,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 8192,
+            }
+          }),
+        }
+      );
+    } else {
+      // OPTION 1: Use Lovable AI (Default)
+      console.log("Using Lovable AI Gateway");
+      contentResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-pro",
+          messages: [
+            {
+              role: "system",
+              content: `You are a professional celebrity biographer and journalist. Write in an engaging, human-like style that reads like a well-researched magazine article or biography book. Use storytelling techniques, vivid descriptions, and maintain a professional yet personable tone. Format content with proper HTML tags: <h2> for section headings, <p> for paragraphs, <ul> and <li> for lists, <strong> for emphasis, and <em> for subtle emphasis.`,
+            },
+            {
+              role: "user",
+              content: `I've scraped content about ${celebrityName} from ${profileURL}. Here's the raw text:
 
 ${rawText}
 
@@ -261,83 +330,84 @@ Required content:
     Example: [{"title": "Titanic", "year": "1997", "imageURL": ""}, {"title": "Inception", "year": "2010", "imageURL": ""}]
 
 Make the writing feel human, warm, and professionally crafted.`,
-          },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "generate_celebrity_profile",
-              description: "Generate complete celebrity profile data",
-              parameters: {
-                type: "object",
-                properties: {
-                  main_content: {
-                    type: "string",
-                    description: "Minimum 250 words HTML-formatted biography written in engaging, human-like journalistic style with <h2> section headings for: About, Before Fame, Career Highlights, Trivia (with <ul> and <li>), and Family Life",
-                  },
-                  name: {
-                    type: "string",
-                    description: "Celebrity's full name",
-                  },
-                  profession: { type: "string" },
-                  date_of_birth: {
-                    type: "string",
-                    description: "Date in YYYY-MM-DD format",
-                  },
-                  place_of_birth: { type: "string" },
-                  zodiac_sign: { type: "string" },
-                  popularity_ranks: {
-                    type: "object",
-                    properties: {
-                      most_popular: { type: "number" },
-                      age_rank: { type: "number" },
-                      name_rank: { type: "number" },
+            },
+          ],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "generate_celebrity_profile",
+                description: "Generate complete celebrity profile data",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    main_content: {
+                      type: "string",
+                      description: "Minimum 250 words HTML-formatted biography written in engaging, human-like journalistic style with <h2> section headings for: About, Before Fame, Career Highlights, Trivia (with <ul> and <li>), and Family Life",
                     },
-                  },
-                  meta_title: { type: "string" },
-                  meta_description: { 
-                    type: "string",
-                    description: "CRITICAL: Must be 160 characters or less for SEO"
-                  },
-                  profile_slug: { type: "string" },
-                  known_for_data: {
-                    type: "array",
-                    description: "Array of famous works/achievements with title, year, and imageURL",
-                    items: {
+                    name: {
+                      type: "string",
+                      description: "Celebrity's full name",
+                    },
+                    profession: { type: "string" },
+                    date_of_birth: {
+                      type: "string",
+                      description: "Date in YYYY-MM-DD format",
+                    },
+                    place_of_birth: { type: "string" },
+                    zodiac_sign: { type: "string" },
+                    popularity_ranks: {
                       type: "object",
                       properties: {
-                        title: { type: "string" },
-                        year: { type: "string" },
-                        imageURL: { type: "string" }
+                        most_popular: { type: "number" },
+                        age_rank: { type: "number" },
+                        name_rank: { type: "number" },
+                      },
+                    },
+                    meta_title: { type: "string" },
+                    meta_description: { 
+                      type: "string",
+                      description: "CRITICAL: Must be 160 characters or less for SEO"
+                    },
+                    profile_slug: { type: "string" },
+                    known_for_data: {
+                      type: "array",
+                      description: "Array of famous works/achievements with title, year, and imageURL",
+                      items: {
+                        type: "object",
+                        properties: {
+                          title: { type: "string" },
+                          year: { type: "string" },
+                          imageURL: { type: "string" }
+                        }
                       }
-                    }
+                    },
                   },
+                  required: [
+                    "main_content",
+                    "name",
+                    "profession",
+                    "date_of_birth",
+                    "place_of_birth",
+                    "zodiac_sign",
+                    "popularity_ranks",
+                    "meta_title",
+                    "meta_description",
+                    "profile_slug",
+                    "known_for_data",
+                  ],
+                  additionalProperties: false,
                 },
-                required: [
-                  "main_content",
-                  "name",
-                  "profession",
-                  "date_of_birth",
-                  "place_of_birth",
-                  "zodiac_sign",
-                  "popularity_ranks",
-                  "meta_title",
-                  "meta_description",
-                  "profile_slug",
-                  "known_for_data",
-                ],
-                additionalProperties: false,
               },
             },
+          ],
+          tool_choice: {
+            type: "function",
+            function: { name: "generate_celebrity_profile" },
           },
-        ],
-        tool_choice: {
-          type: "function",
-          function: { name: "generate_celebrity_profile" },
-        },
-      }),
-    });
+        }),
+      });
+    }
 
     if (!contentResponse.ok) {
       const errorText = await contentResponse.text();
@@ -348,12 +418,28 @@ Make the writing feel human, warm, and professionally crafted.`,
     const contentData = await contentResponse.json();
     console.log("Content generated successfully");
 
-    const toolCall = contentData.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall) {
-      throw new Error("No tool call in response");
+    let generatedProfile;
+    
+    if (engine_choice === "gemini-api") {
+      // Parse Gemini API response format
+      const geminiText = contentData.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!geminiText) {
+        throw new Error("No content in Gemini response");
+      }
+      
+      // Remove markdown code blocks if present
+      const cleanedText = geminiText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      generatedProfile = JSON.parse(cleanedText);
+      console.log("Parsed Gemini API response");
+    } else {
+      // Parse Lovable AI response format
+      const toolCall = contentData.choices?.[0]?.message?.tool_calls?.[0];
+      if (!toolCall) {
+        throw new Error("No tool call in response");
+      }
+      generatedProfile = JSON.parse(toolCall.function.arguments);
+      console.log("Parsed Lovable AI response");
     }
-
-    const generatedProfile = JSON.parse(toolCall.function.arguments);
 
     // Ensure meta_description is 160 chars or less
     if (generatedProfile.meta_description && generatedProfile.meta_description.length > 160) {
