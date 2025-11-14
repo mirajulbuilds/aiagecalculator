@@ -226,9 +226,10 @@ const LookAlikeFinder = () => {
   const handleShare = async () => {
     if (!matchResult) return;
 
+    const topMatch = matchResult.topMatches[0] || matchResult.bestMatch;
     await triggerNativeShare({
       title: "Celebrity Look-Alike Finder",
-      text: `The AI says I look like ${matchResult.bestMatch.name}! Find your twin.`,
+      text: `The AI says my #1 celebrity twin is ${topMatch.name}! Find yours.`,
       url: `${SITE_CONFIG.canonicalUrl}/look-alike-finder`,
     });
   };
@@ -338,80 +339,64 @@ const LookAlikeFinder = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  Your Celebrity Match
+                  Your Top 3 Matches
                 </CardTitle>
                 <CardDescription>
-                  {matchResult ? 'Here\'s your match!' : 'Upload a photo to see results'}
+                  {matchResult ? 'Here are your top celebrity matches!' : 'Upload a photo to see results'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {matchResult ? (
                   <div className="space-y-6">
-                    <div className="text-center">
-                      <img
-                        src={matchResult.bestMatch.profileImageUrl}
-                        alt={matchResult.bestMatch.name}
-                        className="w-48 h-48 mx-auto rounded-full object-cover border-4 border-primary shadow-lg mb-4"
-                      />
-                      <h3 className="text-2xl font-bold text-foreground mb-2">
-                        {matchResult.bestMatch.name}
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        {matchResult.bestMatch.profession}
-                      </p>
-                      <div className="inline-block bg-gradient-to-r from-primary to-purple-600 text-white px-6 py-3 rounded-full text-xl font-bold">
-                        {matchResult.bestMatch.similarityPercentage}% Match
-                      </div>
+                    <h3 className="text-center text-xl font-semibold mb-4">
+                      Here are your Top 3 Matches!
+                    </h3>
+                    
+                    {/* Top 3 Matches Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {matchResult.topMatches.slice(0, 3).map((match, index) => (
+                        <Link
+                          key={match.id}
+                          to={`/people/${match.profileSlug}`}
+                          className="group"
+                        >
+                          <Card className="h-full hover:shadow-xl hover:border-primary/50 transition-all duration-300 cursor-pointer overflow-hidden">
+                            <CardContent className="p-4 text-center">
+                              <div className="relative mb-3">
+                                {index === 0 && (
+                                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-primary to-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                                    #1
+                                  </div>
+                                )}
+                                <img
+                                  src={match.profileImageUrl}
+                                  alt={match.name}
+                                  className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-primary/20 group-hover:border-primary transition-colors"
+                                />
+                              </div>
+                              <h4 className="font-bold text-foreground mb-1 truncate">
+                                {match.name}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mb-3 truncate">
+                                {match.profession}
+                              </p>
+                              <div className="inline-block bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+                                {match.similarityPercentage}% Match
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      ))}
                     </div>
-
-                    <Link to={`/people/${matchResult.bestMatch.profileSlug}`}>
-                      <Button variant="outline" className="w-full">
-                        View Full Profile
-                      </Button>
-                    </Link>
 
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full mt-4"
                       onClick={handleShare}
                     >
                       <Share2 className="w-4 h-4 mr-2" />
-                      Share Your Match!
+                      Share Your #1 Match!
                     </Button>
-
-                    {matchResult.topMatches.length > 1 && (
-                      <div className="mt-6 pt-6 border-t border-border">
-                        <h4 className="font-semibold mb-3 text-sm text-muted-foreground">
-                          Other Similar Matches:
-                        </h4>
-                        <div className="space-y-2">
-                          {matchResult.topMatches.slice(1, 4).map((match) => (
-                            <Link
-                              key={match.id}
-                              to={`/people/${match.profileSlug}`}
-                              className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
-                            >
-                              <img
-                                src={match.profileImageUrl}
-                                alt={match.name}
-                                className="w-12 h-12 rounded-full object-cover"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm truncate">
-                                  {match.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {match.profession}
-                                </p>
-                              </div>
-                              <span className="text-sm font-semibold text-primary">
-                                {match.similarityPercentage}%
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
