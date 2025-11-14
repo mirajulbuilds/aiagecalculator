@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp, Plus } from "lucide-react";
+import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp, Plus, Lightbulb, AlertCircle, CheckCircle } from "lucide-react";
 import { useLifeExpectancyComparison } from "@/contexts/LifeExpectancyComparisonContext";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +21,13 @@ const LifeExpectancyCalculator = () => {
   const [result, setResult] = useState<{
     estimated_age: number;
     summary_text: string;
+    recommendations?: Array<{
+      title: string;
+      description: string;
+      impact: string;
+      priority: "high" | "medium" | "low";
+      category: string;
+    }>;
   } | null>(null);
   const [scenarioLabel, setScenarioLabel] = useState<string>("");
   const { addToComparison } = useLifeExpectancyComparison();
@@ -153,7 +160,8 @@ const LifeExpectancyCalculator = () => {
       if (data && data.estimated_age && data.summary_text) {
         setResult({
           estimated_age: data.estimated_age,
-          summary_text: data.summary_text
+          summary_text: data.summary_text,
+          recommendations: data.recommendations || []
         });
       } else {
         throw new Error("Invalid response from server");
@@ -384,6 +392,75 @@ const LifeExpectancyCalculator = () => {
               <div className="p-4 bg-primary/5 rounded-lg">
                 <p className="text-foreground leading-relaxed">{result.summary_text}</p>
               </div>
+
+              {result.recommendations && result.recommendations.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-primary" />
+                    <h3 className="text-xl font-semibold">Personalized Recommendations</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Follow these evidence-based suggestions to maximize your life expectancy
+                  </p>
+                  
+                  <div className="grid gap-3">
+                    {result.recommendations.map((rec, index) => (
+                      <Card 
+                        key={index} 
+                        className={`border-l-4 ${
+                          rec.priority === "high" 
+                            ? "border-l-destructive" 
+                            : rec.priority === "medium" 
+                            ? "border-l-warning" 
+                            : "border-l-primary"
+                        }`}
+                      >
+                        <CardContent className="p-4 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                {rec.priority === "high" ? (
+                                  <AlertCircle className="w-4 h-4 text-destructive" />
+                                ) : rec.priority === "medium" ? (
+                                  <AlertCircle className="w-4 h-4 text-warning" />
+                                ) : (
+                                  <CheckCircle className="w-4 h-4 text-primary" />
+                                )}
+                                <h4 className="font-semibold">{rec.title}</h4>
+                              </div>
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {rec.description}
+                              </p>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <div className="text-xs font-medium text-muted-foreground uppercase mb-1">
+                                Impact
+                              </div>
+                              <div className="text-sm font-bold text-primary">
+                                {rec.impact}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 pt-2 border-t border-border">
+                            <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-medium">
+                              {rec.category}
+                            </span>
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                              rec.priority === "high"
+                                ? "bg-destructive/10 text-destructive"
+                                : rec.priority === "medium"
+                                ? "bg-warning/10 text-warning"
+                                : "bg-primary/10 text-primary"
+                            }`}>
+                              {rec.priority} priority
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex flex-col gap-3">
                 <Button onClick={handleShare} variant="outline" className="gap-2" size="lg">
