@@ -30,7 +30,9 @@ const LifeExpectancyCalculator = () => {
     }>;
   } | null>(null);
   const [scenarioLabel, setScenarioLabel] = useState<string>("");
-  const { addToComparison } = useLifeExpectancyComparison();
+  const {
+    addToComparison
+  } = useLifeExpectancyComparison();
   const days = Array.from({
     length: 31
   }, (_, i) => i + 1);
@@ -195,13 +197,10 @@ const LifeExpectancyCalculator = () => {
       }
     }
   };
-
   const handleAddToComparison = () => {
     if (!result) return;
-    
     const label = scenarioLabel.trim() || `Scenario ${Date.now()}`;
     const birthDate = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
-    
     addToComparison({
       id: Date.now().toString(),
       label,
@@ -212,9 +211,8 @@ const LifeExpectancyCalculator = () => {
       exercise,
       alcohol,
       estimatedAge: result.estimated_age,
-      summary: result.summary_text,
+      summary: result.summary_text
     });
-    
     setScenarioLabel("");
   };
   return <>
@@ -226,7 +224,7 @@ const LifeExpectancyCalculator = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4 py-[22px] md:text-5xl">
             AI Life Expectancy Calculator
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -393,8 +391,7 @@ const LifeExpectancyCalculator = () => {
                 <p className="text-foreground leading-relaxed">{result.summary_text}</p>
               </div>
 
-              {result.recommendations && result.recommendations.length > 0 && (
-                <div className="space-y-4">
+              {result.recommendations && result.recommendations.length > 0 && <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Lightbulb className="w-5 h-5 text-primary" />
                     <h3 className="text-xl font-semibold">Personalized Recommendations</h3>
@@ -404,28 +401,12 @@ const LifeExpectancyCalculator = () => {
                   </p>
                   
                   <div className="grid gap-3">
-                    {result.recommendations.map((rec, index) => (
-                      <Card 
-                        key={index} 
-                        className={`border-l-4 ${
-                          rec.priority === "high" 
-                            ? "border-l-destructive" 
-                            : rec.priority === "medium" 
-                            ? "border-l-warning" 
-                            : "border-l-primary"
-                        }`}
-                      >
+                    {result.recommendations.map((rec, index) => <Card key={index} className={`border-l-4 ${rec.priority === "high" ? "border-l-destructive" : rec.priority === "medium" ? "border-l-warning" : "border-l-primary"}`}>
                         <CardContent className="p-4 space-y-2">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                {rec.priority === "high" ? (
-                                  <AlertCircle className="w-4 h-4 text-destructive" />
-                                ) : rec.priority === "medium" ? (
-                                  <AlertCircle className="w-4 h-4 text-warning" />
-                                ) : (
-                                  <CheckCircle className="w-4 h-4 text-primary" />
-                                )}
+                                {rec.priority === "high" ? <AlertCircle className="w-4 h-4 text-destructive" /> : rec.priority === "medium" ? <AlertCircle className="w-4 h-4 text-warning" /> : <CheckCircle className="w-4 h-4 text-primary" />}
                                 <h4 className="font-semibold">{rec.title}</h4>
                               </div>
                               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -445,22 +426,14 @@ const LifeExpectancyCalculator = () => {
                             <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-medium">
                               {rec.category}
                             </span>
-                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                              rec.priority === "high"
-                                ? "bg-destructive/10 text-destructive"
-                                : rec.priority === "medium"
-                                ? "bg-warning/10 text-warning"
-                                : "bg-primary/10 text-primary"
-                            }`}>
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${rec.priority === "high" ? "bg-destructive/10 text-destructive" : rec.priority === "medium" ? "bg-warning/10 text-warning" : "bg-primary/10 text-primary"}`}>
                               {rec.priority} priority
                             </span>
                           </div>
                         </CardContent>
-                      </Card>
-                    ))}
+                      </Card>)}
                   </div>
-                </div>
-              )}
+                </div>}
 
               <div className="flex flex-col gap-3">
                 <Button onClick={handleShare} variant="outline" className="gap-2" size="lg">
@@ -469,13 +442,7 @@ const LifeExpectancyCalculator = () => {
                 </Button>
                 
                 <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={scenarioLabel}
-                    onChange={(e) => setScenarioLabel(e.target.value)}
-                    placeholder="Name this scenario (optional)"
-                    className="flex-1 px-4 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <input type="text" value={scenarioLabel} onChange={e => setScenarioLabel(e.target.value)} placeholder="Name this scenario (optional)" className="flex-1 px-4 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary" />
                   <Button onClick={handleAddToComparison} className="gap-2" size="lg">
                     <Plus className="w-4 h-4" />
                     Add to Compare
