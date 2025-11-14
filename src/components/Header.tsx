@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, ChevronDown, X, Home, Sparkles, Camera, Heart, History, Star, BookOpen } from "lucide-react";
+import { Menu, ChevronDown, X, Home, Sparkles, Camera, Heart, History, Star, BookOpen, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import ThemeToggle from "./ThemeToggle";
@@ -178,6 +178,7 @@ const Header = () => {
     { title: "AI Face Age", path: "/ai-face-age", icon: Camera },
     { title: "Birthday Compatibility", path: "/compatibility-calculator", icon: Heart },
     { title: "Past Life Generator", path: "/past-life-generator", icon: History },
+    { title: "Life Expectancy", path: "/life-expectancy-calculator", icon: Activity },
   ];
 
   const mobileNavItems = [
@@ -186,6 +187,7 @@ const Header = () => {
     { title: "AI Face Age", path: "/ai-face-age", icon: Camera },
     { title: "Birthday Compatibility", path: "/compatibility-calculator", icon: Heart },
     { title: "Past Life Generator", path: "/past-life-generator", icon: History },
+    { title: "Life Expectancy", path: "/life-expectancy-calculator", icon: Activity },
     { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
     { title: "Blog", path: "/blog", icon: BookOpen },
   ];
