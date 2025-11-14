@@ -42,3 +42,6 @@ verify_jwt = false
 [functions.get-due-date]
 verify_jwt = false
 
+[functions.get-pet-human-age]
+verify_jwt = false
+

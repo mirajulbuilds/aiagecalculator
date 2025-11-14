@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Menu, User, Calendar, Heart, Sparkles, Brain, Scale, Camera, Gift, Users, Moon, TrendingUp, Activity, Baby, Home, Star, BookOpen, PiggyBank, History, ChevronDown, X } from "lucide-react";
+import { Search, Menu, User, Calendar, Heart, Sparkles, Brain, Scale, Camera, Gift, Users, Moon, TrendingUp, Activity, Baby, Home, Star, BookOpen, PiggyBank, History, ChevronDown, X, PawPrint } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import ThemeToggle from "./ThemeToggle";
@@ -182,6 +182,7 @@ const Header = () => {
     { title: "Retirement Calculator", path: "/retirement-calculator", icon: PiggyBank },
     { title: "Health Score", path: "/health-score-calculator", icon: Heart },
     { title: "Due Date Calculator", path: "/due-date-calculator", icon: Baby },
+    { title: "Pet Age Calculator", path: "/pet-age-calculator", icon: PawPrint },
   ];
 
   const mobileNavItems = [
@@ -194,6 +195,7 @@ const Header = () => {
     { title: "Retirement Calculator", path: "/retirement-calculator", icon: PiggyBank },
     { title: "Health Score", path: "/health-score-calculator", icon: Heart },
     { title: "Due Date Calculator", path: "/due-date-calculator", icon: Baby },
+    { title: "Pet Age Calculator", path: "/pet-age-calculator", icon: PawPrint },
     { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
     { title: "Blog", path: "/blog", icon: BookOpen },
   ];

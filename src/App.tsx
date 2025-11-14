@@ -42,6 +42,7 @@ const HealthScoreCalculator = lazy(() => import("./pages/HealthScoreCalculator")
 const Compare = lazy(() => import("./pages/Compare"));
 const CompareLifeExpectancy = lazy(() => import("./pages/CompareLifeExpectancy"));
 const DueDateCalculator = lazy(() => import("./pages/DueDateCalculator"));
+const PetAgeCalculator = lazy(() => import("./pages/PetAgeCalculator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const AnimatedRoutes = () => {
             <Route path="/compare" element={<Compare />} />
             <Route path="/compare-life-expectancy" element={<CompareLifeExpectancy />} />
             <Route path="/due-date-calculator" element={<DueDateCalculator />} />
+            <Route path="/pet-age-calculator" element={<PetAgeCalculator />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
         <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
