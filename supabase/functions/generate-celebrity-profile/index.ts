@@ -81,7 +81,7 @@ async function scrapeWebsite(url: string) {
 }
 
 // Helper function to extract data based on source type
-function extractDataFromHTML(html: string, sourceType: string) {
+function extractDataFromHTML(html: string, sourceType: string, baseUrl: string) {
   console.log("Extracting data for source type:", sourceType);
   
   // Simple text extraction - remove HTML tags
@@ -104,8 +104,13 @@ function extractDataFromHTML(html: string, sourceType: string) {
     imageUrl = imgMatch[1];
     // Make absolute URL if relative
     if (imageUrl.startsWith('/')) {
-      const urlObj = new URL(html.match(/<base[^>]*href=["']([^"']+)["']/i)?.[1] || sourceType);
-      imageUrl = urlObj.origin + imageUrl;
+      try {
+        const urlObj = new URL(baseUrl);
+        imageUrl = urlObj.origin + imageUrl;
+      } catch (error) {
+        console.error("Error constructing absolute URL:", error);
+        imageUrl = null;
+      }
     }
   }
 
@@ -157,7 +162,7 @@ serve(async (req) => {
 
     // Step 1: Scrape the website
     const html = await scrapeWebsite(profileURL);
-    const scrapedData = extractDataFromHTML(html, sourceType);
+    const scrapedData = extractDataFromHTML(html, sourceType, profileURL);
     celebrityName = scrapedData.name;
     const rawText = scrapedData.rawText;
     const scrapedImageUrl = scrapedData.imageUrl;
