@@ -91,10 +91,11 @@ const AdminPanel = () => {
   const [profileUrl, setProfileUrl] = useState<string>("");
   const [selectedEngine, setSelectedEngine] = useState<string>("lovable-ai");
 
-  // Search & Edit state
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<CelebrityData[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  // All Profiles Data Table state
+  const [allProfiles, setAllProfiles] = useState<CelebrityData[]>([]);
+  const [filteredProfiles, setFilteredProfiles] = useState<CelebrityData[]>([]);
+  const [tableSearchQuery, setTableSearchQuery] = useState<string>("");
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
   
   // Delete confirmation state
   const [profileToDelete, setProfileToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -509,42 +510,53 @@ const AdminPanel = () => {
     toast.info("Profile generation cancelled");
   };
 
-  const handleSearchProfiles = async () => {
-    if (!searchQuery || searchQuery.trim().length === 0) {
-      toast.error("Please enter a celebrity name to search");
-      return;
-    }
-
-    setIsSearching(true);
+  // Fetch all celebrity profiles on mount
+  const fetchAllProfiles = async () => {
+    setIsLoadingProfiles(true);
     try {
       const { data, error } = await supabase
         .from("celebrities")
         .select("*")
-        .ilike("name", `%${searchQuery}%`)
         .order("name");
 
       if (error) {
-        console.error("Search error:", error);
-        toast.error("Failed to search profiles");
-        setSearchResults([]);
+        console.error("Error fetching profiles:", error);
+        toast.error("Failed to load celebrity profiles");
         return;
       }
 
-      setSearchResults(data || []);
-      
-      if (data && data.length === 0) {
-        toast.info("No profiles found matching your search");
-      } else if (data) {
-        toast.success(`Found ${data.length} profile(s)`);
-      }
+      setAllProfiles(data || []);
+      setFilteredProfiles(data || []);
     } catch (error) {
-      console.error("Error searching profiles:", error);
+      console.error("Error loading profiles:", error);
       toast.error("An unexpected error occurred");
-      setSearchResults([]);
     } finally {
-      setIsSearching(false);
+      setIsLoadingProfiles(false);
     }
   };
+
+  // Filter profiles based on search query
+  useEffect(() => {
+    if (!tableSearchQuery.trim()) {
+      setFilteredProfiles(allProfiles);
+      return;
+    }
+
+    const query = tableSearchQuery.toLowerCase();
+    const filtered = allProfiles.filter(profile => 
+      profile.name.toLowerCase().includes(query) ||
+      profile.profession.toLowerCase().includes(query) ||
+      profile.profile_slug.toLowerCase().includes(query)
+    );
+    setFilteredProfiles(filtered);
+  }, [tableSearchQuery, allProfiles]);
+
+  // Load all profiles when Manual Editor tab is active
+  useEffect(() => {
+    if (activeTab === "manual" && allProfiles.length === 0) {
+      fetchAllProfiles();
+    }
+  }, [activeTab]);
 
   const handleLoadProfile = (profile: CelebrityData) => {
     // Populate all form fields with the loaded profile data
@@ -566,11 +578,10 @@ const AdminPanel = () => {
     setKnownForData(profile.known_for_data ? JSON.stringify(profile.known_for_data, null, 2) : "");
     setFaceEmbedding(profile.face_embedding ? JSON.stringify(profile.face_embedding, null, 2) : "");
     
-    // Clear search results after loading
-    setSearchResults([]);
-    setSearchQuery("");
-    
     toast.success(`Loaded profile: ${profile.name}`);
+    
+    // Scroll to form
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   };
 
   const handleDeleteProfile = async () => {
@@ -592,16 +603,12 @@ const AdminPanel = () => {
 
       toast.success(`Profile "${profileToDelete.name}" has been permanently deleted`);
       
-      // Remove from search results
-      setSearchResults(searchResults.filter(p => p.id !== profileToDelete.id));
+      // Remove from all profiles list
+      setAllProfiles(allProfiles.filter(p => p.id !== profileToDelete.id));
+      setFilteredProfiles(filteredProfiles.filter(p => p.id !== profileToDelete.id));
       
       // Close modal and clear state
       setProfileToDelete(null);
-      
-      // Optionally re-run search to refresh results
-      if (searchQuery.trim().length > 0) {
-        handleSearchProfiles();
-      }
     } catch (error) {
       console.error("Error deleting profile:", error);
       toast.error("An unexpected error occurred while deleting");
@@ -749,85 +756,134 @@ const AdminPanel = () => {
 
           {/* TAB 5: MANUAL EDITOR / REVIEW DRAFTS */}
           <TabsContent value="manual" className="space-y-6">
-            {/* SEARCH & EDIT SECTION */}
+            {/* ALL PROFILES DATA TABLE */}
             <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4">
               <h2 className="text-2xl font-semibold text-foreground">
-                Find an Existing Profile to Edit
+                Manage All Celebrity Profiles
               </h2>
               
-              <div className="flex gap-3">
+              {/* Search Bar */}
+              <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <Label htmlFor="searchQuery">Search by Celebrity Name</Label>
+                  <Label htmlFor="tableSearch">Search Profiles</Label>
                   <Input
-                    id="searchQuery"
+                    id="tableSearch"
                     type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Type a celebrity name..."
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleSearchProfiles();
-                      }
-                    }}
+                    value={tableSearchQuery}
+                    onChange={(e) => setTableSearchQuery(e.target.value)}
+                    placeholder="Search by name, profession, or slug..."
+                    className="max-w-sm"
                   />
                 </div>
-                <div className="flex items-end">
-                  <Button
-                    type="button"
-                    onClick={handleSearchProfiles}
-                    disabled={isSearching}
-                    className="min-w-[120px]"
-                  >
-                    {isSearching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Search
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  onClick={fetchAllProfiles}
+                  variant="outline"
+                  size="sm"
+                >
+                  Refresh
+                </Button>
               </div>
 
-              {/* Search Results */}
-              {searchResults.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Search Results ({searchResults.length})
-                  </h3>
-                  <div className="max-h-[400px] overflow-y-auto space-y-2">
-                    {searchResults.map((profile) => (
-                      <div
-                        key={profile.id}
-                        className="flex items-center justify-between p-4 border border-border rounded-lg bg-background hover:bg-accent/5 transition-colors"
-                      >
-                        <div className="flex-1">
-                          <p className="font-semibold text-foreground">{profile.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {profile.profession} • {new Date(profile.date_of_birth).toLocaleDateString()}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Slug: {profile.profile_slug}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            onClick={() => handleLoadProfile(profile)}
-                            variant="default"
-                            size="sm"
-                          >
-                            Load for Editing
-                          </Button>
-                          <Button
-                            type="button"
-                            onClick={() => setProfileToDelete({ id: profile.id, name: profile.name })}
-                            variant="outline"
-                            size="sm"
-                            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+              {/* Loading State */}
+              {isLoadingProfiles && (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
+
+              {/* Data Table */}
+              {!isLoadingProfiles && (
+                <div className="rounded-md border">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-muted/50">
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            Image
+                          </th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            Name
+                          </th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            Profession
+                          </th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            Date of Birth
+                          </th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            Slug
+                          </th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredProfiles.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="h-24 text-center text-muted-foreground">
+                              {tableSearchQuery ? "No profiles match your search." : "No profiles found."}
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredProfiles.map((profile) => (
+                            <tr key={profile.id} className="border-b transition-colors hover:bg-muted/50">
+                              <td className="p-4 align-middle">
+                                <img 
+                                  src={profile.profile_image_url} 
+                                  alt={profile.name}
+                                  className="h-12 w-12 rounded-full object-cover"
+                                />
+                              </td>
+                              <td className="p-4 align-middle font-medium">
+                                {profile.name}
+                              </td>
+                              <td className="p-4 align-middle text-muted-foreground">
+                                {profile.profession}
+                              </td>
+                              <td className="p-4 align-middle text-muted-foreground">
+                                {new Date(profile.date_of_birth).toLocaleDateString()}
+                              </td>
+                              <td className="p-4 align-middle text-sm text-muted-foreground">
+                                {profile.profile_slug}
+                              </td>
+                              <td className="p-4 align-middle">
+                                <div className="flex gap-2">
+                                  <Button
+                                    type="button"
+                                    onClick={() => handleLoadProfile(profile)}
+                                    variant="default"
+                                    size="sm"
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    onClick={() => setProfileToDelete({ id: profile.id, name: profile.name })}
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
                   </div>
+                  
+                  {/* Results Count */}
+                  {filteredProfiles.length > 0 && (
+                    <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/50">
+                      <p className="text-sm text-muted-foreground">
+                        Showing {filteredProfiles.length} of {allProfiles.length} profile(s)
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
