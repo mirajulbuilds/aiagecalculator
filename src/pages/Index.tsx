@@ -30,7 +30,6 @@ import neptuneImg from '../assets/planets/neptune.jpg';
 import plutoImg from '../assets/planets/pluto.jpg';
 import ceresImg from '../assets/planets/ceres.jpg';
 import erisImg from '../assets/planets/eris.jpg';
-
 interface AgeResult {
   years: number;
   months: number;
@@ -46,25 +45,27 @@ interface AgeResult {
   zodiacSign: string;
   zodiacSymbol: string;
 }
-
 const Index = () => {
   const [birthDay, setBirthDay] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
-  
   const currentDate = new Date();
   const [targetDay, setTargetDay] = useState<string>(currentDate.getDate().toString());
   const [targetMonth, setTargetMonth] = useState<string>((currentDate.getMonth() + 1).toString());
   const [targetYear, setTargetYear] = useState<string>(currentDate.getFullYear().toString());
-  
   const [result, setResult] = useState<AgeResult | null>(null);
   const [hasCalculatorResults, setHasCalculatorResults] = useState(false);
   const [timezone, setTimezone] = useState<string>("");
   const [liveAge, setLiveAge] = useState<AgeResult | null>(null);
-  const [planetAges, setPlanetAges] = useState<{ name: string; age: number; imageURL: string; group: string }[]>([]);
+  const [planetAges, setPlanetAges] = useState<{
+    name: string;
+    age: number;
+    imageURL: string;
+    group: string;
+  }[]>([]);
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
-  
+
   // AI Greetings state
   const [selectedOccasion, setSelectedOccasion] = useState('');
   const [occasionDay, setOccasionDay] = useState('');
@@ -101,46 +102,41 @@ const Index = () => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      
       img.onload = () => {
         // Create canvas
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
         if (!ctx) {
           reject(new Error('Could not get canvas context'));
           return;
         }
-        
+
         // Set canvas size to match image
         canvas.width = img.width;
         canvas.height = img.height;
-        
+
         // Draw the original image
         ctx.drawImage(img, 0, 0);
-        
+
         // Add watermark text
         const watermarkText = 'aiagecalc.com';
         const fontSize = Math.max(16, Math.floor(img.width / 30)); // Responsive font size
         const padding = fontSize;
-        
         ctx.font = `${fontSize}px sans-serif`;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'bottom';
-        
+
         // Draw watermark in bottom-right corner
         ctx.fillText(watermarkText, canvas.width - padding, canvas.height - padding);
-        
+
         // Convert canvas to data URL
         const watermarkedImageUrl = canvas.toDataURL('image/png');
         resolve(watermarkedImageUrl);
       };
-      
       img.onerror = () => {
         reject(new Error('Failed to load image'));
       };
-      
       img.src = imageUrl;
     });
   };
@@ -151,30 +147,29 @@ const Index = () => {
     const rect = button.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     // Create 12 particles
     const particleCount = 12;
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle';
-      
+
       // Calculate random angle and distance
-      const angle = (i / particleCount) * Math.PI * 2;
+      const angle = i / particleCount * Math.PI * 2;
       const distance = 50 + Math.random() * 30;
       const tx = Math.cos(angle) * distance;
       const ty = Math.sin(angle) * distance;
-      
+
       // Set custom properties for animation
       particle.style.setProperty('--tx', `${tx}px`);
       particle.style.setProperty('--ty', `${ty}px`);
       particle.style.left = `${centerX}px`;
       particle.style.top = `${centerY}px`;
-      
+
       // Add random delay
       particle.style.animationDelay = `${Math.random() * 0.1}s`;
-      
       document.body.appendChild(particle);
-      
+
       // Remove particle after animation
       setTimeout(() => {
         particle.remove();
@@ -188,9 +183,8 @@ const Index = () => {
     trail.className = 'cursor-trail';
     trail.style.left = `${event.clientX}px`;
     trail.style.top = `${event.clientY}px`;
-    
     document.body.appendChild(trail);
-    
+
     // Remove trail after animation
     setTimeout(() => {
       trail.remove();
@@ -201,7 +195,7 @@ const Index = () => {
   useEffect(() => {
     let lastTrailTime = 0;
     const throttleDelay = 30; // milliseconds between trail creation
-    
+
     const handleMouseMove = (event: MouseEvent) => {
       const now = Date.now();
       if (now - lastTrailTime >= throttleDelay) {
@@ -209,9 +203,7 @@ const Index = () => {
         lastTrailTime = now;
       }
     };
-    
     document.addEventListener('mousemove', handleMouseMove);
-    
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
@@ -223,15 +215,18 @@ const Index = () => {
       toast.error("No image to share");
       return;
     }
-
     try {
       // Convert data URL to blob
       const response = await fetch(watermarkedGreeting);
       const blob = await response.blob();
-      const file = new File([blob], 'greeting-from-aiagecalc.com.png', { type: 'image/png' });
+      const file = new File([blob], 'greeting-from-aiagecalc.com.png', {
+        type: 'image/png'
+      });
 
       // Check if Web Share API is supported with files
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (navigator.share && navigator.canShare && navigator.canShare({
+        files: [file]
+      })) {
         // Use Web Share API (mobile and some desktop browsers)
         await navigator.share({
           files: [file],
@@ -257,7 +252,6 @@ const Index = () => {
       toast.success("Image downloaded successfully!");
     }
   };
-
   useEffect(() => {
     // Detect user's timezone
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -269,35 +263,27 @@ const Index = () => {
     if (!birthDay || !birthMonth || !birthYear || !result) {
       return;
     }
-
     const updateLiveAge = () => {
       const now = new Date();
       const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
-
       if (isNaN(birthDate.getTime()) || birthDate > now) {
         return;
       }
-
       const years = differenceInYears(now, birthDate);
       const months = differenceInMonths(now, birthDate) % 12;
-      
       const afterMonths = new Date(birthDate);
       afterMonths.setFullYear(birthDate.getFullYear() + years);
       afterMonths.setMonth(birthDate.getMonth() + months);
       const days = differenceInDays(now, afterMonths);
-      
       const afterDays = new Date(afterMonths);
       afterDays.setDate(afterMonths.getDate() + days);
       const hours = differenceInHours(now, afterDays);
-      
       const afterHours = new Date(afterDays);
       afterHours.setHours(afterDays.getHours() + hours);
       const minutes = differenceInMinutes(now, afterHours);
-      
       const afterMinutes = new Date(afterHours);
       afterMinutes.setMinutes(afterHours.getMinutes() + minutes);
       const seconds = Math.floor((now.getTime() - afterMinutes.getTime()) / 1000);
-
       const totalDays = differenceInDays(now, birthDate);
       const totalHours = differenceInHours(now, birthDate);
       const totalMinutes = differenceInMinutes(now, birthDate);
@@ -306,7 +292,6 @@ const Index = () => {
       // Calculate next birthday for live age
       const nextBirthdayDays = calculateNextBirthday(parseInt(birthMonth), parseInt(birthDay));
       const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
-
       setLiveAge({
         years,
         months,
@@ -320,104 +305,161 @@ const Index = () => {
         totalSeconds,
         nextBirthdayDays,
         zodiacSign: zodiac.sign,
-        zodiacSymbol: zodiac.symbol,
+        zodiacSymbol: zodiac.symbol
       });
     };
-
     updateLiveAge();
     const interval = setInterval(updateLiveAge, 1000);
-
     return () => clearInterval(interval);
   }, [birthDay, birthMonth, birthYear, result]);
-
-  const months = [
-    { value: "1", label: "January" },
-    { value: "2", label: "February" },
-    { value: "3", label: "March" },
-    { value: "4", label: "April" },
-    { value: "5", label: "May" },
-    { value: "6", label: "June" },
-    { value: "7", label: "July" },
-    { value: "8", label: "August" },
-    { value: "9", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
-
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
-  
+  const months = [{
+    value: "1",
+    label: "January"
+  }, {
+    value: "2",
+    label: "February"
+  }, {
+    value: "3",
+    label: "March"
+  }, {
+    value: "4",
+    label: "April"
+  }, {
+    value: "5",
+    label: "May"
+  }, {
+    value: "6",
+    label: "June"
+  }, {
+    value: "7",
+    label: "July"
+  }, {
+    value: "8",
+    label: "August"
+  }, {
+    value: "9",
+    label: "September"
+  }, {
+    value: "10",
+    label: "October"
+  }, {
+    value: "11",
+    label: "November"
+  }, {
+    value: "12",
+    label: "December"
+  }];
+  const days = Array.from({
+    length: 31
+  }, (_, i) => (i + 1).toString());
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1899 }, (_, i) => (currentYear - i).toString());
-
-  const getZodiacSign = (month: number, day: number): { sign: string; symbol: string } => {
-    const zodiacData: { [key: string]: { sign: string; symbol: string } } = {
-      capricorn: { sign: "Capricorn", symbol: "♑" },
-      aquarius: { sign: "Aquarius", symbol: "♒" },
-      pisces: { sign: "Pisces", symbol: "♓" },
-      aries: { sign: "Aries", symbol: "♈" },
-      taurus: { sign: "Taurus", symbol: "♉" },
-      gemini: { sign: "Gemini", symbol: "♊" },
-      cancer: { sign: "Cancer", symbol: "♋" },
-      leo: { sign: "Leo", symbol: "♌" },
-      virgo: { sign: "Virgo", symbol: "♍" },
-      libra: { sign: "Libra", symbol: "♎" },
-      scorpio: { sign: "Scorpio", symbol: "♏" },
-      sagittarius: { sign: "Sagittarius", symbol: "♐" },
+  const years = Array.from({
+    length: currentYear - 1899
+  }, (_, i) => (currentYear - i).toString());
+  const getZodiacSign = (month: number, day: number): {
+    sign: string;
+    symbol: string;
+  } => {
+    const zodiacData: {
+      [key: string]: {
+        sign: string;
+        symbol: string;
+      };
+    } = {
+      capricorn: {
+        sign: "Capricorn",
+        symbol: "♑"
+      },
+      aquarius: {
+        sign: "Aquarius",
+        symbol: "♒"
+      },
+      pisces: {
+        sign: "Pisces",
+        symbol: "♓"
+      },
+      aries: {
+        sign: "Aries",
+        symbol: "♈"
+      },
+      taurus: {
+        sign: "Taurus",
+        symbol: "♉"
+      },
+      gemini: {
+        sign: "Gemini",
+        symbol: "♊"
+      },
+      cancer: {
+        sign: "Cancer",
+        symbol: "♋"
+      },
+      leo: {
+        sign: "Leo",
+        symbol: "♌"
+      },
+      virgo: {
+        sign: "Virgo",
+        symbol: "♍"
+      },
+      libra: {
+        sign: "Libra",
+        symbol: "♎"
+      },
+      scorpio: {
+        sign: "Scorpio",
+        symbol: "♏"
+      },
+      sagittarius: {
+        sign: "Sagittarius",
+        symbol: "♐"
+      }
     };
-
-    if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return zodiacData.aries;
-    if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return zodiacData.taurus;
-    if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return zodiacData.gemini;
-    if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return zodiacData.cancer;
-    if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return zodiacData.leo;
-    if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return zodiacData.virgo;
-    if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return zodiacData.libra;
-    if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return zodiacData.scorpio;
-    if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return zodiacData.sagittarius;
-    if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return zodiacData.capricorn;
-    if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return zodiacData.aquarius;
+    if (month === 3 && day >= 21 || month === 4 && day <= 19) return zodiacData.aries;
+    if (month === 4 && day >= 20 || month === 5 && day <= 20) return zodiacData.taurus;
+    if (month === 5 && day >= 21 || month === 6 && day <= 20) return zodiacData.gemini;
+    if (month === 6 && day >= 21 || month === 7 && day <= 22) return zodiacData.cancer;
+    if (month === 7 && day >= 23 || month === 8 && day <= 22) return zodiacData.leo;
+    if (month === 8 && day >= 23 || month === 9 && day <= 22) return zodiacData.virgo;
+    if (month === 9 && day >= 23 || month === 10 && day <= 22) return zodiacData.libra;
+    if (month === 10 && day >= 23 || month === 11 && day <= 21) return zodiacData.scorpio;
+    if (month === 11 && day >= 22 || month === 12 && day <= 21) return zodiacData.sagittarius;
+    if (month === 12 && day >= 22 || month === 1 && day <= 19) return zodiacData.capricorn;
+    if (month === 1 && day >= 20 || month === 2 && day <= 18) return zodiacData.aquarius;
     return zodiacData.pisces;
   };
-
   const calculateNextBirthday = (birthMonth: number, birthDay: number): number => {
     const today = new Date();
     const currentYear = today.getFullYear();
-    
+
     // Create this year's birthday
     let nextBirthday = new Date(currentYear, birthMonth - 1, birthDay);
-    
+
     // If birthday has passed this year, use next year
     if (nextBirthday < today) {
       nextBirthday = new Date(currentYear + 1, birthMonth - 1, birthDay);
     }
-    
+
     // Calculate days difference
     const diffTime = nextBirthday.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
     return diffDays;
   };
-
   const calculateAge = () => {
     if (!birthDay || !birthMonth || !birthYear) {
       toast.error("Please select your birth date");
       return;
     }
-
     if (!targetDay || !targetMonth || !targetYear) {
       toast.error("Please select a target date");
       return;
     }
-
     const birthDate = new Date(parseInt(birthYear), parseInt(birthMonth) - 1, parseInt(birthDay));
     const targetDate = new Date(parseInt(targetYear), parseInt(targetMonth) - 1, parseInt(targetDay));
-
     if (isNaN(birthDate.getTime()) || isNaN(targetDate.getTime())) {
       toast.error("Please select valid dates");
       return;
     }
-
     if (birthDate > targetDate) {
       toast.error("Birth date cannot be after the target date");
       return;
@@ -426,22 +468,20 @@ const Index = () => {
     // Calculate differences
     const years = differenceInYears(targetDate, birthDate);
     const months = differenceInMonths(targetDate, birthDate) % 12;
-    
+
     // For days, we need to account for the months already counted
     const afterMonths = new Date(birthDate);
     afterMonths.setFullYear(birthDate.getFullYear() + years);
     afterMonths.setMonth(birthDate.getMonth() + months);
     const days = differenceInDays(targetDate, afterMonths);
-    
+
     // For hours and minutes, calculate from the last complete day
     const afterDays = new Date(afterMonths);
     afterDays.setDate(afterMonths.getDate() + days);
     const hours = differenceInHours(targetDate, afterDays);
-    
     const afterHours = new Date(afterDays);
     afterHours.setHours(afterDays.getHours() + hours);
     const minutes = differenceInMinutes(targetDate, afterHours);
-    
     const afterMinutes = new Date(afterHours);
     afterMinutes.setMinutes(afterHours.getMinutes() + minutes);
     const seconds = Math.floor((targetDate.getTime() - afterMinutes.getTime()) / 1000);
@@ -459,87 +499,71 @@ const Index = () => {
     const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
 
     // Calculate planet ages using single structured data source with local images
-    const celestialData = [
-      {
-        group: "visible",
-        name: "The Moon",
-        imageURL: moonImg,
-        orbitalPeriod: 27.3
-      },
-      {
-        group: "visible",
-        name: "Mercury",
-        imageURL: mercuryImg,
-        orbitalPeriod: 88
-      },
-      {
-        group: "visible",
-        name: "Venus",
-        imageURL: venusImg,
-        orbitalPeriod: 225
-      },
-      {
-        group: "visible",
-        name: "Mars",
-        imageURL: marsImg,
-        orbitalPeriod: 687
-      },
-      {
-        group: "hidden",
-        name: "Jupiter",
-        imageURL: jupiterImg,
-        orbitalPeriod: 4333
-      },
-      {
-        group: "hidden",
-        name: "Saturn",
-        imageURL: saturnImg,
-        orbitalPeriod: 10759
-      },
-      {
-        group: "hidden",
-        name: "Uranus",
-        imageURL: uranusImg,
-        orbitalPeriod: 30687
-      },
-      {
-        group: "hidden",
-        name: "Neptune",
-        imageURL: neptuneImg,
-        orbitalPeriod: 60190
-      },
-      {
-        group: "hidden",
-        name: "Pluto",
-        imageURL: plutoImg,
-        orbitalPeriod: 90560
-      },
-      {
-        group: "hidden",
-        name: "Ceres",
-        imageURL: ceresImg,
-        orbitalPeriod: 1682
-      },
-      {
-        group: "hidden",
-        name: "Eris",
-        imageURL: erisImg,
-        orbitalPeriod: 203830
-      }
-    ];
-    
+    const celestialData = [{
+      group: "visible",
+      name: "The Moon",
+      imageURL: moonImg,
+      orbitalPeriod: 27.3
+    }, {
+      group: "visible",
+      name: "Mercury",
+      imageURL: mercuryImg,
+      orbitalPeriod: 88
+    }, {
+      group: "visible",
+      name: "Venus",
+      imageURL: venusImg,
+      orbitalPeriod: 225
+    }, {
+      group: "visible",
+      name: "Mars",
+      imageURL: marsImg,
+      orbitalPeriod: 687
+    }, {
+      group: "hidden",
+      name: "Jupiter",
+      imageURL: jupiterImg,
+      orbitalPeriod: 4333
+    }, {
+      group: "hidden",
+      name: "Saturn",
+      imageURL: saturnImg,
+      orbitalPeriod: 10759
+    }, {
+      group: "hidden",
+      name: "Uranus",
+      imageURL: uranusImg,
+      orbitalPeriod: 30687
+    }, {
+      group: "hidden",
+      name: "Neptune",
+      imageURL: neptuneImg,
+      orbitalPeriod: 60190
+    }, {
+      group: "hidden",
+      name: "Pluto",
+      imageURL: plutoImg,
+      orbitalPeriod: 90560
+    }, {
+      group: "hidden",
+      name: "Ceres",
+      imageURL: ceresImg,
+      orbitalPeriod: 1682
+    }, {
+      group: "hidden",
+      name: "Eris",
+      imageURL: erisImg,
+      orbitalPeriod: 203830
+    }];
     const earthDays = totalDays;
     const calculatedPlanetAges = celestialData.map(body => ({
       name: body.name,
       age: Number((earthDays / body.orbitalPeriod).toFixed(2)),
       imageURL: body.imageURL,
-      group: body.group,
+      group: body.group
     }));
-
     setPlanetAges(calculatedPlanetAges);
-
     setHasCalculatorResults(true);
-    
     setResult({
       years,
       months,
@@ -553,15 +577,11 @@ const Index = () => {
       totalSeconds,
       nextBirthdayDays,
       zodiacSign: zodiac.sign,
-      zodiacSymbol: zodiac.symbol,
+      zodiacSymbol: zodiac.symbol
     });
-
     toast.success("Age calculated successfully!");
   };
-
-
-  return (
-    <PageTransition>
+  return <PageTransition>
     <main className="min-h-screen bg-background px-3 sm:px-6 md:px-8 py-4 sm:py-8">
       {/* Structured Data for SEO */}
       <script type="application/ld+json">
@@ -593,7 +613,7 @@ const Index = () => {
         {/* Header */}
         <ParallaxSection speed={0.3}>
           <header className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 py-[5px] my-[5px] lg:text-6xl">
               Unlock the Secrets of Your Birthday
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -603,30 +623,19 @@ const Index = () => {
             {/* Famous Birthdays CTA */}
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-stretch">
               <Link to="/famous-birthdays" className="flex-1 sm:flex-initial">
-                <Button 
-                  size="lg" 
-                  className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
-                >
+                <Button size="lg" className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
                   <Star className="w-5 h-5 flex-shrink-0" />
                   <span className="block sm:inline">Explore Famous Birthdays</span>
                 </Button>
               </Link>
               <Link to="/look-alike-finder" className="flex-1 sm:flex-initial">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
-                >
+                <Button size="lg" variant="outline" className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
                   <Sparkles className="w-5 h-5 flex-shrink-0" />
                   <span className="block sm:inline">Find Your Celebrity Twin</span>
                 </Button>
               </Link>
               <Link to="/ai-face-age" className="flex-1 sm:flex-initial">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale"
-                >
+                <Button size="lg" variant="outline" className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
                   <Rocket className="w-5 h-5 flex-shrink-0" />
                   <span className="block sm:inline">AI Face Age Calculator</span>
                 </Button>
@@ -636,21 +645,16 @@ const Index = () => {
         </ParallaxSection>
 
         {/* Timezone Section */}
-        {timezone && (
-          <div className="text-center mb-4">
+        {timezone && <div className="text-center mb-4">
             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <Globe className="w-4 h-4" />
               <span>Timezone: <span className="font-medium">{timezone}</span></span>
             </div>
-          </div>
-        )}
+          </div>}
 
 
         {/* Tabbed Calculator Interface */}
-        <section 
-          className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 hover-lift"
-          aria-label="Age calculators"
-        >
+        <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 hover-lift" aria-label="Age calculators">
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile-Only Dropdown */}
             <div className="mobile-tool-dropdown mb-6 md:hidden">
@@ -712,73 +716,52 @@ const Index = () => {
               {/* Sidebar */}
               <div id="tool-sidebar" className="hidden md:block">
                 <nav className="space-y-1">
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("calculator"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "calculator" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("calculator");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "calculator" && "active")}>
                     <Calculator className="tool-icon" size={20} />
                     <span className="tool-label">Age Calculator</span>
                   </button>
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("difference"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "difference" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("difference");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "difference" && "active")}>
                     <ArrowLeftRight className="tool-icon" size={20} />
                     <span className="tool-label">Age Difference</span>
                   </button>
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("specific"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "specific" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("specific");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "specific" && "active")}>
                     <CalendarCheck className="tool-icon" size={20} />
                     <span className="tool-label">Specific Date</span>
                   </button>
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("greetings"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "greetings" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("greetings");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "greetings" && "active")}>
                     <Gift className="tool-icon" size={20} />
                     <span className="tool-label">AI Greetings</span>
                   </button>
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("birthday"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "birthday" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("birthday");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "birthday" && "active")}>
                     <Cake className="tool-icon" size={20} />
                     <span className="tool-label">On Your Birthday</span>
                   </button>
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("milestones"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "milestones" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("milestones");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "milestones" && "active")}>
                     <Flag className="tool-icon" size={20} />
                     <span className="tool-label">Life Milestones</span>
                   </button>
-                  <button
-                    onClick={(e) => { createParticles(e); setActiveTab("gift-advisor"); }}
-                    className={cn(
-                      "tool-sidebar-link transition-all duration-200 hover:scale-105",
-                      activeTab === "gift-advisor" && "active"
-                    )}
-                  >
+                  <button onClick={e => {
+                        createParticles(e);
+                        setActiveTab("gift-advisor");
+                      }} className={cn("tool-sidebar-link transition-all duration-200 hover:scale-105", activeTab === "gift-advisor" && "active")}>
                     <Lightbulb className="tool-icon" size={20} />
                     <span className="tool-label">AI Gift Advisor</span>
                   </button>
@@ -808,11 +791,9 @@ const Index = () => {
                     <SelectValue placeholder="Day" />
                   </SelectTrigger>
                   <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day} value={day}>
+                    {days.map(day => <SelectItem key={day} value={day}>
                         {day}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={birthMonth} onValueChange={setBirthMonth}>
@@ -820,11 +801,9 @@ const Index = () => {
                     <SelectValue placeholder="Month" />
                   </SelectTrigger>
                   <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={month.value}>
+                    {months.map(month => <SelectItem key={month.value} value={month.value}>
                         {month.label}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={birthYear} onValueChange={setBirthYear}>
@@ -832,11 +811,9 @@ const Index = () => {
                     <SelectValue placeholder="Year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>
+                    {years.map(year => <SelectItem key={year} value={year}>
                         {year}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -853,11 +830,9 @@ const Index = () => {
                     <SelectValue placeholder="Day" />
                   </SelectTrigger>
                   <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day} value={day}>
+                    {days.map(day => <SelectItem key={day} value={day}>
                         {day}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={targetMonth} onValueChange={setTargetMonth}>
@@ -865,11 +840,9 @@ const Index = () => {
                     <SelectValue placeholder="Month" />
                   </SelectTrigger>
                   <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={month.value}>
+                    {months.map(month => <SelectItem key={month.value} value={month.value}>
                         {month.label}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={targetYear} onValueChange={setTargetYear}>
@@ -877,11 +850,9 @@ const Index = () => {
                     <SelectValue placeholder="Year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>
+                    {years.map(year => <SelectItem key={year} value={year}>
                         {year}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -889,17 +860,12 @@ const Index = () => {
           </div>
 
           {/* Calculate Button */}
-          <Button
-            onClick={calculateAge}
-            className="w-full h-12 bg-gradient-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity"
-            size="lg"
-          >
+          <Button onClick={calculateAge} className="w-full h-12 bg-gradient-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity" size="lg">
             Calculate Age
           </Button>
 
           {/* What You'll Discover Section - Show before calculation */}
-          {!result && activeTab === "calculator" && (
-            <div className="mt-8 mb-[50px] p-6 pb-10 bg-accent/30 rounded-xl border border-border animate-fade-in">
+          {!result && activeTab === "calculator" && <div className="mt-8 mb-[50px] p-6 pb-10 bg-accent/30 rounded-xl border border-border animate-fade-in">
               <h3 className="text-xl font-semibold text-foreground mb-4 text-center">
                 Here's What You'll Discover:
               </h3>
@@ -929,8 +895,7 @@ const Index = () => {
                   </div>
                 </li>
               </ul>
-            </div>
-            )}
+            </div>}
               </div>
             </TabsContent>
 
@@ -1010,20 +975,15 @@ const Index = () => {
                   <Label htmlFor="occasion" className="text-lg font-semibold">
                     1. Choose an Occasion
                   </Label>
-                  <select
-                    id="occasion"
-                    value={selectedOccasion}
-                    onChange={(e) => {
-                      setSelectedOccasion(e.target.value);
-                      // Reset date if occasion doesn't need it
-                      if (!['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(e.target.value)) {
-                        setOccasionDay('');
-                        setOccasionMonth('');
-                        setOccasionYear('');
-                      }
-                    }}
-                    className="w-full p-3 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                  >
+                  <select id="occasion" value={selectedOccasion} onChange={e => {
+                            setSelectedOccasion(e.target.value);
+                            // Reset date if occasion doesn't need it
+                            if (!['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(e.target.value)) {
+                              setOccasionDay('');
+                              setOccasionMonth('');
+                              setOccasionYear('');
+                            }
+                          }} className="w-full p-3 rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
                     <option value="">Select an occasion...</option>
                     <option value="Birthday">Birthday</option>
                     <option value="Wedding Anniversary">Wedding Anniversary</option>
@@ -1038,8 +998,7 @@ const Index = () => {
                 </div>
 
                 {/* Step 2: Conditional Date Picker */}
-                {selectedOccasion && ['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(selectedOccasion) && (
-                  <div className="space-y-2 animate-fade-in">
+                {selectedOccasion && ['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(selectedOccasion) && <div className="space-y-2 animate-fade-in">
                     <Label htmlFor="occasion-date" className="text-lg font-semibold">
                       2. Select a Date (Optional)
                     </Label>
@@ -1049,11 +1008,9 @@ const Index = () => {
                           <SelectValue placeholder="Day" />
                         </SelectTrigger>
                         <SelectContent>
-                          {days.map((day) => (
-                            <SelectItem key={day} value={day}>
+                          {days.map(day => <SelectItem key={day} value={day}>
                               {day}
-                            </SelectItem>
-                          ))}
+                            </SelectItem>)}
                         </SelectContent>
                       </Select>
                       <Select value={occasionMonth} onValueChange={setOccasionMonth}>
@@ -1061,11 +1018,9 @@ const Index = () => {
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
                         <SelectContent>
-                          {months.map((month) => (
-                            <SelectItem key={month.value} value={month.value}>
+                          {months.map(month => <SelectItem key={month.value} value={month.value}>
                               {month.label}
-                            </SelectItem>
-                          ))}
+                            </SelectItem>)}
                         </SelectContent>
                       </Select>
                       <Select value={occasionYear} onValueChange={setOccasionYear}>
@@ -1073,153 +1028,122 @@ const Index = () => {
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
                         <SelectContent>
-                          {years.map((year) => (
-                            <SelectItem key={year} value={year}>
+                          {years.map(year => <SelectItem key={year} value={year}>
                               {year}
-                            </SelectItem>
-                          ))}
+                            </SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                )}
+                  </div>}
 
                 {/* Step 3: Custom Prompt */}
                 <div className="space-y-2">
                   <Label htmlFor="greeting-prompt" className="text-lg font-semibold">
                     {selectedOccasion && ['Birthday', 'Wedding Anniversary', 'General Anniversary'].includes(selectedOccasion) ? '3' : '2'}. Describe the Image You Want
                   </Label>
-                  <Textarea
-                    id="greeting-prompt"
-                    value={greetingPrompt}
-                    onChange={(e) => setGreetingPrompt(e.target.value)}
-                    placeholder="e.g., A beautiful birthday cake with 'Happy Birthday Alex' on it, surrounded by blue and silver balloons."
-                    className="w-full min-h-[120px] bg-muted resize-y"
-                  />
+                  <Textarea id="greeting-prompt" value={greetingPrompt} onChange={e => setGreetingPrompt(e.target.value)} placeholder="e.g., A beautiful birthday cake with 'Happy Birthday Alex' on it, surrounded by blue and silver balloons." className="w-full min-h-[120px] bg-muted resize-y" />
                 </div>
 
                 {/* Generate Button */}
-                <Button
-                  onClick={async () => {
-                    if (!selectedOccasion || !greetingPrompt) {
-                      toast.error("Please select an occasion and describe your image.");
-                      return;
-                    }
+                <Button onClick={async () => {
+                          if (!selectedOccasion || !greetingPrompt) {
+                            toast.error("Please select an occasion and describe your image.");
+                            return;
+                          }
+                          setIsGeneratingGreeting(true);
+                          setGeneratedGreeting('');
+                          setWatermarkedGreeting('');
+                          try {
+                            // Format date if selected
+                            let formattedDate = '';
+                            if (occasionDay && occasionMonth && occasionYear) {
+                              const monthName = months.find(m => m.value === occasionMonth)?.label || '';
+                              formattedDate = `${monthName} ${occasionDay}, ${occasionYear}`;
+                            }
+                            const {
+                              data,
+                              error
+                            } = await supabase.functions.invoke('generate-greeting-image', {
+                              body: {
+                                occasion: selectedOccasion,
+                                date: formattedDate,
+                                customPrompt: greetingPrompt
+                              }
+                            });
 
-                    setIsGeneratingGreeting(true);
-                    setGeneratedGreeting('');
-                    setWatermarkedGreeting('');
+                            // Check if there's an error from Supabase SDK
+                            if (error) {
+                              // If data contains an error message, use that
+                              if (data && data.error) {
+                                throw new Error(data.error);
+                              }
+                              throw error;
+                            }
 
-                    try {
-                      // Format date if selected
-                      let formattedDate = '';
-                      if (occasionDay && occasionMonth && occasionYear) {
-                        const monthName = months.find(m => m.value === occasionMonth)?.label || '';
-                        formattedDate = `${monthName} ${occasionDay}, ${occasionYear}`;
-                      }
+                            // Check if response contains an error message
+                            if (data && data.error) {
+                              throw new Error(data.error);
+                            }
 
-                      const { data, error } = await supabase.functions.invoke('generate-greeting-image', {
-                        body: {
-                          occasion: selectedOccasion,
-                          date: formattedDate,
-                          customPrompt: greetingPrompt,
-                        },
-                      });
+                            // Check if we got a valid image URL
+                            if (!data || !data.imageUrl) {
+                              throw new Error("No image was generated. Please try again.");
+                            }
+                            setGeneratedGreeting(data.imageUrl);
 
-                      // Check if there's an error from Supabase SDK
-                      if (error) {
-                        // If data contains an error message, use that
-                        if (data && data.error) {
-                          throw new Error(data.error);
-                        }
-                        throw error;
-                      }
+                            // Automatically apply watermark
+                            try {
+                              const watermarked = await addWatermarkToImage(data.imageUrl);
+                              setWatermarkedGreeting(watermarked);
+                              toast.success("Your greeting image has been generated!");
+                            } catch (watermarkError) {
+                              console.error('Error adding watermark:', watermarkError);
+                              // If watermarking fails, still show the original image
+                              setWatermarkedGreeting(data.imageUrl);
+                              toast.success("Your greeting image has been generated!");
+                            }
+                          } catch (error) {
+                            console.error('Error generating image:', error);
+                            let errorMessage = "Failed to generate image. Please try again.";
+                            if (error instanceof Error) {
+                              errorMessage = error.message;
+                            }
 
-                      // Check if response contains an error message
-                      if (data && data.error) {
-                        throw new Error(data.error);
-                      }
-
-                      // Check if we got a valid image URL
-                      if (!data || !data.imageUrl) {
-                        throw new Error("No image was generated. Please try again.");
-                      }
-
-                      setGeneratedGreeting(data.imageUrl);
-                      
-                      // Automatically apply watermark
-                      try {
-                        const watermarked = await addWatermarkToImage(data.imageUrl);
-                        setWatermarkedGreeting(watermarked);
-                        toast.success("Your greeting image has been generated!");
-                      } catch (watermarkError) {
-                        console.error('Error adding watermark:', watermarkError);
-                        // If watermarking fails, still show the original image
-                        setWatermarkedGreeting(data.imageUrl);
-                        toast.success("Your greeting image has been generated!");
-                      }
-                    } catch (error) {
-                      console.error('Error generating image:', error);
-                      let errorMessage = "Failed to generate image. Please try again.";
-                      
-                      if (error instanceof Error) {
-                        errorMessage = error.message;
-                      }
-                      
-                      // Add helpful context for payment errors
-                      if (errorMessage.includes("Payment required") || errorMessage.includes("credits")) {
-                        errorMessage += " You can add credits in Settings → Workspace → Usage.";
-                      }
-                      
-                      toast.error(errorMessage, {
-                        duration: 6000,
-                      });
-                    } finally {
-                      setIsGeneratingGreeting(false);
-                    }
-                  }}
-                  disabled={isGeneratingGreeting || !selectedOccasion || !greetingPrompt}
-                  className="w-full h-12 text-lg"
-                >
-                  {isGeneratingGreeting ? (
-                    <>
+                            // Add helpful context for payment errors
+                            if (errorMessage.includes("Payment required") || errorMessage.includes("credits")) {
+                              errorMessage += " You can add credits in Settings → Workspace → Usage.";
+                            }
+                            toast.error(errorMessage, {
+                              duration: 6000
+                            });
+                          } finally {
+                            setIsGeneratingGreeting(false);
+                          }
+                        }} disabled={isGeneratingGreeting || !selectedOccasion || !greetingPrompt} className="w-full h-12 text-lg">
+                  {isGeneratingGreeting ? <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Generating Your Image...
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       <Sparkles className="mr-2 h-5 w-5" />
                       Generate Image
-                    </>
-                  )}
+                    </>}
                 </Button>
 
                 {/* Image Result Area */}
-                {isGeneratingGreeting && (
-                  <div className="flex flex-col items-center justify-center py-12 space-y-4 animate-fade-in">
+                {isGeneratingGreeting && <div className="flex flex-col items-center justify-center py-12 space-y-4 animate-fade-in">
                     <Loader2 className="h-12 w-12 animate-spin text-primary" />
                     <p className="text-muted-foreground text-lg">Generating your image, please wait...</p>
-                  </div>
-                )}
+                  </div>}
 
-                {watermarkedGreeting && !isGeneratingGreeting && (
-                  <div className="space-y-4 animate-fade-in">
+                {watermarkedGreeting && !isGeneratingGreeting && <div className="space-y-4 animate-fade-in">
                     <div className="relative rounded-lg overflow-hidden border-2 border-primary/20 bg-muted">
-                      <img
-                        src={watermarkedGreeting}
-                        alt="Generated greeting with watermark"
-                        className="w-full h-auto"
-                      />
+                      <img src={watermarkedGreeting} alt="Generated greeting with watermark" className="w-full h-auto" />
                     </div>
-                    <Button
-                      onClick={handleShareImage}
-                      className="w-full h-12 text-lg"
-                    >
+                    <Button onClick={handleShareImage} className="w-full h-12 text-lg">
                       <Share2 className="mr-2 h-5 w-5" />
                       Share Image
                     </Button>
-                  </div>
-                )}
+                  </div>}
               </div>
               
               {/* SEO Content for AI Greetings */}
@@ -1254,11 +1178,9 @@ const Index = () => {
                         <SelectValue placeholder="Day" />
                       </SelectTrigger>
                       <SelectContent>
-                        {days.map((day) => (
-                          <SelectItem key={day} value={day}>
+                        {days.map(day => <SelectItem key={day} value={day}>
                             {day}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                     <Select value={birthdayMonth} onValueChange={setBirthdayMonth}>
@@ -1266,11 +1188,9 @@ const Index = () => {
                         <SelectValue placeholder="Month" />
                       </SelectTrigger>
                       <SelectContent>
-                        {months.map((month) => (
-                          <SelectItem key={month.value} value={month.value}>
+                        {months.map(month => <SelectItem key={month.value} value={month.value}>
                             {month.label}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                     <Select value={birthdayYear} onValueChange={setBirthdayYear}>
@@ -1278,71 +1198,59 @@ const Index = () => {
                         <SelectValue placeholder="Year" />
                       </SelectTrigger>
                       <SelectContent>
-                        {years.map((year) => (
-                          <SelectItem key={year} value={year}>
+                        {years.map(year => <SelectItem key={year} value={year}>
                             {year}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 {/* Discover Button */}
-                <Button
-                  onClick={async () => {
-                    if (!birthdayDay || !birthdayMonth || !birthdayYear) {
-                      toast.error("Please select your complete birth date");
-                      return;
-                    }
-                    
-                    setIsLoadingBirthdayInfo(true);
-                    setBirthdayInfo(null);
-                    
-                    const birthDate = `${birthdayYear}-${birthdayMonth.padStart(2, '0')}-${birthdayDay.padStart(2, '0')}`;
-                    
-                    try {
-                      const { data, error } = await supabase.functions.invoke('birthday-facts', {
-                        body: { birthDate }
-                      });
-
-                      if (error) {
-                        console.error('Error fetching birthday facts:', error);
-                        toast.error(error.message || 'Failed to load birthday facts');
-                      } else if (data?.error) {
-                        toast.error(data.error);
-                      } else {
-                        setBirthdayInfo(data);
-                        toast.success("Birthday information loaded!");
-                      }
-                    } catch (error: any) {
-                      console.error('Error:', error);
-                      toast.error('Failed to load birthday facts');
-                    } finally {
-                      setIsLoadingBirthdayInfo(false);
-                    }
-                  }}
-                  disabled={isLoadingBirthdayInfo}
-                  className="w-full h-12 text-lg"
-                >
-                  {isLoadingBirthdayInfo ? (
-                    <>
+                <Button onClick={async () => {
+                          if (!birthdayDay || !birthdayMonth || !birthdayYear) {
+                            toast.error("Please select your complete birth date");
+                            return;
+                          }
+                          setIsLoadingBirthdayInfo(true);
+                          setBirthdayInfo(null);
+                          const birthDate = `${birthdayYear}-${birthdayMonth.padStart(2, '0')}-${birthdayDay.padStart(2, '0')}`;
+                          try {
+                            const {
+                              data,
+                              error
+                            } = await supabase.functions.invoke('birthday-facts', {
+                              body: {
+                                birthDate
+                              }
+                            });
+                            if (error) {
+                              console.error('Error fetching birthday facts:', error);
+                              toast.error(error.message || 'Failed to load birthday facts');
+                            } else if (data?.error) {
+                              toast.error(data.error);
+                            } else {
+                              setBirthdayInfo(data);
+                              toast.success("Birthday information loaded!");
+                            }
+                          } catch (error: any) {
+                            console.error('Error:', error);
+                            toast.error('Failed to load birthday facts');
+                          } finally {
+                            setIsLoadingBirthdayInfo(false);
+                          }
+                        }} disabled={isLoadingBirthdayInfo} className="w-full h-12 text-lg">
+                  {isLoadingBirthdayInfo ? <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Discovering...
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       <Sparkles className="mr-2 h-5 w-5" />
                       Discover Your Birthday
-                    </>
-                  )}
+                    </>}
                 </Button>
 
                 {/* Results Display */}
-                <BirthdayFacts
-                  facts={birthdayInfo}
-                  loading={isLoadingBirthdayInfo}
-                />
+                <BirthdayFacts facts={birthdayInfo} loading={isLoadingBirthdayInfo} />
               </div>
 
               {/* SEO Content */}
@@ -1377,11 +1285,9 @@ const Index = () => {
                         <SelectValue placeholder="Day" />
                       </SelectTrigger>
                       <SelectContent>
-                        {days.map((day) => (
-                          <SelectItem key={day} value={day}>
+                        {days.map(day => <SelectItem key={day} value={day}>
                             {day}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                     <Select value={milestonesMonth} onValueChange={setMilestonesMonth}>
@@ -1389,11 +1295,9 @@ const Index = () => {
                         <SelectValue placeholder="Month" />
                       </SelectTrigger>
                       <SelectContent>
-                        {months.map((month) => (
-                          <SelectItem key={month.value} value={month.value}>
+                        {months.map(month => <SelectItem key={month.value} value={month.value}>
                             {month.label}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                     <Select value={milestonesYear} onValueChange={setMilestonesYear}>
@@ -1401,61 +1305,60 @@ const Index = () => {
                         <SelectValue placeholder="Year" />
                       </SelectTrigger>
                       <SelectContent>
-                        {years.map((year) => (
-                          <SelectItem key={year} value={year}>
+                        {years.map(year => <SelectItem key={year} value={year}>
                             {year}
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 {/* Calculate Button */}
-                <Button
-                  onClick={() => {
-                    if (!milestonesDay || !milestonesMonth || !milestonesYear) {
-                      toast.error("Please select your complete birth date");
-                      return;
-                    }
+                <Button onClick={() => {
+                          if (!milestonesDay || !milestonesMonth || !milestonesYear) {
+                            toast.error("Please select your complete birth date");
+                            return;
+                          }
+                          const birthDate = new Date(parseInt(milestonesYear), parseInt(milestonesMonth) - 1, parseInt(milestonesDay));
+                          const now = new Date();
+                          const ageInDays = differenceInDays(now, birthDate);
+                          const ageInSeconds = ageInDays * 24 * 60 * 60;
 
-                    const birthDate = new Date(parseInt(milestonesYear), parseInt(milestonesMonth) - 1, parseInt(milestonesDay));
-                    const now = new Date();
-                    const ageInDays = differenceInDays(now, birthDate);
-                    const ageInSeconds = ageInDays * 24 * 60 * 60;
-                    
-                    // Calculate 10,000th day
-                    const tenThousandthDay = new Date(birthDate);
-                    tenThousandthDay.setDate(tenThousandthDay.getDate() + 10000);
-                    
-                    // Calculate billionth second
-                    const billionthSecond = new Date(birthDate.getTime() + (1000000000 * 1000));
-                    
-                    // Calculate heartbeats (75 bpm average)
-                    const totalHeartbeats = Math.floor(ageInSeconds * 75 / 60);
-                    
-                    // Calculate moon trips (238,855 miles to moon, 3 miles per day walking)
-                    const totalMilesWalked = ageInDays * 3;
-                    const moonTrips = (totalMilesWalked / 238855).toFixed(2);
+                          // Calculate 10,000th day
+                          const tenThousandthDay = new Date(birthDate);
+                          tenThousandthDay.setDate(tenThousandthDay.getDate() + 10000);
 
-                    setMilestones({
-                      tenThousandthDay: tenThousandthDay.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                      billionthSecond: billionthSecond.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                      heartbeats: totalHeartbeats.toLocaleString(),
-                      moonTrips: moonTrips
-                    });
+                          // Calculate billionth second
+                          const billionthSecond = new Date(birthDate.getTime() + 1000000000 * 1000);
 
-                    toast.success("Milestones calculated!");
-                  }}
-                  className="w-full h-12 text-lg"
-                >
+                          // Calculate heartbeats (75 bpm average)
+                          const totalHeartbeats = Math.floor(ageInSeconds * 75 / 60);
+
+                          // Calculate moon trips (238,855 miles to moon, 3 miles per day walking)
+                          const totalMilesWalked = ageInDays * 3;
+                          const moonTrips = (totalMilesWalked / 238855).toFixed(2);
+                          setMilestones({
+                            tenThousandthDay: tenThousandthDay.toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            }),
+                            billionthSecond: billionthSecond.toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            }),
+                            heartbeats: totalHeartbeats.toLocaleString(),
+                            moonTrips: moonTrips
+                          });
+                          toast.success("Milestones calculated!");
+                        }} className="w-full h-12 text-lg">
                   <Rocket className="mr-2 h-5 w-5" />
                   Calculate Milestones
                 </Button>
 
                 {/* Results Display */}
-                {milestones && (
-                  <div className="grid gap-4 animate-fade-in">
+                {milestones && <div className="grid gap-4 animate-fade-in">
                     <div className="p-6 bg-primary/10 rounded-xl border border-primary/20">
                       <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
                         🎉 Your 10,000th Day
@@ -1491,8 +1394,7 @@ const Index = () => {
                         Based on average walking distance, you have traveled enough to walk to the Moon <strong>{milestones.moonTrips}</strong> times!
                       </p>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
 
               {/* SEO Content */}
@@ -1590,110 +1492,81 @@ const Index = () => {
                     <Label htmlFor="gift-age" className="text-lg font-semibold">
                       What is their age?
                     </Label>
-                    <Input
-                      id="gift-age"
-                      type="number"
-                      value={giftAge}
-                      onChange={(e) => setGiftAge(e.target.value)}
-                      placeholder="e.g., 30"
-                      className="h-12 bg-muted"
-                      min="1"
-                      max="120"
-                    />
+                    <Input id="gift-age" type="number" value={giftAge} onChange={e => setGiftAge(e.target.value)} placeholder="e.g., 30" className="h-12 bg-muted" min="1" max="120" />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="gift-interests" className="text-lg font-semibold">
                       What are their interests?
                     </Label>
-                    <Textarea
-                      id="gift-interests"
-                      value={giftInterests}
-                      onChange={(e) => setGiftInterests(e.target.value)}
-                      placeholder="e.g., technology, reading, gardening, cooking"
-                      className="min-h-[100px] bg-muted resize-y"
-                    />
+                    <Textarea id="gift-interests" value={giftInterests} onChange={e => setGiftInterests(e.target.value)} placeholder="e.g., technology, reading, gardening, cooking" className="min-h-[100px] bg-muted resize-y" />
                   </div>
                 </div>
 
                 {/* Generate Button */}
-                <Button
-                  onClick={async () => {
-                    if (!giftRecipient || !giftOccasion || !giftAge || !giftInterests) {
-                      toast.error("Please fill in all fields");
-                      return;
-                    }
-
-                    setIsGeneratingGifts(true);
-                    setGiftIdeas([]);
-
-                    try {
-                      const { data, error } = await supabase.functions.invoke('ai-gift-advisor', {
-                        body: {
-                          recipient: giftRecipient,
-                          occasion: giftOccasion,
-                          age: giftAge,
-                          interests: giftInterests
-                        }
-                      });
-
-                      if (error) {
-                        throw error;
-                      }
-
-                      if (data?.error) {
-                        toast.error(data.error);
-                        return;
-                      }
-
-                      if (data && data.giftIdeas) {
-                        setGiftIdeas(data.giftIdeas);
-                        toast.success("Gift ideas generated successfully!");
-                      } else {
-                        throw new Error("No gift ideas returned");
-                      }
-                    } catch (error: any) {
-                      console.error('Error generating gift ideas:', error);
-                      const errorMessage = error?.message || "Failed to generate gift ideas. Please try again.";
-                      toast.error(errorMessage);
-                    } finally {
-                      setIsGeneratingGifts(false);
-                    }
-                  }}
-                  disabled={isGeneratingGifts}
-                  className="w-full h-12 text-lg"
-                >
-                  {isGeneratingGifts ? (
-                    <>
+                <Button onClick={async () => {
+                          if (!giftRecipient || !giftOccasion || !giftAge || !giftInterests) {
+                            toast.error("Please fill in all fields");
+                            return;
+                          }
+                          setIsGeneratingGifts(true);
+                          setGiftIdeas([]);
+                          try {
+                            const {
+                              data,
+                              error
+                            } = await supabase.functions.invoke('ai-gift-advisor', {
+                              body: {
+                                recipient: giftRecipient,
+                                occasion: giftOccasion,
+                                age: giftAge,
+                                interests: giftInterests
+                              }
+                            });
+                            if (error) {
+                              throw error;
+                            }
+                            if (data?.error) {
+                              toast.error(data.error);
+                              return;
+                            }
+                            if (data && data.giftIdeas) {
+                              setGiftIdeas(data.giftIdeas);
+                              toast.success("Gift ideas generated successfully!");
+                            } else {
+                              throw new Error("No gift ideas returned");
+                            }
+                          } catch (error: any) {
+                            console.error('Error generating gift ideas:', error);
+                            const errorMessage = error?.message || "Failed to generate gift ideas. Please try again.";
+                            toast.error(errorMessage);
+                          } finally {
+                            setIsGeneratingGifts(false);
+                          }
+                        }} disabled={isGeneratingGifts} className="w-full h-12 text-lg">
+                  {isGeneratingGifts ? <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Generating Ideas...
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       <Sparkles className="mr-2 h-5 w-5" />
                       Get Gift Ideas
-                    </>
-                  )}
+                    </>}
                 </Button>
 
                 {/* Results Display */}
-                {giftIdeas.length > 0 && (
-                  <div className="space-y-4 animate-fade-in">
+                {giftIdeas.length > 0 && <div className="space-y-4 animate-fade-in">
                     <h3 className="text-xl font-semibold text-center mb-4">
                       Your Personalized Gift Ideas
                     </h3>
-                    {giftIdeas.map((idea, index) => (
-                      <div key={index} className="p-6 bg-primary/10 rounded-xl border border-primary/20">
+                    {giftIdeas.map((idea, index) => <div key={index} className="p-6 bg-primary/10 rounded-xl border border-primary/20">
                         <h4 className="text-lg font-semibold text-foreground mb-2 flex items-center gap-2">
                           🎁 {idea.name}
                         </h4>
                         <p className="text-muted-foreground">
                           {idea.description}
                         </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      </div>)}
+                  </div>}
               </div>
 
               {/* SEO Content */}
@@ -1712,11 +1585,7 @@ const Index = () => {
         </section>
 
         {/* Traditional Age Section */}
-        {result && activeTab === "calculator" && (
-          <section 
-            className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift"
-            aria-label="Traditional age"
-          >
+        {result && activeTab === "calculator" && <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift" aria-label="Traditional age">
             <div className="flex items-center justify-center gap-2 mb-6">
               <CalendarIconComponent className="w-6 h-6 text-primary" />
               <h2 className="text-xl md:text-2xl font-bold text-foreground">
@@ -1752,21 +1621,13 @@ const Index = () => {
                 </div>
               </div>
             </div>
-          </section>
-        )}
+          </section>}
 
         {/* Additional Age Info Section */}
-        {result && activeTab === "calculator" && (
-          <AdditionalAgeInfo 
-            nextBirthdayDays={result.nextBirthdayDays}
-            zodiacSign={result.zodiacSign}
-            zodiacSymbol={result.zodiacSymbol}
-          />
-        )}
+        {result && activeTab === "calculator" && <AdditionalAgeInfo nextBirthdayDays={result.nextBirthdayDays} zodiacSign={result.zodiacSign} zodiacSymbol={result.zodiacSymbol} />}
 
         {/* Planet Ages Section - Dynamic Rendering */}
-        {planetAges.length > 0 && activeTab === "calculator" && (
-          <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift">
+        {planetAges.length > 0 && activeTab === "calculator" && <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift">
             <div className="flex items-center gap-2 mb-4">
               <Rocket className="w-5 h-5 text-primary" />
               <h3 className="text-xl font-semibold text-foreground">My Age in the Universe</h3>
@@ -1774,12 +1635,9 @@ const Index = () => {
             
             {/* Initially Visible Bodies - 2x2 Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {planetAges.filter(p => p.group === "visible").map((planet, index) => (
-                <div 
-                  key={planet.name}
-                  className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" 
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
+              {planetAges.filter(p => p.group === "visible").map((planet, index) => <div key={planet.name} className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{
+                  animationDelay: `${index * 100}ms`
+                }}>
                   <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
                   <div className="absolute inset-0 bg-black/20" />
                   <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
@@ -1790,11 +1648,7 @@ const Index = () => {
                       <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
                       <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                         <div className="absolute inset-0 w-full h-full animate-planet-rotate">
-                          <img
-                            src={planet.imageURL}
-                            alt={`Image of ${planet.name}`}
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={planet.imageURL} alt={`Image of ${planet.name}`} className="w-full h-full object-cover" />
                         </div>
                       </div>
                     </div>
@@ -1807,39 +1661,27 @@ const Index = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
 
             {/* Toggle Button for Hidden Bodies */}
             <div className="flex justify-center mb-6">
-              <button
-                onClick={() => setShowMorePlanets(!showMorePlanets)}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2 font-medium"
-              >
-                {showMorePlanets ? (
-                  <>
+              <button onClick={() => setShowMorePlanets(!showMorePlanets)} className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2 font-medium">
+                {showMorePlanets ? <>
                     <ChevronUp className="w-5 h-5" />
                     Hide Other Celestial Bodies
-                  </>
-                ) : (
-                  <>
+                  </> : <>
                     <ChevronDown className="w-5 h-5" />
                     See More Celestial Bodies
-                  </>
-                )}
+                  </>}
               </button>
             </div>
 
             {/* Hidden Celestial Bodies - Grid */}
-            {showMorePlanets && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-                {planetAges.filter(p => p.group === "hidden").map((planet, index) => (
-                  <div 
-                    key={planet.name}
-                    className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" 
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
+            {showMorePlanets && <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+                {planetAges.filter(p => p.group === "hidden").map((planet, index) => <div key={planet.name} className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 animate-fade-in" style={{
+                  animationDelay: `${index * 100}ms`
+                }}>
                     <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-accent/30" />
                     <div className="absolute inset-0 bg-black/20" />
                     <div className="relative flex flex-col items-center justify-center space-y-6 p-8 md:p-10">
@@ -1850,11 +1692,7 @@ const Index = () => {
                         <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
                         <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                           <div className="absolute inset-0 w-full h-full animate-planet-rotate">
-                            <img
-                              src={planet.imageURL}
-                              alt={`Image of ${planet.name}`}
-                              className="w-full h-full object-cover"
-                            />
+                            <img src={planet.imageURL} alt={`Image of ${planet.name}`} className="w-full h-full object-cover" />
                           </div>
                         </div>
                       </div>
@@ -1867,25 +1705,18 @@ const Index = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
+                  </div>)}
+              </div>}
+          </section>}
 
 
         {/* Ad Banner */}
         {/* {result && activeTab === "calculator" && (
           <AdSenseBanner format="large-horizontal" className="mb-6" />
-        )} */}
+         )} */}
 
         {/* Live Age Display */}
-        {liveAge && activeTab === "calculator" && (
-          <section 
-            className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground hover-glow"
-            aria-label="Live age counter"
-          >
+        {liveAge && activeTab === "calculator" && <section className="bg-gradient-primary rounded-2xl shadow-card p-6 md:p-8 mb-6 text-primary-foreground hover-glow" aria-label="Live age counter">
             <div className="text-center mb-4">
               <h2 className="text-xl md:text-2xl font-semibold mb-1">
                 Your Current Age (Live)
@@ -1943,31 +1774,27 @@ const Index = () => {
                 </div>
               </div>
             </div>
-          </section>
-        )}
+          </section>}
 
         {/* Age Display Formats */}
-        {result && activeTab === "calculator" && (
-          <AgeDisplayFormats result={result} timezone={timezone} />
-        )}
+        {result && activeTab === "calculator" && <AgeDisplayFormats result={result} timezone={timezone} />}
 
 
         {/* Bottom Ad Banner */}
         {/* {result && activeTab === "calculator" && (
           <AdSenseBanner format="horizontal" className="mt-6" />
-        )} */}
+         )} */}
         </div>
 
         {/* Right Sidebar Ads - Hidden on mobile/tablet */}
         {/* <aside className="hidden xl:flex xl:flex-col w-full xl:w-[320px] space-y-6 xl:sticky xl:top-20 xl:self-start">
           <AdSenseBanner format="vertical" />
           <AdSenseBanner format="square" />
-        </aside> */}
+         </aside> */}
       </div>
       
       {/* SEO Content for Age Calculator - Hidden after results */}
-      {!hasCalculatorResults && (
-        <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border hover-lift">
+      {!hasCalculatorResults && <article className="max-w-7xl mx-auto mt-20 p-8 bg-accent/20 rounded-xl border border-border hover-lift">
         <h2 className="text-3xl font-bold text-foreground mb-6">
           The Complete Guide to Understanding Your Age
         </h2>
@@ -2005,17 +1832,14 @@ const Index = () => {
             </p>
           </div>
         </div>
-      </article>
-      )}
+      </article>}
       </div>
       
       {/* Bottom Page Ad - Always visible */}
       {/* <div className="max-w-7xl mx-auto mt-6 mb-8">
         <AdSenseBanner format="large-horizontal" />
-      </div> */}
+       </div> */}
     </main>
-    </PageTransition>
-  );
+    </PageTransition>;
 };
-
 export default Index;
