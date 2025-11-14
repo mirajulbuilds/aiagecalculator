@@ -121,7 +121,7 @@ Return your response in this exact JSON format:
 
     const parsedResult = JSON.parse(jsonMatch[0]);
     
-    if (!parsedResult.humanAge || !parsedResult.summary_text) {
+    if (parsedResult.humanAge === undefined || parsedResult.humanAge === null || !parsedResult.summary_text) {
       console.error('Missing required fields in AI response:', parsedResult);
       return new Response(
         JSON.stringify({ error: 'Incomplete AI response' }),
