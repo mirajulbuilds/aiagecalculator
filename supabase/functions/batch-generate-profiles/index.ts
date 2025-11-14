@@ -27,66 +27,121 @@ serve(async (req) => {
 
     console.log(`Starting batch generation for ${urls.length} profiles with engine: ${engineChoice || 'lovable-ai'}`);
 
-    const results = [];
+    // Create a readable stream for real-time progress updates
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        const results = [];
+        let successCount = 0;
+        let failedCount = 0;
 
-    for (const urlData of urls) {
-      const { url, sourceType } = urlData;
-      
-      try {
-        console.log(`Processing: ${url}`);
+        for (let i = 0; i < urls.length; i++) {
+          const urlData = urls[i];
+          const { url, sourceType } = urlData;
+          
+          try {
+            // Send progress update: started
+            const startMessage = JSON.stringify({
+              type: "progress",
+              index: i,
+              total: urls.length,
+              url,
+              status: "processing",
+              message: `Processing ${i + 1}/${urls.length}: ${url}`
+            }) + "\n";
+            controller.enqueue(encoder.encode(startMessage));
 
-        // Call the generate-celebrity-profile function
-        const { data: generateData, error: generateError } = await supabase.functions.invoke(
-          "generate-celebrity-profile",
-          {
-            body: {
-              profileURL: url,
-              sourceType: sourceType || "famousbirthdays",
-              engine_choice: engineChoice || "lovable-ai"
+            console.log(`Processing: ${url}`);
+
+            // Call the generate-celebrity-profile function
+            const { data: generateData, error: generateError } = await supabase.functions.invoke(
+              "generate-celebrity-profile",
+              {
+                body: {
+                  profileURL: url,
+                  sourceType: sourceType || "famousbirthdays",
+                  engine_choice: engineChoice || "lovable-ai"
+                }
+              }
+            );
+
+            if (generateError) {
+              throw generateError;
             }
-          }
-        );
 
-        if (generateError) {
-          throw generateError;
+            successCount++;
+            results.push({
+              url,
+              status: "success",
+              profile: generateData
+            });
+
+            // Send progress update: success
+            const successMessage = JSON.stringify({
+              type: "progress",
+              index: i,
+              total: urls.length,
+              url,
+              status: "success",
+              message: `✓ Successfully generated profile for: ${url}`,
+              profile: generateData
+            }) + "\n";
+            controller.enqueue(encoder.encode(successMessage));
+
+            console.log(`✓ Successfully generated profile for: ${url}`);
+
+            // Small delay between requests
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+          } catch (error) {
+            failedCount++;
+            console.error(`✗ Failed to generate profile for ${url}:`, error);
+            
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            results.push({
+              url,
+              status: "failed",
+              error: errorMessage
+            });
+
+            // Send progress update: failed
+            const failMessage = JSON.stringify({
+              type: "progress",
+              index: i,
+              total: urls.length,
+              url,
+              status: "failed",
+              message: `✗ Failed: ${errorMessage}`,
+              error: errorMessage
+            }) + "\n";
+            controller.enqueue(encoder.encode(failMessage));
+          }
         }
 
-        results.push({
-          url,
-          status: "success",
-          profile: generateData
-        });
+        // Send final summary
+        const summaryMessage = JSON.stringify({
+          type: "complete",
+          success: true,
+          total: urls.length,
+          succeeded: successCount,
+          failed: failedCount,
+          results
+        }) + "\n";
+        controller.enqueue(encoder.encode(summaryMessage));
 
-        console.log(`✓ Successfully generated profile for: ${url}`);
-
-        // Small delay between requests to avoid overwhelming the system
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-      } catch (error) {
-        console.error(`✗ Failed to generate profile for ${url}:`, error);
-        results.push({
-          url,
-          status: "failed",
-          error: error instanceof Error ? error.message : "Unknown error"
-        });
+        console.log(`Batch complete: ${successCount} succeeded, ${failedCount} failed`);
+        controller.close();
       }
-    }
+    });
 
-    const successCount = results.filter(r => r.status === "success").length;
-    const failedCount = results.filter(r => r.status === "failed").length;
-
-    console.log(`Batch complete: ${successCount} succeeded, ${failedCount} failed`);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        total: urls.length,
-        succeeded: successCount,
-        failed: failedCount,
-        results
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(stream, {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive"
+      }
+    });
 
   } catch (error) {
     console.error("Error in batch-generate-profiles:", error);
