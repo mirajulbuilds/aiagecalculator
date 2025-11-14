@@ -554,9 +554,18 @@ const AdminPanel = () => {
         </h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="scrape">Scrape & Auto-Generate</TabsTrigger>
-            <TabsTrigger value="manual">Manual Editor / Review Drafts</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsTrigger value="scrape">Scrape & Generate</TabsTrigger>
+            <TabsTrigger value="batch">
+              <Upload className="h-4 w-4 mr-2" />
+              Batch
+            </TabsTrigger>
+            <TabsTrigger value="duplicate">Duplicate Check</TabsTrigger>
+            <TabsTrigger value="usage">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Usage
+            </TabsTrigger>
+            <TabsTrigger value="manual">Manual Editor</TabsTrigger>
           </TabsList>
 
           {/* TAB 1: SCRAPE & AUTO-GENERATE */}
@@ -627,7 +636,51 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-          {/* TAB 2: MANUAL EDITOR / REVIEW DRAFTS */}
+          {/* TAB 2: BATCH PROCESSING */}
+          <TabsContent value="batch" className="space-y-6">
+            <div className="p-6 border border-border rounded-lg bg-card">
+              <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Upload className="h-6 w-6" />
+                Batch Profile Generation
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Upload a CSV file with multiple celebrity URLs to generate profiles in batch. Format: URL, Source Type (one per line).
+              </p>
+              <BatchUploadForm 
+                selectedEngine={selectedEngine}
+                setSelectedEngine={setSelectedEngine}
+              />
+            </div>
+          </TabsContent>
+
+          {/* TAB 3: DUPLICATE CHECKER */}
+          <TabsContent value="duplicate" className="space-y-6">
+            <div className="p-6 border border-border rounded-lg bg-card">
+              <h2 className="text-2xl font-semibold text-foreground mb-4">
+                Check for Duplicate Profiles
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Search for potential duplicate celebrity profiles using name similarity and face embeddings. This helps prevent creating duplicate entries in the database.
+              </p>
+              <DuplicateChecker />
+            </div>
+          </TabsContent>
+
+          {/* TAB 4: USAGE ANALYTICS */}
+          <TabsContent value="usage" className="space-y-6">
+            <div className="p-6 border border-border rounded-lg bg-card">
+              <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <BarChart3 className="h-6 w-6" />
+                Usage Analytics & Cost Tracking
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Monitor profile generation statistics, compare AI engine usage, and track estimated costs.
+              </p>
+              <UsageStatsDisplay />
+            </div>
+          </TabsContent>
+
+          {/* TAB 5: MANUAL EDITOR / REVIEW DRAFTS */}
           <TabsContent value="manual" className="space-y-6">
             {/* SEARCH & EDIT SECTION */}
             <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4">
