@@ -180,6 +180,7 @@ const Header = () => {
     { title: "Past Life Generator", path: "/past-life-generator", icon: History },
     { title: "Life Expectancy", path: "/life-expectancy-calculator", icon: Activity },
     { title: "Retirement Calculator", path: "/retirement-calculator", icon: PiggyBank },
+    { title: "Health Score", path: "/health-score-calculator", icon: Heart },
   ];
 
   const mobileNavItems = [
@@ -190,6 +191,7 @@ const Header = () => {
     { title: "Past Life Generator", path: "/past-life-generator", icon: History },
     { title: "Life Expectancy", path: "/life-expectancy-calculator", icon: Activity },
     { title: "Retirement Calculator", path: "/retirement-calculator", icon: PiggyBank },
+    { title: "Health Score", path: "/health-score-calculator", icon: Heart },
     { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
     { title: "Blog", path: "/blog", icon: BookOpen },
   ];

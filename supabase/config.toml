@@ -36,3 +36,6 @@ verify_jwt = false
 [functions.calculate-retirement]
 verify_jwt = false
 
+[functions.calculate-health-score]
+verify_jwt = false
+
