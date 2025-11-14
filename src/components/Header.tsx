@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, ChevronDown, X } from "lucide-react";
+import { Menu, ChevronDown, X, Home, Sparkles, Camera, Heart, History, Star, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
@@ -173,20 +174,20 @@ const Header = () => {
   ];
 
   const aiToolsItems = [
-    { title: "Look-Alike Finder", path: "/look-alike-finder" },
-    { title: "AI Face Age", path: "/ai-face-age" },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
-    { title: "Past Life Generator", path: "/past-life-generator" },
+    { title: "Look-Alike Finder", path: "/look-alike-finder", icon: Sparkles },
+    { title: "AI Face Age", path: "/ai-face-age", icon: Camera },
+    { title: "Birthday Compatibility", path: "/compatibility-calculator", icon: Heart },
+    { title: "Past Life Generator", path: "/past-life-generator", icon: History },
   ];
 
   const mobileNavItems = [
-    { title: "Home", path: "/" },
-    { title: "Look-Alike Finder", path: "/look-alike-finder" },
-    { title: "AI Face Age", path: "/ai-face-age" },
-    { title: "Birthday Compatibility", path: "/compatibility-calculator" },
-    { title: "Past Life Generator", path: "/past-life-generator" },
-    { title: "Famous Birthdays", path: "/famous-birthdays" },
-    { title: "Blog", path: "/blog" },
+    { title: "Home", path: "/", icon: Home },
+    { title: "Look-Alike Finder", path: "/look-alike-finder", icon: Sparkles },
+    { title: "AI Face Age", path: "/ai-face-age", icon: Camera },
+    { title: "Birthday Compatibility", path: "/compatibility-calculator", icon: Heart },
+    { title: "Past Life Generator", path: "/past-life-generator", icon: History },
+    { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
+    { title: "Blog", path: "/blog", icon: BookOpen },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -243,7 +244,7 @@ const Header = () => {
                     <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <div 
-                    className={`ai-tools-dropdown-panel absolute top-full left-0 mt-2 min-w-[250px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-[20px] border border-white/20 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-3 z-[1001] transition-all duration-200 ${
+                    className={`ai-tools-dropdown-panel absolute top-full left-0 mt-2 min-w-[250px] p-3 z-[1001] transition-all duration-200 ${
                       isDropdownOpen 
                         ? 'opacity-100 visible scale-100 translate-y-0' 
                         : 'opacity-0 invisible scale-95 -translate-y-2'
@@ -259,23 +260,19 @@ const Header = () => {
                         }}
                         to={item.path}
                         onClick={createRipple}
-                        className={`block px-3 py-2.5 text-sm rounded-lg transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 hover:pl-4 relative overflow-hidden ${
-                          isDropdownOpen 
-                            ? 'opacity-100 translate-y-0' 
-                            : 'opacity-0 translate-y-[-10px]'
-                        } ${
-                          isActive(item.path)
-                            ? "text-primary font-semibold bg-primary/10"
-                            : "text-foreground"
+                        className={`desktop-ai-tool-link ${
+                          isActive(item.path) ? "active" : ""
                         }`}
                         style={{
                           transitionDelay: isDropdownOpen ? `${index * 60}ms` : '0ms',
-                          transitionProperty: 'opacity, transform, background-color, padding'
                         }}
                         role="menuitem"
                         tabIndex={isDropdownOpen ? 0 : -1}
                       >
-                        {item.title}
+                        <div className="tool-icon-box">
+                          <item.icon className="w-5 h-5" />
+                        </div>
+                        <span>{item.title}</span>
                       </Link>
                     ))}
                   </div>
@@ -335,69 +332,48 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Menu Backdrop */}
-      <div 
-        id="menu-backdrop"
-        className={`fixed inset-0 z-[99] transition-all duration-300 ease-out ${
-          isMobileMenuOpen 
-            ? 'is-open bg-black/10 backdrop-blur-sm' 
-            : 'bg-transparent'
-        }`}
-        onClick={handleCloseMenu}
-        style={{ display: isMobileMenuOpen ? 'block' : 'none' }}
-      />
-
-      {/* Glass Pop-over Menu Panel */}
-      <div 
-        id="mobile-menu-panel"
-        ref={mobileMenuRef}
-        className={`fixed top-20 right-5 w-[300px] z-[101] border border-white/20 rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] menu-gradient-animated ${
-          isMobileMenuOpen 
-            ? 'is-open scale-100 opacity-100 visible translate-y-0 animate-[bounce-in_0.5s_ease-out]' 
-            : 'scale-90 opacity-0 invisible -translate-y-2'
-        }`}
-        style={{ transformOrigin: 'top right' }}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Mobile navigation menu"
-      >
-        <nav className="flex flex-col space-y-3">
-          {mobileNavItems.map((item, index) => {
-            const isCurrentPage = isActive(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={(e) => {
-                  createRipple(e);
-                  handleCloseMenu();
-                }}
-                className={`text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out relative overflow-hidden group ${
-                  isCurrentPage
-                    ? "text-primary bg-primary/10 shadow-sm font-semibold"
-                    : "text-foreground hover:text-primary"
-                } ${
-                  isMobileMenuOpen 
-                    ? 'opacity-100 translate-x-0 scale-100' 
-                    : 'opacity-0 translate-x-8 scale-95'
-                } hover:bg-primary/5 hover:scale-[1.02] hover:shadow-md hover:-translate-x-1`}
-                style={{
-                  transitionDelay: isMobileMenuOpen ? `${index * 80}ms` : '0ms',
-                  transitionProperty: 'opacity, transform, background-color, color, box-shadow'
-                }}
+      {/* Mobile Menu Drawer - Slides from Right */}
+      <Drawer open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen} direction="right">
+        <DrawerContent className="mobile-nav-drawer fixed right-0 top-0 h-full w-[320px] rounded-l-[20px] p-6">
+          <div className="flex justify-end mb-6">
+            <DrawerClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseMenu}
+                className="relative overflow-hidden"
               >
-                {/* Active indicator */}
-                {isCurrentPage && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full animate-fade-in" />
-                )}
-                {/* Hover gradient effect */}
-                <span className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative">{item.title}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+                <X className="h-5 w-5 text-primary" />
+              </Button>
+            </DrawerClose>
+          </div>
+          
+          <nav className="flex flex-col space-y-2">
+            {mobileNavItems.map((item, index) => {
+              const isCurrentPage = isActive(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={(e) => {
+                    createRipple(e);
+                    handleCloseMenu();
+                  }}
+                  className={`mobile-nav-link ${isCurrentPage ? "active" : ""}`}
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                  }}
+                >
+                  <div className="nav-icon">
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <span className="relative font-medium">{item.title}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
