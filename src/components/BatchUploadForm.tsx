@@ -69,7 +69,7 @@ export const BatchUploadForm = ({ selectedEngine, setSelectedEngine }: BatchUplo
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
           },
           body: JSON.stringify({ urls, engineChoice: selectedEngine })
         }
