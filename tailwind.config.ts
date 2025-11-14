@@ -80,14 +80,6 @@ export default {
             height: "0",
           },
         },
-        "slide-in-left": {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(0)" }
-        },
-        "slide-in-right": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(0)" }
-        },
         "planet-rotate": {
           "0%": {
             transform: "rotate(0deg) scale(1)",
@@ -156,8 +148,6 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "slide-in-left": "slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        "slide-in-right": "slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         "planet-rotate": "planet-rotate 30s linear infinite",
         "shimmer": "shimmer 8s ease-in-out infinite",
         "float": "float 3s ease-in-out infinite",
