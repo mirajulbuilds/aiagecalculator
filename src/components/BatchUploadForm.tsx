@@ -18,6 +18,8 @@ export const BatchUploadForm = ({ selectedEngine, setSelectedEngine }: BatchUplo
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<any[]>([]);
+  const [currentProcessing, setCurrentProcessing] = useState<string>("");
+  const [processedCount, setProcessedCount] = useState(0);
 
   const parseCsv = (text: string) => {
     const lines = text.split('\n').filter(line => line.trim());
@@ -57,26 +59,90 @@ export const BatchUploadForm = ({ selectedEngine, setSelectedEngine }: BatchUplo
     setIsProcessing(true);
     setProgress(0);
     setResults([]);
+    setProcessedCount(0);
+    setCurrentProcessing("");
 
     try {
-      const { data, error } = await supabase.functions.invoke('batch-generate-profiles', {
-        body: {
-          urls,
-          engineChoice: selectedEngine
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/batch-generate-profiles`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({ urls, engineChoice: selectedEngine })
         }
-      });
+      );
 
-      if (error) throw error;
+      if (!response.ok || !response.body) {
+        throw new Error('Failed to start batch processing');
+      }
 
-      setResults(data.results || []);
-      setProgress(100);
-      
-      toast.success(`Batch complete: ${data.succeeded} succeeded, ${data.failed} failed`);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+
+          try {
+            const update = JSON.parse(line);
+
+            if (update.type === 'progress') {
+              setProgress(((update.index + 1) / update.total) * 100);
+              setProcessedCount(update.index + 1);
+              setCurrentProcessing(update.message);
+
+              // Add or update result in real-time
+              setResults(prev => {
+                const newResults = [...prev];
+                const existingIndex = newResults.findIndex(r => r.url === update.url);
+                
+                if (existingIndex >= 0) {
+                  newResults[existingIndex] = {
+                    url: update.url,
+                    status: update.status,
+                    message: update.message,
+                    error: update.error,
+                    profile: update.profile
+                  };
+                } else {
+                  newResults.push({
+                    url: update.url,
+                    status: update.status,
+                    message: update.message,
+                    error: update.error,
+                    profile: update.profile
+                  });
+                }
+                
+                return newResults;
+              });
+            } else if (update.type === 'complete') {
+              setProgress(100);
+              toast.success(`Batch complete: ${update.succeeded} succeeded, ${update.failed} failed`);
+            }
+          } catch (parseError) {
+            console.error('Error parsing stream update:', parseError);
+          }
+        }
+      }
     } catch (error) {
       console.error('Batch processing error:', error);
       toast.error(error instanceof Error ? error.message : 'Batch processing failed');
     } finally {
       setIsProcessing(false);
+      setCurrentProcessing("");
     }
   };
 
@@ -130,29 +196,58 @@ https://en.wikipedia.org/wiki/..., wikipedia`}
       </Button>
 
       {isProcessing && (
-        <div className="space-y-2">
-          <Progress value={progress} />
-          <p className="text-sm text-center text-muted-foreground">Processing profiles...</p>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Progress</span>
+              <span className="font-medium">{processedCount}/{parseCsv(csvText).length}</span>
+            </div>
+            <Progress value={progress} />
+          </div>
+          {currentProcessing && (
+            <div className="rounded-md bg-muted p-3">
+              <p className="text-sm font-medium text-foreground animate-pulse">
+                {currentProcessing}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
       {results.length > 0 && (
         <div className="mt-6 space-y-2">
-          <h3 className="font-semibold">Results</h3>
+          <h3 className="font-semibold">
+            Results ({results.filter(r => r.status === 'success').length}/{results.length})
+          </h3>
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {results.map((result, idx) => (
               <div
                 key={idx}
-                className={`p-3 rounded-lg border ${
+                className={`p-3 rounded-lg border transition-all duration-200 ${
                   result.status === 'success'
                     ? 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800'
+                    : result.status === 'processing'
+                    ? 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 animate-pulse'
                     : 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800'
                 }`}
               >
-                <p className="text-sm font-medium">{result.url}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {result.status === 'success' ? '✓ Success' : `✗ ${result.error}`}
-                </p>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{result.url}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {result.message || `Status: ${result.status}`}
+                    </p>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full whitespace-nowrap ${
+                    result.status === 'success'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                      : result.status === 'processing'
+                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                  }`}>
+                    {result.status}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
