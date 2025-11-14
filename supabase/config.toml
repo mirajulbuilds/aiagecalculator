@@ -39,3 +39,6 @@ verify_jwt = false
 [functions.calculate-health-score]
 verify_jwt = false
 
+[functions.get-due-date]
+verify_jwt = false
+
