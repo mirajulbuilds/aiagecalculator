@@ -130,6 +130,90 @@ function extractDataFromHTML(html: string, sourceType: string, baseUrl: string) 
     }
   }
   
+  // FamousBirthdays-specific extraction
+  if (!imageUrl && sourceType === 'famousbirthdays') {
+    console.log("Using FamousBirthdays-specific image extraction");
+    
+    // Method 1: Look for bio-photo or profile-image class
+    let fbMatch = html.match(/<img[^>]*class=["'][^"']*(?:bio-photo|profile-image|main-photo|celebrity-photo)[^"']*["'][^>]*src=["']([^"']+)["'][^>]*>/i);
+    if (!fbMatch) {
+      // Method 2: Look for src attribute first, then check class
+      fbMatch = html.match(/<img[^>]*src=["']([^"']+)["'][^>]*class=["'][^"']*(?:bio-photo|profile-image|main-photo|celebrity-photo)[^"']*["'][^>]*>/i);
+    }
+    
+    if (fbMatch) {
+      imageUrl = fbMatch[1];
+      console.log("Found FamousBirthdays profile image (method 1/2):", imageUrl);
+    } else {
+      // Method 3: Look for images in specific containers
+      const bioSectionMatch = html.match(/<div[^>]*class=["'][^"']*(?:bio-container|profile-header|celebrity-info)[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
+      if (bioSectionMatch) {
+        const bioHtml = bioSectionMatch[1];
+        const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/i;
+        const imgMatch = bioHtml.match(imgRegex);
+        
+        if (imgMatch) {
+          const src = imgMatch[1];
+          // Skip tiny images and ads
+          if (!src.includes('ads') && !src.includes('banner') && !src.includes('1x1')) {
+            imageUrl = src;
+            console.log("Found FamousBirthdays image in bio section:", imageUrl);
+          }
+        }
+      }
+    }
+    
+    // Method 4: Look for Open Graph image meta tag (often reliable for FamousBirthdays)
+    if (!imageUrl) {
+      const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i);
+      if (ogImageMatch) {
+        imageUrl = ogImageMatch[1];
+        console.log("Found FamousBirthdays OG image:", imageUrl);
+      }
+    }
+    
+    // Method 5: Look for images with specific size attributes (typically profile images are larger)
+    if (!imageUrl) {
+      const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/gi;
+      const images = [];
+      let match;
+      
+      while ((match = imgRegex.exec(html)) !== null) {
+        const fullImgTag = match[0];
+        const src = match[1];
+        
+        // Skip common non-profile patterns
+        if (src.includes('logo') || src.includes('icon') || src.includes('ads') || src.includes('banner')) {
+          continue;
+        }
+        
+        // Look for images with reasonable dimensions
+        const widthMatch = fullImgTag.match(/width=["']?(\d+)/i);
+        const heightMatch = fullImgTag.match(/height=["']?(\d+)/i);
+        const width = widthMatch ? parseInt(widthMatch[1]) : 0;
+        const height = heightMatch ? parseInt(heightMatch[1]) : 0;
+        
+        // FamousBirthdays profile images are typically 200x200 or larger
+        if ((width >= 200 && height >= 200) || (width === 0 && height === 0)) {
+          images.push({ src, width, height, size: width * height });
+        }
+      }
+      
+      if (images.length > 0) {
+        // Prefer square images (typical for profile photos)
+        const squareImages = images.filter(img => {
+          const ratio = img.width > 0 && img.height > 0 ? img.width / img.height : 1;
+          return ratio >= 0.8 && ratio <= 1.2;
+        });
+        
+        const targetImages = squareImages.length > 0 ? squareImages : images;
+        targetImages.sort((a, b) => b.size - a.size);
+        imageUrl = targetImages[0].src;
+        console.log("Found FamousBirthdays image by size:", imageUrl);
+      }
+    }
+  }
+  
   // Fallback: Improved generic extraction
   if (!imageUrl) {
     console.log("Using fallback image extraction");
