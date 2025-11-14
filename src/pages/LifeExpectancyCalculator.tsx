@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2 } from "lucide-react";
+import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const LifeExpectancyCalculator = () => {
   const [birthDay, setBirthDay] = useState<string>("");
@@ -40,6 +41,30 @@ const LifeExpectancyCalculator = () => {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
   
+  // Chart data for visualizations
+  const genderData = [
+    { gender: "Male", average: 76, optimal: 82, yourAge: gender === "Male" ? result?.estimated_age || 0 : 0 },
+    { gender: "Female", average: 81, optimal: 87, yourAge: gender === "Female" ? result?.estimated_age || 0 : 0 },
+  ];
+
+  const lifestyleData = [
+    { factor: "Never Smoked", impact: 84 },
+    { factor: "Regular Exercise", impact: 83 },
+    { factor: "Moderate Alcohol", impact: 81 },
+    { factor: "Healthy Diet", impact: 82 },
+    { factor: "Good Sleep", impact: 80 },
+    { factor: "Low Stress", impact: 81 },
+  ];
+
+  const ageGroupData = [
+    { age: "20-30", male: 78, female: 83 },
+    { age: "30-40", male: 77, female: 82 },
+    { age: "40-50", male: 76, female: 81 },
+    { age: "50-60", male: 75, female: 80 },
+    { age: "60-70", male: 73, female: 78 },
+    { age: "70-80", male: 70, female: 75 },
+  ];
+
   const countries = [
     "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
     "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus",
@@ -339,6 +364,122 @@ const LifeExpectancyCalculator = () => {
               </Button>
             </CardContent>
           </Card>
+        )}
+
+        {/* Data Visualization Charts */}
+        {result && (
+          <div className="space-y-6 mt-8">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 mb-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                <h2 className="text-2xl font-bold">Life Expectancy Insights</h2>
+              </div>
+              <p className="text-muted-foreground">Explore how different factors affect longevity</p>
+            </div>
+
+            {/* Gender Comparison Chart */}
+            <Card className="border-2 border-primary/20">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4">Life Expectancy by Gender</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Comparing average, optimal, and your estimated life expectancy
+                </p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={genderData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="gender" className="text-xs" />
+                    <YAxis className="text-xs" domain={[60, 90]} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="average" fill="hsl(var(--muted))" name="Global Average" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="optimal" fill="hsl(var(--primary))" name="Optimal Health" radius={[8, 8, 0, 0]} />
+                    {result && <Bar dataKey="yourAge" fill="hsl(var(--chart-2))" name="Your Estimate" radius={[8, 8, 0, 0]} />}
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Lifestyle Factors Chart */}
+            <Card className="border-2 border-primary/20">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4">Impact of Lifestyle Factors</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  How healthy habits can increase your life expectancy
+                </p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={lifestyleData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis type="number" domain={[75, 85]} className="text-xs" />
+                    <YAxis dataKey="factor" type="category" width={120} className="text-xs" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="impact" fill="hsl(var(--primary))" name="Life Expectancy (years)" radius={[0, 8, 8, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Age Group Trends Chart */}
+            <Card className="border-2 border-primary/20">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4">Life Expectancy Trends by Age Group</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Life expectancy estimates based on current age and gender
+                </p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={ageGroupData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="age" className="text-xs" />
+                    <YAxis domain={[65, 85]} className="text-xs" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="male" 
+                      stroke="hsl(var(--chart-1))" 
+                      strokeWidth={3}
+                      name="Male"
+                      dot={{ r: 5 }}
+                      activeDot={{ r: 7 }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="female" 
+                      stroke="hsl(var(--chart-2))" 
+                      strokeWidth={3}
+                      name="Female"
+                      dot={{ r: 5 }}
+                      activeDot={{ r: 7 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <div className="text-center text-sm text-muted-foreground p-4 bg-muted/30 rounded-lg">
+              <p>
+                <strong>Note:</strong> These charts display general trends based on population averages. 
+                Individual results may vary based on genetics, environment, and personal health choices.
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </>
