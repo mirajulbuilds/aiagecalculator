@@ -265,7 +265,6 @@ const DueDateCalculator = () => {
                 {/* Share Button */}
                 <Button 
                   onClick={handleShare} 
-                  variant="outline" 
                   className="gap-2 w-full" 
                   size="lg"
                 >
