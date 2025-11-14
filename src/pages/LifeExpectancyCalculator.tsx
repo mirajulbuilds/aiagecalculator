@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-
 const LifeExpectancyCalculator = () => {
   const [birthDay, setBirthDay] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
@@ -22,106 +21,136 @@ const LifeExpectancyCalculator = () => {
     estimated_age: number;
     summary_text: string;
   } | null>(null);
-
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const months = [
-    { value: "1", label: "January" },
-    { value: "2", label: "February" },
-    { value: "3", label: "March" },
-    { value: "4", label: "April" },
-    { value: "5", label: "May" },
-    { value: "6", label: "June" },
-    { value: "7", label: "July" },
-    { value: "8", label: "August" },
-    { value: "9", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
+  const days = Array.from({
+    length: 31
+  }, (_, i) => i + 1);
+  const months = [{
+    value: "1",
+    label: "January"
+  }, {
+    value: "2",
+    label: "February"
+  }, {
+    value: "3",
+    label: "March"
+  }, {
+    value: "4",
+    label: "April"
+  }, {
+    value: "5",
+    label: "May"
+  }, {
+    value: "6",
+    label: "June"
+  }, {
+    value: "7",
+    label: "July"
+  }, {
+    value: "8",
+    label: "August"
+  }, {
+    value: "9",
+    label: "September"
+  }, {
+    value: "10",
+    label: "October"
+  }, {
+    value: "11",
+    label: "November"
+  }, {
+    value: "12",
+    label: "December"
+  }];
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
-  
+  const years = Array.from({
+    length: 100
+  }, (_, i) => currentYear - i);
+
   // Chart data for visualizations
-  const genderData = [
-    { gender: "Male", average: 76, optimal: 82, yourAge: gender === "Male" ? result?.estimated_age || 0 : 0 },
-    { gender: "Female", average: 81, optimal: 87, yourAge: gender === "Female" ? result?.estimated_age || 0 : 0 },
-  ];
-
-  const lifestyleData = [
-    { factor: "Never Smoked", impact: 84 },
-    { factor: "Regular Exercise", impact: 83 },
-    { factor: "Moderate Alcohol", impact: 81 },
-    { factor: "Healthy Diet", impact: 82 },
-    { factor: "Good Sleep", impact: 80 },
-    { factor: "Low Stress", impact: 81 },
-  ];
-
-  const ageGroupData = [
-    { age: "20-30", male: 78, female: 83 },
-    { age: "30-40", male: 77, female: 82 },
-    { age: "40-50", male: 76, female: 81 },
-    { age: "50-60", male: 75, female: 80 },
-    { age: "60-70", male: 73, female: 78 },
-    { age: "70-80", male: 70, female: 75 },
-  ];
-
-  const countries = [
-    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
-    "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus",
-    "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil",
-    "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada",
-    "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica",
-    "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
-    "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
-    "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada",
-    "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India",
-    "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan",
-    "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho",
-    "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia",
-    "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia",
-    "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru",
-    "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia",
-    "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru",
-    "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis",
-    "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe",
-    "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia",
-    "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka",
-    "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand",
-    "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
-    "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
-    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
-  ];
-
+  const genderData = [{
+    gender: "Male",
+    average: 76,
+    optimal: 82,
+    yourAge: gender === "Male" ? result?.estimated_age || 0 : 0
+  }, {
+    gender: "Female",
+    average: 81,
+    optimal: 87,
+    yourAge: gender === "Female" ? result?.estimated_age || 0 : 0
+  }];
+  const lifestyleData = [{
+    factor: "Never Smoked",
+    impact: 84
+  }, {
+    factor: "Regular Exercise",
+    impact: 83
+  }, {
+    factor: "Moderate Alcohol",
+    impact: 81
+  }, {
+    factor: "Healthy Diet",
+    impact: 82
+  }, {
+    factor: "Good Sleep",
+    impact: 80
+  }, {
+    factor: "Low Stress",
+    impact: 81
+  }];
+  const ageGroupData = [{
+    age: "20-30",
+    male: 78,
+    female: 83
+  }, {
+    age: "30-40",
+    male: 77,
+    female: 82
+  }, {
+    age: "40-50",
+    male: 76,
+    female: 81
+  }, {
+    age: "50-60",
+    male: 75,
+    female: 80
+  }, {
+    age: "60-70",
+    male: 73,
+    female: 78
+  }, {
+    age: "70-80",
+    male: 70,
+    female: 75
+  }];
+  const countries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"];
   const handleCalculate = async () => {
     // Validate inputs
     if (!birthDay || !birthMonth || !birthYear || !gender || !country || !smoking || !exercise || !alcohol) {
       toast.error("Please fill in all fields");
       return;
     }
-
     const birthDate = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
-
     setIsLoading(true);
     setResult(null);
-
     try {
-      const { data, error } = await supabase.functions.invoke('get-life-expectancy', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('get-life-expectancy', {
         body: {
           birthDate,
           gender,
           country,
           smoking,
           exercise,
-          alcohol,
-        },
+          alcohol
+        }
       });
-
       if (error) throw error;
-
       if (data && data.estimated_age && data.summary_text) {
         setResult({
           estimated_age: data.estimated_age,
-          summary_text: data.summary_text,
+          summary_text: data.summary_text
         });
       } else {
         throw new Error("Invalid response from server");
@@ -133,17 +162,14 @@ const LifeExpectancyCalculator = () => {
       setIsLoading(false);
     }
   };
-
   const handleShare = async () => {
     if (!result) return;
-
     const shareText = `My estimated life expectancy is ${result.estimated_age}! Find out yours at ${window.location.origin}/life-expectancy-calculator`;
-
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Life Expectancy Calculator",
-          text: shareText,
+          text: shareText
         });
       } catch (error) {
         console.error("Error sharing:", error);
@@ -158,15 +184,10 @@ const LifeExpectancyCalculator = () => {
       }
     }
   };
-
-  return (
-    <>
+  return <>
       <Helmet>
         <title>Life Expectancy Calculator | How Long Will I Live?</title>
-        <meta
-          name="description"
-          content="Calculate your estimated life expectancy based on lifestyle factors using AI-powered predictions. Get personalized insights about your potential longevity."
-        />
+        <meta name="description" content="Calculate your estimated life expectancy based on lifestyle factors using AI-powered predictions. Get personalized insights about your potential longevity." />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -176,7 +197,7 @@ const LifeExpectancyCalculator = () => {
             AI Life Expectancy Calculator
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Answer a few questions about your lifestyle, and our AI (powered by Gemini 2.5 Pro) will give you an estimate of your potential life expectancy.
+            Answer a few questions about your lifestyle, and our AI will give you an estimate of your potential life expectancy.
           </p>
           <p className="text-sm text-muted-foreground mt-2 italic">
             *This is for entertainment purposes only and is not medical advice.*
@@ -198,11 +219,9 @@ const LifeExpectancyCalculator = () => {
                     <SelectValue placeholder="Day" />
                   </SelectTrigger>
                   <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day} value={day.toString()}>
+                    {days.map(day => <SelectItem key={day} value={day.toString()}>
                         {day}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
 
@@ -211,11 +230,9 @@ const LifeExpectancyCalculator = () => {
                     <SelectValue placeholder="Month" />
                   </SelectTrigger>
                   <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month.value} value={month.value}>
+                    {months.map(month => <SelectItem key={month.value} value={month.value}>
                         {month.label}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
 
@@ -224,11 +241,9 @@ const LifeExpectancyCalculator = () => {
                     <SelectValue placeholder="Year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year.toString()}>
+                    {years.map(year => <SelectItem key={year} value={year.toString()}>
                         {year}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -262,11 +277,9 @@ const LifeExpectancyCalculator = () => {
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
                 <SelectContent>
-                  {countries.map((countryName) => (
-                    <SelectItem key={countryName} value={countryName}>
+                  {countries.map(countryName => <SelectItem key={countryName} value={countryName}>
                       {countryName}
-                    </SelectItem>
-                  ))}
+                    </SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -326,20 +339,14 @@ const LifeExpectancyCalculator = () => {
             </div>
 
             {/* Calculate Button */}
-            <Button
-              onClick={handleCalculate}
-              disabled={isLoading}
-              className="main-action-button w-full"
-              size="lg"
-            >
+            <Button onClick={handleCalculate} disabled={isLoading} className="main-action-button w-full" size="lg">
               {isLoading ? "Calculating..." : "Calculate My Life Expectancy"}
             </Button>
           </CardContent>
         </Card>
 
         {/* Result Card */}
-        {result && (
-          <Card className="content-card animate-fade-in">
+        {result && <Card className="content-card animate-fade-in">
             <CardContent className="p-6 text-center space-y-6">
               <div>
                 <p className="text-muted-foreground text-sm mb-2">Your Estimated Life Expectancy</p>
@@ -353,22 +360,15 @@ const LifeExpectancyCalculator = () => {
                 <p className="text-foreground leading-relaxed">{result.summary_text}</p>
               </div>
 
-              <Button
-                onClick={handleShare}
-                variant="outline"
-                className="gap-2"
-                size="lg"
-              >
+              <Button onClick={handleShare} variant="outline" className="gap-2" size="lg">
                 <Share2 className="w-4 h-4" />
                 Share Result
               </Button>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
 
         {/* Data Visualization Charts */}
-        {result && (
-          <div className="space-y-6 mt-8">
+        {result && <div className="space-y-6 mt-8">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 mb-2">
                 <TrendingUp className="w-5 h-5 text-primary" />
@@ -389,13 +389,11 @@ const LifeExpectancyCalculator = () => {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="gender" className="text-xs" />
                     <YAxis className="text-xs" domain={[60, 90]} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
+                    <Tooltip contentStyle={{
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px'
+                }} />
                     <Legend />
                     <Bar dataKey="average" fill="hsl(var(--muted))" name="Global Average" radius={[8, 8, 0, 0]} />
                     <Bar dataKey="optimal" fill="hsl(var(--primary))" name="Optimal Health" radius={[8, 8, 0, 0]} />
@@ -417,13 +415,11 @@ const LifeExpectancyCalculator = () => {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis type="number" domain={[75, 85]} className="text-xs" />
                     <YAxis dataKey="factor" type="category" width={120} className="text-xs" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
+                    <Tooltip contentStyle={{
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px'
+                }} />
                     <Bar dataKey="impact" fill="hsl(var(--primary))" name="Life Expectancy (years)" radius={[0, 8, 8, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -442,32 +438,22 @@ const LifeExpectancyCalculator = () => {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="age" className="text-xs" />
                     <YAxis domain={[65, 85]} className="text-xs" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
+                    <Tooltip contentStyle={{
+                  backgroundColor: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px'
+                }} />
                     <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="male" 
-                      stroke="hsl(var(--chart-1))" 
-                      strokeWidth={3}
-                      name="Male"
-                      dot={{ r: 5 }}
-                      activeDot={{ r: 7 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="female" 
-                      stroke="hsl(var(--chart-2))" 
-                      strokeWidth={3}
-                      name="Female"
-                      dot={{ r: 5 }}
-                      activeDot={{ r: 7 }}
-                    />
+                    <Line type="monotone" dataKey="male" stroke="hsl(var(--chart-1))" strokeWidth={3} name="Male" dot={{
+                  r: 5
+                }} activeDot={{
+                  r: 7
+                }} />
+                    <Line type="monotone" dataKey="female" stroke="hsl(var(--chart-2))" strokeWidth={3} name="Female" dot={{
+                  r: 5
+                }} activeDot={{
+                  r: 7
+                }} />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -479,11 +465,8 @@ const LifeExpectancyCalculator = () => {
                 Individual results may vary based on genetics, environment, and personal health choices.
               </p>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
-    </>
-  );
+    </>;
 };
-
 export default LifeExpectancyCalculator;
