@@ -121,8 +121,20 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  
+  let profileURL = "";
+  let engine_choice = "lovable-ai";
+  let celebrityName = "Unknown";
+
   try {
-    const { profileURL, sourceType, manualImageBase64, engine_choice } = await req.json();
+    const body = await req.json();
+    profileURL = body.profileURL;
+    engine_choice = body.engine_choice || "lovable-ai";
+    const sourceType = body.sourceType;
+    const manualImageBase64 = body.manualImageBase64;
 
     if (!profileURL) {
       return new Response(
@@ -145,12 +157,12 @@ serve(async (req) => {
 
     // Step 1: Scrape the website
     const html = await scrapeWebsite(profileURL);
-    const { name: celebrityName, rawText, imageUrl: scrapedImageUrl } = extractDataFromHTML(html, sourceType);
+    const scrapedData = extractDataFromHTML(html, sourceType);
+    celebrityName = scrapedData.name;
+    const rawText = scrapedData.rawText;
+    const scrapedImageUrl = scrapedData.imageUrl;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     let profileImageUrl = null;
 
@@ -454,12 +466,46 @@ Make the writing feel human, warm, and professionally crafted.`,
 
     console.log("Profile generation complete:", completeProfile.profile_slug);
 
+    // Log usage to profile_generations table
+    try {
+      const { error: logError } = await supabase.from("profile_generations").insert({
+        celebrity_name: generatedProfile.name,
+        source_url: profileURL,
+        engine_used: engine_choice === "gemini-api" ? "gemini-api" : "lovable-ai",
+        generation_status: "success",
+      });
+
+      if (logError) {
+        console.error("Failed to log generation:", logError);
+      }
+    } catch (logErr) {
+      console.error("Error logging generation:", logErr);
+    }
+
     return new Response(JSON.stringify(completeProfile), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
     console.error("Error in generate-celebrity-profile:", error);
+    
+    // Log failed generation
+    try {
+      const { error: logError } = await supabase.from("profile_generations").insert({
+        celebrity_name: celebrityName.substring(0, 100),
+        source_url: profileURL || "Unknown",
+        engine_used: engine_choice === "gemini-api" ? "gemini-api" : "lovable-ai",
+        generation_status: "failed",
+        error_message: error instanceof Error ? error.message.substring(0, 500) : "Unknown error",
+      });
+
+      if (logError) {
+        console.error("Failed to log error:", logError);
+      }
+    } catch (logErr) {
+      console.error("Error logging failed generation:", logErr);
+    }
+    
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : "Unknown error occurred",

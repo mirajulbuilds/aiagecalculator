@@ -48,3 +48,12 @@ verify_jwt = false
 [functions.get-celebrities-by-age]
 verify_jwt = false
 
+[functions.check-celebrity-duplicate]
+verify_jwt = true
+
+[functions.batch-generate-profiles]
+verify_jwt = true
+
+[functions.get-usage-stats]
+verify_jwt = true
+
