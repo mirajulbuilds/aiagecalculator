@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Camera, Share2, Sparkles, AlertCircle } from "lucide-react";
+import { Upload, Camera, Share2, Sparkles, AlertCircle, RotateCcw, History, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
 import { triggerNativeShare } from "@/lib/shareUtils";
+import { useMatchHistory } from "@/hooks/useMatchHistory";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CelebrityMatch {
   id: string;
@@ -34,6 +36,7 @@ const LookAlikeFinder = () => {
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
+  const { history, addToHistory, removeFromHistory, clearHistory } = useMatchHistory();
 
   // Client-side image compression utility
   const compressImage = async (file: File): Promise<File> => {
@@ -212,6 +215,26 @@ const LookAlikeFinder = () => {
 
       console.log('Match found:', matchData);
       setMatchResult(matchData);
+      
+      // Add to history
+      if (uploadedImage && matchData.topMatches && matchData.topMatches.length > 0) {
+        addToHistory({
+          imageUrl: uploadedImage,
+          topMatch: {
+            name: matchData.topMatches[0].name,
+            profileSlug: matchData.topMatches[0].profileSlug,
+            profileImageUrl: matchData.topMatches[0].profileImageUrl,
+            similarityPercentage: matchData.topMatches[0].similarityPercentage,
+            profession: matchData.topMatches[0].profession,
+          },
+          topThree: matchData.topMatches.slice(0, 3).map(match => ({
+            name: match.name,
+            profileSlug: match.profileSlug,
+            similarityPercentage: match.similarityPercentage,
+          })),
+        });
+      }
+      
       toast.success('Match found!');
 
     } catch (error) {
@@ -234,6 +257,14 @@ const LookAlikeFinder = () => {
     });
   };
 
+  const handleReset = () => {
+    setUploadedImage(null);
+    setUploadedFile(null);
+    setMatchResult(null);
+    setError(null);
+    toast.success('Ready for a new photo!');
+  };
+
   return (
     <PageTransition>
     <>
@@ -244,7 +275,7 @@ const LookAlikeFinder = () => {
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-6xl">
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -259,6 +290,16 @@ const LookAlikeFinder = () => {
             </p>
           </div>
 
+          <Tabs defaultValue="finder" className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+              <TabsTrigger value="finder">Find Match</TabsTrigger>
+              <TabsTrigger value="history">
+                <History className="w-4 h-4 mr-2" />
+                History ({history.length})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="finder">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Upload Section */}
             <Card className="bg-card/50 backdrop-blur">
@@ -389,14 +430,23 @@ const LookAlikeFinder = () => {
                       ))}
                     </div>
 
-                    <Button
-                      variant="outline"
-                      className="w-full mt-4"
-                      onClick={handleShare}
-                    >
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Share Your #1 Match!
-                    </Button>
+                    <div className="flex gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={handleShare}
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Share Your #1 Match!
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleReset}
+                      >
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Try Another Photo
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
@@ -407,6 +457,126 @@ const LookAlikeFinder = () => {
               </CardContent>
             </Card>
           </div>
+            </TabsContent>
+
+            <TabsContent value="history">
+              <div className="space-y-6">
+                {history.length === 0 ? (
+                  <Card className="bg-card/50 backdrop-blur">
+                    <CardContent className="py-12 text-center">
+                      <History className="w-16 h-16 mx-auto mb-4 opacity-50 text-muted-foreground" />
+                      <p className="text-muted-foreground mb-2">No match history yet</p>
+                      <p className="text-sm text-muted-foreground">
+                        Your last 5 celebrity matches will appear here
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl font-bold">Your Match History</h2>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearHistory}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Clear All
+                      </Button>
+                    </div>
+                    
+                    <div className="grid gap-4">
+                      {history.map((item) => (
+                        <Card key={item.id} className="bg-card/50 backdrop-blur">
+                          <CardContent className="p-6">
+                            <div className="grid md:grid-cols-2 gap-6">
+                              {/* User Photo */}
+                              <div>
+                                <p className="text-sm text-muted-foreground mb-3">
+                                  {new Date(item.timestamp).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    hour: 'numeric',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                                <img
+                                  src={item.imageUrl}
+                                  alt="Your photo"
+                                  className="w-full h-48 rounded-lg object-cover border-2 border-border"
+                                />
+                              </div>
+
+                              {/* Match Results */}
+                              <div>
+                                <h3 className="font-semibold mb-4">Top Match</h3>
+                                <Link
+                                  to={`/people/${item.topMatch.profileSlug}`}
+                                  className="block group"
+                                >
+                                  <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                                    <img
+                                      src={item.topMatch.profileImageUrl}
+                                      alt={item.topMatch.name}
+                                      className="w-20 h-20 rounded-full object-cover border-2 border-primary"
+                                    />
+                                    <div className="flex-1">
+                                      <h4 className="font-bold group-hover:text-primary transition-colors">
+                                        {item.topMatch.name}
+                                      </h4>
+                                      <p className="text-sm text-muted-foreground">
+                                        {item.topMatch.profession}
+                                      </p>
+                                      <div className="mt-2 inline-block bg-gradient-to-r from-primary to-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                        {item.topMatch.similarityPercentage}% Match
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Link>
+
+                                {item.topThree.length > 1 && (
+                                  <div className="mt-4 pt-4 border-t border-border">
+                                    <h4 className="text-sm font-semibold mb-2 text-muted-foreground">
+                                      Other matches:
+                                    </h4>
+                                    <div className="space-y-1">
+                                      {item.topThree.slice(1).map((match, idx) => (
+                                        <Link
+                                          key={idx}
+                                          to={`/people/${match.profileSlug}`}
+                                          className="flex items-center justify-between p-2 rounded hover:bg-muted/50 transition-colors text-sm"
+                                        >
+                                          <span className="font-medium">{match.name}</span>
+                                          <span className="text-primary font-semibold">
+                                            {match.similarityPercentage}%
+                                          </span>
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeFromHistory(item.id)}
+                                  className="w-full mt-4"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Remove from History
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
 
           {/* How It Works */}
           <Card className="mt-8 bg-gradient-to-br from-primary/5 to-purple-600/5">
