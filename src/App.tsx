@@ -11,6 +11,8 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ComparisonProvider } from "./contexts/ComparisonContext";
 import { FloatingCompareBar } from "./components/FloatingCompareBar";
+import { LifeExpectancyComparisonProvider } from "./contexts/LifeExpectancyComparisonContext";
+import { FloatingLifeExpectancyCompareBar } from "./components/FloatingLifeExpectancyCompareBar";
 import { BackToTop } from "./components/BackToTop";
 import ScrollProgress from "./components/ScrollProgress";
 
@@ -38,6 +40,7 @@ const LifeExpectancyCalculator = lazy(() => import("./pages/LifeExpectancyCalcul
 const RetirementCalculator = lazy(() => import("./pages/RetirementCalculator"));
 const HealthScoreCalculator = lazy(() => import("./pages/HealthScoreCalculator"));
 const Compare = lazy(() => import("./pages/Compare"));
+const CompareLifeExpectancy = lazy(() => import("./pages/CompareLifeExpectancy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -66,6 +69,7 @@ const AnimatedRoutes = () => {
             <Route path="/retirement-calculator" element={<RetirementCalculator />} />
             <Route path="/health-score-calculator" element={<HealthScoreCalculator />} />
             <Route path="/compare" element={<Compare />} />
+            <Route path="/compare-life-expectancy" element={<CompareLifeExpectancy />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
         <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
@@ -84,22 +88,25 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="ai-age-calc-theme">
         <TooltipProvider>
           <ComparisonProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <ScrollProgress />
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <main className="flex-1">
-                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-                    <AnimatedRoutes />
-                  </Suspense>
-                </main>
-                <Footer />
-                <FloatingCompareBar />
-                <BackToTop />
-              </div>
-            </BrowserRouter>
+            <LifeExpectancyComparisonProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ScrollProgress />
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main className="flex-1">
+                    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+                      <AnimatedRoutes />
+                    </Suspense>
+                  </main>
+                  <Footer />
+                  <FloatingCompareBar />
+                  <FloatingLifeExpectancyCompareBar />
+                  <BackToTop />
+                </div>
+              </BrowserRouter>
+            </LifeExpectancyComparisonProvider>
           </ComparisonProvider>
         </TooltipProvider>
       </ThemeProvider>

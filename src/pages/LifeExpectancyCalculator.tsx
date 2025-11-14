@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp } from "lucide-react";
+import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp, Plus } from "lucide-react";
+import { useLifeExpectancyComparison } from "@/contexts/LifeExpectancyComparisonContext";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +22,8 @@ const LifeExpectancyCalculator = () => {
     estimated_age: number;
     summary_text: string;
   } | null>(null);
+  const [scenarioLabel, setScenarioLabel] = useState<string>("");
+  const { addToComparison } = useLifeExpectancyComparison();
   const days = Array.from({
     length: 31
   }, (_, i) => i + 1);
@@ -183,6 +186,28 @@ const LifeExpectancyCalculator = () => {
         toast.error("Failed to copy to clipboard");
       }
     }
+  };
+
+  const handleAddToComparison = () => {
+    if (!result) return;
+    
+    const label = scenarioLabel.trim() || `Scenario ${Date.now()}`;
+    const birthDate = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
+    
+    addToComparison({
+      id: Date.now().toString(),
+      label,
+      birthDate,
+      gender,
+      country,
+      smoking,
+      exercise,
+      alcohol,
+      estimatedAge: result.estimated_age,
+      summary: result.summary_text,
+    });
+    
+    setScenarioLabel("");
   };
   return <>
       <Helmet>
@@ -360,10 +385,26 @@ const LifeExpectancyCalculator = () => {
                 <p className="text-foreground leading-relaxed">{result.summary_text}</p>
               </div>
 
-              <Button onClick={handleShare} variant="outline" className="gap-2" size="lg">
-                <Share2 className="w-4 h-4" />
-                Share Result
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button onClick={handleShare} variant="outline" className="gap-2" size="lg">
+                  <Share2 className="w-4 h-4" />
+                  Share Result
+                </Button>
+                
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={scenarioLabel}
+                    onChange={(e) => setScenarioLabel(e.target.value)}
+                    placeholder="Name this scenario (optional)"
+                    className="flex-1 px-4 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <Button onClick={handleAddToComparison} className="gap-2" size="lg">
+                    <Plus className="w-4 h-4" />
+                    Add to Compare
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>}
 
