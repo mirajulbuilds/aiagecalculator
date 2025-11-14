@@ -18,6 +18,8 @@ const PetAgeCalculator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<{
     humanAge: number;
+    actualAge: string;
+    lifeStage: string;
     summary_text: string;
   } | null>(null);
 
@@ -53,6 +55,33 @@ const PetAgeCalculator = () => {
 
     const birthDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     
+    // Validate date is not in the future
+    const selectedDate = new Date(birthDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate > today) {
+      toast.error("Birth date cannot be in the future!");
+      return;
+    }
+
+    // Validate date is valid (e.g., not Feb 30th)
+    const dateCheck = new Date(birthDate);
+    if (dateCheck.toString() === 'Invalid Date' || 
+        dateCheck.getDate() !== parseInt(day) ||
+        dateCheck.getMonth() + 1 !== parseInt(month) ||
+        dateCheck.getFullYear() !== parseInt(year)) {
+      toast.error("Invalid date combination. Please check your selection.");
+      return;
+    }
+
+    // Check if pet is too old (over 30 years)
+    const ageInYears = (today.getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+    if (ageInYears > 30) {
+      toast.error("Please enter a valid birth date within the last 30 years.");
+      return;
+    }
+    
     setIsLoading(true);
     setResult(null);
 
@@ -67,9 +96,11 @@ const PetAgeCalculator = () => {
 
       if (error) throw error;
 
-      if (data && data.humanAge !== undefined) {
+      if (data && data.humanAge !== undefined && data.actualAge && data.lifeStage) {
         setResult({
           humanAge: data.humanAge,
+          actualAge: data.actualAge,
+          lifeStage: data.lifeStage,
           summary_text: data.summary_text
         });
       } else {
@@ -215,13 +246,25 @@ const PetAgeCalculator = () => {
           {/* Result Card */}
           {result && (
             <Card className="mb-8 animate-fade-in-up border-primary/30 shadow-xl bg-gradient-to-br from-card to-primary/5">
-              <CardContent className="p-8 text-center space-y-6">
-                <div className="space-y-2">
+              <CardContent className="p-8 space-y-6">
+                <div className="text-center space-y-2">
                   <p className="text-lg text-muted-foreground">Your pet is...</p>
                   <div className="text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent animate-bounce-gentle">
                     {result.humanAge}
                   </div>
                   <p className="text-2xl font-semibold text-foreground">...in human years!</p>
+                </div>
+
+                {/* Pet Details Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-background/50 backdrop-blur rounded-lg p-4 border border-primary/20 text-center">
+                    <p className="text-sm text-muted-foreground mb-1">Actual Age</p>
+                    <p className="text-xl font-semibold text-foreground">{result.actualAge}</p>
+                  </div>
+                  <div className="bg-background/50 backdrop-blur rounded-lg p-4 border border-primary/20 text-center">
+                    <p className="text-sm text-muted-foreground mb-1">Life Stage</p>
+                    <p className="text-xl font-semibold text-foreground">{result.lifeStage}</p>
+                  </div>
                 </div>
 
                 <div className="bg-background/50 backdrop-blur rounded-lg p-6 border border-primary/20">

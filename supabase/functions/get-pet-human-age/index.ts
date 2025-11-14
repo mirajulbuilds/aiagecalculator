@@ -41,6 +41,7 @@ serve(async (req) => {
 Pet Type: ${petType}
 ${petType === 'Dog' ? `Dog Size: ${dogSize}` : ''}
 Birth Date: ${birthDate}
+Today's Date: ${new Date().toISOString().split('T')[0]}
 
 Use these modern veterinary formulas:
 - For Cats: First year = 15 human years, second year = 9 human years, each year after = 4 human years
@@ -49,13 +50,20 @@ Use these modern veterinary formulas:
 - For Large Dogs (51+ lbs): First year = 15 human years, second year = 9 human years, each year after = 6 human years
 
 Calculate:
-1. The exact age of the pet in years and months from the birth date to today
+1. The exact age of the pet in years and months from the birth date to today (format: "X years, Y months" or "X months" for pets under 1 year)
 2. The human-equivalent age (as a whole number)
-3. A short, fun summary (2-3 sentences) explaining the result and what life stage the pet is in
+3. The life stage based on age:
+   - For Cats: "Kitten" (0-1 year), "Young Adult" (1-3 years), "Adult" (3-7 years), "Mature" (7-11 years), "Senior" (11-14 years), "Geriatric" (15+ years)
+   - For Small Dogs: "Puppy" (0-1 year), "Young Adult" (1-3 years), "Adult" (3-8 years), "Senior" (8-11 years), "Geriatric" (12+ years)
+   - For Medium Dogs: "Puppy" (0-1 year), "Young Adult" (1-3 years), "Adult" (3-7 years), "Senior" (7-10 years), "Geriatric" (11+ years)
+   - For Large Dogs: "Puppy" (0-1 year), "Young Adult" (1-3 years), "Adult" (3-6 years), "Senior" (6-9 years), "Geriatric" (10+ years)
+4. A short, fun summary (2-3 sentences) explaining the result and what life stage the pet is in
 
 Return your response in this exact JSON format:
 {
+  "actualAge": "[X years, Y months]",
   "humanAge": [number],
+  "lifeStage": "[life stage]",
   "summary_text": "[your fun summary here]"
 }`;
 
@@ -121,7 +129,8 @@ Return your response in this exact JSON format:
 
     const parsedResult = JSON.parse(jsonMatch[0]);
     
-    if (parsedResult.humanAge === undefined || parsedResult.humanAge === null || !parsedResult.summary_text) {
+    if (parsedResult.humanAge === undefined || parsedResult.humanAge === null || 
+        !parsedResult.summary_text || !parsedResult.actualAge || !parsedResult.lifeStage) {
       console.error('Missing required fields in AI response:', parsedResult);
       return new Response(
         JSON.stringify({ error: 'Incomplete AI response' }),
