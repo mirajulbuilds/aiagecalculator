@@ -33,3 +33,6 @@ verify_jwt = false
 [functions.get-life-expectancy]
 verify_jwt = false
 
+[functions.calculate-retirement]
+verify_jwt = false
+
