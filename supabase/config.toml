@@ -45,3 +45,6 @@ verify_jwt = false
 [functions.get-pet-human-age]
 verify_jwt = false
 
+[functions.get-celebrities-by-age]
+verify_jwt = false
+

@@ -16,6 +16,7 @@ const AiFaceAge = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
   const [estimatedAge, setEstimatedAge] = useState<number | null>(null);
+  const [celebrities, setCelebrities] = useState<Array<{ name: string; profile_slug: string }>>([]);
   const [error, setError] = useState<string | null>(null);
 
   // Client-side image compression utility
@@ -137,6 +138,7 @@ const AiFaceAge = () => {
     setIsAnalyzing(true);
     setError(null);
     setEstimatedAge(null);
+    setCelebrities([]);
 
     try {
       console.log('Analyzing face age...');
@@ -169,6 +171,29 @@ const AiFaceAge = () => {
       console.log('Estimated age:', data.estimatedAge);
       setEstimatedAge(data.estimatedAge);
       toast.success('Age estimated!');
+
+      // Fetch celebrities with the same age
+      try {
+        console.log('Fetching celebrities aged', data.estimatedAge);
+        const { data: celebData, error: celebError } = await supabase.functions.invoke(
+          'get-celebrities-by-age',
+          {
+            body: { target_age: data.estimatedAge }
+          }
+        );
+
+        if (celebError) {
+          console.error('Error fetching celebrities:', celebError);
+        } else if (celebData?.celebrities && celebData.celebrities.length > 0) {
+          console.log('Found celebrities:', celebData.celebrities);
+          setCelebrities(celebData.celebrities);
+        } else {
+          console.log('No celebrities found for this age');
+        }
+      } catch (celebError) {
+        console.error('Error fetching celebrities:', celebError);
+        // Don't show error to user, just log it
+      }
 
     } catch (error) {
       console.error('Error estimating age:', error);
@@ -314,6 +339,28 @@ const AiFaceAge = () => {
                       </p>
                     </div>
 
+                    {/* Celebrity Context Area */}
+                    {celebrities.length > 0 && (
+                      <div className="bg-background/50 backdrop-blur rounded-lg p-6 border border-primary/20 animate-fade-in">
+                        <p className="text-sm font-medium text-muted-foreground mb-3 text-center">
+                          🌟 You share this age with:
+                        </p>
+                        <div className="space-y-2">
+                          {celebrities.map((celeb, index) => (
+                            <a
+                              key={index}
+                              href={`/people/${celeb.profile_slug}`}
+                              className="block p-3 rounded-md bg-card/50 hover:bg-primary/10 transition-all duration-200 border border-transparent hover:border-primary/30 group"
+                            >
+                              <p className="text-foreground font-medium group-hover:text-primary transition-colors">
+                                {celeb.name}
+                              </p>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <Button
                       variant="outline"
                       className="w-full"
@@ -331,6 +378,7 @@ const AiFaceAge = () => {
                           setUploadedImage(null);
                           setUploadedFile(null);
                           setEstimatedAge(null);
+                          setCelebrities([]);
                         }}
                       >
                         Try Another Photo
