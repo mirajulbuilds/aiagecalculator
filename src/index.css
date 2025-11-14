@@ -1368,6 +1368,7 @@ All colors MUST be HSL.
   .mobile-nav-link:nth-child(6) { animation: sidebar-wave 0.5s ease-out 0.3s both; }
   .mobile-nav-link:nth-child(7) { animation: sidebar-wave 0.5s ease-out 0.35s both; }
   .mobile-nav-link:nth-child(8) { animation: sidebar-wave 0.5s ease-out 0.4s both; }
+  .mobile-nav-link:nth-child(9) { animation: sidebar-wave 0.5s ease-out 0.45s both; }
 
   /* Icon animations */
   .mobile-nav-link .nav-icon {
@@ -1382,6 +1383,7 @@ All colors MUST be HSL.
   .mobile-nav-link:nth-child(6) .nav-icon { animation-delay: 0.35s; }
   .mobile-nav-link:nth-child(7) .nav-icon { animation-delay: 0.4s; }
   .mobile-nav-link:nth-child(8) .nav-icon { animation-delay: 0.45s; }
+  .mobile-nav-link:nth-child(9) .nav-icon { animation-delay: 0.5s; }
 
   /* ============================================
      Desktop AI Tools Dropdown - Unified Design
