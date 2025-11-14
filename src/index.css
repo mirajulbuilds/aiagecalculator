@@ -1367,6 +1367,7 @@ All colors MUST be HSL.
   .mobile-nav-link:nth-child(5) { animation: sidebar-wave 0.5s ease-out 0.25s both; }
   .mobile-nav-link:nth-child(6) { animation: sidebar-wave 0.5s ease-out 0.3s both; }
   .mobile-nav-link:nth-child(7) { animation: sidebar-wave 0.5s ease-out 0.35s both; }
+  .mobile-nav-link:nth-child(8) { animation: sidebar-wave 0.5s ease-out 0.4s both; }
 
   /* Icon animations */
   .mobile-nav-link .nav-icon {
@@ -1380,6 +1381,7 @@ All colors MUST be HSL.
   .mobile-nav-link:nth-child(5) .nav-icon { animation-delay: 0.3s; }
   .mobile-nav-link:nth-child(6) .nav-icon { animation-delay: 0.35s; }
   .mobile-nav-link:nth-child(7) .nav-icon { animation-delay: 0.4s; }
+  .mobile-nav-link:nth-child(8) .nav-icon { animation-delay: 0.45s; }
 
   /* ============================================
      Desktop AI Tools Dropdown - Unified Design
@@ -1486,6 +1488,7 @@ All colors MUST be HSL.
   .desktop-ai-tool-link:nth-child(2) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards; }
   .desktop-ai-tool-link:nth-child(3) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards; }
   .desktop-ai-tool-link:nth-child(4) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards; }
+  .desktop-ai-tool-link:nth-child(5) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.25s forwards; }
   
   /* Particle Click Effect Animations */
   @keyframes particle-burst {

@@ -34,6 +34,7 @@ const BatchEmbeddingGenerator = lazy(() => import("./pages/BatchEmbeddingGenerat
 const AiFaceAge = lazy(() => import("./pages/AiFaceAge"));
 const CompatibilityCalculator = lazy(() => import("./pages/CompatibilityCalculator"));
 const PastLifeGenerator = lazy(() => import("./pages/PastLifeGenerator"));
+const LifeExpectancyCalculator = lazy(() => import("./pages/LifeExpectancyCalculator"));
 const Compare = lazy(() => import("./pages/Compare"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -59,6 +60,7 @@ const AnimatedRoutes = () => {
         <Route path="/ai-face-age" element={<AiFaceAge />} />
         <Route path="/compatibility-calculator" element={<CompatibilityCalculator />} />
         <Route path="/past-life-generator" element={<PastLifeGenerator />} />
+        <Route path="/life-expectancy-calculator" element={<LifeExpectancyCalculator />} />
         <Route path="/compare" element={<Compare />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
         <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />

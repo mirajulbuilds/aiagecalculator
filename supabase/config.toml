@@ -29,3 +29,7 @@ verify_jwt = false
 
 [functions.past-life-generator]
 verify_jwt = false
+
+[functions.get-life-expectancy]
+verify_jwt = false
+
