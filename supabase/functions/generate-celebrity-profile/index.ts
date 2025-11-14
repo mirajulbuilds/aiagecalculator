@@ -80,7 +80,7 @@ async function scrapeWebsite(url: string) {
   return html;
 }
 
-// Helper function to extract data based on source type
+// Helper function to extract data based on source type with source-aware image extraction
 function extractDataFromHTML(html: string, sourceType: string, baseUrl: string) {
   console.log("Extracting data for source type:", sourceType);
   
@@ -97,26 +97,85 @@ function extractDataFromHTML(html: string, sourceType: string, baseUrl: string) 
   const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
   const name = titleMatch?.[1]?.split('|')[0]?.trim() || h1Match?.[1]?.trim() || "Unknown";
 
-  // Try to extract image URL
+  // Source-aware image extraction
   let imageUrl = null;
-  const imgMatch = html.match(/<img[^>]*src=["']([^"']+)["'][^>]*>/i);
-  if (imgMatch?.[1]) {
-    imageUrl = imgMatch[1];
-    // Make absolute URL if relative
-    if (imageUrl.startsWith('/')) {
-      try {
-        const urlObj = new URL(baseUrl);
-        imageUrl = urlObj.origin + imageUrl;
-      } catch (error) {
-        console.error("Error constructing absolute URL:", error);
-        imageUrl = null;
+  
+  // Wikipedia-specific extraction
+  if (sourceType === 'wikipedia') {
+    console.log("Using Wikipedia-specific image extraction");
+    const infoboxMatch = html.match(/<table[^>]*class=["'][^"']*infobox[^"']*["'][^>]*>([\s\S]*?)<\/table>/i);
+    if (infoboxMatch) {
+      const infoboxHtml = infoboxMatch[1];
+      const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/gi;
+      const images = [];
+      let match;
+      
+      while ((match = imgRegex.exec(infoboxHtml)) !== null) {
+        const src = match[1];
+        if (src.includes('upload.wikimedia.org') && !src.includes('icon') && !src.includes('logo') && !src.includes('Commons-logo')) {
+          const widthMatch = match[0].match(/width=["']?(\d+)/i);
+          const width = widthMatch ? parseInt(widthMatch[1]) : 0;
+          images.push({ src, width });
+        }
+      }
+      
+      if (images.length > 0) {
+        images.sort((a, b) => b.width - a.width);
+        imageUrl = images[0].src;
+        if (imageUrl.includes('/thumb/')) {
+          imageUrl = imageUrl.replace(/\/thumb(\/.*?)\/\d+px-.*$/, '$1');
+        }
+        console.log("Found Wikipedia infobox image:", imageUrl);
       }
     }
   }
+  
+  // Fallback: Improved generic extraction
+  if (!imageUrl) {
+    console.log("Using fallback image extraction");
+    const imgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/gi;
+    const images = [];
+    const skipPatterns = [/logo/i, /icon/i, /banner/i, /sprite/i, /1x1/];
+    let match;
+    
+    while ((match = imgRegex.exec(html)) !== null) {
+      const src = match[1];
+      if (skipPatterns.some(pattern => pattern.test(src))) continue;
+      
+      const widthMatch = match[0].match(/width=["']?(\d+)/i);
+      const width = widthMatch ? parseInt(widthMatch[1]) : 0;
+      if (width > 0 && width < 100) continue;
+      
+      images.push({ src, width });
+    }
+    
+    if (images.length > 0) {
+      images.sort((a, b) => b.width - a.width);
+      imageUrl = images[0].src;
+    }
+  }
+  
+  // Make absolute URL if relative
+  if (imageUrl && imageUrl.startsWith('/')) {
+    try {
+      const urlObj = new URL(baseUrl);
+      imageUrl = urlObj.origin + imageUrl;
+    } catch (error) {
+      console.error("Error constructing absolute URL:", error);
+      imageUrl = null;
+    }
+  }
+  
+  // Ensure HTTPS for Wikimedia URLs
+  if (imageUrl && imageUrl.includes('wikimedia.org') && imageUrl.startsWith('http://')) {
+    imageUrl = imageUrl.replace('http://', 'https://');
+  }
+
+  console.log("Final extracted image URL:", imageUrl);
 
   return {
     name,
-    rawText: textContent.substring(0, 5000), // Limit to 5000 chars
+    rawText: textContent.substring(0, 5000),
     imageUrl,
   };
 }
