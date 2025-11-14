@@ -40,7 +40,7 @@ serve(async (req) => {
           "generate-celebrity-profile",
           {
             body: {
-              url,
+              profileURL: url,
               sourceType: sourceType || "famousbirthdays",
               engine_choice: engineChoice || "lovable-ai"
             }
