@@ -71,6 +71,50 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_generations: {
+        Row: {
+          celebrity_id: string | null
+          celebrity_name: string
+          created_at: string
+          engine_used: string
+          error_message: string | null
+          generated_by: string | null
+          generation_status: string
+          id: string
+          source_url: string
+        }
+        Insert: {
+          celebrity_id?: string | null
+          celebrity_name: string
+          created_at?: string
+          engine_used: string
+          error_message?: string | null
+          generated_by?: string | null
+          generation_status: string
+          id?: string
+          source_url: string
+        }
+        Update: {
+          celebrity_id?: string | null
+          celebrity_name?: string
+          created_at?: string
+          engine_used?: string
+          error_message?: string | null
+          generated_by?: string | null
+          generation_status?: string
+          id?: string
+          source_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_generations_celebrity_id_fkey"
+            columns: ["celebrity_id"]
+            isOneToOne: false
+            referencedRelation: "celebrities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null

@@ -24,11 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Loader2, Trash2 } from "lucide-react";
+import { CalendarIcon, Loader2, Trash2, Upload, BarChart3 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { DuplicateChecker } from "@/components/DuplicateChecker";
+import { BatchUploadForm } from "@/components/BatchUploadForm";
+import { UsageStatsDisplay } from "@/components/UsageStatsDisplay";
 
 const celebritySchema = z.object({
   name: z.string().min(1, "Celebrity name is required").max(100),
