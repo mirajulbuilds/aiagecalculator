@@ -48,12 +48,30 @@ serve(async (req) => {
 - Exercise Frequency: ${exercise}
 - Alcohol Consumption: ${alcohol}
 
-Act as a data scientist and health analyst. Calculate the user's estimated life expectancy as a single number (e.g., 82). Then, write a short (2-3 sentences), positive, and encouraging summary about their potential longevity, mentioning which lifestyle factors are helping. Do not mention a death date or be negative.
+Act as a data scientist and health analyst. 
+
+1. Calculate the user's estimated life expectancy as a single number (e.g., 82)
+2. Write a short (2-3 sentences), positive, and encouraging summary about their potential longevity
+3. Provide 3-5 specific, actionable lifestyle recommendations to maximize their life expectancy. Each recommendation should:
+   - Target the area that needs most improvement based on their current inputs
+   - Be specific and actionable (not generic advice)
+   - Explain the potential impact in years gained or percentage improvement
+   - Include a priority level (high, medium, low)
+   - Include a category (smoking, exercise, alcohol, diet, sleep, stress, or other)
 
 Return ONLY a valid JSON object in this exact format (no additional text):
 {
   "estimated_age": 82,
-  "summary_text": "You are on a great track for a long life..."
+  "summary_text": "You are on a great track for a long life...",
+  "recommendations": [
+    {
+      "title": "Quit smoking immediately",
+      "description": "Stopping smoking now could add 7-10 years to your life expectancy and dramatically reduce heart disease risk.",
+      "impact": "+7-10 years",
+      "priority": "high",
+      "category": "smoking"
+    }
+  ]
 }`;
 
     console.log("Sending request to AI with prompt");
@@ -130,7 +148,7 @@ Return ONLY a valid JSON object in this exact format (no additional text):
     }
 
     // Validate the result
-    if (!result.estimated_age || !result.summary_text) {
+    if (!result.estimated_age || !result.summary_text || !result.recommendations) {
       console.error("Missing required fields in AI response:", result);
       return new Response(
         JSON.stringify({ error: "Invalid AI response format" }),
