@@ -100,6 +100,18 @@ const AdminPanel = () => {
   const [profileToDelete, setProfileToDelete] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Duplicate warning state
+  const [duplicateWarning, setDuplicateWarning] = useState<{
+    show: boolean;
+    duplicates: any[];
+    celebrityName: string;
+  }>({
+    show: false,
+    duplicates: [],
+    celebrityName: ""
+  });
+  const [pendingGeneration, setPendingGeneration] = useState<any>(null);
+
   const {
     register,
     handleSubmit,
@@ -371,6 +383,7 @@ const AdminPanel = () => {
         imageBase64 = imagePreview;
       }
 
+      // STEP 1: Generate the profile first to get the celebrity name
       const { data, error } = await supabase.functions.invoke("generate-celebrity-profile", {
         body: {
           profileURL: profileUrl,
@@ -387,7 +400,46 @@ const AdminPanel = () => {
 
       console.log("Generated data:", data);
 
-      // Auto-fill all fields with generated data in Tab 2
+      // STEP 2: Check for duplicates using the generated name
+      console.log("Checking for duplicates:", data.name);
+      const { data: duplicateData, error: duplicateError } = await supabase.functions.invoke(
+        'check-celebrity-duplicate',
+        {
+          body: {
+            name: data.name,
+            faceEmbedding: null
+          }
+        }
+      );
+
+      if (duplicateError) {
+        console.error("Duplicate check error:", duplicateError);
+        // Continue anyway if duplicate check fails
+      } else if (duplicateData && duplicateData.isDuplicate) {
+        // Show duplicate warning dialog
+        setPendingGeneration(data);
+        setDuplicateWarning({
+          show: true,
+          duplicates: duplicateData.duplicates || [],
+          celebrityName: data.name
+        });
+        setIsGenerating(false);
+        return; // Stop here and wait for user decision
+      }
+
+      // STEP 3: No duplicates found, proceed with filling the form
+      await proceedWithGeneration(data);
+
+    } catch (error) {
+      console.error("Error generating content:", error);
+      toast.error("Failed to generate content. Please try again.");
+      setIsGenerating(false);
+    }
+  };
+
+  const proceedWithGeneration = async (data: any) => {
+    try {
+      // Auto-fill all fields with generated data
       setValue("name", data.name);
       setValue("profileSlug", data.profile_slug);
       setValue("mainContent", data.main_content);
@@ -437,12 +489,24 @@ const AdminPanel = () => {
       
       // Auto-switch to Manual Editor tab
       setActiveTab("manual");
-    } catch (error) {
-      console.error("Error generating content:", error);
-      toast.error("Failed to generate content. Please try again.");
     } finally {
       setIsGenerating(false);
+      setPendingGeneration(null);
+      setDuplicateWarning({ show: false, duplicates: [], celebrityName: "" });
     }
+  };
+
+  const handleProceedDespiteDuplicates = async () => {
+    if (pendingGeneration) {
+      setIsGenerating(true);
+      await proceedWithGeneration(pendingGeneration);
+    }
+  };
+
+  const handleCancelDuplicateWarning = () => {
+    setDuplicateWarning({ show: false, duplicates: [], celebrityName: "" });
+    setPendingGeneration(null);
+    toast.info("Profile generation cancelled");
   };
 
   const handleSearchProfiles = async () => {
@@ -633,6 +697,9 @@ const AdminPanel = () => {
                 {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Generate & Review Draft
               </Button>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                ✓ Automatic duplicate detection enabled - you'll be warned if a similar profile exists
+              </p>
             </div>
           </TabsContent>
 
@@ -1016,6 +1083,80 @@ const AdminPanel = () => {
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Yes, Delete Permanently
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Duplicate Warning Modal */}
+      <AlertDialog open={duplicateWarning.show} onOpenChange={(open) => !open && handleCancelDuplicateWarning()}>
+        <AlertDialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <span className="text-2xl">⚠️</span>
+              Potential Duplicate Profile Detected
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              Found {duplicateWarning.duplicates.length} existing profile(s) similar to <strong className="text-foreground">{duplicateWarning.celebrityName}</strong>.
+              <br />
+              <span className="text-amber-600 dark:text-amber-400 font-semibold">
+                Creating a duplicate profile may cause confusion and data inconsistency.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3 my-4">
+            <h4 className="font-semibold text-foreground">Similar Profiles Found:</h4>
+            {duplicateWarning.duplicates.map((dup, idx) => (
+              <div 
+                key={idx}
+                className="p-4 border-2 border-amber-200 dark:border-amber-800 rounded-lg bg-amber-50 dark:bg-amber-950/20"
+              >
+                <div className="flex items-start gap-4">
+                  {dup.profileImageUrl && (
+                    <img
+                      src={dup.profileImageUrl}
+                      alt={dup.name}
+                      className="w-20 h-20 rounded-lg object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <a
+                      href={`/people/${dup.profileSlug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-foreground hover:underline text-lg"
+                    >
+                      {dup.name} ↗
+                    </a>
+                    <div className="flex flex-wrap gap-3 mt-2 text-sm">
+                      <span className="px-2 py-1 rounded bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100">
+                        Name Match: <strong>{dup.nameSimilarity}%</strong>
+                      </span>
+                      {dup.faceSimilarity > 0 && (
+                        <span className="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100">
+                          Face Match: <strong>{dup.faceSimilarity}%</strong>
+                        </span>
+                      )}
+                      <span className="px-2 py-1 rounded bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 font-semibold">
+                        Overall: {dup.overallScore}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel onClick={handleCancelDuplicateWarning}>
+              Cancel Generation
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleProceedDespiteDuplicates}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              Proceed Anyway (Create Duplicate)
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
