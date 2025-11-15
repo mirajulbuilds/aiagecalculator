@@ -24,14 +24,33 @@ serve(async (req) => {
   }
 
   try {
-    const { topic, title, featured_image_idea, in_body_image_ideas } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const { topic, title, featured_image_idea, in_body_image_ideas, engine_choice } = await req.json();
+    
+    console.log("Generating blog post for topic:", topic, "using engine:", engine_choice);
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    // Determine which AI engine to use
+    const useGeminiDirect = engine_choice === "gemini";
+    let apiKey: string;
+    let apiEndpoint: string;
+    let modelName: string;
+
+    if (useGeminiDirect) {
+      // Use direct Gemini API
+      apiKey = Deno.env.get("GEMINI_API_KEY") || "";
+      if (!apiKey) {
+        throw new Error("GEMINI_API_KEY is not configured. Please add it in project secrets.");
+      }
+      apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+      modelName = "gemini-2.0-flash-exp";
+    } else {
+      // Use Lovable AI (default)
+      apiKey = Deno.env.get("LOVABLE_API_KEY") || "";
+      if (!apiKey) {
+        throw new Error("LOVABLE_API_KEY is not configured");
+      }
+      apiEndpoint = "https://ai.gateway.lovable.dev/v1/chat/completions";
+      modelName = "google/gemini-2.5-flash";
     }
-
-    console.log("Generating blog post for topic:", topic);
 
     // Step 1: Generate blog article content with SEO
     const articlePrompt = `You are an expert content writer for AiAgeCalc.com, a website about age calculations, birthdays, zodiac signs, and celebrity ages.
@@ -68,20 +87,44 @@ Return ONLY a JSON object with this exact structure:
   "main_content": "Full HTML article content"
 }`;
 
-    const articleResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: "You are an expert SEO content writer. Always respond with valid JSON only." },
-          { role: "user", content: articlePrompt }
-        ],
-      }),
-    });
+    let articleResponse: Response;
+    
+    if (useGeminiDirect) {
+      // Direct Gemini API call
+      articleResponse = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `You are an expert SEO content writer. Always respond with valid JSON only.\n\n${articlePrompt}`
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 8192,
+          }
+        }),
+      });
+    } else {
+      // Lovable AI call
+      articleResponse = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: modelName,
+          messages: [
+            { role: "system", content: "You are an expert SEO content writer. Always respond with valid JSON only." },
+            { role: "user", content: articlePrompt }
+          ],
+        }),
+      });
+    }
 
     if (!articleResponse.ok) {
       const errorText = await articleResponse.text();
@@ -90,7 +133,15 @@ Return ONLY a JSON object with this exact structure:
     }
 
     const articleData = await articleResponse.json();
-    const articleText = articleData.choices?.[0]?.message?.content;
+    let articleText: string;
+    
+    if (useGeminiDirect) {
+      // Parse Gemini direct API response
+      articleText = articleData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    } else {
+      // Parse Lovable AI response
+      articleText = articleData.choices?.[0]?.message?.content || "";
+    }
     
     if (!articleText) {
       throw new Error("No article content generated");
@@ -116,36 +167,41 @@ Return ONLY a JSON object with this exact structure:
       
       const imagePrompt = `Create a professional, vibrant featured image for a blog post about ${topic}. ${featured_image_idea}. High quality, visually appealing, suitable for a blog hero image.`;
       
-      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image-preview",
-          messages: [
-            { role: "user", content: imagePrompt }
-          ],
-          modalities: ["image", "text"]
-        }),
-      });
+      // Only Lovable AI supports image generation currently
+      if (!useGeminiDirect) {
+        const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-image-preview",
+            messages: [
+              { role: "user", content: imagePrompt }
+            ],
+            modalities: ["image", "text"]
+          }),
+        });
 
-      if (imageResponse.ok) {
-        const imageData = await imageResponse.json();
-        const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-        if (imageUrl) {
-          generatedFeaturedImageUrl = imageUrl;
-          console.log("Featured image generated successfully");
+        if (imageResponse.ok) {
+          const imageData = await imageResponse.json();
+          const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+          if (imageUrl) {
+            generatedFeaturedImageUrl = imageUrl;
+            console.log("Featured image generated successfully");
+          }
+        } else {
+          console.warn("Featured image generation failed, continuing without it");
         }
       } else {
-        console.warn("Featured image generation failed, continuing without it");
+        console.log("Image generation not supported with direct Gemini API, skipping featured image");
       }
     }
 
-    // Step 3: Generate in-body images if requested
+    // Step 3: Generate in-body images if requested (only with Lovable AI)
     const generatedBodyImagesData: Array<{url: string; placement: string; description: string}> = [];
-    if (in_body_image_ideas && in_body_image_ideas.trim()) {
+    if (in_body_image_ideas && in_body_image_ideas.trim() && !useGeminiDirect) {
       const imageIdeas = in_body_image_ideas.split(',').map((idea: string) => idea.trim()).filter(Boolean);
       console.log("Generating", imageIdeas.length, "body images");
 
@@ -158,7 +214,7 @@ Return ONLY a JSON object with this exact structure:
           const bodyImageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              Authorization: `Bearer ${apiKey}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
