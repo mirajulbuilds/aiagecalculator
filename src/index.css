@@ -689,17 +689,17 @@ All colors MUST be HSL.
       }
     }
     
-    /* Dropdown item cascade animation */
-    @keyframes dropdown-item-cascade {
-      0% {
-        opacity: 1;
-        transform: translateX(-12px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateX(0);
-      }
+  /* Dropdown item cascade animation */
+  @keyframes dropdown-item-cascade {
+    0% {
+      opacity: 0;
+      transform: translateX(-12px) translateY(-4px);
     }
+    100% {
+      opacity: 1;
+      transform: translateX(0) translateY(0);
+    }
+  }
     
     /* Icon bounce animation */
     @keyframes icon-bounce-in {
@@ -1489,6 +1489,8 @@ All colors MUST be HSL.
     color: hsl(var(--foreground));
     text-decoration: none;
     font-size: 0.875rem;
+    opacity: 0;
+    transform: translateX(-12px) translateY(-4px);
   }
 
   .desktop-ai-tool-link .tool-icon-box {
@@ -1539,7 +1541,9 @@ All colors MUST be HSL.
     font-weight: 600;
     box-shadow: 
       0 6px 20px rgba(139, 92, 246, 0.25),
-      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 20px rgba(139, 92, 246, 0.4);
+    animation: desktop-dropdown-glow 2s ease-in-out infinite;
   }
 
   .desktop-ai-tool-link.active .tool-icon-box {
@@ -1554,6 +1558,23 @@ All colors MUST be HSL.
   .desktop-ai-tool-link:nth-child(3) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards; }
   .desktop-ai-tool-link:nth-child(4) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards; }
   .desktop-ai-tool-link:nth-child(5) { animation: dropdown-item-cascade 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.25s forwards; }
+  
+  /* Desktop Dropdown Glow Animation */
+  @keyframes desktop-dropdown-glow {
+    0%, 100% {
+      box-shadow: 
+        0 6px 20px rgba(139, 92, 246, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15),
+        0 0 20px rgba(139, 92, 246, 0.4);
+    }
+    50% {
+      box-shadow: 
+        0 8px 30px rgba(139, 92, 246, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        0 0 30px rgba(139, 92, 246, 0.6),
+        0 0 45px rgba(139, 92, 246, 0.3);
+    }
+  }
   
   /* Particle Click Effect Animations */
   @keyframes particle-burst {
