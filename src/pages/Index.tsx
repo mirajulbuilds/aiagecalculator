@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star, Calculator, ArrowLeftRight, CalendarCheck, Gift, Cake, Flag, Lightbulb } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Calendar, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star, Calculator, ArrowLeftRight, CalendarCheck, Gift, Cake, Flag, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -1934,96 +1934,117 @@ const Index = () => {
         {result && activeTab === "calculator" && <AgeDisplayFormats result={result} timezone={timezone} />}
 
         {/* Matching Celebrities Section */}
-        {matchingCelebrities.length > 0 && activeTab === "calculator" && (
+        {result && activeTab === "calculator" && (
           <section id="matching-birthdays-section" className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift">
             <div className="text-center mb-8 space-y-2">
               <h2 className="text-2xl md:text-3xl font-bold text-foreground flex items-center justify-center gap-2">
                 <Cake className="w-7 h-7 text-primary" />
-                You Share Your Birthday With...
+                {matchingCelebrities.length > 0 ? "You Share Your Birthday With..." : "Your Birthday"}
               </h2>
               <p className="text-muted-foreground">
-                Famous people born on {new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay)).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+                {new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay)).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {matchingCelebrities.map((celebrity) => (
-                <CelebrityCard key={celebrity.id} celebrity={celebrity} />
-              ))}
-            </div>
-
-            {/* Generated Birthday Card */}
-            {birthdayCardImage && (
-              <div className="mb-6 animate-fade-in">
-                <div className="bg-gradient-to-br from-primary/5 to-accent/10 rounded-xl p-6 border border-primary/20">
-                  <h3 className="text-lg font-semibold text-foreground mb-4 text-center">
-                    Your Shareable Birthday Card
-                  </h3>
-                  <div className="relative max-w-2xl mx-auto rounded-lg overflow-hidden shadow-2xl">
-                    <img 
-                      src={birthdayCardImage} 
-                      alt="Birthday card with matching celebrities" 
-                      className="w-full h-auto"
-                    />
-                  </div>
-                  <div className="mt-4 text-center">
-                    <Button
-                      onClick={handleShareBirthdayCard}
-                      className="gap-2"
-                      size="lg"
-                    >
-                      <Download className="w-4 h-4" />
-                      Download & Share Card
-                    </Button>
-                  </div>
+            {matchingCelebrities.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  {matchingCelebrities.map((celebrity) => (
+                    <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                  ))}
                 </div>
+
+                {/* Generated Birthday Card */}
+                {birthdayCardImage && (
+                  <div className="mb-6 animate-fade-in">
+                    <div className="bg-gradient-to-br from-primary/5 to-accent/10 rounded-xl p-6 border border-primary/20">
+                      <h3 className="text-lg font-semibold text-foreground mb-4 text-center">
+                        Your Shareable Birthday Card
+                      </h3>
+                      <div className="relative max-w-2xl mx-auto rounded-lg overflow-hidden shadow-2xl">
+                        <img 
+                          src={birthdayCardImage} 
+                          alt="Birthday card with matching celebrities" 
+                          className="w-full h-auto"
+                        />
+                      </div>
+                      <div className="mt-4 text-center">
+                        <Button
+                          onClick={handleShareBirthdayCard}
+                          className="gap-2"
+                          size="lg"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download & Share Card
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Button
+                    variant="default"
+                    size="lg"
+                    className="gap-2 w-full sm:w-auto"
+                    onClick={handleGenerateBirthdayCard}
+                    disabled={isGeneratingCard}
+                  >
+                    {isGeneratingCard ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Generating Card...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        Generate Birthday Card
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="gap-2 w-full sm:w-auto"
+                    onClick={handleShareBirthday}
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share Text Message
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors w-full sm:w-auto"
+                    onClick={() => {
+                      const monthName = new Date(2000, parseInt(birthMonth) - 1, 1)
+                        .toLocaleDateString('en-US', { month: 'long' })
+                        .toLowerCase();
+                      window.location.href = `/birth-date/${monthName}-${birthDay}`;
+                    }}
+                  >
+                    See All Celebrities Born on This Day
+                    <Star className="w-4 h-4" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8 space-y-4">
+                <p className="text-lg text-muted-foreground">
+                  No famous celebrities share your exact birthday, but you can still explore celebrities born in{' '}
+                  {new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay)).toLocaleDateString('en-US', { month: 'long' })}!
+                </p>
+                <Button
+                  onClick={() => {
+                    const monthName = new Date(2000, parseInt(birthMonth) - 1, 1).toLocaleDateString('en-US', { month: 'long' });
+                    window.location.href = `/birthdays/${monthName.toLowerCase()}`;
+                  }}
+                  className="gap-2"
+                >
+                  <Calendar className="w-4 h-4" />
+                  Explore {new Date(2000, parseInt(birthMonth) - 1, 1).toLocaleDateString('en-US', { month: 'long' })} Birthdays
+                </Button>
               </div>
             )}
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button
-                variant="default"
-                size="lg"
-                className="gap-2 w-full sm:w-auto"
-                onClick={handleGenerateBirthdayCard}
-                disabled={isGeneratingCard}
-              >
-                {isGeneratingCard ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Generating Card...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    Generate Birthday Card
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2 w-full sm:w-auto"
-                onClick={handleShareBirthday}
-              >
-                <Share2 className="w-4 h-4" />
-                Share Text Message
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors w-full sm:w-auto"
-                onClick={() => {
-                  const monthName = new Date(2000, parseInt(birthMonth) - 1, 1)
-                    .toLocaleDateString('en-US', { month: 'long' })
-                    .toLowerCase();
-                  window.location.href = `/birth-date/${monthName}-${birthDay}`;
-                }}
-              >
-                See All Celebrities Born on This Day
-                <Star className="w-4 h-4" />
-              </Button>
-            </div>
           </section>
         )}
 
