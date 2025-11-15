@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Star, ArrowLeft } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
@@ -99,14 +100,53 @@ const ZodiacPage = () => {
     );
   }
 
+  const zodiacSign = capitalizeSign(signName || "");
+  const currentUrl = `https://aiagecalc.com/zodiac/${signName}${currentPage > 1 ? `?page=${currentPage}` : ''}`;
+
   return (
     <>
+      <SEOHead
+        title={`${zodiacSign} Celebrities - Famous ${zodiacSign} Birthdays & Ages`}
+        description={`Explore ${totalCount} famous ${zodiacSign} celebrities and their birthdays. Discover personality traits, ages, and interesting facts about ${zodiacSign} stars born under this zodiac sign.`}
+        keywords={`${zodiacSign} celebrities, famous ${zodiacSign}, ${zodiacSign} birthdays, ${zodiacSign} stars, ${zodiacSign} personality, zodiac signs`}
+        url={currentUrl}
+        type="website"
+      />
+      
       <Helmet>
-        <title>{capitalizeSign(signName || "")} Celebrities - Famous Birthdays</title>
-        <meta
-          name="description"
-          content={`Discover famous ${capitalizeSign(signName || "")} celebrities, their ages, birthdays, and personality traits. Browse our complete list of ${capitalizeSign(signName || "")} stars.`}
-        />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": `${zodiacSign} Celebrities`,
+            "description": `Browse famous celebrities born under the ${zodiacSign} zodiac sign`,
+            "url": currentUrl,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://aiagecalc.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Famous Birthdays",
+                  "item": "https://aiagecalc.com/famous-birthdays"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": `${zodiacSign} Celebrities`,
+                  "item": currentUrl
+                }
+              ]
+            },
+            "numberOfItems": totalCount
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-background">
