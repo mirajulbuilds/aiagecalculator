@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import { logAdminAction } from "@/lib/auditLogger";
@@ -20,6 +21,7 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
   const [blogTitle, setBlogTitle] = useState<string>("");
   const [featuredImageIdea, setFeaturedImageIdea] = useState<string>("");
   const [inBodyImageIdeas, setInBodyImageIdeas] = useState<string>("");
+  const [aiEngine, setAiEngine] = useState<string>("lovable");
   const [generatedBlogData, setGeneratedBlogData] = useState<any>(null);
   const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
   const [isSavingBlog, setIsSavingBlog] = useState(false);
@@ -37,7 +39,8 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
           topic: blogTopic,
           title: blogTitle,
           featured_image_idea: featuredImageIdea,
-          in_body_image_ideas: inBodyImageIdeas
+          in_body_image_ideas: inBodyImageIdeas,
+          engine_choice: aiEngine
         }
       });
 
@@ -111,6 +114,22 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
       <CardContent className="space-y-6">
         {/* Blog Generation Form */}
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="aiEngine">Select AI Engine *</Label>
+            <Select value={aiEngine} onValueChange={setAiEngine}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose AI engine" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="lovable">Lovable AI (Uses Project Credits)</SelectItem>
+                <SelectItem value="gemini">My Gemini API (Uses My API Key)</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              Choose between Lovable AI (uses project credits) or your own Gemini API key.
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="blogTopic">Blog Topic / Main Idea *</Label>
             <Textarea
