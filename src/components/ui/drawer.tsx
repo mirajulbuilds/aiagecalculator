@@ -49,9 +49,8 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed z-50 flex flex-col bg-background",
-        "transition-transform duration-300 ease-out",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:slide-out-right data-[state=open]:slide-in-right",
+        "data-[state=open]:animate-slide-in-bounce data-[state=closed]:animate-out",
+        "data-[state=closed]:slide-out-right data-[state=closed]:duration-300",
         className,
       )}
       {...props}

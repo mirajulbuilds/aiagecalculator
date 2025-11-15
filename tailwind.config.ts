@@ -144,6 +144,20 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "slide-in-bounce": {
+          "0%": {
+            transform: "translateX(100%)",
+          },
+          "60%": {
+            transform: "translateX(-8px)",
+          },
+          "80%": {
+            transform: "translateX(4px)",
+          },
+          "100%": {
+            transform: "translateX(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -154,6 +168,7 @@ export default {
         "pulse-ripple": "pulse-ripple 0.6s ease-out",
         "scale-up": "scale-up 0.2s ease-out forwards",
         "fade-in": "fade-in 0.3s ease-out",
+        "slide-in-bounce": "slide-in-bounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",
