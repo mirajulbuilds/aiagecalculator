@@ -344,7 +344,7 @@ const Header = () => {
 
       {/* Mobile Menu Drawer - Slides from Right */}
       <Drawer open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen} direction="right">
-        <DrawerContent className="mobile-nav-drawer fixed right-0 top-0 h-full w-[320px] rounded-l-[20px]">
+        <DrawerContent className="mobile-nav-drawer fixed right-0 top-0 h-full w-[85vw] max-w-[380px] rounded-l-[20px]">
           {/* Fixed Header Section */}
           <div className="mobile-nav-drawer-header flex items-center justify-end gap-2">
             <ThemeToggle />
