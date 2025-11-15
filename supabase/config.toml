@@ -90,4 +90,7 @@ verify_jwt = false
 [functions.generate-sitemap-blog]
 verify_jwt = false
 
+[functions.generate-blog-post]
+verify_jwt = true
+
 
