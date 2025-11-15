@@ -5,6 +5,14 @@ import { Calendar, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Celebrity {
   id: string;
@@ -20,6 +28,9 @@ const BirthMonthPage = () => {
   const { monthName } = useParams<{ monthName: string }>();
   const [celebrities, setCelebrities] = useState<Celebrity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 24;
 
   const monthNameToNumber = (name: string): number => {
     const months: { [key: string]: number } = {
@@ -36,11 +47,18 @@ const BirthMonthPage = () => {
 
   useEffect(() => {
     if (monthName) {
-      loadCelebrities();
+      setCurrentPage(1);
+      loadCelebrities(1);
     }
   }, [monthName]);
 
-  const loadCelebrities = async () => {
+  useEffect(() => {
+    if (monthName) {
+      loadCelebrities(currentPage);
+    }
+  }, [currentPage]);
+
+  const loadCelebrities = async (page: number) => {
     if (!monthName) return;
     
     const monthNumber = monthNameToNumber(monthName);
@@ -51,46 +69,35 @@ const BirthMonthPage = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .rpc("get_celebrities_by_birthday", {
-          birth_month: monthNumber,
-          birth_day: 0 // Pass 0 to get all days in the month
-        });
+      const from = (page - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
 
-      if (error) {
-        console.error("Error fetching celebrities:", error);
-        // Fallback: fetch all and filter client-side
-        const { data: allData, error: allError } = await supabase
-          .from("celebrities")
-          .select("*")
-          .order("popularity_ranks->most_popular", { ascending: true });
+      // Fetch all celebrities and filter by month (client-side filtering due to date format)
+      const { data: allData, error: allError } = await supabase
+        .from("celebrities")
+        .select("*")
+        .order("popularity_ranks->most_popular", { ascending: true });
 
-        if (allError) {
-          console.error("Error in fallback fetch:", allError);
-        } else {
-          const filtered = (allData || []).filter(celebrity => {
-            const date = new Date(celebrity.date_of_birth);
-            return date.getMonth() + 1 === monthNumber;
-          });
-          setCelebrities(filtered);
-        }
+      if (allError) {
+        console.error("Error fetching celebrities:", allError);
+        setCelebrities([]);
+        setTotalCount(0);
       } else {
-        // Filter for the entire month since RPC might return specific day
-        const allCelebrities = await supabase
-          .from("celebrities")
-          .select("*")
-          .order("popularity_ranks->most_popular", { ascending: true });
+        const filtered = (allData || []).filter(celebrity => {
+          const date = new Date(celebrity.date_of_birth);
+          return date.getMonth() + 1 === monthNumber;
+        });
         
-        if (allCelebrities.data) {
-          const filtered = allCelebrities.data.filter(celebrity => {
-            const date = new Date(celebrity.date_of_birth);
-            return date.getMonth() + 1 === monthNumber;
-          });
-          setCelebrities(filtered);
-        }
+        setTotalCount(filtered.length);
+        
+        // Apply pagination to filtered results
+        const paginated = filtered.slice(from, to + 1);
+        setCelebrities(paginated);
       }
     } catch (error) {
       console.error("Error loading celebrities:", error);
+      setCelebrities([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -137,17 +144,96 @@ const BirthMonthPage = () => {
               </h1>
             </div>
             <p className="text-muted-foreground">
-              Found {celebrities.length} {celebrities.length === 1 ? 'celebrity' : 'celebrities'}
+              Found {totalCount} {totalCount === 1 ? 'celebrity' : 'celebrities'}
+              {totalCount > itemsPerPage && (
+                <span className="ml-2">
+                  (Page {currentPage} of {Math.ceil(totalCount / itemsPerPage)})
+                </span>
+              )}
             </p>
           </div>
 
           {/* Results Grid */}
           {celebrities.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {celebrities.map((celebrity) => (
-                <CelebrityCard key={celebrity.id} celebrity={celebrity} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {celebrities.map((celebrity) => (
+                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                ))}
+              </div>
+
+              {totalCount > itemsPerPage && (
+                <div className="mt-12">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => {
+                            if (currentPage > 1) {
+                              setCurrentPage(currentPage - 1);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }, (_, i) => i + 1)
+                        .filter((page) => {
+                          const totalPages = Math.ceil(totalCount / itemsPerPage);
+                          return (
+                            page === 1 ||
+                            page === totalPages ||
+                            Math.abs(page - currentPage) <= 1
+                          );
+                        })
+                        .map((page, index, array) => {
+                          const prevPage = array[index - 1];
+                          const showEllipsis = prevPage && page - prevPage > 1;
+
+                          return (
+                            <>
+                              {showEllipsis && (
+                                <PaginationItem key={`ellipsis-${page}`}>
+                                  <span className="px-4">...</span>
+                                </PaginationItem>
+                              )}
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  onClick={() => {
+                                    setCurrentPage(page);
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                  }}
+                                  isActive={currentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            </>
+                          );
+                        })}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => {
+                            if (currentPage < Math.ceil(totalCount / itemsPerPage)) {
+                              setCurrentPage(currentPage + 1);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className={
+                            currentPage === Math.ceil(totalCount / itemsPerPage)
+                              ? "pointer-events-none opacity-50"
+                              : "cursor-pointer"
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           ) : (
             <div className="bg-card rounded-2xl shadow-card p-12 text-center">
               <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
