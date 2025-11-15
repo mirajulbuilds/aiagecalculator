@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, AlertTriangle, Info, RefreshCw, Activity, Key, AlertCircle, Ban, TrendingUp } from "lucide-react";
+import { Shield, AlertTriangle, Info, RefreshCw, Activity, Key, AlertCircle, Ban, TrendingUp, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import {
   Collapsible,
@@ -34,6 +35,7 @@ interface RateLimitStats {
 }
 
 export default function SecurityMonitoring() {
+  const navigate = useNavigate();
   const [logs, setLogs] = useState<SecurityLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [eventTypeFilter, setEventTypeFilter] = useState<string>("all");
@@ -187,6 +189,14 @@ export default function SecurityMonitoring() {
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/admin')}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Admin Panel
+        </Button>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Shield className="h-8 w-8" />
           Security Monitoring
