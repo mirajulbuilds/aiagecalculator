@@ -49,11 +49,14 @@ Disallow: /compare-life-expectancy
 # Crawl rate - be gentle
 Crawl-delay: 1
 
-# Dynamic sitemap (always up-to-date with database)
-Sitemap: https://ryetajignnzczcybyggr.supabase.co/functions/v1/generate-sitemap
+# Sitemap Index (main entry point)
+Sitemap: https://aiagecalc.com/sitemap-index.xml
 
-# Static sitemap (backup)
-Sitemap: https://aiagecalc.com/sitemap.xml
+# Individual sitemaps (for granular crawling)
+Sitemap: https://aiagecalc.com/sitemap-static.xml
+Sitemap: https://aiagecalc.com/sitemap-celebrities.xml
+Sitemap: https://aiagecalc.com/sitemap-categories.xml
+Sitemap: https://aiagecalc.com/sitemap-blog.xml
 
 # Host declaration
 Host: https://aiagecalc.com
