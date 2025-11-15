@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,23 +23,14 @@ interface SecurityLog {
 
 const SecurityMonitoring = () => {
   const navigate = useNavigate();
-  const { isAdmin, isLoading: isCheckingAdmin } = useAdminCheck();
   const [logs, setLogs] = useState<SecurityLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>("all");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
 
   useEffect(() => {
-    if (!isCheckingAdmin && !isAdmin) {
-      navigate("/");
-    }
-  }, [isAdmin, isCheckingAdmin, navigate]);
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetchSecurityLogs();
-    }
-  }, [isAdmin, filterType, filterSeverity]);
+    fetchSecurityLogs();
+  }, [filterType, filterSeverity]);
 
   const fetchSecurityLogs = async () => {
     setIsLoading(true);
@@ -110,21 +100,6 @@ const SecurityMonitoring = () => {
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
   };
-
-  if (isCheckingAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Verifying admin access...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-background p-6">
