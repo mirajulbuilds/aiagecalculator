@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, MapPin, Calendar, Star, TrendingUp, Share2 } from "lucide-react";
+import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -305,7 +306,10 @@ const CelebrityProfile = () => {
                   <div 
                     className="prose prose-lg dark:prose-invert max-w-none [&_h2]:text-primary [&_h2]:font-bold [&_h2]:text-2xl [&_h2]:mb-4 [&_h2]:mt-6 [&_h2]:scroll-mt-20"
                     dangerouslySetInnerHTML={{ 
-                      __html: celebrity.main_content
+                      __html: DOMPurify.sanitize(celebrity.main_content, {
+                        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre'],
+                        ALLOWED_ATTR: ['id', 'class', 'href', 'target', 'rel']
+                      })
                         .replace(/<h2>/g, '<h2 id="about-section">')
                         .replace(/<h2([^>]*)>Before Fame<\/h2>/i, '<h2$1 id="before-fame-section">Before Fame</h2>')
                         .replace(/<h2([^>]*)>Trivia<\/h2>/i, '<h2$1 id="trivia-section">Trivia</h2>')

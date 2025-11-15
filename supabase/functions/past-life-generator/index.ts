@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateInput, createValidationErrorResponse, birthDateSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -44,11 +46,14 @@ serve(async (req) => {
 
     const { birthDate } = await req.json();
 
-    if (!birthDate) {
-      return new Response(
-        JSON.stringify({ error: "Birth date is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Validate input with Zod
+    const requestSchema = z.object({
+      birthDate: birthDateSchema
+    });
+
+    const validation = validateInput(requestSchema, { birthDate });
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

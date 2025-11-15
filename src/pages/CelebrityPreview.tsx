@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import DOMPurify from "dompurify";
 
 interface PreviewData {
   name: string;
@@ -103,7 +104,12 @@ const CelebrityPreview = () => {
           <div className="p-6 md:p-8">
             <div
               className="prose prose-slate dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: previewData.mainContent }}
+              dangerouslySetInnerHTML={{ 
+                __html: DOMPurify.sanitize(previewData.mainContent, {
+                  ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre'],
+                  ALLOWED_ATTR: ['id', 'class', 'href', 'target', 'rel']
+                })
+              }}
             />
           </div>
         </div>

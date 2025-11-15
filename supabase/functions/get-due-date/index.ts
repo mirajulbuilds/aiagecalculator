@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateInput, createValidationErrorResponse, calculationMethodEnum, dateSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -49,12 +51,20 @@ serve(async (req) => {
       inputDate
     });
 
-    // Validate inputs
-    if (!calculationMethod || !inputDate) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Validate input with Zod
+    const requestSchema = z.object({
+      calculationMethod: calculationMethodEnum,
+      inputDate: dateSchema.refine((date) => {
+        const d = new Date(date);
+        const now = new Date();
+        const threeYearsAgo = new Date(now.getFullYear() - 3, now.getMonth(), now.getDate());
+        return d >= threeYearsAgo && d <= now;
+      }, "Input date must be within the last 3 years")
+    });
+
+    const validation = validateInput(requestSchema, { calculationMethod, inputDate });
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

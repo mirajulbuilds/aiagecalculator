@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action_type: string
+          admin_user_id: string
+          changes: Json | null
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          resource_id: string | null
+          resource_name: string | null
+          resource_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_user_id: string
+          changes?: Json | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          resource_id?: string | null
+          resource_name?: string | null
+          resource_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_user_id?: string
+          changes?: Json | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          resource_id?: string | null
+          resource_name?: string | null
+          resource_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       celebrities: {
         Row: {
           created_at: string

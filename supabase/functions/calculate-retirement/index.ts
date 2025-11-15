@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateInput, createValidationErrorResponse, ageSchema, moneySchema, percentageSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,6 +47,24 @@ serve(async (req) => {
     const { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference } = await req.json();
 
     console.log('Calculating retirement with params:', { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference });
+
+    // Validate input with Zod
+    const requestSchema = z.object({
+      currentAge: ageSchema,
+      currentSavings: moneySchema,
+      monthlyIncome: moneySchema,
+      monthlyExpenses: moneySchema,
+      desiredRetirementIncome: moneySchema,
+      investmentReturn: percentageSchema.refine(val => val >= -20 && val <= 30, "Investment return must be between -20% and 30%"),
+      lifestylePreference: z.enum(["modest", "comfortable", "luxurious"], {
+        errorMap: () => ({ message: "Lifestyle preference must be one of: modest, comfortable, luxurious" })
+      })
+    });
+
+    const validation = validateInput(requestSchema, { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference });
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
+    }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
