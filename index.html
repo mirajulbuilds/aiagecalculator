@@ -174,6 +174,21 @@
     }
     </script>
 
+    <!-- 
+      SECURITY NOTE: Subresource Integrity (SRI) 
+      
+      SRI is intentionally NOT applied to Google Tag Manager and Google AdSense scripts because:
+      1. These scripts are dynamically updated by Google without version control
+      2. Adding integrity hashes would break functionality when Google updates their CDN
+      3. CSP (Content Security Policy) provides adequate protection by:
+         - Whitelisting only trusted Google domains (googletagmanager.com, googlesyndication.com)
+         - Blocking any unauthorized scripts from other domains
+         - Preventing inline script injection except from whitelisted sources
+      
+      This approach follows industry best practices for third-party advertising and analytics.
+      Reference: https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
+    -->
+    
     <!-- Google tag (gtag.js) -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=G-8MRSPQGLE9"></script>
     <script>
