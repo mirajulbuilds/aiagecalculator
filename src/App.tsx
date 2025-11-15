@@ -54,6 +54,7 @@ const PetAgeCalculator = lazy(() => import("./pages/PetAgeCalculator"));
 const SecurityMonitoring = lazy(() => import("./pages/SecurityMonitoring"));
 const TwoFactorEnrollment = lazy(() => import("./pages/TwoFactorEnrollment"));
 const TwoFactorVerification = lazy(() => import("./pages/TwoFactorVerification"));
+const BlogManagement = lazy(() => import("./pages/admin/BlogManagement"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -121,6 +122,11 @@ const AnimatedRoutes = () => {
         <Route path="/admin/role-management" element={
           <DomainGuard>
             <ProtectedAdminRoute><RoleManagement /></ProtectedAdminRoute>
+          </DomainGuard>
+        } />
+        <Route path="/admin/blog-management" element={
+          <DomainGuard>
+            <ProtectedAdminRoute><BlogManagement /></ProtectedAdminRoute>
           </DomainGuard>
         } />
         <Route path="/admin/security-monitoring" element={

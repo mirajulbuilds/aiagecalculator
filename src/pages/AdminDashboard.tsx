@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserRole } from "@/hooks/useUserRole";
 import { 
   Users, 
@@ -16,9 +17,12 @@ import {
   TrendingUp,
   AlertCircle,
   Activity,
-  Crown
+  Crown,
+  FileText,
+  Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
+import { AIBlogGenerator } from "@/components/AIBlogGenerator";
 
 interface DashboardStats {
   totalProfiles: number;
@@ -67,6 +71,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { role, isLoading: roleLoading } = useUserRole();
   const [adminEmail, setAdminEmail] = useState<string>("");
+  const [session, setSession] = useState<any>(null);
   const [stats, setStats] = useState<DashboardStats>({
     totalProfiles: 0,
     securityEvents24h: 0,
@@ -74,6 +79,7 @@ const AdminDashboard = () => {
     blockedIPs: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>("overview");
 
   useEffect(() => {
     fetchAdminInfo();
@@ -82,8 +88,10 @@ const AdminDashboard = () => {
 
   const fetchAdminInfo = async () => {
     const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
     if (user?.email) {
       setAdminEmail(user.email);
+      setSession(session);
     }
   };
 
@@ -187,6 +195,12 @@ const AdminDashboard = () => {
       stat: stats.blockedIPs,
       statLabel: "Active Blocks",
     },
+    {
+      title: "Blog Posts Management",
+      description: "View, edit, and manage all published blog posts",
+      icon: <FileText className="h-8 w-8 text-primary" />,
+      link: "/admin/blog-management",
+    },
   ];
 
   // Add role management card for super admins only
@@ -285,18 +299,39 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Main Dashboard Cards */}
+      {/* Main Dashboard Content */}
       <div className="container mx-auto px-6 py-12">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-foreground mb-2">Management Tools</h2>
-          <p className="text-sm text-muted-foreground">Select a tool to manage different aspects of the system</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dashboardCards.map((card) => (
-            <DashboardCard key={card.link} {...card} />
-          ))}
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="overview">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Dashboard Overview
+            </TabsTrigger>
+            <TabsTrigger value="blog">
+              <Sparkles className="h-4 w-4 mr-2" />
+              AI Blog Generator
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-foreground mb-2">Management Tools</h2>
+              <p className="text-sm text-muted-foreground">Select a tool to manage different aspects of the system</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dashboardCards.map((card) => (
+                <DashboardCard key={card.link} {...card} />
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Blog Generator Tab */}
+          <TabsContent value="blog" className="space-y-6">
+            <AIBlogGenerator session={session} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
