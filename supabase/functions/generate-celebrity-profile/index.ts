@@ -373,11 +373,7 @@ serve(async (req) => {
       }
     }
 
-    // If no image found, use a placeholder image to satisfy NOT NULL constraint
-    if (!profileImageUrl) {
-      console.log("No image extracted, using placeholder image");
-      profileImageUrl = "https://via.placeholder.com/400x400/6366F1/FFFFFF?text=Celebrity+Profile";
-    }
+    // If no image found, profileImageUrl remains null (no fake images)
 
     // Step 3: Use AI to rewrite and generate structured content
     console.log("Generating content with AI using scraped data, engine:", engine_choice || "lovable-ai");
