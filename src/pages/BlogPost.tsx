@@ -12,6 +12,17 @@ import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Utility to fix any remaining bad URLs in content
+const fixInternalLinks = (html: string): string => {
+  if (!html) return html;
+  
+  // Replace any backend lovableproject URLs with relative paths
+  return html.replace(
+    /https?:\/\/[a-f0-9-]+\.lovableproject\.com(\/[^"'\s]*)/gi,
+    '$1'  // Keep only the path
+  );
+};
+
 interface BlogPostData {
   id: string;
   slug: string;
@@ -195,7 +206,7 @@ const BlogPost = () => {
               {post.isFromDatabase ? (
                 <div 
                   dangerouslySetInnerHTML={{ 
-                    __html: DOMPurify.sanitize(post.content, {
+                    __html: DOMPurify.sanitize(fixInternalLinks(post.content), {
                       ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'span', 'div'],
                       ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'target', 'rel']
                     })
