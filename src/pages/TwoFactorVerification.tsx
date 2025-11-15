@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,22 @@ import { toast } from "sonner";
 import { Shield, KeyRound } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
+
 const TwoFactorVerification = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [verificationCode, setVerificationCode] = useState("");
   const [recoveryCode, setRecoveryCode] = useState("");
   const [verifying, setVerifying] = useState(false);
+
+  useEffect(() => {
+    const currentDomain = window.location.origin;
+    if (!ALLOWED_DOMAINS.includes(currentDomain)) {
+      toast.error('2FA verification is not allowed from this domain');
+      handleLogout();
+    }
+  }, []);
 
   const handleVerifyCode = async (useRecovery: boolean = false) => {
     const code = useRecovery ? recoveryCode : verificationCode;
@@ -60,6 +70,8 @@ const TwoFactorVerification = () => {
   };
 
   const handleLogout = async () => {
+    // Clear 2FA verification from session
+    sessionStorage.removeItem('2fa_verified');
     await supabase.auth.signOut();
     navigate("/auth-gateway-key-a1b2c3");
   };

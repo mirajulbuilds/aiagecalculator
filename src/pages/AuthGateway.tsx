@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,15 +6,42 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { logAuthFailure } from "@/lib/securityLogger";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+
+const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
 
 const AuthGateway = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isAllowedDomain, setIsAllowedDomain] = useState(true);
+
+  useEffect(() => {
+    const currentDomain = window.location.origin;
+    setIsAllowedDomain(ALLOWED_DOMAINS.includes(currentDomain));
+    
+    if (!ALLOWED_DOMAINS.includes(currentDomain)) {
+      toast.error('Authentication is not allowed from this domain. Please use https://aiagecalculator.lovable.app');
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // SECURITY: Check domain first
+    const currentDomain = window.location.origin;
+    if (!ALLOWED_DOMAINS.includes(currentDomain)) {
+      toast.error('Authentication is not allowed from this domain. Please use https://aiagecalculator.lovable.app');
+      
+      // Log unauthorized domain attempt
+      await supabase.functions.invoke('log-auth-attempt', {
+        body: { email, success: false, reason: 'Unauthorized domain: ' + currentDomain }
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -27,11 +54,21 @@ const AuthGateway = () => {
         // Log authentication failure
         logAuthFailure(email, error.message);
         
+        // Log failed attempt
+        await supabase.functions.invoke('log-auth-attempt', {
+          body: { email, success: false, reason: error.message }
+        });
+        
         toast.error("Login failed: " + error.message);
         return;
       }
 
       if (data.session) {
+        // Log successful login
+        await supabase.functions.invoke('log-auth-attempt', {
+          body: { email, success: true }
+        });
+        
         toast.success("Login successful");
         
         // Check 2FA enrollment status
@@ -71,6 +108,16 @@ const AuthGateway = () => {
           <h1 className="text-3xl font-bold text-foreground">Admin Portal Access</h1>
         </div>
 
+        {!isAllowedDomain && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Unauthorized Domain</AlertTitle>
+            <AlertDescription>
+              Authentication is only allowed from https://aiagecalculator.lovable.app
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleLogin} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
@@ -103,7 +150,7 @@ const AuthGateway = () => {
           <Button
             type="submit"
             className="w-full"
-            disabled={isLoading}
+            disabled={isLoading || !isAllowedDomain}
           >
             {isLoading ? "Logging in..." : "Login"}
           </Button>
