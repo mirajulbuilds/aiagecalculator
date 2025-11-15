@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
+import { DomainGuard } from "@/components/DomainGuard";
 import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -84,39 +85,63 @@ const AnimatedRoutes = () => {
             <Route path="/compare-life-expectancy" element={<CompareLifeExpectancy />} />
             <Route path="/due-date-calculator" element={<DueDateCalculator />} />
             <Route path="/pet-age-calculator" element={<PetAgeCalculator />} />
-        <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
+        <Route path="/auth-gateway-key-a1b2c3" element={
+          <DomainGuard><AuthGateway /></DomainGuard>
+        } />
         <Route path="/system-control-panel-x4y5z6" element={
-          <ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/celebrity-management" element={
-          <ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/usage-stats" element={
-          <ProtectedAdminRoute><UsageStats /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><UsageStats /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/audit-logs" element={
-          <ProtectedAdminRoute><AuditLogs /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><AuditLogs /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/ip-blocking" element={
-          <ProtectedAdminRoute><IPBlocking /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><IPBlocking /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/2fa-management" element={
-          <ProtectedAdminRoute><TwoFactorManagement /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><TwoFactorManagement /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/role-management" element={
-          <ProtectedAdminRoute><RoleManagement /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><RoleManagement /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/admin/security-monitoring" element={
-          <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/2fa-enrollment" element={
-          <ProtectedAdminRoute><TwoFactorEnrollment /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><TwoFactorEnrollment /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/2fa-verify" element={
-          <ProtectedAdminRoute><TwoFactorVerification /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><TwoFactorVerification /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/security-monitoring-m7n8p9" element={
-          <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
+          <DomainGuard>
+            <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
+          </DomainGuard>
         } />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
         <Route path="/celebrity/preview" element={<CelebrityPreview />} />

@@ -25,9 +25,14 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
     
+    // Determine event type and severity based on reason
+    const isUnauthorizedDomain = reason && reason.includes('Unauthorized domain');
+    const eventType = isUnauthorizedDomain ? 'unauthorized_domain_access' : 'auth_attempt';
+    const severity = isUnauthorizedDomain ? 'critical' : (success ? 'low' : 'medium');
+    
     const { error } = await supabase.from('security_logs').insert({
-      event_type: 'auth_attempt',
-      severity: success ? 'low' : 'medium',
+      event_type: eventType,
+      severity: severity,
       ip_address: ipAddress,
       user_agent: userAgent,
       details: {
