@@ -7,6 +7,7 @@ import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { logAdminAction } from "@/lib/auditLogger";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -297,9 +298,11 @@ const AdminPanel = () => {
       // STEP 2: Conditional Logic - CREATE or UPDATE
       if (!existingProfile) {
         // CREATE NEW PROFILE
-        const { error: insertError } = await supabase
+        const { data: newProfile, error: insertError } = await supabase
           .from("celebrities")
-          .insert(profileData);
+          .insert(profileData)
+          .select('id')
+          .single();
 
         if (insertError) {
           toast.error("Failed to create profile: " + insertError.message);
@@ -307,8 +310,24 @@ const AdminPanel = () => {
           return;
         }
 
+        // Log the creation action
+        await logAdminAction({
+          action_type: 'create',
+          resource_type: 'celebrity',
+          resource_id: newProfile?.id,
+          resource_name: data.name,
+          changes: { after: profileData }
+        });
+
         toast.success("Success! New profile has been CREATED.");
       } else {
+        // Fetch existing data for audit log
+        const { data: oldProfile } = await supabase
+          .from("celebrities")
+          .select("*")
+          .eq("id", existingProfile.id)
+          .single();
+
         // UPDATE EXISTING PROFILE
         const { error: updateError } = await supabase
           .from("celebrities")
@@ -320,6 +339,18 @@ const AdminPanel = () => {
           setIsSaving(false);
           return;
         }
+
+        // Log the update action with before/after changes
+        await logAdminAction({
+          action_type: 'update',
+          resource_type: 'celebrity',
+          resource_id: existingProfile.id,
+          resource_name: data.name,
+          changes: {
+            before: oldProfile || undefined,
+            after: profileData
+          }
+        });
 
         toast.success("Success! Profile has been UPDATED.");
       }

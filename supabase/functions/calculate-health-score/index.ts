@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateInput, createValidationErrorResponse, ageSchema, genderEnum, bmiSchema, smokingHabitsEnum, exerciseFrequencyEnum, alcoholConsumptionEnum, sleepQualityEnum, dietQualityEnum, stressLevelEnum } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -56,12 +58,22 @@ serve(async (req) => {
       bmi
     });
 
-    // Validate inputs
-    if (!age || !gender || !smoking || !exercise || !alcohol || !sleep || !diet || !stress || !bmi) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Validate input with Zod
+    const requestSchema = z.object({
+      age: ageSchema,
+      gender: genderEnum,
+      bmi: bmiSchema,
+      smoking: smokingHabitsEnum,
+      exercise: exerciseFrequencyEnum,
+      alcohol: alcoholConsumptionEnum,
+      sleep: sleepQualityEnum,
+      diet: dietQualityEnum,
+      stress: stressLevelEnum
+    });
+
+    const validation = validateInput(requestSchema, { age, gender, smoking, exercise, alcohol, sleep, diet, stress, bmi });
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateInput, createValidationErrorResponse, birthDateSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -78,11 +80,15 @@ serve(async (req) => {
 
     const { date1, date2 } = await req.json();
 
-    if (!date1 || !date2) {
-      return new Response(
-        JSON.stringify({ error: "Both dates are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Validate input with Zod
+    const requestSchema = z.object({
+      date1: birthDateSchema,
+      date2: birthDateSchema
+    });
+
+    const validation = validateInput(requestSchema, { date1, date2 });
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
     }
 
     const d1 = new Date(date1);

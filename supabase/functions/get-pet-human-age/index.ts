@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { validateInput, createValidationErrorResponse, birthDateSchema, shortStringSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,18 +46,28 @@ serve(async (req) => {
 
     const { petType, dogSize, birthDate } = await req.json();
 
-    if (!petType || !birthDate) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Validate input with Zod
+    const requestSchema = z.object({
+      petType: z.enum(["Cat", "Dog"], {
+        errorMap: () => ({ message: "Pet type must be either 'Cat' or 'Dog'" })
+      }),
+      dogSize: z.enum(["Small", "Medium", "Large"], {
+        errorMap: () => ({ message: "Dog size must be one of: Small, Medium, Large" })
+      }).optional(),
+      birthDate: birthDateSchema
+    }).refine((data) => {
+      if (data.petType === "Dog" && !data.dogSize) {
+        return false;
+      }
+      return true;
+    }, {
+      message: "Dog size is required when pet type is Dog",
+      path: ["dogSize"]
+    });
 
-    if (petType === 'Dog' && !dogSize) {
-      return new Response(
-        JSON.stringify({ error: 'Dog size is required for dogs' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const validation = validateInput(requestSchema, { petType, dogSize, birthDate });
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
