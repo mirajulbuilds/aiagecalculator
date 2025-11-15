@@ -344,43 +344,56 @@ const Header = () => {
 
       {/* Mobile Menu Drawer - Slides from Right */}
       <Drawer open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen} direction="right">
-        <DrawerContent className="mobile-nav-drawer fixed right-0 top-0 h-full w-[320px] rounded-l-[20px] p-6">
-          <div className="flex justify-end mb-6">
-            <DrawerClose asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCloseMenu}
-                className="relative overflow-hidden"
-              >
-                <X className="h-5 w-5 text-primary" />
-              </Button>
-            </DrawerClose>
+        <DrawerContent className="mobile-nav-drawer fixed right-0 top-0 h-full w-[320px] rounded-l-[20px]">
+          {/* Fixed Header Section */}
+          <div className="mobile-nav-drawer-header flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-primary" />
+              <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Ai Age Calculator
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <DrawerClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCloseMenu}
+                  className="relative overflow-hidden"
+                >
+                  <X className="h-5 w-5 text-primary" />
+                </Button>
+              </DrawerClose>
+            </div>
           </div>
           
-          <nav className="flex flex-col space-y-2">
-            {mobileNavItems.map((item, index) => {
-              const isCurrentPage = isActive(item.path);
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={(e) => {
-                    createRipple(e);
-                    handleCloseMenu();
-                  }}
-                  className={`mobile-nav-link ${isCurrentPage ? "active" : ""}`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  <div className="nav-icon">
-                    <item.icon className="w-5 h-5" />
-                  </div>
-                  <span className="relative font-medium">{item.title}</span>
-                </Link>
-              );
-            })}
+          {/* Scrollable Navigation Content */}
+          <nav className="mobile-nav-drawer-content">
+            <div className="flex flex-col space-y-2">
+              {mobileNavItems.map((item, index) => {
+                const isCurrentPage = isActive(item.path);
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={(e) => {
+                      createRipple(e);
+                      handleCloseMenu();
+                    }}
+                    className={`mobile-nav-link ${isCurrentPage ? "active" : ""}`}
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                    }}
+                  >
+                    <div className="nav-icon">
+                      <item.icon className="w-5 h-5" />
+                    </div>
+                    <span className="relative font-medium">{item.title}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </nav>
         </DrawerContent>
       </Drawer>
