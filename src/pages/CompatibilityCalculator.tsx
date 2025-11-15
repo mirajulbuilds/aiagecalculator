@@ -6,6 +6,7 @@ import { Heart, CalendarIcon, Share2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
 import { triggerNativeShare } from "@/lib/shareUtils";
@@ -119,17 +120,12 @@ const CompatibilityCalculator = () => {
   return (
     <PageTransition>
     <>
-      <Helmet>
-        <title>Birthday Compatibility Calculator | Zodiac, Numerology & More</title>
-        <meta
-          name="description"
-          content="Discover how compatible you are with your partner, friend, or crush based on Zodiac signs, Numerology, and Chinese Zodiac. Free compatibility calculator!"
-        />
-        <meta
-          name="keywords"
-          content="birthday compatibility, zodiac compatibility, numerology compatibility, relationship compatibility, love calculator"
-        />
-      </Helmet>
+      <SEOHead
+        title="Birthday Compatibility Calculator - Zodiac, Numerology & More"
+        description="Discover how compatible you are with your partner, friend, or crush based on Zodiac signs, Numerology, and Chinese Zodiac. Free AI-powered compatibility calculator!"
+        keywords="birthday compatibility, zodiac compatibility, numerology compatibility, relationship compatibility, love calculator, zodiac love match"
+        type="website"
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
         <div className="container mx-auto max-w-4xl">

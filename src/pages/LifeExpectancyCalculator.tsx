@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp, Plus, Lightbulb, AlertCircle, CheckCircle } from "lucide-react";
 import { useLifeExpectancyComparison } from "@/contexts/LifeExpectancyComparisonContext";
 import { Button } from "@/components/ui/button";
@@ -216,10 +217,12 @@ const LifeExpectancyCalculator = () => {
     setScenarioLabel("");
   };
   return <>
-      <Helmet>
-        <title>Life Expectancy Calculator | How Long Will I Live?</title>
-        <meta name="description" content="Calculate your estimated life expectancy based on lifestyle factors using AI-powered predictions. Get personalized insights about your potential longevity." />
-      </Helmet>
+      <SEOHead
+        title="Life Expectancy Calculator - How Long Will I Live?"
+        description="Calculate your estimated life expectancy based on lifestyle factors using AI-powered predictions. Get personalized insights about your potential longevity and health recommendations."
+        keywords="life expectancy calculator, how long will i live, longevity calculator, lifespan calculator, life expectancy prediction"
+        type="website"
+      />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}

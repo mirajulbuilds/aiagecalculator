@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import PageTransition from "@/components/PageTransition";
 import ParallaxSection from "@/components/ParallaxSection";
+import { SEOHead } from "@/components/SEOHead";
 import moonImg from '../assets/planets/moon.jpg';
 import mercuryImg from '../assets/planets/mercury.jpg';
 import venusImg from '../assets/planets/venus.jpg';
@@ -582,6 +583,12 @@ const Index = () => {
     toast.success("Age calculated successfully!");
   };
   return <PageTransition>
+    <SEOHead
+      title="AI Age Calculator - Calculate Your Exact Age in Seconds"
+      description="Free AI-powered age calculator. Calculate your exact age in years, months, days, hours, and seconds. Discover your age on different planets, get personalized birthday facts, and explore AI greeting cards."
+      keywords="age calculator, calculate age, birthday calculator, age in days, age in seconds, age calculator online, free age calculator"
+      type="website"
+    />
     <main className="min-h-screen bg-background px-3 sm:px-6 md:px-8 py-4 sm:py-8">
       {/* Structured Data for SEO */}
       <script type="application/ld+json">

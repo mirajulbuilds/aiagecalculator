@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { ArrowLeft, MapPin, Calendar, Star, TrendingUp, Share2 } from "lucide-react";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
@@ -266,9 +267,15 @@ const CelebrityProfile = () => {
   return (
     <PageTransition>
     <>
+      <SEOHead
+        title={celebrity.meta_title}
+        description={celebrity.meta_description}
+        image={celebrity.profile_image_url}
+        url={`https://aiagecalc.com/people/${celebrity.profile_slug}`}
+        type="profile"
+        keywords={`${celebrity.name}, ${celebrity.profession}, ${celebrity.zodiac_sign}, celebrity birthday, famous birthdays`}
+      />
       <Helmet>
-        <title>{celebrity.meta_title}</title>
-        <meta name="description" content={celebrity.meta_description} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 

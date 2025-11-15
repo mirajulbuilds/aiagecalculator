@@ -5,6 +5,7 @@ import { Upload, Camera, Share2, Sparkles, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
@@ -217,11 +218,12 @@ const AiFaceAge = () => {
   return (
     <PageTransition>
     <>
-      <Helmet>
-        <title>How Old Do I Look? AI Face Age Calculator</title>
-        <meta name="description" content="Upload a photo and let our AI-powered face age calculator estimate your age! Fun, free, and accurate age detection using advanced computer vision." />
-        <meta name="keywords" content="face age calculator, how old do i look, AI age detector, face age estimation, age from photo" />
-      </Helmet>
+      <SEOHead
+        title="How Old Do I Look? AI Face Age Calculator"
+        description="Upload a photo and let our AI-powered face age calculator estimate your age! Fun, free, and accurate age detection using advanced computer vision technology."
+        keywords="face age calculator, how old do i look, AI age detector, face age estimation, age from photo, age guesser"
+        type="website"
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
         <div className="container mx-auto max-w-4xl">

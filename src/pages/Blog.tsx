@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { blogPosts } from "@/data/blogPosts";
 import { Calendar, ArrowRight } from "lucide-react";
@@ -10,15 +11,13 @@ import ScrollFadeIn from "@/components/ScrollFadeIn";
 const Blog = () => {
   return (
     <PageTransition>
+    <SEOHead
+      title="Birthday & Age Calculator Blog - Insights, Traditions & Science"
+      description="Explore fascinating articles about birthday traditions, zodiac signs, planetary age calculations, and more. Expert insights on birthdays and celebrations worldwide."
+      keywords="birthday blog, age calculator articles, birthday traditions, zodiac personality, Mars age calculation"
+      type="website"
+    />
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <Helmet>
-        <title>Birthday & Age Calculator Blog | Insights, Traditions & Science</title>
-        <meta 
-          name="description" 
-          content="Explore fascinating articles about birthday traditions, zodiac signs, planetary age calculations, and more. Expert insights on birthdays and celebrations worldwide." 
-        />
-        <meta name="keywords" content="birthday blog, age calculator articles, birthday traditions, zodiac personality, Mars age calculation" />
-      </Helmet>
 
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
