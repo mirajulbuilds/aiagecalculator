@@ -5,6 +5,7 @@ import { Upload, Camera, Share2, Sparkles, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Link } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
@@ -237,11 +238,12 @@ const LookAlikeFinder = () => {
   return (
     <PageTransition>
     <>
-      <Helmet>
-        <title>Find Your Celebrity Look-Alike | AI Face Match Tool</title>
-        <meta name="description" content="Upload your photo and discover which celebrity you look like! Our AI-powered face matching technology compares your features with thousands of celebrities." />
-        <meta name="keywords" content="celebrity look-alike, face match, AI face recognition, celebrity twin, who do I look like" />
-      </Helmet>
+      <SEOHead
+        title="Find Your Celebrity Look-Alike - AI Face Match Tool"
+        description="Upload your photo and discover which celebrity you look like! Our AI-powered face matching technology compares your features with thousands of celebrities to find your twin."
+        keywords="celebrity look-alike, face match, AI face recognition, celebrity twin, who do I look like, celebrity doppelganger"
+        type="website"
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
         <div className="container mx-auto max-w-4xl">

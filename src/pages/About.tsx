@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { SEOHead } from "@/components/SEOHead";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cake, Sparkles } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
@@ -6,14 +7,12 @@ import PageTransition from "@/components/PageTransition";
 const About = () => {
   return (
     <PageTransition>
+    <SEOHead
+      title="About Us - Your Age & Birthday Companion"
+      description="Learn about AiAgeCalc.com - your fun and informative destination for exploring everything related to age, birthdays, and celebrations with AI-powered tools."
+      type="website"
+    />
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <Helmet>
-        <title>About Us | AiAgeCalc.com - Your Age & Birthday Companion</title>
-        <meta 
-          name="description" 
-          content="Learn about AiAgeCalc.com - your fun and informative destination for exploring everything related to age, birthdays, and celebrations." 
-        />
-      </Helmet>
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
