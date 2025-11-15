@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_2fa: {
+        Row: {
+          created_at: string | null
+          enrolled_at: string | null
+          id: string
+          is_enrolled: boolean
+          last_verified_at: string | null
+          recovery_codes: string[] | null
+          secret: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          enrolled_at?: string | null
+          id?: string
+          is_enrolled?: boolean
+          last_verified_at?: string | null
+          recovery_codes?: string[] | null
+          secret?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          enrolled_at?: string | null
+          id?: string
+          is_enrolled?: boolean
+          last_verified_at?: string | null
+          recovery_codes?: string[] | null
+          secret?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_audit_logs: {
         Row: {
           action_type: string

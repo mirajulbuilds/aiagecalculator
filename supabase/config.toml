@@ -60,4 +60,13 @@ verify_jwt = true
 [functions.log-security-event]
 verify_jwt = false
 
+[functions.enroll-2fa]
+verify_jwt = true
+
+[functions.verify-2fa]
+verify_jwt = true
+
+[functions.check-2fa-status]
+verify_jwt = true
+
 
