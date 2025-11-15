@@ -57,3 +57,7 @@ verify_jwt = true
 [functions.get-usage-stats]
 verify_jwt = true
 
+[functions.log-security-event]
+verify_jwt = false
+
+

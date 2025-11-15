@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { logAuthFailure } from "@/lib/securityLogger";
 
 const AuthGateway = () => {
   const navigate = useNavigate();
@@ -23,6 +24,9 @@ const AuthGateway = () => {
       });
 
       if (error) {
+        // Log authentication failure
+        logAuthFailure(email, error.message);
+        
         toast.error("Login failed: " + error.message);
         return;
       }
