@@ -5,6 +5,14 @@ import { Briefcase, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Celebrity {
   id: string;
@@ -21,6 +29,9 @@ const ProfessionPage = () => {
   const [celebrities, setCelebrities] = useState<Celebrity[]>([]);
   const [loading, setLoading] = useState(true);
   const [professionName, setProfessionName] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 24;
 
   // Convert slug to readable name (e.g., "tiktok-star" -> "TikTok Star")
   const slugToName = (slug: string) => {
@@ -39,11 +50,18 @@ const ProfessionPage = () => {
     if (professionSlug) {
       const displayName = slugToName(professionSlug);
       setProfessionName(displayName);
-      loadCelebrities();
+      setCurrentPage(1); // Reset to page 1 when profession changes
+      loadCelebrities(1);
     }
   }, [professionSlug]);
 
-  const loadCelebrities = async () => {
+  useEffect(() => {
+    if (professionSlug) {
+      loadCelebrities(currentPage);
+    }
+  }, [currentPage]);
+
+  const loadCelebrities = async (page: number) => {
     if (!professionSlug) return;
     
     setLoading(true);
@@ -51,12 +69,25 @@ const ProfessionPage = () => {
       // Convert slug to display name for CONTAINS matching
       const displayName = slugToName(professionSlug);
       
-      // Fetch celebrities where profession CONTAINS the category name
+      // Calculate pagination range
+      const from = (page - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+      
+      // Fetch total count
+      const { count } = await supabase
+        .from("celebrities")
+        .select("*", { count: "exact", head: true })
+        .ilike("profession", `%${displayName}%`);
+      
+      setTotalCount(count || 0);
+      
+      // Fetch paginated celebrities where profession CONTAINS the category name
       const { data, error } = await supabase
         .from("celebrities")
         .select("*")
         .ilike("profession", `%${displayName}%`)
-        .order("popularity_ranks->most_popular", { ascending: true });
+        .order("popularity_ranks->most_popular", { ascending: true })
+        .range(from, to);
 
       if (error) {
         console.error("Error fetching celebrities:", error);
@@ -113,17 +144,100 @@ const ProfessionPage = () => {
               </h1>
             </div>
             <p className="text-muted-foreground">
-              Found {celebrities.length} {celebrities.length === 1 ? 'celebrity' : 'celebrities'}
+              Found {totalCount} {totalCount === 1 ? 'celebrity' : 'celebrities'}
+              {totalCount > itemsPerPage && (
+                <span className="ml-2">
+                  (Page {currentPage} of {Math.ceil(totalCount / itemsPerPage)})
+                </span>
+              )}
             </p>
           </div>
 
           {/* Results Grid */}
           {celebrities.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {celebrities.map((celebrity) => (
-                <CelebrityCard key={celebrity.id} celebrity={celebrity} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {celebrities.map((celebrity) => (
+                  <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalCount > itemsPerPage && (
+                <div className="mt-12">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => {
+                            if (currentPage > 1) {
+                              setCurrentPage(currentPage - 1);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+
+                      {/* Page Numbers */}
+                      {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }, (_, i) => i + 1)
+                        .filter((page) => {
+                          // Show first page, last page, current page, and pages around current
+                          const totalPages = Math.ceil(totalCount / itemsPerPage);
+                          return (
+                            page === 1 ||
+                            page === totalPages ||
+                            Math.abs(page - currentPage) <= 1
+                          );
+                        })
+                        .map((page, index, array) => {
+                          // Add ellipsis if there's a gap
+                          const prevPage = array[index - 1];
+                          const showEllipsis = prevPage && page - prevPage > 1;
+
+                          return (
+                            <>
+                              {showEllipsis && (
+                                <PaginationItem key={`ellipsis-${page}`}>
+                                  <span className="px-4">...</span>
+                                </PaginationItem>
+                              )}
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  onClick={() => {
+                                    setCurrentPage(page);
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                  }}
+                                  isActive={currentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            </>
+                          );
+                        })}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => {
+                            if (currentPage < Math.ceil(totalCount / itemsPerPage)) {
+                              setCurrentPage(currentPage + 1);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className={
+                            currentPage === Math.ceil(totalCount / itemsPerPage)
+                              ? "pointer-events-none opacity-50"
+                              : "cursor-pointer"
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           ) : (
             <div className="bg-card rounded-2xl shadow-card p-12 text-center">
               <Briefcase className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
