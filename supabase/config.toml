@@ -72,4 +72,19 @@ verify_jwt = true
 [functions.generate-sitemap]
 verify_jwt = false
 
+[functions.generate-sitemap-index]
+verify_jwt = false
+
+[functions.generate-sitemap-static]
+verify_jwt = false
+
+[functions.generate-sitemap-celebrities]
+verify_jwt = false
+
+[functions.generate-sitemap-categories]
+verify_jwt = false
+
+[functions.generate-sitemap-blog]
+verify_jwt = false
+
 
