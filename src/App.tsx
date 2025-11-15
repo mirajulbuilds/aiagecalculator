@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
+import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -76,8 +77,8 @@ const AnimatedRoutes = () => {
             <Route path="/due-date-calculator" element={<DueDateCalculator />} />
             <Route path="/pet-age-calculator" element={<PetAgeCalculator />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
-        <Route path="/system-control-panel-x4y5z6" element={<AdminPanel />} />
-        <Route path="/security-monitoring-m7n8p9" element={<SecurityMonitoring />} />
+          <Route path="/system-control-panel-x4y5z6" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
+          <Route path="/security-monitoring-m7n8p9" element={<ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>} />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
         <Route path="/celebrity/preview" element={<CelebrityPreview />} />
         <Route path="/people/:profileSlug" element={<CelebrityProfile />} />

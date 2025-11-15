@@ -29,7 +29,6 @@ import { CalendarIcon, Loader2, Trash2, Upload, BarChart3, Shield } from "lucide
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { DuplicateChecker } from "@/components/DuplicateChecker";
 import { BatchUploadForm } from "@/components/BatchUploadForm";
 import { UsageStatsDisplay } from "@/components/UsageStatsDisplay";
@@ -70,10 +69,6 @@ interface CelebrityData {
 
 const AdminPanel = () => {
   const navigate = useNavigate();
-  
-  // Admin authentication check with proper role verification
-  const { isAdmin, isLoading: isCheckingAdmin } = useAdminCheck();
-  
   const [session, setSession] = useState<Session | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -351,30 +346,6 @@ const AdminPanel = () => {
       setIsSaving(false);
     }
   };
-
-  // Show loading while checking admin status
-  if (isCheckingAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Verifying admin access...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show access denied if not admin
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-destructive mb-4">Access Denied</h1>
-          <p className="text-muted-foreground">You do not have permission to access this page.</p>
-        </div>
-      </div>
-    );
-  }
 
   const handleGenerateContent = async () => {
     if (!profileUrl || profileUrl.trim().length === 0) {
