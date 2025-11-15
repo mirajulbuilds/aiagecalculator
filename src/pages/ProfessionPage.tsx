@@ -48,23 +48,25 @@ const ProfessionPage = () => {
     
     setLoading(true);
     try {
-      // Fetch all celebrities and filter by profession slug match
+      // Convert slug to display name for CONTAINS matching
+      const displayName = slugToName(professionSlug);
+      
+      // Fetch celebrities where profession CONTAINS the category name
       const { data, error } = await supabase
         .from("celebrities")
         .select("*")
+        .ilike("profession", `%${displayName}%`)
         .order("popularity_ranks->most_popular", { ascending: true });
 
       if (error) {
         console.error("Error fetching celebrities:", error);
+        setCelebrities([]);
       } else {
-        // Filter by matching profession slug
-        const filtered = (data || []).filter(celebrity => 
-          nameToSlug(celebrity.profession) === professionSlug
-        );
-        setCelebrities(filtered);
+        setCelebrities(data || []);
       }
     } catch (error) {
       console.error("Error loading celebrities:", error);
+      setCelebrities([]);
     } finally {
       setLoading(false);
     }
