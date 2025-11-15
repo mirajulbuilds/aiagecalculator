@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Calendar, ArrowLeft } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
@@ -115,14 +116,53 @@ const BirthMonthPage = () => {
     );
   }
 
+  const month = capitalizeMonth(monthName || "");
+  const currentUrl = `https://aiagecalc.com/birth-month/${monthName}${currentPage > 1 ? `?page=${currentPage}` : ''}`;
+
   return (
     <>
+      <SEOHead
+        title={`${month} Birthdays - Famous Celebrities Born in ${month}`}
+        description={`Browse ${totalCount} celebrities born in ${month}. Discover their ages, zodiac signs, and interesting birthday facts about famous people born in ${month}.`}
+        keywords={`${month} birthdays, celebrities born in ${month}, famous ${month} births, ${month} celebrities, ${month} zodiac signs`}
+        url={currentUrl}
+        type="website"
+      />
+      
       <Helmet>
-        <title>Celebrities Born in {capitalizeMonth(monthName || "")} - Famous Birthdays</title>
-        <meta
-          name="description"
-          content={`Discover celebrities born in ${capitalizeMonth(monthName || "")}. Browse famous birthdays, ages, and fascinating facts about stars born this month.`}
-        />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": `Celebrities Born in ${month}`,
+            "description": `Famous celebrities and their birthdays in ${month}`,
+            "url": currentUrl,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://aiagecalc.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Famous Birthdays",
+                  "item": "https://aiagecalc.com/famous-birthdays"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": `${month} Birthdays`,
+                  "item": currentUrl
+                }
+              ]
+            },
+            "numberOfItems": totalCount
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-background">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Briefcase, ArrowLeft } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
@@ -115,14 +116,52 @@ const ProfessionPage = () => {
     );
   }
 
+  const currentUrl = `https://aiagecalc.com/profession/${professionSlug}${currentPage > 1 ? `?page=${currentPage}` : ''}`;
+
   return (
     <>
+      <SEOHead
+        title={`Famous ${professionName}s - Ages, Birthdays & Career Highlights`}
+        description={`Explore ${totalCount} famous ${professionName.toLowerCase()}s and their birthdays. Discover ages, career achievements, and interesting facts about top ${professionName.toLowerCase()}s in the entertainment industry.`}
+        keywords={`famous ${professionName.toLowerCase()}s, ${professionName.toLowerCase()} celebrities, ${professionName.toLowerCase()} birthdays, ${professionName.toLowerCase()} ages, celebrity ${professionName.toLowerCase()}s`}
+        url={currentUrl}
+        type="website"
+      />
+      
       <Helmet>
-        <title>Famous {professionName}s - Celebrity Ages & Birthdays</title>
-        <meta
-          name="description"
-          content={`Discover famous ${professionName.toLowerCase()}s, their ages, birthdays, and fascinating facts. Browse our complete list of celebrity ${professionName.toLowerCase()}s.`}
-        />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": `Famous ${professionName}s`,
+            "description": `Browse celebrities who are ${professionName.toLowerCase()}s`,
+            "url": currentUrl,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://aiagecalc.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Famous Birthdays",
+                  "item": "https://aiagecalc.com/famous-birthdays"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": `${professionName}s`,
+                  "item": currentUrl
+                }
+              ]
+            },
+            "numberOfItems": totalCount
+          })}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-background">
