@@ -7,8 +7,73 @@ import { Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+interface CombinedBlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  author: string;
+  publishedDate: string;
+  featuredImage: string;
+}
 
 const Blog = () => {
+  const [dbPosts, setDbPosts] = useState<CombinedBlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .select('*')
+          .not('published_at', 'is', null)
+          .order('published_at', { ascending: false });
+
+        if (error) throw error;
+
+        const mappedPosts: CombinedBlogPost[] = (data || []).map(post => ({
+          id: post.id,
+          slug: post.slug,
+          title: post.title,
+          summary: post.meta_description,
+          author: post.author || 'AI Age Calculator Team',
+          publishedDate: post.published_at || post.created_at,
+          featuredImage: post.featured_image_url || '/placeholder.svg'
+        }));
+
+        setDbPosts(mappedPosts);
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+        setError('Failed to load blog posts');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
+  const staticPosts: CombinedBlogPost[] = blogPosts.map(post => ({
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    summary: post.summary,
+    author: post.author,
+    publishedDate: post.publishedDate,
+    featuredImage: post.featuredImage
+  }));
+
+  const allPosts = [...dbPosts, ...staticPosts].sort(
+    (a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime()
+  );
+
   return (
     <PageTransition>
     <SEOHead
@@ -41,8 +106,31 @@ const Blog = () => {
       </header>
 
       <main className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {blogPosts.map((post, index) => (
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {isLoading ? (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="h-full">
+                <Skeleton className="aspect-video w-full rounded-t-lg" />
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-5/6" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {allPosts.map((post, index) => (
             <ScrollFadeIn key={post.id} delay={index * 100}>
               <Link to={`/blog/${post.slug}`} className="group block h-full">
                 <Card className="h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-2 hover:border-primary/50">
@@ -79,7 +167,8 @@ const Blog = () => {
               </Link>
             </ScrollFadeIn>
           ))}
-        </div>
+          </div>
+        )}
       </main>
     </div>
     </PageTransition>

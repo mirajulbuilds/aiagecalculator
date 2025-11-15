@@ -121,6 +121,7 @@ export type Database = {
       }
       blog_posts: {
         Row: {
+          author: string | null
           author_id: string | null
           body_images_data: Json | null
           created_at: string
@@ -135,6 +136,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          author?: string | null
           author_id?: string | null
           body_images_data?: Json | null
           created_at?: string
@@ -149,6 +151,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          author?: string | null
           author_id?: string | null
           body_images_data?: Json | null
           created_at?: string
