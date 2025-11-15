@@ -1230,14 +1230,14 @@ All colors MUST be HSL.
       box-shadow: 
         0 6px 20px rgba(139, 92, 246, 0.25),
         inset 0 1px 1px rgba(255, 255, 255, 0.15),
-        0 0 0 2px rgba(139, 92, 246, 0.2);
+        0 0 15px rgba(139, 92, 246, 0.3);
     }
     50% {
       box-shadow: 
-        0 8px 30px rgba(139, 92, 246, 0.4),
+        0 8px 30px rgba(139, 92, 246, 0.5),
         inset 0 1px 1px rgba(255, 255, 255, 0.2),
-        0 0 0 3px rgba(139, 92, 246, 0.35),
-        0 0 20px rgba(139, 92, 246, 0.3);
+        0 0 25px rgba(139, 92, 246, 0.5),
+        0 0 40px rgba(139, 92, 246, 0.3);
     }
   }
   
@@ -1253,7 +1253,19 @@ All colors MUST be HSL.
         0 8px 35px rgba(139, 92, 246, 0.6),
         inset 0 1px 1px rgba(139, 92, 246, 0.3),
         0 0 0 3px rgba(139, 92, 246, 0.5),
-        0 0 25px rgba(139, 92, 246, 0.4);
+        0 0 30px rgba(139, 92, 246, 0.4);
+    }
+  }
+
+  /* Mobile Nav Fade In Animation */
+  @keyframes mobile-nav-fade-in {
+    0% {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
   
@@ -1338,6 +1350,9 @@ All colors MUST be HSL.
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: hsl(var(--foreground));
     text-decoration: none;
+    opacity: 0;
+    transform: translateX(20px);
+    animation: mobile-nav-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   .mobile-nav-link .nav-icon {
@@ -1388,8 +1403,9 @@ All colors MUST be HSL.
     font-weight: 600;
     box-shadow: 
       0 6px 20px rgba(139, 92, 246, 0.25),
-      inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    animation: pulse-glow 2s ease-in-out infinite;
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 15px rgba(139, 92, 246, 0.3);
+    animation: pulse-glow 2s ease-in-out infinite, mobile-nav-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   .mobile-nav-link.active .nav-icon {
@@ -1397,6 +1413,7 @@ All colors MUST be HSL.
     border-color: rgba(139, 92, 246, 0.4);
     color: hsl(var(--primary));
     transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
   }
 
   /* Staggered entrance animations for mobile nav */
