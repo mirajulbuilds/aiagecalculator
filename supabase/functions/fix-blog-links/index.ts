@@ -11,14 +11,10 @@ function sanitizeInternalLinks(html: string): string {
   if (!html) return html;
   
   // Pattern to match backend URLs (lovableproject.com or any staging URLs)
-  const backendUrlPattern = /https?:\/\/[a-f0-9-]+\.lovableproject\.com/gi;
+  const backendUrlPattern = /https?:\/\/[a-f0-9-]+\.lovableproject\.com(\/[^"'\s<>]*)/gi;
   
-  // Replace any backend URLs with empty string (leaving just the path)
-  let sanitized = html.replace(backendUrlPattern, '');
-  
-  // Also handle any accidentally fully qualified public domain URLs
-  // Convert https://aiagecalc.com/path to just /path for consistency
-  sanitized = sanitized.replace(/https:\/\/aiagecalc\.com/g, '');
+  // Replace backend URLs with public domain + path
+  let sanitized = html.replace(backendUrlPattern, 'https://aiagecalc.com$1');
   
   return sanitized;
 }

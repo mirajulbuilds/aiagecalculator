@@ -10,14 +10,10 @@ function sanitizeInternalLinks(html: string): string {
   if (!html) return html;
   
   // Pattern to match backend URLs (lovableproject.com or any staging URLs)
-  const backendUrlPattern = /https?:\/\/[a-f0-9-]+\.lovableproject\.com/gi;
+  const backendUrlPattern = /https?:\/\/[a-f0-9-]+\.lovableproject\.com(\/[^"'\s<>]*)/gi;
   
-  // Replace any backend URLs with empty string (leaving just the path)
-  let sanitized = html.replace(backendUrlPattern, '');
-  
-  // Also handle any accidentally fully qualified public domain URLs
-  // Convert https://aiagecalc.com/path to just /path for consistency
-  sanitized = sanitized.replace(/https:\/\/aiagecalc\.com/g, '');
+  // Replace backend URLs with public domain + path
+  let sanitized = html.replace(backendUrlPattern, 'https://aiagecalc.com$1');
   
   return sanitized;
 }
@@ -52,13 +48,14 @@ Requirements:
 
 CRITICAL - Link Formatting Rules:
 - The site's public domain is https://aiagecalc.com
-- For ALL internal links (pages on this site), use ONLY relative URLs starting with /
+- For ALL internal links (pages on this site), use FULL absolute URLs with the domain
 - Examples of CORRECT internal links:
-  * <a href="/">home page</a>
-  * <a href="/famous-birthdays">Famous Birthdays</a>
-  * <a href="/blog">blog</a>
-  * <a href="/zodiac">zodiac calculator</a>
-- NEVER create absolute URLs with domain names for internal links
+  * <a href="https://aiagecalc.com/">home page</a>
+  * <a href="https://aiagecalc.com/famous-birthdays">Famous Birthdays</a>
+  * <a href="https://aiagecalc.com/blog">blog</a>
+  * <a href="https://aiagecalc.com/zodiac">zodiac calculator</a>
+  * <a href="https://aiagecalc.com/compatibility-calculator">Birthday Compatibility</a>
+- NEVER use relative URLs (starting with just /)
 - NEVER use lovableproject.com or any backend domains
 - External links (to other websites) should use full https:// URLs with target="_blank" rel="noopener noreferrer"
 

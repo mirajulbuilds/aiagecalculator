@@ -16,10 +16,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 const fixInternalLinks = (html: string): string => {
   if (!html) return html;
   
-  // Replace any backend lovableproject URLs with relative paths
+  // Replace any backend lovableproject URLs with public domain
   return html.replace(
-    /https?:\/\/[a-f0-9-]+\.lovableproject\.com(\/[^"'\s]*)/gi,
-    '$1'  // Keep only the path
+    /https?:\/\/[a-f0-9-]+\.lovableproject\.com(\/[^"'\s<>]*)/gi,
+    'https://aiagecalc.com$1'
   );
 };
 
