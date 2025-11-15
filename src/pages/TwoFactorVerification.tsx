@@ -22,7 +22,7 @@ const TwoFactorVerification = () => {
     const currentDomain = window.location.origin;
     if (!ALLOWED_DOMAINS.includes(currentDomain)) {
       toast.error('2FA verification is not allowed from this domain');
-      handleLogout();
+      window.location.href = 'https://aiagecalculator.lovable.app/2fa-verify';
     }
   }, []);
 

@@ -23,7 +23,11 @@ const AuthGateway = () => {
     setIsAllowedDomain(ALLOWED_DOMAINS.includes(currentDomain));
     
     if (!ALLOWED_DOMAINS.includes(currentDomain)) {
-      toast.error('Authentication is not allowed from this domain. Please use https://aiagecalculator.lovable.app');
+      toast.error('Authentication is not allowed from this domain');
+      
+      setTimeout(() => {
+        window.location.href = 'https://aiagecalculator.lovable.app/auth-gateway-key-a1b2c3';
+      }, 1000);
     }
   }, []);
 
@@ -101,22 +105,28 @@ const AuthGateway = () => {
     }
   };
 
+  if (!isAllowedDomain) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold text-destructive">Access Denied</h1>
+          <p className="text-muted-foreground">
+            Admin access is only available from authorized domain
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Redirecting to https://aiagecalculator.lovable.app...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground">Admin Portal Access</h1>
         </div>
-
-        {!isAllowedDomain && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Unauthorized Domain</AlertTitle>
-            <AlertDescription>
-              Authentication is only allowed from https://aiagecalculator.lovable.app
-            </AlertDescription>
-          </Alert>
-        )}
 
         <form onSubmit={handleLogin} className="mt-8 space-y-6">
           <div className="space-y-4">
