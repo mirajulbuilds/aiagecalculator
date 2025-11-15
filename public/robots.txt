@@ -1,7 +1,23 @@
+# robots.txt for AiAgeCalc.com
+# Updated: 2025-11-15
+
+# Allow all major search engines full access
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
 Allow: /
 
 User-agent: Twitterbot
@@ -10,7 +26,35 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+# Default rule for all other bots
 User-agent: *
 Allow: /
 
+# Disallow admin and authentication pages
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /auth-gateway*
+Disallow: /security-monitoring
+
+# Disallow comparison pages (user-specific functionality)
+Disallow: /compare
+Disallow: /compare-life-expectancy
+
+# Crawl rate - be gentle
+Crawl-delay: 1
+
+# Dynamic sitemap (always up-to-date with database)
+Sitemap: https://ryetajignnzczcybyggr.supabase.co/functions/v1/generate-sitemap
+
+# Static sitemap (backup)
 Sitemap: https://aiagecalc.com/sitemap.xml
+
+# Host declaration
+Host: https://aiagecalc.com
+
