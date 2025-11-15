@@ -24,7 +24,12 @@ const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const AuthGateway = lazy(() => import("./pages/AuthGateway"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const UsageStats = lazy(() => import("./pages/admin/UsageStats"));
+const AuditLogs = lazy(() => import("./pages/admin/AuditLogs"));
+const IPBlocking = lazy(() => import("./pages/admin/IPBlocking"));
+const TwoFactorManagement = lazy(() => import("./pages/admin/TwoFactorManagement"));
 const CelebrityPreview = lazy(() => import("./pages/CelebrityPreview"));
 const CelebrityProfile = lazy(() => import("./pages/CelebrityProfile"));
 const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
@@ -79,10 +84,36 @@ const AnimatedRoutes = () => {
             <Route path="/due-date-calculator" element={<DueDateCalculator />} />
             <Route path="/pet-age-calculator" element={<PetAgeCalculator />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
-        <Route path="/2fa-enrollment" element={<TwoFactorEnrollment />} />
-        <Route path="/2fa-verify" element={<TwoFactorVerification />} />
-          <Route path="/system-control-panel-x4y5z6" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
-          <Route path="/security-monitoring-m7n8p9" element={<ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>} />
+        <Route path="/system-control-panel-x4y5z6" element={
+          <ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/celebrity-management" element={
+          <ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/usage-stats" element={
+          <ProtectedAdminRoute><UsageStats /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/audit-logs" element={
+          <ProtectedAdminRoute><AuditLogs /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/ip-blocking" element={
+          <ProtectedAdminRoute><IPBlocking /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/2fa-management" element={
+          <ProtectedAdminRoute><TwoFactorManagement /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/security-monitoring" element={
+          <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
+        } />
+        <Route path="/2fa-enrollment" element={
+          <ProtectedAdminRoute><TwoFactorEnrollment /></ProtectedAdminRoute>
+        } />
+        <Route path="/2fa-verify" element={
+          <ProtectedAdminRoute><TwoFactorVerification /></ProtectedAdminRoute>
+        } />
+        <Route path="/security-monitoring-m7n8p9" element={
+          <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
+        } />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
         <Route path="/celebrity/preview" element={<CelebrityPreview />} />
         <Route path="/people/:profileSlug" element={<CelebrityProfile />} />

@@ -191,11 +191,11 @@ export default function SecurityMonitoring() {
       <div className="mb-6">
         <Button
           variant="ghost"
-          onClick={() => navigate('/admin')}
+          onClick={() => navigate('/system-control-panel-x4y5z6')}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Admin Panel
+          Back to Dashboard
         </Button>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <Shield className="h-8 w-8" />
