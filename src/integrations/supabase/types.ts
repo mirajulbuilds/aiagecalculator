@@ -119,6 +119,51 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          body_images_data: Json | null
+          created_at: string
+          featured_image_url: string | null
+          id: string
+          main_content: string
+          meta_description: string
+          meta_title: string
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body_images_data?: Json | null
+          created_at?: string
+          featured_image_url?: string | null
+          id?: string
+          main_content: string
+          meta_description: string
+          meta_title: string
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body_images_data?: Json | null
+          created_at?: string
+          featured_image_url?: string | null
+          id?: string
+          main_content?: string
+          meta_description?: string
+          meta_title?: string
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       celebrities: {
         Row: {
           created_at: string
