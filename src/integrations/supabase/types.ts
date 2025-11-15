@@ -115,6 +115,39 @@ export type Database = {
           },
         ]
       }
+      security_logs: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -141,6 +174,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_security_logs: { Args: never; Returns: undefined }
       get_celebrities_by_birthday: {
         Args: { birth_day: number; birth_month: number }
         Returns: {

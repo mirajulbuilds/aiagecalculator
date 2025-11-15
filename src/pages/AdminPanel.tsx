@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Loader2, Trash2, Upload, BarChart3 } from "lucide-react";
+import { CalendarIcon, Loader2, Trash2, Upload, BarChart3, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -635,9 +635,19 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
-          Celebrity Profile Content Engine
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+            Celebrity Profile Content Engine
+          </h1>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/security-monitoring-m7n8p9')}
+            className="flex items-center gap-2"
+          >
+            <Shield className="h-4 w-4" />
+            Security Monitoring
+          </Button>
+        </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-8">
