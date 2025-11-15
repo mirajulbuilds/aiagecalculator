@@ -294,7 +294,7 @@ const CelebrityProfile = () => {
         </header>
 
         {/* Main Two-Column Layout */}
-        <main className="container mx-auto px-4 py-8 max-w-7xl">
+        <main className="container mx-auto py-8 max-w-7xl">
           <div className="profile-layout-container">
             {/* Profile Image Block */}
             <div id="profile-image-block" className="w-full">
