@@ -93,4 +93,6 @@ verify_jwt = false
 [functions.generate-blog-post]
 verify_jwt = true
 
+[functions.fix-blog-links]
+verify_jwt = true
 

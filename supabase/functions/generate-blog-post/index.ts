@@ -5,6 +5,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Function to sanitize URLs in generated HTML
+function sanitizeInternalLinks(html: string): string {
+  if (!html) return html;
+  
+  // Pattern to match backend URLs (lovableproject.com or any staging URLs)
+  const backendUrlPattern = /https?:\/\/[a-f0-9-]+\.lovableproject\.com/gi;
+  
+  // Replace any backend URLs with empty string (leaving just the path)
+  let sanitized = html.replace(backendUrlPattern, '');
+  
+  // Also handle any accidentally fully qualified public domain URLs
+  // Convert https://aiagecalc.com/path to just /path for consistency
+  sanitized = sanitized.replace(/https:\/\/aiagecalc\.com/g, '');
+  
+  return sanitized;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -32,6 +49,18 @@ Requirements:
 - Make it SEO-friendly with natural keyword integration
 - Write in a friendly, conversational tone
 - Include practical examples and actionable insights
+
+CRITICAL - Link Formatting Rules:
+- The site's public domain is https://aiagecalc.com
+- For ALL internal links (pages on this site), use ONLY relative URLs starting with /
+- Examples of CORRECT internal links:
+  * <a href="/">home page</a>
+  * <a href="/famous-birthdays">Famous Birthdays</a>
+  * <a href="/blog">blog</a>
+  * <a href="/zodiac">zodiac calculator</a>
+- NEVER create absolute URLs with domain names for internal links
+- NEVER use lovableproject.com or any backend domains
+- External links (to other websites) should use full https:// URLs with target="_blank" rel="noopener noreferrer"
 
 Return ONLY a JSON object with this exact structure:
 {
@@ -168,6 +197,7 @@ Return ONLY a JSON object with this exact structure:
     return new Response(
       JSON.stringify({
         ...parsedArticle,
+        main_content: sanitizeInternalLinks(parsedArticle.main_content),
         featured_image_url: generatedFeaturedImageUrl,
         body_images_data: generatedBodyImagesData
       }),

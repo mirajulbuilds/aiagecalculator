@@ -71,6 +71,7 @@ const BlogManagement = () => {
   const [selectedPosts, setSelectedPosts] = useState<Set<string>>(new Set());
   const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
+  const [isFixingLinks, setIsFixingLinks] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -308,6 +309,37 @@ const BlogManagement = () => {
     }
   };
 
+  const handleFixAllLinks = async () => {
+    if (!session) return;
+
+    if (!confirm('This will fix all internal links in all blog posts to use relative URLs instead of backend URLs. Continue?')) {
+      return;
+    }
+
+    setIsFixingLinks(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('fix-blog-links');
+
+      if (error) throw error;
+
+      await logAdminAction({
+        action_type: 'update',
+        resource_type: 'celebrity',
+        resource_name: 'blog_posts_links',
+        changes: { after: data }
+      });
+
+      toast.success(data.message || `Fixed ${data.fixed} blog post(s)`);
+      loadBlogPosts();
+    } catch (error: any) {
+      console.error('Error fixing links:', error);
+      toast.error(error.message || 'Failed to fix links');
+    } finally {
+      setIsFixingLinks(false);
+    }
+  };
+
   const handleTogglePublish = async (post: BlogPost) => {
     try {
       const newPublishedAt = post.published_at ? null : new Date().toISOString();
@@ -450,6 +482,15 @@ const BlogManagement = () => {
                   <Button onClick={loadBlogPosts} variant="outline">
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Refresh
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleFixAllLinks} 
+                    variant="outline"
+                    disabled={isFixingLinks}
+                  >
+                    {isFixingLinks && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Fix All Internal Links
                   </Button>
                 </div>
               </CardHeader>
