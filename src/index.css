@@ -1292,12 +1292,12 @@ All colors MUST be HSL.
 
   .mobile-nav-drawer-header {
     flex-shrink: 0;
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    padding: 0.75rem 1rem;
+    border-bottom: none;
   }
 
   .dark .mobile-nav-drawer-header {
-    border-bottom-color: rgba(139, 92, 246, 0.2);
+    border-bottom: none;
   }
 
   .mobile-nav-drawer-content {
