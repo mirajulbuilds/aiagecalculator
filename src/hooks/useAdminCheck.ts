@@ -17,7 +17,7 @@ export const useAdminCheck = () => {
           console.error('No active session');
           setIsAdmin(false);
           setIsLoading(false);
-          navigate('/auth-gateway');
+          navigate('/auth-gateway-key-a1b2c3');
           return;
         }
 
