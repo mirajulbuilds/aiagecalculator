@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Shield, Copy, Check, Download } from "lucide-react";
 import QRCode from "react-qr-code";
 
-const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
+const ALLOWED_DOMAINS = ['https://lovable.app'];
 
 const TwoFactorEnrollment = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const TwoFactorEnrollment = () => {
     const currentDomain = window.location.origin;
     if (!ALLOWED_DOMAINS.includes(currentDomain)) {
       toast.error('2FA enrollment is not allowed from this domain');
-      window.location.href = 'https://aiagecalculator.lovable.app/2fa-enrollment';
+      window.location.href = 'https://lovable.app/2fa-enrollment';
       return;
     }
     checkEnrollmentStatus();

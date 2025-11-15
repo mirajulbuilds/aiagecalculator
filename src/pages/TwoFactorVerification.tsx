@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Shield, KeyRound } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
+const ALLOWED_DOMAINS = ['https://lovable.app'];
 
 const TwoFactorVerification = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const TwoFactorVerification = () => {
     const currentDomain = window.location.origin;
     if (!ALLOWED_DOMAINS.includes(currentDomain)) {
       toast.error('2FA verification is not allowed from this domain');
-      window.location.href = 'https://aiagecalculator.lovable.app/2fa-verify';
+      window.location.href = 'https://lovable.app/2fa-verify';
     }
   }, []);
 

@@ -4,7 +4,7 @@ import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from 'lucide-react';
 
-const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
+const ALLOWED_DOMAINS = ['https://lovable.app'];
 
 interface ProtectedAdminRouteProps {
   children: ReactNode;
@@ -24,7 +24,7 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
     const currentDomain = window.location.origin;
     if (!ALLOWED_DOMAINS.includes(currentDomain)) {
       console.error('Admin route accessed from unauthorized domain:', currentDomain);
-      window.location.href = `https://aiagecalculator.lovable.app${location.pathname}`;
+      window.location.href = `https://lovable.app${location.pathname}`;
     }
   }, [location.pathname]);
 

@@ -9,7 +9,7 @@ import { logAuthFailure } from "@/lib/securityLogger";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
+const ALLOWED_DOMAINS = ['https://lovable.app'];
 
 const AuthGateway = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const AuthGateway = () => {
       toast.error('Authentication is not allowed from this domain');
       
       setTimeout(() => {
-        window.location.href = 'https://aiagecalculator.lovable.app/auth-gateway-key-a1b2c3';
+        window.location.href = 'https://lovable.app/auth-gateway-key-a1b2c3';
       }, 1000);
     }
   }, []);
@@ -37,7 +37,7 @@ const AuthGateway = () => {
     // SECURITY: Check domain first
     const currentDomain = window.location.origin;
     if (!ALLOWED_DOMAINS.includes(currentDomain)) {
-      toast.error('Authentication is not allowed from this domain. Please use https://aiagecalculator.lovable.app');
+      toast.error('Authentication is not allowed from this domain. Please use Lovable preview');
       
       // Log unauthorized domain attempt
       await supabase.functions.invoke('log-auth-attempt', {
