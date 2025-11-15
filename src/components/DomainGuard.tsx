@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-const ALLOWED_DOMAINS = ['https://aiagecalculator.lovable.app'];
-const ALLOWED_DOMAIN = 'https://aiagecalculator.lovable.app';
+const ALLOWED_DOMAINS = ['https://lovable.app'];
+const ALLOWED_DOMAIN = 'https://lovable.app';
 
 interface DomainGuardProps {
   children: React.ReactNode;
