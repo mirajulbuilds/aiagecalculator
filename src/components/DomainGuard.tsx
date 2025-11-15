@@ -1,8 +1,14 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-const ALLOWED_DOMAINS = ['https://lovable.app'];
-const ALLOWED_DOMAIN = 'https://lovable.app';
+const isAllowedDomain = (origin: string): boolean => {
+  // Allow any *.lovableproject.com or *.lovable.app subdomain
+  return origin.endsWith('.lovableproject.com') || 
+         origin.endsWith('.lovable.app') || 
+         origin === 'https://lovable.app';
+};
+
+const REDIRECT_DOMAIN = 'https://aiagecalc.com';
 
 interface DomainGuardProps {
   children: React.ReactNode;
@@ -13,22 +19,17 @@ export const DomainGuard = ({ children, redirectToHome = false }: DomainGuardPro
   useEffect(() => {
     const currentDomain = window.location.origin;
     
-    if (!ALLOWED_DOMAINS.includes(currentDomain)) {
+    if (!isAllowedDomain(currentDomain)) {
       console.error('Unauthorized domain access attempt:', currentDomain);
       
-      toast.error('Access denied: Unauthorized domain');
+      toast.error('Access denied: Admin access only available in development environment');
       
-      if (!redirectToHome) {
-        const currentPath = window.location.pathname + window.location.search;
-        window.location.href = `${ALLOWED_DOMAIN}${currentPath}`;
-      } else {
-        window.location.href = ALLOWED_DOMAIN;
-      }
+      window.location.href = REDIRECT_DOMAIN;
     }
   }, [redirectToHome]);
   
   const currentDomain = window.location.origin;
-  if (!ALLOWED_DOMAINS.includes(currentDomain)) {
+  if (!isAllowedDomain(currentDomain)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4 p-8">
