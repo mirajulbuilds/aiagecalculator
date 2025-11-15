@@ -26,13 +26,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Loader2, Trash2, Upload, BarChart3, Shield } from "lucide-react";
+import { CalendarIcon, Loader2, Trash2, Upload, BarChart3, Shield, ScrollText } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
 import { DuplicateChecker } from "@/components/DuplicateChecker";
 import { BatchUploadForm } from "@/components/BatchUploadForm";
 import { UsageStatsDisplay } from "@/components/UsageStatsDisplay";
+import { AuditLogViewer } from "@/components/AuditLogViewer";
 
 const celebritySchema = z.object({
   name: z.string().min(1, "Celebrity name is required").max(100),
@@ -603,6 +604,9 @@ const AdminPanel = () => {
 
   const handleDeleteProfile = async () => {
     if (!profileToDelete) return;
+    
+    // Get profile data before deletion for audit log
+    const profileData = allProfiles.find(p => p.id === profileToDelete.id);
 
     setIsDeleting(true);
     
@@ -617,6 +621,18 @@ const AdminPanel = () => {
         toast.error("Failed to delete profile: " + error.message);
         return;
       }
+
+      // Log deletion to audit logs
+      await logAdminAction({
+        action_type: 'delete',
+        resource_type: 'celebrity',
+        resource_id: profileToDelete.id,
+        resource_name: profileToDelete.name,
+        changes: {
+          before: profileData,
+          after: null
+        }
+      });
 
       toast.success(`Profile "${profileToDelete.name}" has been permanently deleted`);
       
@@ -652,7 +668,7 @@ const AdminPanel = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-7 mb-8">
             <TabsTrigger value="scrape">Scrape & Generate</TabsTrigger>
             <TabsTrigger value="batch">
               <Upload className="h-4 w-4 mr-2" />
@@ -662,6 +678,14 @@ const AdminPanel = () => {
             <TabsTrigger value="usage">
               <BarChart3 className="h-4 w-4 mr-2" />
               Usage
+            </TabsTrigger>
+            <TabsTrigger value="audit">
+              <ScrollText className="h-4 w-4 mr-2" />
+              Audit Logs
+            </TabsTrigger>
+            <TabsTrigger value="security">
+              <Shield className="h-4 w-4 mr-2" />
+              Security
             </TabsTrigger>
             <TabsTrigger value="manual">Manual Editor</TabsTrigger>
           </TabsList>
@@ -777,11 +801,25 @@ const AdminPanel = () => {
               <p className="text-muted-foreground mb-6">
                 Monitor profile generation statistics, compare AI engine usage, and track estimated costs.
               </p>
-              <UsageStatsDisplay />
+          <UsageStatsDisplay />
             </div>
           </TabsContent>
 
-          {/* TAB 5: MANUAL EDITOR / REVIEW DRAFTS */}
+          {/* TAB 5: AUDIT LOGS */}
+          <TabsContent value="audit" className="space-y-6">
+            <AuditLogViewer />
+          </TabsContent>
+
+          {/* TAB 6: SECURITY MONITORING */}
+          <TabsContent value="security" className="space-y-6">
+            <iframe 
+              src="/security-monitoring-m7n8p9" 
+              className="w-full h-[800px] border-0 rounded-lg"
+              title="Security Monitoring"
+            />
+          </TabsContent>
+
+          {/* TAB 7: MANUAL EDITOR / REVIEW DRAFTS */}
           <TabsContent value="manual" className="space-y-6">
             {/* ALL PROFILES DATA TABLE */}
             <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4">

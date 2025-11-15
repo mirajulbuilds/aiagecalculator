@@ -37,6 +37,27 @@ serve(async (req) => {
     // Rate limiting check
     const identifier = req.headers.get('x-forwarded-for') || 'unknown';
     if (!checkRateLimit(identifier)) {
+      // Log rate limit violation
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      
+      fetch(`${supabaseUrl}/functions/v1/log-security-event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`
+        },
+        body: JSON.stringify({
+          event_type: 'rate_limit',
+          ip_address: identifier,
+          details: {
+            function_name: 'ai-gift-advisor',
+            timestamp: new Date().toISOString()
+          },
+          severity: 'medium'
+        })
+      }).catch(err => console.error('Failed to log rate limit:', err));
+
       return new Response(
         JSON.stringify({ error: 'Too many requests. Please try again later.' }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
