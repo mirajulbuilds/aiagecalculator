@@ -24,7 +24,7 @@ export const DomainGuard = ({ children, redirectToHome = false }: DomainGuardPro
       
       toast.error('Access denied: Admin access only available in development environment');
       
-      window.location.href = REDIRECT_DOMAIN;
+      window.location.href = '/';
     }
   }, [redirectToHome]);
   
