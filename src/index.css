@@ -354,6 +354,7 @@ All colors MUST be HSL.
     grid-area: content;
     width: 100%;
     box-sizing: border-box;
+    min-width: 0;
   }
   
   /* DESKTOP LAYOUT */
@@ -365,13 +366,12 @@ All colors MUST be HSL.
         "content sidebar";
       gap: 32px;
       padding: 0 24px;
-      max-width: 1200px;
-      margin: 0 auto;
     }
     
     #profile-sidebar-block {
       position: sticky;
       top: 20px;
+      align-self: start;
     }
   }
 
