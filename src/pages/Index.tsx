@@ -16,6 +16,7 @@ import { AgeAtDateCalculator } from "@/components/AgeAtDateCalculator";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
 import { BirthdayFacts } from "@/components/BirthdayFacts";
 import { supabase } from "@/integrations/supabase/client";
+import { CelebrityCard } from "@/components/CelebrityCard";
 import { Label } from "@/components/ui/label";
 import PageTransition from "@/components/PageTransition";
 import ParallaxSection from "@/components/ParallaxSection";
@@ -66,6 +67,7 @@ const Index = () => {
   }[]>([]);
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
+  const [matchingCelebrities, setMatchingCelebrities] = useState<any[]>([]);
 
   // AI Greetings state
   const [selectedOccasion, setSelectedOccasion] = useState('');
@@ -446,7 +448,7 @@ const Index = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
-  const calculateAge = () => {
+  const calculateAge = async () => {
     if (!birthDay || !birthMonth || !birthYear) {
       toast.error("Please select your birth date");
       return;
@@ -498,6 +500,32 @@ const Index = () => {
 
     // Get zodiac sign
     const zodiac = getZodiacSign(parseInt(birthMonth), parseInt(birthDay));
+
+    // Query for celebrities with matching birthday
+    try {
+      const { data: celebrities, error } = await supabase
+        .rpc('get_celebrities_by_birthday', {
+          birth_month: parseInt(birthMonth),
+          birth_day: parseInt(birthDay)
+        })
+        .limit(4);
+      
+      if (!error && celebrities) {
+        // Sort by popularity_ranks if available (lower ranks = more popular)
+        const sortedCelebrities = celebrities.sort((a: any, b: any) => {
+          const aRank = a.popularity_ranks?.overall || 999999;
+          const bRank = b.popularity_ranks?.overall || 999999;
+          return aRank - bRank;
+        }).slice(0, 4);
+        
+        setMatchingCelebrities(sortedCelebrities);
+      } else {
+        setMatchingCelebrities([]);
+      }
+    } catch (error) {
+      console.error('Error fetching matching celebrities:', error);
+      setMatchingCelebrities([]);
+    }
 
     // Calculate planet ages using single structured data source with local images
     const celestialData = [{
@@ -1785,6 +1813,44 @@ const Index = () => {
 
         {/* Age Display Formats */}
         {result && activeTab === "calculator" && <AgeDisplayFormats result={result} timezone={timezone} />}
+
+        {/* Matching Celebrities Section */}
+        {matchingCelebrities.length > 0 && activeTab === "calculator" && (
+          <section id="matching-birthdays-section" className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 animate-fade-in hover-lift">
+            <div className="text-center mb-8 space-y-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground flex items-center justify-center gap-2">
+                <Cake className="w-7 h-7 text-primary" />
+                You Share Your Birthday With...
+              </h2>
+              <p className="text-muted-foreground">
+                Famous people born on {new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay)).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {matchingCelebrities.map((celebrity) => (
+                <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                onClick={() => {
+                  const monthName = new Date(2000, parseInt(birthMonth) - 1, 1)
+                    .toLocaleDateString('en-US', { month: 'long' })
+                    .toLowerCase();
+                  window.location.href = `/birth-date/${monthName}-${birthDay}`;
+                }}
+              >
+                See All Celebrities Born on This Day
+                <Star className="w-4 h-4" />
+              </Button>
+            </div>
+          </section>
+        )}
 
 
         {/* Bottom Ad Banner */}
