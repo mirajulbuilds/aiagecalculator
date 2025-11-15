@@ -33,7 +33,28 @@ const AuthGateway = () => {
 
       if (data.session) {
         toast.success("Login successful");
-        navigate("/system-control-panel-x4y5z6");
+        
+        // Check 2FA enrollment status
+        const { data: statusData, error: statusError } = await supabase.functions.invoke('check-2fa-status');
+        
+        if (statusError) {
+          console.error('Error checking 2FA status:', statusError);
+          navigate("/system-control-panel-x4y5z6");
+          return;
+        }
+
+        if (statusData.is_admin) {
+          if (statusData.requires_enrollment) {
+            // Admin needs to enroll in 2FA
+            navigate("/2fa-enrollment");
+          } else {
+            // Admin needs to verify 2FA
+            navigate("/2fa-verify");
+          }
+        } else {
+          // Non-admin user
+          navigate("/");
+        }
       }
     } catch (error) {
       toast.error("An unexpected error occurred");

@@ -45,6 +45,8 @@ const CompareLifeExpectancy = lazy(() => import("./pages/CompareLifeExpectancy")
 const DueDateCalculator = lazy(() => import("./pages/DueDateCalculator"));
 const PetAgeCalculator = lazy(() => import("./pages/PetAgeCalculator"));
 const SecurityMonitoring = lazy(() => import("./pages/SecurityMonitoring"));
+const TwoFactorEnrollment = lazy(() => import("./pages/TwoFactorEnrollment"));
+const TwoFactorVerification = lazy(() => import("./pages/TwoFactorVerification"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -77,6 +79,8 @@ const AnimatedRoutes = () => {
             <Route path="/due-date-calculator" element={<DueDateCalculator />} />
             <Route path="/pet-age-calculator" element={<PetAgeCalculator />} />
         <Route path="/auth-gateway-key-a1b2c3" element={<AuthGateway />} />
+        <Route path="/2fa-enrollment" element={<TwoFactorEnrollment />} />
+        <Route path="/2fa-verify" element={<TwoFactorVerification />} />
           <Route path="/system-control-panel-x4y5z6" element={<ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>} />
           <Route path="/security-monitoring-m7n8p9" element={<ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>} />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
