@@ -1,10 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
 
-const ALLOWED_ORIGINS = ['https://lovable.app'];
+const isAllowedOrigin = (origin: string): boolean => {
+  // Allow any *.lovableproject.com or *.lovable.app subdomain
+  return origin.endsWith('.lovableproject.com') || 
+         origin.endsWith('.lovable.app') || 
+         origin === 'https://lovable.app';
+};
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://lovable.app',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Credentials': 'true'
@@ -25,7 +30,7 @@ serve(async (req) => {
       originDomain = '';
     }
     
-    if (!ALLOWED_ORIGINS.includes(originDomain)) {
+    if (!isAllowedOrigin(originDomain)) {
       console.error('Blocked request from unauthorized domain:', originDomain);
       return new Response(
         JSON.stringify({ error: 'Authentication not allowed from this domain' }),

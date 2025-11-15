@@ -9,24 +9,32 @@ import { logAuthFailure } from "@/lib/securityLogger";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-const ALLOWED_DOMAINS = ['https://lovable.app'];
+const isAllowedDomain = (origin: string): boolean => {
+  // Allow any *.lovableproject.com or *.lovable.app subdomain
+  return origin.endsWith('.lovableproject.com') || 
+         origin.endsWith('.lovable.app') || 
+         origin === 'https://lovable.app';
+};
+
+const REDIRECT_DOMAIN = 'https://aiagecalc.com';
 
 const AuthGateway = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isAllowedDomain, setIsAllowedDomain] = useState(true);
+  const [isDomainAllowed, setIsDomainAllowed] = useState(true);
 
   useEffect(() => {
     const currentDomain = window.location.origin;
-    setIsAllowedDomain(ALLOWED_DOMAINS.includes(currentDomain));
+    const allowed = isAllowedDomain(currentDomain);
+    setIsDomainAllowed(allowed);
     
-    if (!ALLOWED_DOMAINS.includes(currentDomain)) {
-      toast.error('Authentication is not allowed from this domain');
+    if (!allowed) {
+      toast.error('Admin authentication only available in development environment');
       
       setTimeout(() => {
-        window.location.href = 'https://lovable.app/auth-gateway-key-a1b2c3';
+        window.location.href = REDIRECT_DOMAIN;
       }, 1000);
     }
   }, []);
@@ -36,8 +44,8 @@ const AuthGateway = () => {
     
     // SECURITY: Check domain first
     const currentDomain = window.location.origin;
-    if (!ALLOWED_DOMAINS.includes(currentDomain)) {
-      toast.error('Authentication is not allowed from this domain. Please use Lovable preview');
+    if (!isAllowedDomain(currentDomain)) {
+      toast.error('Admin authentication only available in development environment');
       
       // Log unauthorized domain attempt
       await supabase.functions.invoke('log-auth-attempt', {
@@ -105,7 +113,7 @@ const AuthGateway = () => {
     }
   };
 
-  if (!isAllowedDomain) {
+  if (!isDomainAllowed) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -160,7 +168,7 @@ const AuthGateway = () => {
           <Button
             type="submit"
             className="w-full"
-            disabled={isLoading || !isAllowedDomain}
+            disabled={isLoading || !isDomainAllowed}
           >
             {isLoading ? "Logging in..." : "Login"}
           </Button>
