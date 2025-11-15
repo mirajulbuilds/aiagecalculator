@@ -26,7 +26,16 @@ const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-50 bg-black/80", className)} {...props} />
+  <DrawerPrimitive.Overlay 
+    ref={ref} 
+    className={cn(
+      "fixed inset-0 z-50 bg-black/80 transition-opacity duration-300 ease-out",
+      "data-[state=open]:animate-in data-[state=closed]:animate-out",
+      "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    )} 
+    {...props} 
+  />
 ));
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
@@ -40,6 +49,9 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed z-50 flex flex-col bg-background",
+        "transition-transform duration-300 ease-out",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:slide-out-right data-[state=open]:slide-in-right",
         className,
       )}
       {...props}
