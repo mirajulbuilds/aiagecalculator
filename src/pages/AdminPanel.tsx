@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -184,6 +185,14 @@ const AdminPanel = () => {
       is_preview: true, // Flag to indicate this is preview data
     };
 
+    // Sanitize HTML content before preview
+    const sanitizedContent = DOMPurify.sanitize(watch("mainContent") || "<p>No content available</p>", {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre'],
+      ALLOWED_ATTR: ['id', 'class', 'href', 'target', 'rel']
+    });
+    
+    previewData.main_content = sanitizedContent;
+    
     // Save to sessionStorage (persists across new tabs)
     sessionStorage.setItem("temp_profile_preview", JSON.stringify(previewData));
     
@@ -268,13 +277,19 @@ const AdminPanel = () => {
         }
       }
 
+      // Sanitize HTML content to prevent XSS
+      const sanitizedMainContent = DOMPurify.sanitize(data.mainContent, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre'],
+        ALLOWED_ATTR: ['id', 'class', 'href', 'target', 'rel']
+      });
+
       const profileData = {
         name: data.name,
         profile_slug: data.profileSlug,
         date_of_birth: format(data.dateOfBirth, "yyyy-MM-dd"),
         profession: data.profession,
         place_of_birth: data.placeOfBirth || null,
-        main_content: data.mainContent,
+        main_content: sanitizedMainContent,
         meta_title: data.metaTitle,
         meta_description: data.metaDescription,
         profile_image_url: imageUrl,
