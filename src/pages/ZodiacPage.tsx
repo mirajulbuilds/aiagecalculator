@@ -6,6 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Celebrity {
   id: string;
@@ -22,6 +30,9 @@ const ZodiacPage = () => {
   const { signName } = useParams<{ signName: string }>();
   const [celebrities, setCelebrities] = useState<Celebrity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 24;
 
   const capitalizeSign = (name: string) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
@@ -29,28 +40,48 @@ const ZodiacPage = () => {
 
   useEffect(() => {
     if (signName) {
-      loadCelebrities();
+      setCurrentPage(1);
+      loadCelebrities(1);
     }
   }, [signName]);
 
-  const loadCelebrities = async () => {
+  useEffect(() => {
+    if (signName) {
+      loadCelebrities(currentPage);
+    }
+  }, [currentPage]);
+
+  const loadCelebrities = async (page: number) => {
     if (!signName) return;
     
     setLoading(true);
     try {
+      const from = (page - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+
+      const { count } = await supabase
+        .from("celebrities")
+        .select("*", { count: "exact", head: true })
+        .ilike("zodiac_sign", capitalizeSign(signName));
+      
+      setTotalCount(count || 0);
+
       const { data, error } = await supabase
         .from("celebrities")
         .select("*")
         .ilike("zodiac_sign", capitalizeSign(signName))
-        .order("popularity_ranks->most_popular", { ascending: true });
+        .order("popularity_ranks->most_popular", { ascending: true })
+        .range(from, to);
 
       if (error) {
         console.error("Error fetching celebrities:", error);
+        setCelebrities([]);
       } else {
         setCelebrities(data || []);
       }
     } catch (error) {
       console.error("Error loading celebrities:", error);
+      setCelebrities([]);
     } finally {
       setLoading(false);
     }
@@ -97,19 +128,98 @@ const ZodiacPage = () => {
               </h1>
             </div>
             <p className="text-muted-foreground">
-              Found {celebrities.length} {celebrities.length === 1 ? 'celebrity' : 'celebrities'}
+              Found {totalCount} {totalCount === 1 ? 'celebrity' : 'celebrities'}
+              {totalCount > itemsPerPage && (
+                <span className="ml-2">
+                  (Page {currentPage} of {Math.ceil(totalCount / itemsPerPage)})
+                </span>
+              )}
             </p>
           </div>
 
           {/* Results Grid */}
           {celebrities.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {celebrities.map((celebrity, index) => (
-                <ScrollFadeIn key={celebrity.id} delay={index * 80}>
-                  <CelebrityCard celebrity={celebrity} />
-                </ScrollFadeIn>
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {celebrities.map((celebrity, index) => (
+                  <ScrollFadeIn key={celebrity.id} delay={index * 80}>
+                    <CelebrityCard celebrity={celebrity} />
+                  </ScrollFadeIn>
+                ))}
+              </div>
+
+              {totalCount > itemsPerPage && (
+                <div className="mt-12">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => {
+                            if (currentPage > 1) {
+                              setCurrentPage(currentPage - 1);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }, (_, i) => i + 1)
+                        .filter((page) => {
+                          const totalPages = Math.ceil(totalCount / itemsPerPage);
+                          return (
+                            page === 1 ||
+                            page === totalPages ||
+                            Math.abs(page - currentPage) <= 1
+                          );
+                        })
+                        .map((page, index, array) => {
+                          const prevPage = array[index - 1];
+                          const showEllipsis = prevPage && page - prevPage > 1;
+
+                          return (
+                            <>
+                              {showEllipsis && (
+                                <PaginationItem key={`ellipsis-${page}`}>
+                                  <span className="px-4">...</span>
+                                </PaginationItem>
+                              )}
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  onClick={() => {
+                                    setCurrentPage(page);
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                  }}
+                                  isActive={currentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            </>
+                          );
+                        })}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => {
+                            if (currentPage < Math.ceil(totalCount / itemsPerPage)) {
+                              setCurrentPage(currentPage + 1);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className={
+                            currentPage === Math.ceil(totalCount / itemsPerPage)
+                              ? "pointer-events-none opacity-50"
+                              : "cursor-pointer"
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           ) : (
             <div className="bg-card rounded-2xl shadow-card p-12 text-center">
               <Star className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
