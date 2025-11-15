@@ -131,6 +131,8 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => {
     try {
+      // Clear 2FA verification from session
+      sessionStorage.removeItem('2fa_verified');
       await supabase.auth.signOut();
       toast.success("Logged out successfully");
       navigate("/auth-gateway-key-a1b2c3");

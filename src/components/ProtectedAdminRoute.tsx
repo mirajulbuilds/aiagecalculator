@@ -26,7 +26,14 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
         
         if (error) {
           console.error('Error checking 2FA status:', error);
-          setTwoFAStatus({ checked: true, enrolled: true, verified: true });
+          // SECURITY: On error, deny access and force re-authentication
+          setTwoFAStatus({ checked: true, enrolled: false, verified: false });
+          return;
+        }
+
+        // Double-check: if not enrolled in 2FA, user shouldn't have access
+        if (!data.is_enrolled) {
+          setTwoFAStatus({ checked: true, enrolled: false, verified: false });
           return;
         }
 
@@ -42,7 +49,8 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
         });
       } catch (error) {
         console.error('Error:', error);
-        setTwoFAStatus({ checked: true, enrolled: true, verified: true });
+        // SECURITY: On error, deny access and force re-authentication
+        setTwoFAStatus({ checked: true, enrolled: false, verified: false });
       }
     };
 
