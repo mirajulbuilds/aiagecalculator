@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { validateInput, createValidationErrorResponse, birthDateSchema } from "../_shared/validation.ts";
+import { checkIPBlocked, logBlockedIPAttempt } from "../_shared/ipBlocking.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -69,8 +70,20 @@ serve(async (req) => {
   }
 
   try {
-    // Rate limiting check
+    // Get client IP
     const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
+
+    // Check if IP is blocked
+    const isBlocked = await checkIPBlocked(clientIp);
+    if (isBlocked) {
+      await logBlockedIPAttempt(clientIp, 'birthday-compatibility');
+      return new Response(
+        JSON.stringify({ error: 'Access denied' }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Rate limiting check
     if (!checkRateLimit(clientIp)) {
       // Log rate limit violation
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
