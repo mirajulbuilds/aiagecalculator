@@ -190,7 +190,7 @@ const FamousBirthdays = () => {
             </div>
             
             {trendingCelebrities.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-6">
                 {trendingCelebrities.map((celebrity, index) => (
                   <ScrollFadeIn key={celebrity.id} delay={index * 100}>
                     <CelebrityCard celebrity={celebrity} />
@@ -221,7 +221,7 @@ const FamousBirthdays = () => {
             </div>
 
             {bornToday.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-6">
                 {bornToday.map((celebrity, index) => (
                   <ScrollFadeIn key={celebrity.id} delay={index * 100}>
                     <CelebrityCard celebrity={celebrity} />
@@ -247,7 +247,7 @@ const FamousBirthdays = () => {
             </div>
 
             {bornTomorrow.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-6">
                 {bornTomorrow.map((celebrity, index) => (
                   <ScrollFadeIn key={celebrity.id} delay={index * 100}>
                     <CelebrityCard celebrity={celebrity} />
