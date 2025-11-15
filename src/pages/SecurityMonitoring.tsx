@@ -11,6 +11,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { IPBlockingManager } from "@/components/IPBlockingManager";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SecurityLog {
   id: string;
@@ -194,6 +196,14 @@ export default function SecurityMonitoring() {
         </p>
       </div>
 
+      <Tabs defaultValue="monitoring" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="monitoring">Event Monitoring</TabsTrigger>
+          <TabsTrigger value="blocking">IP Blocking</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="monitoring" className="space-y-6">
+
       {/* Summary Cards */}
       {rateLimitStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -271,7 +281,28 @@ export default function SecurityMonitoring() {
                       Last: {format(new Date(ip.last_violation), "PPpp")}
                     </div>
                   </div>
-                  <Badge variant="destructive">{ip.count} violations</Badge>
+                  <div className="flex gap-2">
+                    <Badge variant="destructive">{ip.count} violations</Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Switch to IP blocking tab with prefilled IP
+                        const tabs = document.querySelector('[value="blocking"]') as HTMLElement;
+                        tabs?.click();
+                        // Small delay to allow tab switch
+                        setTimeout(() => {
+                          const ipInput = document.querySelector('input[id="ip"]') as HTMLInputElement;
+                          if (ipInput) {
+                            ipInput.value = ip.ip;
+                            ipInput.dispatchEvent(new Event('input', { bubbles: true }));
+                          }
+                        }, 100);
+                      }}
+                    >
+                      Block IP
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -423,6 +454,12 @@ export default function SecurityMonitoring() {
           )}
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="blocking">
+          <IPBlockingManager />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

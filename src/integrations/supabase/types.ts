@@ -89,6 +89,36 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_ips: {
+        Row: {
+          blocked_at: string | null
+          blocked_by: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          ip_address: string
+          reason: string
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_by: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address: string
+          reason: string
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_by?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: string
+          reason?: string
+        }
+        Relationships: []
+      }
       celebrities: {
         Row: {
           created_at: string
@@ -249,6 +279,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_ip_blocks: { Args: never; Returns: undefined }
       cleanup_old_security_logs: { Args: never; Returns: undefined }
       get_celebrities_by_birthday: {
         Args: { birth_day: number; birth_month: number }
@@ -277,6 +308,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      is_ip_blocked: { Args: { ip_addr: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
