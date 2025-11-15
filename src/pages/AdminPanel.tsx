@@ -26,14 +26,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Loader2, Trash2, Upload, BarChart3, Shield, ScrollText } from "lucide-react";
+import { CalendarIcon, Loader2, Trash2, Upload, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
 import { DuplicateChecker } from "@/components/DuplicateChecker";
 import { BatchUploadForm } from "@/components/BatchUploadForm";
-import { UsageStatsDisplay } from "@/components/UsageStatsDisplay";
-import { AuditLogViewer } from "@/components/AuditLogViewer";
 
 const celebritySchema = z.object({
   name: z.string().min(1, "Celebrity name is required").max(100),
@@ -653,40 +651,28 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col gap-4 mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/system-control-panel-x4y5z6')}
+            className="self-start"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
             Celebrity Profile Content Engine
           </h1>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/security-monitoring-m7n8p9')}
-            className="flex items-center gap-2"
-          >
-            <Shield className="h-4 w-4" />
-            Security Monitoring
-          </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="scrape">Scrape & Generate</TabsTrigger>
             <TabsTrigger value="batch">
               <Upload className="h-4 w-4 mr-2" />
               Batch
             </TabsTrigger>
             <TabsTrigger value="duplicate">Duplicate Check</TabsTrigger>
-            <TabsTrigger value="usage">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Usage
-            </TabsTrigger>
-            <TabsTrigger value="audit">
-              <ScrollText className="h-4 w-4 mr-2" />
-              Audit Logs
-            </TabsTrigger>
-            <TabsTrigger value="security">
-              <Shield className="h-4 w-4 mr-2" />
-              Security
-            </TabsTrigger>
             <TabsTrigger value="manual">Manual Editor</TabsTrigger>
           </TabsList>
 
@@ -791,35 +777,7 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-          {/* TAB 4: USAGE ANALYTICS */}
-          <TabsContent value="usage" className="space-y-6">
-            <div className="p-6 border border-border rounded-lg bg-card">
-              <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                <BarChart3 className="h-6 w-6" />
-                Usage Analytics & Cost Tracking
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Monitor profile generation statistics, compare AI engine usage, and track estimated costs.
-              </p>
-          <UsageStatsDisplay />
-            </div>
-          </TabsContent>
-
-          {/* TAB 5: AUDIT LOGS */}
-          <TabsContent value="audit" className="space-y-6">
-            <AuditLogViewer />
-          </TabsContent>
-
-          {/* TAB 6: SECURITY MONITORING */}
-          <TabsContent value="security" className="space-y-6">
-            <iframe 
-              src="/security-monitoring-m7n8p9" 
-              className="w-full h-[800px] border-0 rounded-lg"
-              title="Security Monitoring"
-            />
-          </TabsContent>
-
-          {/* TAB 7: MANUAL EDITOR / REVIEW DRAFTS */}
+          {/* TAB 4: MANUAL EDITOR / REVIEW DRAFTS */}
           <TabsContent value="manual" className="space-y-6">
             {/* ALL PROFILES DATA TABLE */}
             <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4">
