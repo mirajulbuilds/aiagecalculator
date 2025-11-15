@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useUserRole } from "@/hooks/useUserRole";
 import { 
   Users, 
   Shield, 
@@ -13,7 +15,8 @@ import {
   LogOut,
   TrendingUp,
   AlertCircle,
-  Activity
+  Activity,
+  Crown
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -62,6 +65,7 @@ const DashboardCard = ({ title, description, icon, link, stat, statLabel }: Dash
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { role, isLoading: roleLoading } = useUserRole();
   const [adminEmail, setAdminEmail] = useState<string>("");
   const [stats, setStats] = useState<DashboardStats>({
     totalProfiles: 0,
@@ -183,6 +187,16 @@ const AdminDashboard = () => {
     },
   ];
 
+  // Add role management card for super admins only
+  if (role === 'super_admin') {
+    dashboardCards.push({
+      title: "Role Management",
+      description: "Manage user roles and permissions (Super Admin Only)",
+      icon: <Crown className="h-8 w-8 text-primary" />,
+      link: "/admin/role-management",
+    } as any);
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -195,7 +209,14 @@ const AdminDashboard = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-foreground">Welcome back</p>
+                <div className="flex items-center gap-2 justify-end">
+                  <p className="text-sm font-medium text-foreground">Welcome back</p>
+                  {!roleLoading && role && (
+                    <Badge variant={role === 'super_admin' ? 'default' : 'secondary'} className="text-xs">
+                      {role === 'super_admin' ? 'Super Admin' : role.charAt(0).toUpperCase() + role.slice(1)}
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">{adminEmail}</p>
               </div>
               <Button onClick={handleLogout} variant="outline" size="sm">
