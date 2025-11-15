@@ -18,11 +18,9 @@ import {
   AlertCircle,
   Activity,
   Crown,
-  FileText,
-  Sparkles
+  FileText
 } from "lucide-react";
 import { toast } from "sonner";
-import { AIBlogGenerator } from "@/components/AIBlogGenerator";
 
 interface DashboardStats {
   totalProfiles: number;
@@ -79,7 +77,6 @@ const AdminDashboard = () => {
     blockedIPs: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>("overview");
 
   useEffect(() => {
     fetchAdminInfo();
@@ -301,37 +298,16 @@ const AdminDashboard = () => {
 
       {/* Main Dashboard Content */}
       <div className="container mx-auto px-6 py-12">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="overview">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Dashboard Overview
-            </TabsTrigger>
-            <TabsTrigger value="blog">
-              <Sparkles className="h-4 w-4 mr-2" />
-              AI Blog Generator
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-2">Management Tools</h2>
-              <p className="text-sm text-muted-foreground">Select a tool to manage different aspects of the system</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {dashboardCards.map((card) => (
-                <DashboardCard key={card.link} {...card} />
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Blog Generator Tab */}
-          <TabsContent value="blog" className="space-y-6">
-            <AIBlogGenerator session={session} />
-          </TabsContent>
-        </Tabs>
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-foreground mb-2">Management Tools</h2>
+          <p className="text-sm text-muted-foreground">Select a tool to manage different aspects of the system</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboardCards.map((card) => (
+            <DashboardCard key={card.link} {...card} />
+          ))}
+        </div>
       </div>
     </div>
   );
