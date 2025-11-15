@@ -68,6 +68,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
   const [matchingCelebrities, setMatchingCelebrities] = useState<any[]>([]);
+  const [similarBirthdayCelebrities, setSimilarBirthdayCelebrities] = useState<any[]>([]);
   const [birthdayCardImage, setBirthdayCardImage] = useState<string>("");
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
 
@@ -567,6 +568,49 @@ const Index = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
+
+  const fetchSimilarBirthdayCelebrities = async (month: number, day: number) => {
+    try {
+      // Fetch all celebrities and filter client-side for dates within ±7 days
+      const { data: allCelebrities, error } = await supabase
+        .from('celebrities')
+        .select('*')
+        .not('date_of_birth', 'is', null);
+      
+      if (error || !allCelebrities) {
+        setSimilarBirthdayCelebrities([]);
+        return;
+      }
+
+      // Filter celebrities within ±7 days
+      const similarCelebrities = allCelebrities.filter((celebrity: any) => {
+        const celebDate = new Date(celebrity.date_of_birth);
+        const celebMonth = celebDate.getMonth() + 1;
+        const celebDay = celebDate.getDate();
+        
+        // Calculate day difference accounting for month boundaries
+        const userDate = new Date(2000, month - 1, day);
+        const celebFullDate = new Date(2000, celebMonth - 1, celebDay);
+        const dayDiff = Math.abs(differenceInDays(celebFullDate, userDate));
+        
+        // Include if within 7 days (but not exact match)
+        return dayDiff > 0 && dayDiff <= 7;
+      });
+
+      // Sort by popularity and take top 8
+      const sortedSimilar = similarCelebrities.sort((a: any, b: any) => {
+        const aRank = a.popularity_ranks?.overall || 999999;
+        const bRank = b.popularity_ranks?.overall || 999999;
+        return aRank - bRank;
+      }).slice(0, 8);
+
+      setSimilarBirthdayCelebrities(sortedSimilar);
+    } catch (error) {
+      console.error('Error fetching similar birthday celebrities:', error);
+      setSimilarBirthdayCelebrities([]);
+    }
+  };
+
   const calculateAge = async () => {
     if (!birthDay || !birthMonth || !birthYear) {
       toast.error("Please select your birth date");
@@ -638,12 +682,17 @@ const Index = () => {
         }).slice(0, 4);
         
         setMatchingCelebrities(sortedCelebrities);
+        setSimilarBirthdayCelebrities([]); // Clear similar birthdays if exact matches found
       } else {
         setMatchingCelebrities([]);
+        // If no exact matches, fetch celebrities born within ±7 days
+        await fetchSimilarBirthdayCelebrities(parseInt(birthMonth), parseInt(birthDay));
       }
     } catch (error) {
       console.error('Error fetching matching celebrities:', error);
       setMatchingCelebrities([]);
+      // Try to fetch similar birthdays as fallback
+      await fetchSimilarBirthdayCelebrities(parseInt(birthMonth), parseInt(birthDay));
     }
 
     // Calculate planet ages using single structured data source with local images
@@ -2028,21 +2077,41 @@ const Index = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center py-8 space-y-4">
-                <p className="text-lg text-muted-foreground">
-                  No famous celebrities share your exact birthday, but you can still explore celebrities born in{' '}
-                  {new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay)).toLocaleDateString('en-US', { month: 'long' })}!
-                </p>
-                <Button
-                  onClick={() => {
-                    const monthName = new Date(2000, parseInt(birthMonth) - 1, 1).toLocaleDateString('en-US', { month: 'long' });
-                    window.location.href = `/birthdays/${monthName.toLowerCase()}`;
-                  }}
-                  className="gap-2"
-                >
-                  <Calendar className="w-4 h-4" />
-                  Explore {new Date(2000, parseInt(birthMonth) - 1, 1).toLocaleDateString('en-US', { month: 'long' })} Birthdays
-                </Button>
+              <div className="space-y-6">
+                <div className="text-center py-8 space-y-4">
+                  <p className="text-lg text-muted-foreground">
+                    No famous celebrities share your exact birthday
+                  </p>
+                  <Button
+                    onClick={() => {
+                      const monthName = new Date(2000, parseInt(birthMonth) - 1, 1).toLocaleDateString('en-US', { month: 'long' });
+                      window.location.href = `/birthdays/${monthName.toLowerCase()}`;
+                    }}
+                    className="gap-2"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    Explore {new Date(2000, parseInt(birthMonth) - 1, 1).toLocaleDateString('en-US', { month: 'long' })} Birthdays
+                  </Button>
+                </div>
+
+                {/* Similar Birthdays Section */}
+                {similarBirthdayCelebrities.length > 0 && (
+                  <div className="border-t border-border pt-6">
+                    <div className="text-center mb-6">
+                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                        🎂 Celebrities Born Within a Week
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Famous people with birthdays close to yours
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {similarBirthdayCelebrities.map((celebrity) => (
+                        <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </section>
