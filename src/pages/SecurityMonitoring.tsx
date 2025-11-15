@@ -34,6 +34,15 @@ interface RateLimitStats {
   suspicious_ips: Array<{ ip: string; count: number; last_violation: string }>;
 }
 
+interface DomainAccessStats {
+  total_attempts_24h: number;
+  total_attempts_7d: number;
+  total_attempts_30d: number;
+  unauthorized_domains: Array<{ domain: string; count: number; last_attempt: string }>;
+  attempted_emails: Array<{ email: string; count: number; last_attempt: string }>;
+  source_ips: Array<{ ip: string; count: number; last_attempt: string }>;
+}
+
 export default function SecurityMonitoring() {
   const navigate = useNavigate();
   const [logs, setLogs] = useState<SecurityLog[]>([]);
@@ -41,10 +50,12 @@ export default function SecurityMonitoring() {
   const [eventTypeFilter, setEventTypeFilter] = useState<string>("all");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
   const [rateLimitStats, setRateLimitStats] = useState<RateLimitStats | null>(null);
+  const [domainAccessStats, setDomainAccessStats] = useState<DomainAccessStats | null>(null);
 
   useEffect(() => {
     fetchSecurityLogs();
     fetchRateLimitStats();
+    fetchDomainAccessStats();
   }, [eventTypeFilter, severityFilter]);
 
   const fetchSecurityLogs = async () => {
@@ -152,6 +163,98 @@ export default function SecurityMonitoring() {
     }
   };
 
+  const fetchDomainAccessStats = async () => {
+    try {
+      const now = new Date();
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const [attempts24h, attempts7d, attempts30d, domainData] = await Promise.all([
+        supabase
+          .from("security_logs")
+          .select("id", { count: "exact", head: true })
+          .eq("event_type", "unauthorized_domain_access")
+          .gte("created_at", twentyFourHoursAgo.toISOString()),
+        supabase
+          .from("security_logs")
+          .select("id", { count: "exact", head: true })
+          .eq("event_type", "unauthorized_domain_access")
+          .gte("created_at", sevenDaysAgo.toISOString()),
+        supabase
+          .from("security_logs")
+          .select("id", { count: "exact", head: true })
+          .eq("event_type", "unauthorized_domain_access")
+          .gte("created_at", thirtyDaysAgo.toISOString()),
+        supabase
+          .from("security_logs")
+          .select("*")
+          .eq("event_type", "unauthorized_domain_access")
+          .gte("created_at", sevenDaysAgo.toISOString())
+          .order("created_at", { ascending: false }),
+      ]);
+
+      // Extract unauthorized domains
+      const domainCounts = new Map<string, { count: number; lastAttempt: string }>();
+      const emailCounts = new Map<string, { count: number; lastAttempt: string }>();
+      const ipCounts = new Map<string, { count: number; lastAttempt: string }>();
+
+      domainData.data?.forEach((log: any) => {
+        // Extract domain from details.origin
+        if (log.details?.origin) {
+          const current = domainCounts.get(log.details.origin) || { count: 0, lastAttempt: log.created_at };
+          domainCounts.set(log.details.origin, {
+            count: current.count + 1,
+            lastAttempt: log.created_at > current.lastAttempt ? log.created_at : current.lastAttempt,
+          });
+        }
+
+        // Extract email from details
+        if (log.details?.email) {
+          const current = emailCounts.get(log.details.email) || { count: 0, lastAttempt: log.created_at };
+          emailCounts.set(log.details.email, {
+            count: current.count + 1,
+            lastAttempt: log.created_at > current.lastAttempt ? log.created_at : current.lastAttempt,
+          });
+        }
+
+        // Extract IP
+        if (log.ip_address) {
+          const current = ipCounts.get(log.ip_address) || { count: 0, lastAttempt: log.created_at };
+          ipCounts.set(log.ip_address, {
+            count: current.count + 1,
+            lastAttempt: log.created_at > current.lastAttempt ? log.created_at : current.lastAttempt,
+          });
+        }
+      });
+
+      const unauthorizedDomains = Array.from(domainCounts.entries())
+        .map(([domain, data]) => ({ domain, count: data.count, last_attempt: data.lastAttempt }))
+        .sort((a, b) => b.count - a.count);
+
+      const attemptedEmails = Array.from(emailCounts.entries())
+        .map(([email, data]) => ({ email, count: data.count, last_attempt: data.lastAttempt }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+      const sourceIps = Array.from(ipCounts.entries())
+        .map(([ip, data]) => ({ ip, count: data.count, last_attempt: data.lastAttempt }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+      setDomainAccessStats({
+        total_attempts_24h: attempts24h.count || 0,
+        total_attempts_7d: attempts7d.count || 0,
+        total_attempts_30d: attempts30d.count || 0,
+        unauthorized_domains: unauthorizedDomains,
+        attempted_emails: attemptedEmails,
+        source_ips: sourceIps,
+      });
+    } catch (error) {
+      console.error("Error fetching domain access stats:", error);
+    }
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
@@ -169,6 +272,10 @@ export default function SecurityMonitoring() {
 
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
+      case "auth_attempt":
+        return Key;
+      case "unauthorized_domain_access":
+        return Ban;
       case "auth_failure":
         return Key;
       case "rate_limit":
@@ -209,6 +316,7 @@ export default function SecurityMonitoring() {
       <Tabs defaultValue="monitoring" className="space-y-6">
         <TabsList>
           <TabsTrigger value="monitoring">Event Monitoring</TabsTrigger>
+          <TabsTrigger value="domains">Domain Access</TabsTrigger>
           <TabsTrigger value="blocking">IP Blocking</TabsTrigger>
         </TabsList>
 
@@ -371,6 +479,8 @@ export default function SecurityMonitoring() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Events</SelectItem>
+                <SelectItem value="auth_attempt">Auth Attempt</SelectItem>
+                <SelectItem value="unauthorized_domain_access">Unauthorized Domain</SelectItem>
                 <SelectItem value="auth_failure">Auth Failure</SelectItem>
                 <SelectItem value="rate_limit">Rate Limit</SelectItem>
                 <SelectItem value="suspicious_activity">Suspicious Activity</SelectItem>
@@ -464,6 +574,190 @@ export default function SecurityMonitoring() {
           )}
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="domains" className="space-y-6">
+          {/* Domain Access Statistics */}
+          {domainAccessStats && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    24h Attempts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{domainAccessStats.total_attempts_24h}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Unauthorized domain access</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    7d Attempts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{domainAccessStats.total_attempts_7d}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Last 7 days</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Ban className="h-4 w-4" />
+                    30d Attempts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{domainAccessStats.total_attempts_30d}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Unauthorized Domains */}
+          {domainAccessStats && domainAccessStats.unauthorized_domains.length > 0 && (
+            <Card className="mb-6 border-red-500/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-red-500">
+                  <AlertCircle className="h-5 w-5" />
+                  Unauthorized Domain Access Attempts
+                </CardTitle>
+                <CardDescription>
+                  Domains attempting to access admin functionality
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {domainAccessStats.unauthorized_domains.map((domain) => (
+                    <div
+                      key={domain.domain}
+                      className="flex items-center justify-between p-3 bg-red-500/5 border border-red-500/20 rounded-lg"
+                    >
+                      <div>
+                        <code className="text-sm font-mono">{domain.domain}</code>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Last: {format(new Date(domain.last_attempt), "PPpp")}
+                        </div>
+                      </div>
+                      <Badge variant="destructive">{domain.count} attempts</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Source IPs */}
+          {domainAccessStats && domainAccessStats.source_ips.length > 0 && (
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Source IP Addresses (Last 7 Days)
+                </CardTitle>
+                <CardDescription>
+                  IP addresses making unauthorized domain access attempts
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {domainAccessStats.source_ips.map((ip, index) => (
+                    <div
+                      key={ip.ip}
+                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
+                        <div>
+                          <code className="text-sm font-mono">{ip.ip}</code>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Last: {format(new Date(ip.last_attempt), "PPp")}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge variant="outline">{ip.count} attempts</Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const tabs = document.querySelector('[value="blocking"]') as HTMLElement;
+                            tabs?.click();
+                            setTimeout(() => {
+                              const ipInput = document.querySelector('input[id="ip"]') as HTMLInputElement;
+                              if (ipInput) {
+                                ipInput.value = ip.ip;
+                                ipInput.dispatchEvent(new Event('input', { bubbles: true }));
+                              }
+                            }, 100);
+                          }}
+                        >
+                          Block IP
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Attempted Emails */}
+          {domainAccessStats && domainAccessStats.attempted_emails.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Key className="h-5 w-5" />
+                  Email Addresses Used in Attempts
+                </CardTitle>
+                <CardDescription>
+                  Top 10 email addresses used in unauthorized access attempts
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {domainAccessStats.attempted_emails.map((email, index) => (
+                    <div
+                      key={email.email}
+                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
+                        <div>
+                          <code className="text-sm font-mono">{email.email}</code>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Last: {format(new Date(email.last_attempt), "PPp")}
+                          </div>
+                        </div>
+                      </div>
+                      <Badge variant="secondary">{email.count} attempts</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Empty State */}
+          {domainAccessStats && 
+           domainAccessStats.total_attempts_24h === 0 && 
+           domainAccessStats.total_attempts_7d === 0 && 
+           domainAccessStats.total_attempts_30d === 0 && (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Shield className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No Unauthorized Access Attempts</h3>
+                <p className="text-muted-foreground">
+                  Your admin access is secure. No unauthorized domain access attempts detected.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="blocking">
