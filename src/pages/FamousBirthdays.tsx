@@ -22,12 +22,26 @@ interface Celebrity {
   popularity_ranks: any;
 }
 
+const STATIC_PROFESSIONS = [
+  { name: "Actor", slug: "actor" },
+  { name: "Musician", slug: "musician" },
+  { name: "TikTok Star", slug: "tiktok-star" },
+  { name: "YouTube Star", slug: "youtube-star" },
+  { name: "Model", slug: "model" },
+  { name: "Athlete", slug: "athlete" },
+  { name: "Entrepreneur", slug: "entrepreneur" },
+  { name: "Director", slug: "director" },
+  { name: "Writer", slug: "writer" },
+  { name: "Politician", slug: "politician" },
+  { name: "Scientist", slug: "scientist" },
+  { name: "TV Host", slug: "tv-host" },
+];
+
 const FamousBirthdays = () => {
   const navigate = useNavigate();
   const [trendingCelebrities, setTrendingCelebrities] = useState<Celebrity[]>([]);
   const [bornToday, setBornToday] = useState<Celebrity[]>([]);
   const [bornTomorrow, setBornTomorrow] = useState<Celebrity[]>([]);
-  const [professions, setProfessions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -94,20 +108,6 @@ const FamousBirthdays = () => {
         console.error("Error fetching tomorrow's birthdays:", tomorrowError);
       } else {
         setBornTomorrow(tomorrowData || []);
-      }
-
-      // Fetch unique professions
-      const { data: professionsData, error: professionsError } = await supabase
-        .from("celebrities")
-        .select("profession")
-        .order("profession");
-
-      if (professionsError) {
-        console.error("Error fetching professions:", professionsError);
-      } else {
-        // Get unique professions
-        const uniqueProfessions = [...new Set(professionsData?.map(c => c.profession) || [])];
-        setProfessions(uniqueProfessions);
       }
     } catch (error) {
       console.error("Error loading celebrities:", error);
@@ -272,28 +272,20 @@ const FamousBirthdays = () => {
               </h2>
             </div>
 
-            {professions.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {professions.map((profession, index) => (
-                  <ScrollFadeIn key={profession} delay={index * 80}>
-                    <Link
-                      to={`/profession/${profession.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center block"
-                    >
-                      <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
-                        {profession}
-                      </h3>
-                    </Link>
-                  </ScrollFadeIn>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-card rounded-2xl shadow-card p-8 text-center">
-                <p className="text-muted-foreground">
-                  Loading professions...
-                </p>
-              </div>
-            )}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {STATIC_PROFESSIONS.map((profession, index) => (
+                <ScrollFadeIn key={profession.slug} delay={index * 80}>
+                  <Link
+                    to={`/profession/${profession.slug}`}
+                    className="group bg-card rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border interactive-element text-center block"
+                  >
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">
+                      {profession.name}
+                    </h3>
+                  </Link>
+                </ScrollFadeIn>
+              ))}
+            </div>
           </section>
 
           {/* Browse by Zodiac Sign */}
