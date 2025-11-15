@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   Table,
   TableBody,
@@ -39,6 +40,7 @@ interface AdminUser {
 
 const TwoFactorManagement = () => {
   const navigate = useNavigate();
+  const { isSuperAdmin, isLoading: roleLoading } = useUserRole();
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -117,13 +119,20 @@ const TwoFactorManagement = () => {
         target_user_id: resetUserId,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's an authorization error
+        if (error.message.includes('Unauthorized')) {
+          toast.error("Only super admins can reset 2FA");
+        } else {
+          toast.error(error.message || "Failed to reset 2FA");
+        }
+        throw error;
+      }
 
       toast.success("2FA reset successfully");
       await fetchAdminUsers();
     } catch (error: any) {
       console.error("Error resetting 2FA:", error);
-      toast.error(error.message || "Failed to reset 2FA");
     } finally {
       setIsResetting(false);
       setResetUserId(null);
@@ -178,7 +187,18 @@ const TwoFactorManagement = () => {
             />
           </div>
 
-          {isLoading ? (
+          {!isSuperAdmin && !roleLoading && (
+            <div className="mb-4 p-4 bg-muted rounded-lg border border-border">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <AlertCircle className="h-5 w-5" />
+                <p className="text-sm">
+                  Only super admins can reset 2FA. You can view the status but cannot perform reset operations.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {isLoading || roleLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
@@ -229,7 +249,7 @@ const TwoFactorManagement = () => {
                             : "Never"}
                         </TableCell>
                         <TableCell className="text-right">
-                          {user.twofa_enrolled && (
+                          {user.twofa_enrolled && isSuperAdmin && (
                             <Button
                               onClick={() => setResetUserId(user.id)}
                               variant="destructive"
@@ -237,6 +257,11 @@ const TwoFactorManagement = () => {
                             >
                               Reset 2FA
                             </Button>
+                          )}
+                          {user.twofa_enrolled && !isSuperAdmin && (
+                            <Badge variant="outline" className="text-muted-foreground">
+                              Super Admin Only
+                            </Badge>
                           )}
                         </TableCell>
                       </TableRow>

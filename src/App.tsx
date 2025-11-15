@@ -30,6 +30,7 @@ const UsageStats = lazy(() => import("./pages/admin/UsageStats"));
 const AuditLogs = lazy(() => import("./pages/admin/AuditLogs"));
 const IPBlocking = lazy(() => import("./pages/admin/IPBlocking"));
 const TwoFactorManagement = lazy(() => import("./pages/admin/TwoFactorManagement"));
+const RoleManagement = lazy(() => import("./pages/admin/RoleManagement"));
 const CelebrityPreview = lazy(() => import("./pages/CelebrityPreview"));
 const CelebrityProfile = lazy(() => import("./pages/CelebrityProfile"));
 const FamousBirthdays = lazy(() => import("./pages/FamousBirthdays"));
@@ -101,6 +102,9 @@ const AnimatedRoutes = () => {
         } />
         <Route path="/admin/2fa-management" element={
           <ProtectedAdminRoute><TwoFactorManagement /></ProtectedAdminRoute>
+        } />
+        <Route path="/admin/role-management" element={
+          <ProtectedAdminRoute><RoleManagement /></ProtectedAdminRoute>
         } />
         <Route path="/admin/security-monitoring" element={
           <ProtectedAdminRoute><SecurityMonitoring /></ProtectedAdminRoute>
