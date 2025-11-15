@@ -68,6 +68,8 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<string>("calculator");
   const [showMorePlanets, setShowMorePlanets] = useState<boolean>(false);
   const [matchingCelebrities, setMatchingCelebrities] = useState<any[]>([]);
+  const [birthdayCardImage, setBirthdayCardImage] = useState<string>("");
+  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
 
   // AI Greetings state
   const [selectedOccasion, setSelectedOccasion] = useState('');
@@ -211,6 +213,85 @@ const Index = () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
+
+  // Generate birthday card function
+  const handleGenerateBirthdayCard = async () => {
+    if (matchingCelebrities.length === 0 || !birthMonth || !birthDay) {
+      toast.error("Please calculate your age first");
+      return;
+    }
+
+    setIsGeneratingCard(true);
+    setBirthdayCardImage("");
+
+    try {
+      const monthName = new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay))
+        .toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
+      const { data, error } = await supabase.functions.invoke('generate-birthday-card', {
+        body: {
+          birthDate: monthName,
+          celebrities: matchingCelebrities.slice(0, 4)
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.imageUrl) {
+        setBirthdayCardImage(data.imageUrl);
+        toast.success("Birthday card generated! 🎉");
+      } else {
+        throw new Error("No image URL received");
+      }
+    } catch (error) {
+      console.error('Error generating birthday card:', error);
+      toast.error("Failed to generate birthday card. Please try again.");
+    } finally {
+      setIsGeneratingCard(false);
+    }
+  };
+
+  // Share or download birthday card
+  const handleShareBirthdayCard = async () => {
+    if (!birthdayCardImage) {
+      toast.error("Please generate the card first");
+      return;
+    }
+
+    try {
+      // Convert base64 to blob
+      const response = await fetch(birthdayCardImage);
+      const blob = await response.blob();
+      const file = new File([blob], 'birthday-matches-aiagecalc.png', { type: 'image/png' });
+
+      // Try Web Share API first
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My Celebrity Birthday Matches',
+          text: 'Check out who I share my birthday with! 🎂✨'
+        });
+        toast.success("Shared successfully!");
+      } else {
+        // Fallback: Download
+        const link = document.createElement('a');
+        link.href = birthdayCardImage;
+        link.download = 'birthday-matches-aiagecalc.png';
+        link.click();
+        toast.success("Card downloaded! Share it on your social media.");
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error('Error sharing card:', error);
+        // Final fallback: download
+        const link = document.createElement('a');
+        link.href = birthdayCardImage;
+        link.download = 'birthday-matches-aiagecalc.png';
+        link.click();
+        toast.success("Card downloaded!");
+      }
+    }
+  };
 
   // Share birthday celebrities function
   const handleShareBirthday = async () => {
@@ -1871,15 +1952,62 @@ const Index = () => {
               ))}
             </div>
 
+            {/* Generated Birthday Card */}
+            {birthdayCardImage && (
+              <div className="mb-6 animate-fade-in">
+                <div className="bg-gradient-to-br from-primary/5 to-accent/10 rounded-xl p-6 border border-primary/20">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 text-center">
+                    Your Shareable Birthday Card
+                  </h3>
+                  <div className="relative max-w-2xl mx-auto rounded-lg overflow-hidden shadow-2xl">
+                    <img 
+                      src={birthdayCardImage} 
+                      alt="Birthday card with matching celebrities" 
+                      className="w-full h-auto"
+                    />
+                  </div>
+                  <div className="mt-4 text-center">
+                    <Button
+                      onClick={handleShareBirthdayCard}
+                      className="gap-2"
+                      size="lg"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download & Share Card
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button
                 variant="default"
                 size="lg"
                 className="gap-2 w-full sm:w-auto"
+                onClick={handleGenerateBirthdayCard}
+                disabled={isGeneratingCard}
+              >
+                {isGeneratingCard ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generating Card...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate Birthday Card
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2 w-full sm:w-auto"
                 onClick={handleShareBirthday}
               >
                 <Share2 className="w-4 h-4" />
-                Share My Celebrity Birthday Matches
+                Share Text Message
               </Button>
               <Button
                 variant="outline"
