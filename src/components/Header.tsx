@@ -346,26 +346,18 @@ const Header = () => {
       <Drawer open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen} direction="right">
         <DrawerContent className="mobile-nav-drawer fixed right-0 top-0 h-full w-[320px] rounded-l-[20px]">
           {/* Fixed Header Section */}
-          <div className="mobile-nav-drawer-header flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-primary" />
-              <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Ai Age Calculator
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <DrawerClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCloseMenu}
-                  className="relative overflow-hidden"
-                >
-                  <X className="h-5 w-5 text-primary" />
-                </Button>
-              </DrawerClose>
-            </div>
+          <div className="mobile-nav-drawer-header flex items-center justify-end gap-2">
+            <ThemeToggle />
+            <DrawerClose asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseMenu}
+                className="relative overflow-hidden"
+              >
+                <X className="h-5 w-5 text-primary" />
+              </Button>
+            </DrawerClose>
           </div>
           
           {/* Scrollable Navigation Content */}
