@@ -212,6 +212,44 @@ const Index = () => {
     };
   }, []);
 
+  // Share birthday celebrities function
+  const handleShareBirthday = async () => {
+    if (matchingCelebrities.length === 0) return;
+
+    const monthName = new Date(2000, parseInt(birthMonth) - 1, parseInt(birthDay)).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    const celebrityNames = matchingCelebrities.slice(0, 3).map(c => c.name).join(', ');
+    const moreCount = matchingCelebrities.length > 3 ? ` and ${matchingCelebrities.length - 3} more` : '';
+    
+    const shareText = `I share my birthday (${monthName}) with ${celebrityNames}${moreCount}! 🎂✨\n\nFind out who you share your birthday with at aiagecalc.com`;
+    const shareUrl = 'https://aiagecalc.com';
+
+    try {
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Celebrity Birthday Matches',
+          text: shareText,
+          url: shareUrl
+        });
+        toast.success("Shared successfully!");
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+        toast.success("Message copied to clipboard! Share it anywhere you like.");
+      }
+    } catch (error) {
+      // If user cancels or error occurs, try clipboard as final fallback
+      if (error instanceof Error && error.name !== 'AbortError') {
+        try {
+          await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+          toast.success("Message copied to clipboard!");
+        } catch (clipboardError) {
+          toast.error("Unable to share. Please try again.");
+        }
+      }
+    }
+  };
+
   // Share or download function
   const handleShareImage = async () => {
     if (!watermarkedGreeting) {
@@ -1833,11 +1871,20 @@ const Index = () => {
               ))}
             </div>
 
-            <div className="text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button
+                variant="default"
+                size="lg"
+                className="gap-2 w-full sm:w-auto"
+                onClick={handleShareBirthday}
+              >
+                <Share2 className="w-4 h-4" />
+                Share My Celebrity Birthday Matches
+              </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors w-full sm:w-auto"
                 onClick={() => {
                   const monthName = new Date(2000, parseInt(birthMonth) - 1, 1)
                     .toLocaleDateString('en-US', { month: 'long' })
