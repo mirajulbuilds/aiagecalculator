@@ -18,6 +18,19 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
   const { addToComparison, isInComparison } = useComparison();
   const inComparison = isInComparison(celebrity.id);
 
+  const calculateAge = (dateOfBirth: string): number => {
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const age = calculateAge(celebrity.date_of_birth);
+
   const handleCompareClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -34,20 +47,10 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           
-          {/* Compare Button */}
-          <Button
-            size="icon"
-            variant={inComparison ? "default" : "outline"}
-            className="absolute top-2 right-2 w-9 h-9 md:w-10 md:h-10 rounded-full shadow-lg backdrop-blur-sm bg-background/90 hover:bg-background z-20 transition-all"
-            onClick={handleCompareClick}
-            title={inComparison ? "Added to comparison" : "Add to comparison"}
-          >
-            {inComparison ? (
-              <Check className="w-4 h-4 md:w-5 md:h-5" />
-            ) : (
-              <Scale className="w-4 h-4 md:w-5 md:h-5" />
-            )}
-          </Button>
+          {/* Age Badge */}
+          <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
+            <span className="text-xs font-semibold text-white">{age} years</span>
+          </div>
         </div>
         <div className="p-4 min-h-24 flex flex-col">
           <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors line-clamp-1">
@@ -56,6 +59,21 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
           <p className="text-sm text-muted-foreground line-clamp-2">{celebrity.profession}</p>
         </div>
       </Link>
+      
+      {/* Compare Button - Outside Link to prevent navigation conflict */}
+      <Button
+        size="icon"
+        variant={inComparison ? "default" : "outline"}
+        className="absolute top-2 right-2 w-9 h-9 md:w-10 md:h-10 rounded-full shadow-lg backdrop-blur-sm bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 z-30 transition-all border-2"
+        onClick={handleCompareClick}
+        title={inComparison ? "Added to comparison" : "Add to comparison"}
+      >
+        {inComparison ? (
+          <Check className="w-4 h-4 md:w-5 md:h-5" />
+        ) : (
+          <Scale className="w-4 h-4 md:w-5 md:h-5" />
+        )}
+      </Button>
     </div>
   );
 };
