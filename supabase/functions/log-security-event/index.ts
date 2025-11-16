@@ -14,10 +14,90 @@ interface SecurityEvent {
   severity?: 'low' | 'medium' | 'high' | 'critical';
 }
 
+// In-memory rate limiter
+const rateLimits = new Map<string, { count: number; resetTime: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const limit = rateLimits.get(ip);
+  
+  // Allow 10 requests per minute per IP
+  if (!limit || now > limit.resetTime) {
+    rateLimits.set(ip, { count: 1, resetTime: now + 60000 });
+    return true;
+  }
+  
+  if (limit.count >= 10) {
+    return false; // Rate limit exceeded
+  }
+  
+  limit.count++;
+  return true;
+}
+
+// Spam detection
+function isSpamPattern(details: Record<string, any>): boolean {
+  const detailsStr = JSON.stringify(details).toLowerCase();
+  
+  // Block common spam indicators
+  const spamKeywords = ['viagra', 'casino', 'lottery', 'prize', 'winner', 'click here'];
+  const hasSpamKeyword = spamKeywords.some(keyword => detailsStr.includes(keyword));
+  
+  // Block excessive URLs (more than 5)
+  const urlCount = (detailsStr.match(/https?:\/\//g) || []).length;
+  const hasExcessiveUrls = urlCount > 5;
+  
+  return hasSpamKeyword || hasExcessiveUrls;
+}
+
+// Input validation
+function validateSecurityEvent(event: SecurityEvent): { valid: boolean; error?: string } {
+  const MAX_DETAILS_SIZE = 5000; // 5KB limit
+  
+  // Validate event type
+  const validEventTypes = ['auth_failure', 'rate_limit', 'csp_violation', 'suspicious_activity'];
+  if (!validEventTypes.includes(event.event_type)) {
+    return { valid: false, error: `Invalid event_type. Must be one of: ${validEventTypes.join(', ')}` };
+  }
+  
+  // Validate severity
+  const validSeverities = ['low', 'medium', 'high', 'critical'];
+  if (event.severity && !validSeverities.includes(event.severity)) {
+    return { valid: false, error: `Invalid severity. Must be one of: ${validSeverities.join(', ')}` };
+  }
+  
+  // Validate details size
+  const detailsSize = JSON.stringify(event.details).length;
+  if (detailsSize > MAX_DETAILS_SIZE) {
+    return { valid: false, error: `Event details too large (${detailsSize} bytes, max ${MAX_DETAILS_SIZE})` };
+  }
+  
+  // Check for spam patterns
+  if (isSpamPattern(event.details)) {
+    return { valid: false, error: 'Spam pattern detected' };
+  }
+  
+  return { valid: true };
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+  
+  const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  
+  // Rate limiting check
+  if (!checkRateLimit(clientIP)) {
+    console.warn(`Rate limit exceeded for IP: ${clientIP}`);
+    return new Response(
+      JSON.stringify({ error: 'Rate limit exceeded. Maximum 10 requests per minute. Try again later.' }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 429,
+      }
+    );
   }
 
   try {
@@ -27,7 +107,6 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get request details
-    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
     const userAgent = req.headers.get('user-agent') || 'unknown';
 
     // Handle CSP violation reports (sent as JSON with different content-type)
@@ -35,7 +114,17 @@ Deno.serve(async (req) => {
         req.headers.get('content-type')?.includes('application/reports+json')) {
       
       const report = await req.json();
-      console.log('CSP Violation Report:', report);
+      console.log('CSP Violation Report received from:', clientIP);
+      
+      // Validate CSP report size (prevent abuse)
+      const reportSize = JSON.stringify(report).length;
+      if (reportSize > 10000) { // 10KB limit for CSP reports
+        console.warn(`CSP report too large from ${clientIP}: ${reportSize} bytes`);
+        return new Response(JSON.stringify({ error: 'Report too large' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        });
+      }
       
       // Extract CSP violation details
       const cspReport = report['csp-report'] || report;
@@ -70,16 +159,17 @@ Deno.serve(async (req) => {
     // Handle regular security events
     const event: SecurityEvent = await req.json();
 
-    // Validate event type
-    const validEventTypes = ['auth_failure', 'rate_limit', 'csp_violation', 'suspicious_activity'];
-    if (!validEventTypes.includes(event.event_type)) {
-      throw new Error(`Invalid event_type. Must be one of: ${validEventTypes.join(', ')}`);
-    }
-
-    // Validate severity
-    const validSeverities = ['low', 'medium', 'high', 'critical'];
-    if (event.severity && !validSeverities.includes(event.severity)) {
-      throw new Error(`Invalid severity. Must be one of: ${validSeverities.join(', ')}`);
+    // Validate event
+    const validation = validateSecurityEvent(event);
+    if (!validation.valid) {
+      console.warn(`Invalid security event from ${clientIP}: ${validation.error}`);
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        }
+      );
     }
 
     // Insert security log
