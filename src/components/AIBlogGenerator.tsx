@@ -27,8 +27,34 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
   const [isSavingBlog, setIsSavingBlog] = useState(false);
 
   const handleGenerateBlog = async () => {
+    // Input validation
     if (!blogTopic.trim()) {
       toast.error("Please enter a blog topic");
+      return;
+    }
+
+    if (blogTopic.length < 10) {
+      toast.error("Blog topic must be at least 10 characters");
+      return;
+    }
+
+    if (blogTopic.length > 500) {
+      toast.error("Blog topic must be less than 500 characters");
+      return;
+    }
+
+    if (blogTitle && blogTitle.length > 200) {
+      toast.error("Blog title must be less than 200 characters");
+      return;
+    }
+
+    if (featuredImageIdea && featuredImageIdea.length > 300) {
+      toast.error("Featured image idea must be less than 300 characters");
+      return;
+    }
+
+    if (inBodyImageIdeas && inBodyImageIdeas.length > 500) {
+      toast.error("In-body image ideas must be less than 500 characters");
       return;
     }
 
@@ -135,12 +161,13 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
             <Textarea
               id="blogTopic"
               value={blogTopic}
-              onChange={(e) => setBlogTopic(e.target.value)}
+              onChange={(e) => setBlogTopic(e.target.value.slice(0, 500))}
               placeholder="e.g., How to calculate your zodiac sign based on your birthday"
               rows={3}
+              maxLength={500}
             />
             <p className="text-sm text-muted-foreground">
-              Describe what you want the blog post to be about. Be specific for better results.
+              Describe what you want the blog post to be about. Be specific for better results. ({blogTopic.length}/500)
             </p>
           </div>
 
@@ -150,11 +177,12 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
               <Input
                 id="blogTitle"
                 value={blogTitle}
-                onChange={(e) => setBlogTitle(e.target.value)}
+                onChange={(e) => setBlogTitle(e.target.value.slice(0, 200))}
                 placeholder="e.g., Understanding Your Zodiac Sign"
+                maxLength={200}
               />
               <p className="text-sm text-muted-foreground">
-                Leave blank to let AI generate an SEO-optimized title.
+                Leave blank to let AI generate an SEO-optimized title. ({blogTitle.length}/200)
               </p>
             </div>
 
@@ -163,11 +191,12 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
               <Input
                 id="featuredImageIdea"
                 value={featuredImageIdea}
-                onChange={(e) => setFeaturedImageIdea(e.target.value)}
+                onChange={(e) => setFeaturedImageIdea(e.target.value.slice(0, 300))}
                 placeholder="e.g., A vibrant zodiac wheel"
+                maxLength={300}
               />
               <p className="text-sm text-muted-foreground">
-                Description for the main blog image.
+                Description for the main blog image. ({featuredImageIdea.length}/300)
               </p>
             </div>
           </div>
@@ -177,11 +206,12 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
             <Input
               id="inBodyImageIdeas"
               value={inBodyImageIdeas}
-              onChange={(e) => setInBodyImageIdeas(e.target.value)}
+              onChange={(e) => setInBodyImageIdeas(e.target.value.slice(0, 500))}
               placeholder="e.g., zodiac wheel diagram, birthday cake, age calculator"
+              maxLength={500}
             />
             <p className="text-sm text-muted-foreground">
-              Describe 2-3 images for the blog body, separated by commas.
+              Describe 2-3 images for the blog body, separated by commas. ({inBodyImageIdeas.length}/500)
             </p>
           </div>
 

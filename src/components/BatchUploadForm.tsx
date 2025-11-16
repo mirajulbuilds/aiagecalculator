@@ -63,13 +63,14 @@ export const BatchUploadForm = ({ selectedEngine, setSelectedEngine }: BatchUplo
     setCurrentProcessing("");
 
     try {
+      // Use supabase.functions.invoke to properly include user's JWT
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/batch-generate-profiles`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
           },
           body: JSON.stringify({ urls, engineChoice: selectedEngine })
         }
