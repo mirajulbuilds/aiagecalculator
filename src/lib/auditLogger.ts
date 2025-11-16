@@ -23,14 +23,14 @@ export const logAdminAction = async (params: AuditLogParams): Promise<void> => {
       return;
     }
 
-    const { error } = await supabase.from('admin_audit_logs').insert({
-      admin_user_id: user.id,
-      action_type: params.action_type,
-      resource_type: params.resource_type,
-      resource_id: params.resource_id,
-      resource_name: params.resource_name,
-      changes: params.changes,
-      user_agent: navigator.userAgent
+    // Call the secure server-side function instead of direct insert
+    const { error } = await supabase.rpc('log_admin_action', {
+      p_action_type: params.action_type,
+      p_resource_type: params.resource_type,
+      p_resource_id: params.resource_id || null,
+      p_resource_name: params.resource_name || null,
+      p_changes: params.changes || null,
+      p_user_agent: navigator.userAgent
     });
 
     if (error) {

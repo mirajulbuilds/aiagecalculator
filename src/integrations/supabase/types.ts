@@ -358,6 +358,17 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_ip_blocked: { Args: { ip_addr: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      log_admin_action: {
+        Args: {
+          p_action_type: string
+          p_changes?: Json
+          p_resource_id?: string
+          p_resource_name?: string
+          p_resource_type: string
+          p_user_agent?: string
+        }
+        Returns: undefined
+      }
       reset_user_2fa: { Args: { target_user_id: string }; Returns: boolean }
     }
     Enums: {
