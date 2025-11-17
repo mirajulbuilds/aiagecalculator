@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
+import { BasicAdminRoute } from "@/components/BasicAdminRoute";
 import { DomainGuard } from "@/components/DomainGuard";
 import { AnimatePresence } from "framer-motion";
 import Header from "./components/Header";
@@ -136,12 +137,12 @@ const AnimatedRoutes = () => {
         } />
         <Route path="/2fa-enrollment" element={
           <DomainGuard>
-            <ProtectedAdminRoute><TwoFactorEnrollment /></ProtectedAdminRoute>
+            <BasicAdminRoute><TwoFactorEnrollment /></BasicAdminRoute>
           </DomainGuard>
         } />
         <Route path="/2fa-verify" element={
           <DomainGuard>
-            <ProtectedAdminRoute><TwoFactorVerification /></ProtectedAdminRoute>
+            <BasicAdminRoute><TwoFactorVerification /></BasicAdminRoute>
           </DomainGuard>
         } />
         <Route path="/security-monitoring-m7n8p9" element={
