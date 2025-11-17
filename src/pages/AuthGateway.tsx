@@ -84,24 +84,55 @@ const AuthGateway = () => {
         toast.success("Login successful");
         
         // Check 2FA enrollment status
-        const { data: statusData, error: statusError } = await supabase.functions.invoke('check-2fa-status');
+        console.log('✅ Login successful, checking 2FA status...');
+        const { data: statusData, error: statusError } = await supabase.functions.invoke('check-2fa-status', {
+          method: 'POST'
+        });
+        
+        console.log('2FA Status Response:', {
+          data: statusData,
+          error: statusError,
+          hasError: !!statusError
+        });
         
         if (statusError) {
-          console.error('Error checking 2FA status:', statusError);
+          console.error('❌ Error checking 2FA status:', statusError);
+          console.error('Error details:', {
+            message: statusError.message,
+            name: statusError.name,
+            context: statusError.context
+          });
+          toast.error('Failed to verify admin status');
           navigate("/system-control-panel-x4y5z6");
           return;
         }
 
+        if (!statusData) {
+          console.error('❌ No data returned from 2FA status check');
+          toast.error('Failed to verify admin status. Redirecting to dashboard...');
+          navigate("/system-control-panel-x4y5z6");
+          return;
+        }
+
+        console.log('✅ 2FA status check result:', {
+          is_admin: statusData?.is_admin,
+          requires_enrollment: statusData?.requires_enrollment,
+          is_enrolled: statusData?.is_enrolled
+        });
+
         if (statusData.is_admin) {
           if (statusData.requires_enrollment) {
             // Admin needs to enroll in 2FA
+            console.log('🔐 Redirecting to 2FA enrollment...');
             navigate("/2fa-enrollment");
           } else {
             // Admin needs to verify 2FA
+            console.log('🔐 Redirecting to 2FA verification...');
             navigate("/2fa-verify");
           }
         } else {
           // Non-admin user
+          console.log('👤 Non-admin user, redirecting to home...');
           navigate("/");
         }
       }
