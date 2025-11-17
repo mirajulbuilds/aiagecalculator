@@ -26,11 +26,24 @@ export const useAdminCheck = () => {
 
         if (error) {
           console.error('Error checking admin status:', error);
+          console.error('Admin check error details:', {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint,
+            userId: session?.user?.id
+          });
           setIsAdmin(false);
           setIsLoading(false);
           navigate('/');
           return;
         }
+
+        console.log('Admin check result:', { 
+          data, 
+          isAdmin: data === true,
+          userId: session?.user?.id 
+        });
 
         setIsAdmin(data === true);
         setIsLoading(false);

@@ -40,10 +40,16 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
       if (!isAdmin || isLoading) return;
 
       try {
+        const { data: { session } } = await supabase.auth.getSession();
         const { data, error } = await supabase.functions.invoke('check-2fa-status');
         
         if (error) {
           console.error('Error checking 2FA status:', error);
+          console.error('2FA check error details:', {
+            message: error.message,
+            isAdmin,
+            userId: session?.user?.id
+          });
           // SECURITY: On error, deny access and force re-authentication
           setTwoFAStatus({ checked: true, enrolled: false, verified: false });
           return;
@@ -66,7 +72,13 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
           verified: isRecentlyVerified || false
         });
       } catch (error) {
-        console.error('Error:', error);
+        const { data: { session } } = await supabase.auth.getSession();
+        console.error('Error checking 2FA status:', error);
+        console.error('2FA check exception details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          isAdmin,
+          userId: session?.user?.id
+        });
         // SECURITY: On error, deny access and force re-authentication
         setTwoFAStatus({ checked: true, enrolled: false, verified: false });
       }
@@ -87,7 +99,14 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
   }
 
   if (!isAdmin) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">Redirecting...</p>
+        </div>
+      </div>
+    );
   }
 
   // Check if admin needs to enroll in 2FA
