@@ -23,15 +23,22 @@ serve(async (req) => {
   try {
     // SECURITY: Validate origin domain
     const origin = req.headers.get('origin') || req.headers.get('referer') || '';
+    console.log('📍 Request origin:', origin);
+    
     let originDomain = '';
     try {
       originDomain = new URL(origin).origin;
-    } catch {
+    } catch (e) {
+      console.warn('Could not parse origin:', origin);
       originDomain = '';
     }
     
-    if (!isAllowedOrigin(originDomain)) {
-      console.error('Blocked request from unauthorized domain:', originDomain);
+    console.log('🔍 Parsed origin domain:', originDomain);
+    console.log('✓ Is allowed?', isAllowedOrigin(originDomain));
+    
+    // Only block if origin exists and doesn't match allowed domains
+    if (origin && originDomain && !isAllowedOrigin(originDomain)) {
+      console.error('❌ Blocked request from unauthorized domain:', originDomain);
       return new Response(
         JSON.stringify({ error: 'Authentication not allowed from this domain' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -68,6 +75,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (!roleData) {
+      console.log('ℹ️ User is not admin, returning non-admin status');
       return new Response(
         JSON.stringify({ 
           is_admin: false,
@@ -87,13 +95,17 @@ serve(async (req) => {
 
     const isEnrolled = twoFAData?.is_enrolled || false;
 
+    const response = {
+      is_admin: true,
+      is_enrolled: isEnrolled,
+      requires_enrollment: !isEnrolled,
+      enrolled_at: twoFAData?.enrolled_at || null
+    };
+
+    console.log('✅ Returning admin status:', response);
+
     return new Response(
-      JSON.stringify({ 
-        is_admin: true,
-        is_enrolled: isEnrolled,
-        requires_enrollment: !isEnrolled,
-        enrolled_at: twoFAData?.enrolled_at || null
-      }),
+      JSON.stringify(response),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
