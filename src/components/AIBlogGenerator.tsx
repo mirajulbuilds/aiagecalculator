@@ -38,8 +38,8 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
       return;
     }
 
-    if (blogTopic.length > 500) {
-      toast.error("Blog topic must be less than 500 characters");
+    if (blogTopic.length > 2500) {
+      toast.error("Blog topic must be less than 2500 characters");
       return;
     }
 
@@ -161,13 +161,13 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
             <Textarea
               id="blogTopic"
               value={blogTopic}
-              onChange={(e) => setBlogTopic(e.target.value.slice(0, 500))}
+              onChange={(e) => setBlogTopic(e.target.value.slice(0, 2500))}
               placeholder="e.g., How to calculate your zodiac sign based on your birthday"
-              rows={3}
-              maxLength={500}
+              rows={6}
+              maxLength={2500}
             />
             <p className="text-sm text-muted-foreground">
-              Describe what you want the blog post to be about. Be specific for better results. ({blogTopic.length}/500)
+              Describe what you want the blog post to be about. Be specific for better results. ({blogTopic.length}/2500)
             </p>
           </div>
 
