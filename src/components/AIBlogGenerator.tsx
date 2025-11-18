@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, Edit3, Calendar, User } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import { logAdminAction } from "@/lib/auditLogger";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DOMPurify from "dompurify";
 
 interface AIBlogGeneratorProps {
   session: Session | null;
@@ -25,6 +27,7 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
   const [generatedBlogData, setGeneratedBlogData] = useState<any>(null);
   const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
   const [isSavingBlog, setIsSavingBlog] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");
 
   const handleGenerateBlog = async () => {
     // Input validation
@@ -229,91 +232,156 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
         {/* Review & Publish Section */}
         {generatedBlogData && (
           <div className="space-y-6 pt-6 border-t">
-            <h3 className="text-xl font-semibold text-foreground">
-              Review & Publish
-            </h3>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Title</Label>
-                <Input
-                  value={generatedBlogData.title}
-                  onChange={(e) => setGeneratedBlogData({...generatedBlogData, title: e.target.value})}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Slug</Label>
-                <Input
-                  value={generatedBlogData.slug}
-                  onChange={(e) => setGeneratedBlogData({...generatedBlogData, slug: e.target.value})}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Meta Title</Label>
-                <Input
-                  value={generatedBlogData.meta_title}
-                  onChange={(e) => setGeneratedBlogData({...generatedBlogData, meta_title: e.target.value})}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Meta Description</Label>
-                <Textarea
-                  value={generatedBlogData.meta_description}
-                  onChange={(e) => setGeneratedBlogData({...generatedBlogData, meta_description: e.target.value})}
-                  rows={3}
-                />
-              </div>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-foreground">
+                Review & Publish
+              </h3>
+              <Tabs value={previewMode} onValueChange={(v) => setPreviewMode(v as "edit" | "preview")}>
+                <TabsList>
+                  <TabsTrigger value="edit" className="flex items-center gap-2">
+                    <Edit3 className="w-4 h-4" />
+                    Edit
+                  </TabsTrigger>
+                  <TabsTrigger value="preview" className="flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
+                    Preview
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
 
-            {/* Featured Image Display */}
-            {generatedBlogData.featured_image_url && (
-              <div className="space-y-2">
-                <Label>Featured Image</Label>
-                <div className="border rounded-lg p-4 bg-muted">
-                  <img
-                    src={generatedBlogData.featured_image_url}
-                    alt="Featured"
-                    className="w-full max-w-md mx-auto rounded-lg"
+            {previewMode === "edit" ? (
+              <>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Title</Label>
+                    <Input
+                      value={generatedBlogData.title}
+                      onChange={(e) => setGeneratedBlogData({...generatedBlogData, title: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Slug</Label>
+                    <Input
+                      value={generatedBlogData.slug}
+                      onChange={(e) => setGeneratedBlogData({...generatedBlogData, slug: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Meta Title</Label>
+                    <Input
+                      value={generatedBlogData.meta_title}
+                      onChange={(e) => setGeneratedBlogData({...generatedBlogData, meta_title: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Meta Description</Label>
+                    <Textarea
+                      value={generatedBlogData.meta_description}
+                      onChange={(e) => setGeneratedBlogData({...generatedBlogData, meta_description: e.target.value})}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                {/* Featured Image Display */}
+                {generatedBlogData.featured_image_url && (
+                  <div className="space-y-2">
+                    <Label>Featured Image</Label>
+                    <div className="border rounded-lg p-4 bg-muted">
+                      <img
+                        src={generatedBlogData.featured_image_url}
+                        alt="Featured"
+                        className="w-full max-w-md mx-auto rounded-lg"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Body Images Display */}
+                {generatedBlogData.body_images_data && generatedBlogData.body_images_data.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>In-Body Images ({generatedBlogData.body_images_data.length})</Label>
+                    <div className="grid gap-4 md:grid-cols-3">
+                      {generatedBlogData.body_images_data.map((img: any, idx: number) => (
+                        <div key={idx} className="border rounded-lg p-3 bg-muted space-y-2">
+                          <img
+                            src={img.url}
+                            alt={img.description}
+                            className="w-full rounded"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            <strong>Placement:</strong> {img.placement}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {img.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Content Editor */}
+                <div className="space-y-2">
+                  <Label>Article Content</Label>
+                  <RichTextEditor
+                    value={generatedBlogData.main_content}
+                    onChange={(value) => setGeneratedBlogData({...generatedBlogData, main_content: value})}
                   />
                 </div>
-              </div>
-            )}
-
-            {/* Body Images Display */}
-            {generatedBlogData.body_images_data && generatedBlogData.body_images_data.length > 0 && (
-              <div className="space-y-2">
-                <Label>In-Body Images ({generatedBlogData.body_images_data.length})</Label>
-                <div className="grid gap-4 md:grid-cols-3">
-                  {generatedBlogData.body_images_data.map((img: any, idx: number) => (
-                    <div key={idx} className="border rounded-lg p-3 bg-muted space-y-2">
-                      <img
-                        src={img.url}
-                        alt={img.description}
-                        className="w-full rounded"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        <strong>Placement:</strong> {img.placement}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {img.description}
-                      </p>
+              </>
+            ) : (
+              /* Preview Mode */
+              <Card className="overflow-hidden border-2">
+                {generatedBlogData.featured_image_url && (
+                  <div className="aspect-[21/9] overflow-hidden">
+                    <img 
+                      src={generatedBlogData.featured_image_url} 
+                      alt={generatedBlogData.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="p-8 md:p-12">
+                  <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    {generatedBlogData.title}
+                  </h1>
+                  
+                  <div className="flex flex-wrap gap-4 mb-8 text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm">{new Date().toLocaleDateString()}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">AI Age Calculator Team</span>
+                    </div>
+                  </div>
 
-            {/* Content Editor */}
-            <div className="space-y-2">
-              <Label>Article Content</Label>
-              <RichTextEditor
-                value={generatedBlogData.main_content}
-                onChange={(value) => setGeneratedBlogData({...generatedBlogData, main_content: value})}
-              />
-            </div>
+                  <div 
+                    className="prose prose-lg max-w-none dark:prose-invert
+                      prose-headings:font-bold prose-headings:text-foreground
+                      prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4
+                      prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-3
+                      prose-p:text-foreground/90 prose-p:leading-relaxed
+                      prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                      prose-strong:text-foreground prose-strong:font-semibold
+                      prose-ul:text-foreground/90 prose-ol:text-foreground/90
+                      prose-li:marker:text-primary
+                      prose-blockquote:border-l-primary prose-blockquote:text-foreground/80
+                      prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                      prose-img:rounded-lg prose-img:shadow-lg"
+                    dangerouslySetInnerHTML={{ 
+                      __html: DOMPurify.sanitize(generatedBlogData.main_content) 
+                    }}
+                  />
+                </div>
+              </Card>
+            )}
 
             {/* Save Button */}
             <Button
