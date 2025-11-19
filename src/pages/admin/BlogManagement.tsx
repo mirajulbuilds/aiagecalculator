@@ -61,7 +61,7 @@ const BlogManagement = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft" | "scheduled">("all");
   const [isLoading, setIsLoading] = useState(true);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -99,9 +99,11 @@ const BlogManagement = () => {
 
     // Status filter
     if (statusFilter === "published") {
-      filtered = filtered.filter((post) => post.published_at !== null);
+      filtered = filtered.filter((post) => post.published_at !== null && new Date(post.published_at) <= new Date());
     } else if (statusFilter === "draft") {
       filtered = filtered.filter((post) => post.published_at === null);
+    } else if (statusFilter === "scheduled") {
+      filtered = filtered.filter((post) => post.published_at !== null && new Date(post.published_at) > new Date());
     }
 
     // Search filter
@@ -198,7 +200,7 @@ const BlogManagement = () => {
 
       await logAdminAction({
         action_type: "delete",
-        resource_type: "celebrity",
+        resource_type: "blog_post",
         resource_id: postToDelete.id,
         resource_name: postToDelete.title,
         changes: {
@@ -476,6 +478,7 @@ const BlogManagement = () => {
                       <SelectItem value="all">All Posts</SelectItem>
                       <SelectItem value="published">Published</SelectItem>
                       <SelectItem value="draft">Drafts</SelectItem>
+                      <SelectItem value="scheduled">Scheduled</SelectItem>
                     </SelectContent>
                   </Select>
                   
@@ -536,16 +539,27 @@ const BlogManagement = () => {
                               </div>
                             </TableCell>
                             <TableCell>
-                              {post.published_at ? (
+                              {!post.published_at ? (
+                                <Badge variant="secondary">Draft</Badge>
+                              ) : new Date(post.published_at) > new Date() ? (
+                                <Badge variant="outline" className="border-blue-500 text-blue-500">
+                                  Scheduled
+                                </Badge>
+                              ) : (
                                 <Badge variant="default" className="bg-green-500">
                                   Published
                                 </Badge>
-                              ) : (
-                                <Badge variant="secondary">Draft</Badge>
                               )}
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              {format(new Date(post.created_at), "MMM d, yyyy")}
+                              {post.published_at && new Date(post.published_at) > new Date() ? (
+                                <div>
+                                  <div className="text-xs">Scheduled for:</div>
+                                  <div>{format(new Date(post.published_at), "MMM d, yyyy h:mm a")}</div>
+                                </div>
+                              ) : (
+                                <div>{format(new Date(post.created_at), "MMM d, yyyy")}</div>
+                              )}
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-2">

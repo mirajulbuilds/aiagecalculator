@@ -8,11 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Eye, Edit3, Calendar, User } from "lucide-react";
+import { Loader2, Eye, Edit3, Calendar as CalendarIcon, User, FileText, Clock } from "lucide-react";
 import RichTextEditor from "@/components/RichTextEditor";
 import { logAdminAction } from "@/lib/auditLogger";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 import DOMPurify from "dompurify";
+import { cn } from "@/lib/utils";
 
 interface AIBlogGeneratorProps {
   session: Session | null;
@@ -28,6 +32,8 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
   const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
   const [isSavingBlog, setIsSavingBlog] = useState(false);
   const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");
+  const [publicationMode, setPublicationMode] = useState<"immediate" | "draft" | "scheduled">("immediate");
+  const [scheduledDate, setScheduledDate] = useState<Date>();
 
   const handleGenerateBlog = async () => {
     // Input validation
@@ -91,8 +97,29 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
       return;
     }
 
+    // Validate scheduled date if scheduling
+    if (publicationMode === "scheduled") {
+      if (!scheduledDate) {
+        toast.error("Please select a scheduled date");
+        return;
+      }
+      if (scheduledDate < new Date()) {
+        toast.error("Scheduled date must be in the future");
+        return;
+      }
+    }
+
     setIsSavingBlog(true);
     try {
+      // Determine published_at value based on publication mode
+      let publishedAt: string | null = null;
+      if (publicationMode === "immediate") {
+        publishedAt = new Date().toISOString();
+      } else if (publicationMode === "scheduled") {
+        publishedAt = scheduledDate!.toISOString();
+      }
+      // For draft mode, publishedAt stays null
+
       const { error } = await supabase
         .from('blog_posts')
         .insert({
@@ -104,25 +131,32 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
           featured_image_url: generatedBlogData.featured_image_url,
           body_images_data: generatedBlogData.body_images_data || [],
           author_id: session.user.id,
-          published_at: new Date().toISOString()
+          published_at: publishedAt
         });
 
       if (error) throw error;
 
       await logAdminAction({
         action_type: 'create',
-        resource_type: 'celebrity',
+        resource_type: 'blog_post',
         resource_id: undefined,
         resource_name: generatedBlogData.title,
-        changes: { after: { title: generatedBlogData.title, slug: generatedBlogData.slug } }
+        changes: { after: { title: generatedBlogData.title, slug: generatedBlogData.slug, publication_mode: publicationMode } }
       });
 
-      toast.success("Blog post published successfully!");
+      const successMessage = 
+        publicationMode === "draft" ? "Blog post saved as draft!" :
+        publicationMode === "scheduled" ? `Blog post scheduled for ${format(scheduledDate!, "PPP 'at' p")}` :
+        "Blog post published successfully!";
+
+      toast.success(successMessage);
       setGeneratedBlogData(null);
       setBlogTopic("");
       setBlogTitle("");
       setFeaturedImageIdea("");
       setInBodyImageIdeas("");
+      setPublicationMode("immediate");
+      setScheduledDate(undefined);
     } catch (error: any) {
       console.error("Save error:", error);
       toast.error(error.message || "Failed to save blog post");
@@ -383,16 +417,98 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
               </Card>
             )}
 
-            {/* Save Button */}
-            <Button
-              onClick={handleSaveBlog}
-              disabled={isSavingBlog}
-              size="lg"
-              className="w-full"
-            >
-              {isSavingBlog && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save & Publish Blog Post
-            </Button>
+            {/* Publication Options */}
+            <Card className="border-2">
+              <CardHeader>
+                <CardTitle className="text-lg">Publication Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="publicationMode">Publication Mode</Label>
+                  <Select value={publicationMode} onValueChange={(v: any) => setPublicationMode(v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose publication mode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="immediate">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          <span>Publish Immediately</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="draft">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          <span>Save as Draft</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="scheduled">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>Schedule for Later</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {publicationMode === "scheduled" && (
+                  <div className="space-y-2">
+                    <Label>Schedule Date & Time</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !scheduledDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {scheduledDate ? format(scheduledDate, "PPP 'at' p") : "Pick a date and time"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={scheduledDate}
+                          onSelect={setScheduledDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                        <div className="p-3 border-t">
+                          <Label className="text-xs text-muted-foreground mb-2 block">Time</Label>
+                          <Input
+                            type="time"
+                            value={scheduledDate ? format(scheduledDate, "HH:mm") : ""}
+                            onChange={(e) => {
+                              if (scheduledDate && e.target.value) {
+                                const [hours, minutes] = e.target.value.split(':');
+                                const newDate = new Date(scheduledDate);
+                                newDate.setHours(parseInt(hours), parseInt(minutes));
+                                setScheduledDate(newDate);
+                              }
+                            }}
+                          />
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSaveBlog}
+                  disabled={isSavingBlog || (publicationMode === "scheduled" && !scheduledDate)}
+                  size="lg"
+                  className="w-full"
+                >
+                  {isSavingBlog && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {publicationMode === "draft" && "Save as Draft"}
+                  {publicationMode === "scheduled" && "Schedule Blog Post"}
+                  {publicationMode === "immediate" && "Publish Now"}
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         )}
       </CardContent>
