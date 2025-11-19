@@ -56,6 +56,7 @@ const SecurityMonitoring = lazy(() => import("./pages/SecurityMonitoring"));
 const TwoFactorEnrollment = lazy(() => import("./pages/TwoFactorEnrollment"));
 const TwoFactorVerification = lazy(() => import("./pages/TwoFactorVerification"));
 const BlogManagement = lazy(() => import("./pages/admin/BlogManagement"));
+const CelebrityProfilesManager = lazy(() => import("./pages/admin/CelebrityProfilesManager"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -95,9 +96,14 @@ const AnimatedRoutes = () => {
             <ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>
           </DomainGuard>
         } />
-        <Route path="/admin/celebrity-management" element={
+        <Route path="/system-control-panel-x4y5z6" element={
           <DomainGuard>
             <ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>
+          </DomainGuard>
+        } />
+        <Route path="/manage-profiles" element={
+          <DomainGuard>
+            <ProtectedAdminRoute><CelebrityProfilesManager /></ProtectedAdminRoute>
           </DomainGuard>
         } />
         <Route path="/admin/usage-stats" element={

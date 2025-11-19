@@ -26,7 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CalendarIcon, Loader2, Trash2, Upload, ArrowLeft } from "lucide-react";
+import { CalendarIcon, Loader2, Trash2, Upload, ArrowLeft, Users } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -86,12 +86,6 @@ const AdminPanel = () => {
   const [sourceType, setSourceType] = useState<string>("famousbirthdays");
   const [profileUrl, setProfileUrl] = useState<string>("");
   const [selectedEngine, setSelectedEngine] = useState<string>("lovable-ai");
-
-  // All Profiles Data Table state
-  const [allProfiles, setAllProfiles] = useState<CelebrityData[]>([]);
-  const [filteredProfiles, setFilteredProfiles] = useState<CelebrityData[]>([]);
-  const [tableSearchQuery, setTableSearchQuery] = useState<string>("");
-  const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
   
   // Delete confirmation state
   const [profileToDelete, setProfileToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -526,135 +520,13 @@ const AdminPanel = () => {
     toast.info("Profile generation cancelled");
   };
 
-  // Fetch all celebrity profiles on mount
-  const fetchAllProfiles = async () => {
-    setIsLoadingProfiles(true);
-    try {
-      const { data, error } = await supabase
-        .from("celebrities")
-        .select("*")
-        .order("name");
-
-      if (error) {
-        console.error("Error fetching profiles:", error);
-        toast.error("Failed to load celebrity profiles");
-        return;
-      }
-
-      setAllProfiles(data || []);
-      setFilteredProfiles(data || []);
-    } catch (error) {
-      console.error("Error loading profiles:", error);
-      toast.error("An unexpected error occurred");
-    } finally {
-      setIsLoadingProfiles(false);
-    }
-  };
-
-  // Filter profiles based on search query
-  useEffect(() => {
-    if (!tableSearchQuery.trim()) {
-      setFilteredProfiles(allProfiles);
-      return;
-    }
-
-    const query = tableSearchQuery.toLowerCase();
-    const filtered = allProfiles.filter(profile => 
-      profile.name.toLowerCase().includes(query) ||
-      profile.profession.toLowerCase().includes(query) ||
-      profile.profile_slug.toLowerCase().includes(query)
-    );
-    setFilteredProfiles(filtered);
-  }, [tableSearchQuery, allProfiles]);
-
-  // Load all profiles when Manual Editor tab is active
-  useEffect(() => {
-    if (activeTab === "manual" && allProfiles.length === 0) {
-      fetchAllProfiles();
-    }
-  }, [activeTab]);
-
-  const handleLoadProfile = (profile: CelebrityData) => {
-    // Populate all form fields with the loaded profile data
-    setValue("name", profile.name);
-    setValue("profileSlug", profile.profile_slug);
-    setValue("mainContent", profile.main_content);
-    setValue("metaTitle", profile.meta_title);
-    setValue("metaDescription", profile.meta_description);
-    setValue("profession", profile.profession);
-    setValue("placeOfBirth", profile.place_of_birth || "");
-    setValue("dateOfBirth", new Date(profile.date_of_birth));
-    
-    // Set profile image
-    setImagePreview(profile.profile_image_url);
-    
-    // Set additional fields
-    setZodiacSign(profile.zodiac_sign || "");
-    setPopularityRanks(profile.popularity_ranks || null);
-    setKnownForData(profile.known_for_data ? JSON.stringify(profile.known_for_data, null, 2) : "");
-    setFaceEmbedding(profile.face_embedding ? JSON.stringify(profile.face_embedding, null, 2) : "");
-    
-    toast.success(`Loaded profile: ${profile.name}`);
-    
-    // Scroll to form
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  };
-
-  const handleDeleteProfile = async () => {
-    if (!profileToDelete) return;
-    
-    // Get profile data before deletion for audit log
-    const profileData = allProfiles.find(p => p.id === profileToDelete.id);
-
-    setIsDeleting(true);
-    
-    try {
-      const { error } = await supabase
-        .from("celebrities")
-        .delete()
-        .eq("id", profileToDelete.id);
-
-      if (error) {
-        console.error("Delete error:", error);
-        toast.error("Failed to delete profile: " + error.message);
-        return;
-      }
-
-      // Log deletion to audit logs
-      await logAdminAction({
-        action_type: 'delete',
-        resource_type: 'celebrity',
-        resource_id: profileToDelete.id,
-        resource_name: profileToDelete.name,
-        changes: {
-          before: profileData,
-          after: null
-        }
-      });
-
-      toast.success(`Profile "${profileToDelete.name}" has been permanently deleted`);
-      
-      // Remove from all profiles list
-      setAllProfiles(allProfiles.filter(p => p.id !== profileToDelete.id));
-      setFilteredProfiles(filteredProfiles.filter(p => p.id !== profileToDelete.id));
-      
-      // Close modal and clear state
-      setProfileToDelete(null);
-    } catch (error) {
-      console.error("Error deleting profile:", error);
-      toast.error("An unexpected error occurred while deleting");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col gap-4 mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate('/system-control-panel-x4y5z6')}
+            onClick={() => navigate('/dashboard-admin-x7y8z9')}
             className="self-start"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -663,6 +535,25 @@ const AdminPanel = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
             Celebrity Profile Content Engine
           </h1>
+        </div>
+
+        {/* Navigation to Profile Manager */}
+        <div 
+          className="mb-6 cursor-pointer rounded-lg border-2 border-primary/20 bg-card p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/50"
+          onClick={() => navigate('/manage-profiles')}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-foreground">Manage All Profiles</h2>
+                <p className="text-sm text-muted-foreground">View, search, edit, and delete existing celebrity profiles</p>
+              </div>
+            </div>
+            <ArrowLeft className="h-5 w-5 text-muted-foreground rotate-180" />
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -779,137 +670,6 @@ const AdminPanel = () => {
 
           {/* TAB 4: MANUAL EDITOR / REVIEW DRAFTS */}
           <TabsContent value="manual" className="space-y-6">
-            {/* ALL PROFILES DATA TABLE */}
-            <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4">
-              <h2 className="text-2xl font-semibold text-foreground">
-                Manage All Celebrity Profiles
-              </h2>
-              
-              {/* Search Bar */}
-              <div className="flex gap-3 items-end">
-                <div className="flex-1">
-                  <Label htmlFor="tableSearch">Search Profiles</Label>
-                  <Input
-                    id="tableSearch"
-                    type="text"
-                    value={tableSearchQuery}
-                    onChange={(e) => setTableSearchQuery(e.target.value)}
-                    placeholder="Search by name, profession, or slug..."
-                    className="max-w-sm"
-                  />
-                </div>
-                <Button
-                  type="button"
-                  onClick={fetchAllProfiles}
-                  variant="outline"
-                  size="sm"
-                >
-                  Refresh
-                </Button>
-              </div>
-
-              {/* Loading State */}
-              {isLoadingProfiles && (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              )}
-
-              {/* Data Table */}
-              {!isLoadingProfiles && (
-                <div className="rounded-md border">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b bg-muted/50">
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                            Image
-                          </th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                            Name
-                          </th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                            Profession
-                          </th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                            Date of Birth
-                          </th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                            Slug
-                          </th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredProfiles.length === 0 ? (
-                          <tr>
-                            <td colSpan={6} className="h-24 text-center text-muted-foreground">
-                              {tableSearchQuery ? "No profiles match your search." : "No profiles found."}
-                            </td>
-                          </tr>
-                        ) : (
-                          filteredProfiles.map((profile) => (
-                            <tr key={profile.id} className="border-b transition-colors hover:bg-muted/50">
-                              <td className="p-4 align-middle">
-                                <img 
-                                  src={profile.profile_image_url} 
-                                  alt={profile.name}
-                                  className="h-12 w-12 rounded-full object-cover"
-                                />
-                              </td>
-                              <td className="p-4 align-middle font-medium">
-                                {profile.name}
-                              </td>
-                              <td className="p-4 align-middle text-muted-foreground">
-                                {profile.profession}
-                              </td>
-                              <td className="p-4 align-middle text-muted-foreground">
-                                {new Date(profile.date_of_birth).toLocaleDateString()}
-                              </td>
-                              <td className="p-4 align-middle text-sm text-muted-foreground">
-                                {profile.profile_slug}
-                              </td>
-                              <td className="p-4 align-middle">
-                                <div className="flex gap-2">
-                                  <Button
-                                    type="button"
-                                    onClick={() => handleLoadProfile(profile)}
-                                    variant="default"
-                                    size="sm"
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    onClick={() => setProfileToDelete({ id: profile.id, name: profile.name })}
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                  
-                  {/* Results Count */}
-                  {filteredProfiles.length > 0 && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/50">
-                      <p className="text-sm text-muted-foreground">
-                        Showing {filteredProfiles.length} of {allProfiles.length} profile(s)
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="p-6 border border-border rounded-lg bg-card space-y-6">
@@ -1138,34 +898,6 @@ const AdminPanel = () => {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Permanent Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to permanently delete this profile? This action cannot be undone.
-              {profileToDelete && (
-                <span className="block mt-2 font-semibold text-foreground">
-                  You are about to delete: {profileToDelete.name}
-                </span>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteProfile}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Yes, Delete Permanently
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Duplicate Warning Modal */}
       <AlertDialog open={duplicateWarning.show} onOpenChange={(open) => !open && handleCancelDuplicateWarning()}>
