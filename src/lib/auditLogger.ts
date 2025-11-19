@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface AuditLogParams {
   action_type: 'create' | 'update' | 'delete' | 'role_change';
-  resource_type: 'celebrity' | 'user_role';
+  resource_type: 'celebrity' | 'user_role' | 'blog_post';
   resource_id?: string;
   resource_name?: string;
   changes?: {
