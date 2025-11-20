@@ -359,6 +359,24 @@ All colors MUST be HSL.
     flex: 0 0 auto;
   }
   
+  /* Mobile Tab Bar Styling - Slimmer and More Compact */
+  @media (max-width: 767px) {
+    /* Reduce height of tabs list container */
+    [role="tablist"] {
+      height: 36px !important;
+      min-height: 36px !important;
+      padding: 4px !important;
+    }
+    
+    /* Reduce padding on individual tab triggers */
+    [role="tab"] {
+      padding: 6px 12px !important;
+      font-size: 0.875rem !important;
+      min-height: 28px !important;
+      height: 28px !important;
+    }
+  }
+  
   /* Celebrity Profile CSS Grid Layout */
   .profile-layout-container {
     display: grid;
