@@ -152,7 +152,7 @@ const AdminDashboard = () => {
       title: "Celebrity Profile Content Engine",
       description: "Create, edit, and manage celebrity profiles",
       icon: <Users className="h-8 w-8 text-primary" />,
-      link: "/admin/celebrity-management",
+      link: "/manage-profiles",
       stat: stats.totalProfiles,
       statLabel: "Total Profiles",
     },
