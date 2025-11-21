@@ -50,7 +50,7 @@ serve(async (req) => {
       );
     }
 
-    const { topic, title, featured_image_idea, in_body_image_ideas, engine_choice } = await req.json();
+    const { topic, title, featured_image_idea, in_body_image_1, in_body_image_2, in_body_image_3, engine_choice } = await req.json();
     
     console.log("Generating blog post for topic:", topic, "using engine:", engine_choice);
 
@@ -227,48 +227,53 @@ Return ONLY a JSON object with this exact structure:
 
     // Step 3: Generate in-body images if requested (only with Lovable AI)
     const generatedBodyImagesData: Array<{url: string; placement: string; description: string}> = [];
-    if (in_body_image_ideas && in_body_image_ideas.trim() && !useGeminiDirect) {
-      const imageIdeas = in_body_image_ideas.split(',').map((idea: string) => idea.trim()).filter(Boolean);
-      console.log("Generating", imageIdeas.length, "body images");
+    if (!useGeminiDirect) {
+      const imageIdeas = [in_body_image_1, in_body_image_2, in_body_image_3]
+        .filter(idea => idea && idea.trim())
+        .map(idea => idea.trim());
+      
+      if (imageIdeas.length > 0) {
+        console.log("Generating", imageIdeas.length, "body images");
 
-      for (let i = 0; i < Math.min(imageIdeas.length, 3); i++) {
-        const idea = imageIdeas[i];
-        
-        try {
-          const bodyImagePrompt = `Create a relevant, high-quality image for a blog post about ${topic}. ${idea}. Professional, clear, and visually engaging.`;
+        for (let i = 0; i < imageIdeas.length; i++) {
+          const idea = imageIdeas[i];
           
-          const bodyImageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-2.5-flash-image-preview",
-              messages: [
-                { role: "user", content: bodyImagePrompt }
-              ],
-              modalities: ["image", "text"]
-            }),
-          });
-
-          if (bodyImageResponse.ok) {
-            const bodyImageData = await bodyImageResponse.json();
-            const bodyImageUrl = bodyImageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+          try {
+            const bodyImagePrompt = `Create a relevant, high-quality image for a blog post about ${topic}. ${idea}. Professional, clear, and visually engaging.`;
             
-            if (bodyImageUrl) {
-              // Suggest placement based on index
-              const placements = ['after_h2_1', 'after_h2_2', 'after_h2_3'];
-              generatedBodyImagesData.push({
-                url: bodyImageUrl,
-                placement: placements[i] || `after_h2_${i + 1}`,
-                description: idea
-              });
-              console.log(`Body image ${i + 1} generated successfully`);
+            const bodyImageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: "google/gemini-2.5-flash-image-preview",
+                messages: [
+                  { role: "user", content: bodyImagePrompt }
+                ],
+                modalities: ["image", "text"]
+              }),
+            });
+
+            if (bodyImageResponse.ok) {
+              const bodyImageData = await bodyImageResponse.json();
+              const bodyImageUrl = bodyImageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+              
+              if (bodyImageUrl) {
+                // Suggest placement based on index
+                const placements = ['after_h2_1', 'after_h2_2', 'after_h2_3'];
+                generatedBodyImagesData.push({
+                  url: bodyImageUrl,
+                  placement: placements[i] || `after_h2_${i + 1}`,
+                  description: idea
+                });
+                console.log(`Body image ${i + 1} generated successfully`);
+              }
             }
+          } catch (error) {
+            console.warn(`Failed to generate body image ${i + 1}:`, error);
           }
-        } catch (error) {
-          console.warn(`Failed to generate body image ${i + 1}:`, error);
         }
       }
     }
