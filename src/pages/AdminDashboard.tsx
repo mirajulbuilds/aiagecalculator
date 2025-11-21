@@ -157,12 +157,10 @@ const AdminDashboard = () => {
       statLabel: "Total Profiles",
     },
     {
-      title: "Security Monitoring",
-      description: "Monitor security events, rate limits, and suspicious activity",
-      icon: <Shield className="h-8 w-8 text-primary" />,
-      link: "/admin/security-monitoring",
-      stat: stats.securityEvents24h,
-      statLabel: "Events (24h)",
+      title: "Blog Posts Management",
+      description: "View, edit, and manage all published blog posts",
+      icon: <FileText className="h-8 w-8 text-primary" />,
+      link: "/admin/blog-management",
     },
     {
       title: "Usage Statistics",
@@ -173,16 +171,18 @@ const AdminDashboard = () => {
       statLabel: "API Calls Today",
     },
     {
+      title: "Security Monitoring",
+      description: "Monitor security events, rate limits, and suspicious activity",
+      icon: <Shield className="h-8 w-8 text-primary" />,
+      link: "/admin/security-monitoring",
+      stat: stats.securityEvents24h,
+      statLabel: "Events (24h)",
+    },
+    {
       title: "Audit Logs",
       description: "Review admin actions and system changes",
       icon: <ScrollText className="h-8 w-8 text-primary" />,
       link: "/admin/audit-logs",
-    },
-    {
-      title: "2FA Management",
-      description: "Manage two-factor authentication settings",
-      icon: <Key className="h-8 w-8 text-primary" />,
-      link: "/admin/2fa-management",
     },
     {
       title: "IP Blocking",
@@ -193,10 +193,10 @@ const AdminDashboard = () => {
       statLabel: "Active Blocks",
     },
     {
-      title: "Blog Posts Management",
-      description: "View, edit, and manage all published blog posts",
-      icon: <FileText className="h-8 w-8 text-primary" />,
-      link: "/admin/blog-management",
+      title: "2FA Management",
+      description: "Manage two-factor authentication settings",
+      icon: <Key className="h-8 w-8 text-primary" />,
+      link: "/admin/2fa-management",
     },
   ];
 
