@@ -26,7 +26,9 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
   const [blogTopic, setBlogTopic] = useState<string>("");
   const [blogTitle, setBlogTitle] = useState<string>("");
   const [featuredImageIdea, setFeaturedImageIdea] = useState<string>("");
-  const [inBodyImageIdeas, setInBodyImageIdeas] = useState<string>("");
+  const [inBodyImage1Idea, setInBodyImage1Idea] = useState<string>("");
+  const [inBodyImage2Idea, setInBodyImage2Idea] = useState<string>("");
+  const [inBodyImage3Idea, setInBodyImage3Idea] = useState<string>("");
   const [aiEngine, setAiEngine] = useState<string>("lovable");
   const [generatedBlogData, setGeneratedBlogData] = useState<any>(null);
   const [isGeneratingBlog, setIsGeneratingBlog] = useState(false);
@@ -62,8 +64,18 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
       return;
     }
 
-    if (inBodyImageIdeas && inBodyImageIdeas.length > 500) {
-      toast.error("In-body image ideas must be less than 500 characters");
+    if (inBodyImage1Idea && inBodyImage1Idea.length > 300) {
+      toast.error("In-body image 1 idea must be less than 300 characters");
+      return;
+    }
+
+    if (inBodyImage2Idea && inBodyImage2Idea.length > 300) {
+      toast.error("In-body image 2 idea must be less than 300 characters");
+      return;
+    }
+
+    if (inBodyImage3Idea && inBodyImage3Idea.length > 300) {
+      toast.error("In-body image 3 idea must be less than 300 characters");
       return;
     }
 
@@ -74,7 +86,9 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
           topic: blogTopic,
           title: blogTitle,
           featured_image_idea: featuredImageIdea,
-          in_body_image_ideas: inBodyImageIdeas,
+          in_body_image_1: inBodyImage1Idea,
+          in_body_image_2: inBodyImage2Idea,
+          in_body_image_3: inBodyImage3Idea,
           engine_choice: aiEngine
         }
       });
@@ -154,7 +168,9 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
       setBlogTopic("");
       setBlogTitle("");
       setFeaturedImageIdea("");
-      setInBodyImageIdeas("");
+      setInBodyImage1Idea("");
+      setInBodyImage2Idea("");
+      setInBodyImage3Idea("");
       setPublicationMode("immediate");
       setScheduledDate(undefined);
     } catch (error: any) {
@@ -194,6 +210,20 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="blogTitle">Blog Title (Optional)</Label>
+            <Input
+              id="blogTitle"
+              value={blogTitle}
+              onChange={(e) => setBlogTitle(e.target.value.slice(0, 200))}
+              placeholder="e.g., Understanding Your Zodiac Sign"
+              maxLength={200}
+            />
+            <p className="text-sm text-muted-foreground">
+              Leave blank to let AI generate an SEO-optimized title. ({blogTitle.length}/200)
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="blogTopic">Blog Topic / Main Idea *</Label>
             <Textarea
               id="blogTopic"
@@ -208,47 +238,64 @@ export const AIBlogGenerator = ({ session }: AIBlogGeneratorProps) => {
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="blogTitle">Title (Optional)</Label>
-              <Input
-                id="blogTitle"
-                value={blogTitle}
-                onChange={(e) => setBlogTitle(e.target.value.slice(0, 200))}
-                placeholder="e.g., Understanding Your Zodiac Sign"
-                maxLength={200}
-              />
-              <p className="text-sm text-muted-foreground">
-                Leave blank to let AI generate an SEO-optimized title. ({blogTitle.length}/200)
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="featuredImageIdea">Featured Image Idea (Optional)</Label>
-              <Input
-                id="featuredImageIdea"
-                value={featuredImageIdea}
-                onChange={(e) => setFeaturedImageIdea(e.target.value.slice(0, 300))}
-                placeholder="e.g., A vibrant zodiac wheel"
-                maxLength={300}
-              />
-              <p className="text-sm text-muted-foreground">
-                Description for the main blog image. ({featuredImageIdea.length}/300)
-              </p>
-            </div>
-          </div>
-
           <div className="space-y-2">
-            <Label htmlFor="inBodyImageIdeas">In-Body Image Ideas (Optional)</Label>
+            <Label htmlFor="featuredImageIdea">Featured Image Idea (Optional)</Label>
             <Input
-              id="inBodyImageIdeas"
-              value={inBodyImageIdeas}
-              onChange={(e) => setInBodyImageIdeas(e.target.value.slice(0, 500))}
-              placeholder="e.g., zodiac wheel diagram, birthday cake, age calculator"
-              maxLength={500}
+              id="featuredImageIdea"
+              value={featuredImageIdea}
+              onChange={(e) => setFeaturedImageIdea(e.target.value.slice(0, 300))}
+              placeholder="e.g., A vibrant zodiac wheel"
+              maxLength={300}
             />
             <p className="text-sm text-muted-foreground">
-              Describe 2-3 images for the blog body, separated by commas. ({inBodyImageIdeas.length}/500)
+              Description for the main blog image. ({featuredImageIdea.length}/300)
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <Label>In-Body Image Ideas (Optional)</Label>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Input
+                  id="inBodyImage1Idea"
+                  value={inBodyImage1Idea}
+                  onChange={(e) => setInBodyImage1Idea(e.target.value.slice(0, 300))}
+                  placeholder="e.g., A zodiac wheel diagram"
+                  maxLength={300}
+                />
+                <p className="text-xs text-muted-foreground">
+                  In-Body Image 1 Idea ({inBodyImage1Idea.length}/300)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Input
+                  id="inBodyImage2Idea"
+                  value={inBodyImage2Idea}
+                  onChange={(e) => setInBodyImage2Idea(e.target.value.slice(0, 300))}
+                  placeholder="e.g., A birthday cake illustration"
+                  maxLength={300}
+                />
+                <p className="text-xs text-muted-foreground">
+                  In-Body Image 2 Idea ({inBodyImage2Idea.length}/300)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Input
+                  id="inBodyImage3Idea"
+                  value={inBodyImage3Idea}
+                  onChange={(e) => setInBodyImage3Idea(e.target.value.slice(0, 300))}
+                  placeholder="e.g., An age calculator interface"
+                  maxLength={300}
+                />
+                <p className="text-xs text-muted-foreground">
+                  In-Body Image 3 Idea ({inBodyImage3Idea.length}/300)
+                </p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Describe specific images to be inserted into the article.
             </p>
           </div>
 
