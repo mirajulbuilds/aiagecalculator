@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { CalendarIcon, Loader2, Trash2, ArrowLeft, Upload } from "lucide-react";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from "@/components/ui/pagination";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -80,6 +81,11 @@ const CelebrityProfilesManager = () => {
   const [tableSearchQuery, setTableSearchQuery] = useState<string>("");
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 50;
+  
   // Delete confirmation state
   const [profileToDelete, setProfileToDelete] = useState<{ id: string; name: string } | null>(null);
 
@@ -96,14 +102,33 @@ const CelebrityProfilesManager = () => {
 
   const mainContent = watch("mainContent");
 
-  // Fetch all celebrity profiles on mount
+  // Fetch celebrity profiles with pagination
   const fetchAllProfiles = async () => {
     setIsLoadingProfiles(true);
     try {
+      // Get total count
+      const { count, error: countError } = await supabase
+        .from("celebrities")
+        .select("*", { count: 'exact', head: true });
+
+      if (countError) {
+        console.error("Error fetching count:", countError);
+        toast.error("Failed to load profile count");
+        return;
+      }
+
+      setTotalCount(count || 0);
+
+      // Calculate pagination range
+      const from = (currentPage - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+
+      // Fetch paginated data
       const { data, error } = await supabase
         .from("celebrities")
         .select("*")
-        .order("name");
+        .order("name")
+        .range(from, to);
 
       if (error) {
         console.error("Error fetching profiles:", error);
@@ -137,10 +162,10 @@ const CelebrityProfilesManager = () => {
     setFilteredProfiles(filtered);
   }, [tableSearchQuery, allProfiles]);
 
-  // Load all profiles on mount
+  // Load profiles when page changes
   useEffect(() => {
     fetchAllProfiles();
-  }, []);
+  }, [currentPage]);
 
   const handleLoadProfile = (profile: CelebrityData) => {
     // Populate all form fields with the loaded profile data
@@ -200,7 +225,8 @@ const CelebrityProfilesManager = () => {
 
       toast.success("Profile deleted successfully");
       
-      // Refresh the profiles list
+      // Refresh the profiles list and reset to first page
+      setCurrentPage(1);
       fetchAllProfiles();
       
       // Reset the form if we were editing this profile
@@ -355,6 +381,7 @@ const CelebrityProfilesManager = () => {
       setPopularityRanks(null);
       setKnownForData("");
       setFaceEmbedding("");
+      setCurrentPage(1);
       fetchAllProfiles();
 
     } catch (error) {
@@ -385,16 +412,21 @@ const CelebrityProfilesManager = () => {
             </div>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold text-primary">{allProfiles.length}</div>
+            <div className="text-2xl font-bold text-primary">{totalCount}</div>
             <div className="text-xs text-muted-foreground">Total Profiles</div>
           </div>
         </div>
 
         {/* ALL PROFILES DATA TABLE */}
         <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold text-foreground">
-            All Celebrity Profiles
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-foreground">
+              All Celebrity Profiles
+            </h2>
+            <div className="text-sm text-muted-foreground">
+              Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} profiles
+            </div>
+          </div>
           
           {/* Search Bar */}
           <div className="flex gap-3 items-end">
@@ -411,7 +443,10 @@ const CelebrityProfilesManager = () => {
             </div>
             <Button
               type="button"
-              onClick={fetchAllProfiles}
+              onClick={() => {
+                setCurrentPage(1);
+                fetchAllProfiles();
+              }}
               variant="outline"
               size="sm"
             >
@@ -510,12 +545,28 @@ const CelebrityProfilesManager = () => {
                 </table>
               </div>
               
-              {/* Results Count */}
-              {filteredProfiles.length > 0 && (
+              {/* Pagination Controls */}
+              {filteredProfiles.length > 0 && totalCount > 0 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/50">
                   <p className="text-sm text-muted-foreground">
-                    Showing {filteredProfiles.length} of {allProfiles.length} profile(s)
+                    Page {currentPage} of {Math.ceil(totalCount / itemsPerPage)}
                   </p>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalCount / itemsPerPage), prev + 1))}
+                          className={currentPage >= Math.ceil(totalCount / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
               )}
             </div>
