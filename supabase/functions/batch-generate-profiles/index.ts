@@ -93,11 +93,42 @@ serve(async (req) => {
               throw generateError;
             }
 
+            // CRITICAL FIX: Save generated profile to the database
+            console.log(`Saving profile to database: ${generateData.name}`);
+            const { data: savedProfile, error: saveError } = await supabase
+              .from("celebrities")
+              .upsert({
+                name: generateData.name,
+                profile_slug: generateData.profile_slug,
+                date_of_birth: generateData.date_of_birth,
+                profession: generateData.profession,
+                place_of_birth: generateData.place_of_birth || null,
+                zodiac_sign: generateData.zodiac_sign || null,
+                profile_image_url: generateData.profile_image_url,
+                main_content: generateData.main_content,
+                meta_title: generateData.meta_title,
+                meta_description: generateData.meta_description,
+                popularity_ranks: generateData.popularity_ranks || null,
+                known_for_data: generateData.known_for_data || null,
+              }, {
+                onConflict: 'profile_slug'
+              })
+              .select()
+              .single();
+
+            if (saveError) {
+              console.error(`Failed to save profile to database:`, saveError);
+              throw new Error(`Generated profile but failed to save: ${saveError.message}`);
+            }
+
+            console.log(`✓ Profile saved to database with ID: ${savedProfile.id}`);
+
             successCount++;
             results.push({
               url,
               status: "success",
-              profile: generateData
+              profile: savedProfile,
+              message: `Generated and saved to database`
             });
 
             // Send progress update: success
@@ -107,12 +138,12 @@ serve(async (req) => {
               total: urls.length,
               url,
               status: "success",
-              message: `✓ Successfully generated profile for: ${url}`,
-              profile: generateData
+              message: `✓ Successfully generated and saved profile for: ${generateData.name}`,
+              profile: savedProfile
             }) + "\n";
             controller.enqueue(encoder.encode(successMessage));
 
-            console.log(`✓ Successfully generated profile for: ${url}`);
+            console.log(`✓ Successfully generated and saved profile for: ${url}`);
 
             // Small delay between requests
             await new Promise(resolve => setTimeout(resolve, 2000));
