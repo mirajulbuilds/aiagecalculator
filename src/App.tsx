@@ -96,7 +96,7 @@ const AnimatedRoutes = () => {
             <ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>
           </DomainGuard>
         } />
-        <Route path="/system-control-panel-x4y5z6" element={
+        <Route path="/celebrity-content-engine" element={
           <DomainGuard>
             <ProtectedAdminRoute><AdminPanel /></ProtectedAdminRoute>
           </DomainGuard>
