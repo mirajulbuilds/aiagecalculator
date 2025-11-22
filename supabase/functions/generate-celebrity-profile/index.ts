@@ -74,7 +74,9 @@ async function scrapeWebsite(url: string) {
   console.log("Scraping URL:", url);
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`Failed to fetch URL: ${response.status}`);
+    const errorDetails = `Failed to fetch URL: ${url} - Status: ${response.status} ${response.statusText}`;
+    console.error(errorDetails);
+    throw new Error(errorDetails);
   }
   const html = await response.text();
   return html;
@@ -571,8 +573,19 @@ Make the writing feel human, warm, and professionally crafted.`,
 
     if (!contentResponse.ok) {
       const errorText = await contentResponse.text();
-      console.error("Content generation failed:", errorText);
-      throw new Error(`Content generation failed: ${contentResponse.status}`);
+      console.error("AI API Error Response:", errorText);
+      console.error("AI API Status:", contentResponse.status, contentResponse.statusText);
+      
+      // Parse error details for better user feedback
+      let errorMessage = `AI API failed (${contentResponse.status})`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.error?.message || errorJson.message || errorText.substring(0, 200);
+      } catch {
+        errorMessage = errorText.substring(0, 200);
+      }
+      
+      throw new Error(`Content generation failed: ${errorMessage}`);
     }
 
     const contentData = await contentResponse.json();
@@ -582,15 +595,22 @@ Make the writing feel human, warm, and professionally crafted.`,
     
     if (engine_choice === "gemini-api") {
       // Parse Gemini API response format
+      console.log("Raw Gemini API response:", JSON.stringify(contentData, null, 2));
       const geminiText = contentData.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!geminiText) {
-        throw new Error("No content in Gemini response");
+        console.error("Gemini response structure:", contentData);
+        throw new Error("No content in Gemini API response. Check if API key is valid and has quota remaining.");
       }
       
       // Remove markdown code blocks if present
       const cleanedText = geminiText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      generatedProfile = JSON.parse(cleanedText);
-      console.log("Parsed Gemini API response");
+      try {
+        generatedProfile = JSON.parse(cleanedText);
+        console.log("Parsed Gemini API response successfully");
+      } catch (parseError) {
+        console.error("Failed to parse Gemini response as JSON:", cleanedText.substring(0, 500));
+        throw new Error("Gemini API returned invalid JSON format");
+      }
     } else {
       // Parse Lovable AI response format
       const toolCall = contentData.choices?.[0]?.message?.tool_calls?.[0];
