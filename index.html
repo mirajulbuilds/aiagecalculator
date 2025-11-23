@@ -245,7 +245,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- Global Design Theme v1 -->
+    <!-- Global Design Theme v1 + Critical CSS for Above-the-Fold -->
     <style>
       /* 1. Root Variables (Our Color & Font Palette) */
       :root {
@@ -257,6 +257,58 @@
         --theme-text-light: #6B7280;   /* Lighter grey for subtext */
         --theme-border: #E5E7EB;       /* Light border for inputs */
         --font-primary: 'Plus Jakarta Sans', sans-serif; /* Modern, clean font */
+      }
+
+      /* Critical CSS for Above-the-Fold Performance */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        min-height: 100vh;
+        line-height: 1.5;
+      }
+
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Prevent layout shift for images */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Critical header/hero styles */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: var(--theme-bg-card);
+        border-bottom: 1px solid var(--theme-border);
+      }
+
+      /* Loading state to prevent flash */
+      .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s ease-in-out infinite;
+      }
+
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
       }
 
       /* 2. Google Font - Loaded via link tag in head for better performance */
