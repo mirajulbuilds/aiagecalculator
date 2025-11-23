@@ -1998,8 +1998,8 @@ const Index = () => {
             {matchingCelebrities.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                  {matchingCelebrities.map((celebrity) => (
-                    <CelebrityCard key={celebrity.id} celebrity={celebrity} />
+                  {matchingCelebrities.map((celebrity, index) => (
+                    <CelebrityCard key={celebrity.id} celebrity={celebrity} priority={index < 4} />
                   ))}
                 </div>
 
@@ -2013,7 +2013,10 @@ const Index = () => {
                       <div className="relative max-w-2xl mx-auto rounded-lg overflow-hidden shadow-2xl">
                         <img 
                           src={birthdayCardImage} 
-                          alt="Birthday card with matching celebrities" 
+                          alt="Birthday card with matching celebrities"
+                          width="800"
+                          height="600"
+                          loading="lazy"
                           className="w-full h-auto"
                         />
                       </div>
