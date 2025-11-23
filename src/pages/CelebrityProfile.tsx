@@ -301,6 +301,10 @@ const CelebrityProfile = () => {
               <img 
                 src={celebrity.profile_image_url} 
                 alt={celebrity.name}
+                width="800"
+                height="450"
+                loading="eager"
+                fetchPriority="high"
                 className="w-full max-w-2xl max-h-[450px] mx-auto rounded-2xl shadow-lg object-cover"
               />
             </div>
@@ -348,6 +352,9 @@ const CelebrityProfile = () => {
                                 <img
                                   src={item.imageURL}
                                   alt={item.title || 'Known for item'}
+                                  width="220"
+                                  height="330"
+                                  loading="lazy"
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
                               ) : (
@@ -401,6 +408,9 @@ const CelebrityProfile = () => {
                             <img 
                               src={celeb.profile_image_url} 
                               alt={celeb.name}
+                              width="200"
+                              height="200"
+                              loading="lazy"
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                             />
                           </div>
@@ -437,6 +447,9 @@ const CelebrityProfile = () => {
                             <img 
                               src={celeb.profile_image_url} 
                               alt={celeb.name}
+                              width="200"
+                              height="200"
+                              loading="lazy"
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                             />
                           </div>
@@ -473,6 +486,9 @@ const CelebrityProfile = () => {
                             <img 
                               src={celeb.profile_image_url} 
                               alt={celeb.name}
+                              width="400"
+                              height="400"
+                              loading="lazy"
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                             />
                           </div>

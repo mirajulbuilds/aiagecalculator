@@ -9,11 +9,19 @@
     <!-- Resource Hints for Performance -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://ryetajignnzczcybyggr.supabase.co" crossorigin />
+    
+    <!-- Google Fonts - Non-blocking load with display=swap -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" />
 
     <!-- Google tag (gtag.js) - Google Tag & GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
+    <script async defer src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -232,6 +240,7 @@
     <!-- Google AdSense -->
     <script
       async
+      defer
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7563901271542265"
       crossorigin="anonymous"
     ></script>
@@ -250,8 +259,7 @@
         --font-primary: 'Plus Jakarta Sans', sans-serif; /* Modern, clean font */
       }
 
-      /* 2. Import the Google Font */
-      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+      /* 2. Google Font - Loaded via link tag in head for better performance */
 
       /* 3. Global Body Styling */
       body {

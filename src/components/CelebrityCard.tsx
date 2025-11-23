@@ -14,7 +14,12 @@ interface Celebrity {
   zodiac_sign?: string;
 }
 
-export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
+interface CelebrityCardProps {
+  celebrity: Celebrity;
+  priority?: boolean; // For LCP optimization - set true for first 4 images
+}
+
+export const CelebrityCard = ({ celebrity, priority = false }: CelebrityCardProps) => {
   const { addToComparison, isInComparison } = useComparison();
   const inComparison = isInComparison(celebrity.id);
 
@@ -44,6 +49,10 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
           <img
             src={celebrity.profile_image_url}
             alt={celebrity.name}
+            width="400"
+            height="400"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           
