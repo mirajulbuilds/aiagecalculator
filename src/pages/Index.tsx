@@ -1999,7 +1999,7 @@ const Index = () => {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   {matchingCelebrities.map((celebrity, index) => (
-                    <CelebrityCard key={celebrity.id} celebrity={celebrity} priority={index < 4} />
+                    <CelebrityCard key={celebrity.id} celebrity={celebrity} priority={index < 8} />
                   ))}
                 </div>
 

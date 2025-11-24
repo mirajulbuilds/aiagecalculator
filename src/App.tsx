@@ -19,8 +19,10 @@ import { FloatingLifeExpectancyCompareBar } from "./components/FloatingLifeExpec
 import { BackToTop } from "./components/BackToTop";
 import ScrollProgress from "./components/ScrollProgress";
 
-// Lazy load route components for code splitting
-const Index = lazy(() => import("./pages/Index"));
+// Import Homepage directly (not lazy) for instant loading
+import Index from "./pages/Index";
+
+// Lazy load other route components for code splitting
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
