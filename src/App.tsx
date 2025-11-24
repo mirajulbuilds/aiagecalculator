@@ -18,6 +18,7 @@ import { LifeExpectancyComparisonProvider } from "./contexts/LifeExpectancyCompa
 import { FloatingLifeExpectancyCompareBar } from "./components/FloatingLifeExpectancyCompareBar";
 import { BackToTop } from "./components/BackToTop";
 import ScrollProgress from "./components/ScrollProgress";
+import { PerformanceMonitor } from "./components/PerformanceMonitor";
 
 // Import Homepage directly (not lazy) for instant loading
 import Index from "./pages/Index";
@@ -190,6 +191,7 @@ const App = () => (
                   <FloatingCompareBar />
                   <FloatingLifeExpectancyCompareBar />
                   <BackToTop />
+                  <PerformanceMonitor />
                 </div>
               </BrowserRouter>
             </LifeExpectancyComparisonProvider>
