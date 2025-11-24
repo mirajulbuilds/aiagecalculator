@@ -1,6 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { initPerformanceMonitoring } from "./lib/performanceMonitoring";
+
+// Initialize Core Web Vitals monitoring
+initPerformanceMonitoring();
 
 // Register service worker for offline caching and performance
 if ('serviceWorker' in navigator) {
