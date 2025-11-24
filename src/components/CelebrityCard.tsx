@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Scale, Check } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { Button } from "@/components/ui/button";
-import { OptimizedImage } from "@/components/OptimizedImage";
 
 interface Celebrity {
   id: string;
@@ -15,12 +14,7 @@ interface Celebrity {
   zodiac_sign?: string;
 }
 
-interface CelebrityCardProps {
-  celebrity: Celebrity;
-  priority?: boolean; // For LCP optimization - set true for first 4 images
-}
-
-export const CelebrityCard = ({ celebrity, priority = false }: CelebrityCardProps) => {
+export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
   const { addToComparison, isInComparison } = useComparison();
   const inComparison = isInComparison(celebrity.id);
 
@@ -47,12 +41,9 @@ export const CelebrityCard = ({ celebrity, priority = false }: CelebrityCardProp
     <div className="group relative bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-500 ease-out hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] hover:-translate-y-2 hover:scale-[1.02] border border-border interactive-element">
       <Link to={`/people/${celebrity.profile_slug}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
-          <OptimizedImage
+          <img
             src={celebrity.profile_image_url}
             alt={celebrity.name}
-            width={400}
-            height={400}
-            priority={priority}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           

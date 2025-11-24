@@ -18,12 +18,9 @@ import { LifeExpectancyComparisonProvider } from "./contexts/LifeExpectancyCompa
 import { FloatingLifeExpectancyCompareBar } from "./components/FloatingLifeExpectancyCompareBar";
 import { BackToTop } from "./components/BackToTop";
 import ScrollProgress from "./components/ScrollProgress";
-import { PerformanceMonitor } from "./components/PerformanceMonitor";
 
-// Import Homepage directly (not lazy) for instant loading
-import Index from "./pages/Index";
-
-// Lazy load other route components for code splitting
+// Lazy load route components for code splitting
+const Index = lazy(() => import("./pages/Index"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
@@ -191,7 +188,6 @@ const App = () => (
                   <FloatingCompareBar />
                   <FloatingLifeExpectancyCompareBar />
                   <BackToTop />
-                  <PerformanceMonitor />
                 </div>
               </BrowserRouter>
             </LifeExpectancyComparisonProvider>

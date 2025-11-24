@@ -9,19 +9,11 @@
     <!-- Resource Hints for Performance -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://ryetajignnzczcybyggr.supabase.co" crossorigin />
-    
-    <!-- Google Fonts - Non-blocking load with display=swap -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" />
 
     <!-- Google tag (gtag.js) - Google Tag & GA4 -->
-    <script async defer src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -228,7 +220,7 @@
     -->
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W03ZKHKH45"></script>
+    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-W03ZKHKH45"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -244,7 +236,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- Global Design Theme v1 + Critical CSS for Above-the-Fold -->
+    <!-- Global Design Theme v1 -->
     <style>
       /* 1. Root Variables (Our Color & Font Palette) */
       :root {
@@ -258,59 +250,8 @@
         --font-primary: 'Plus Jakarta Sans', sans-serif; /* Modern, clean font */
       }
 
-      /* Critical CSS for Above-the-Fold Performance */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        -webkit-text-size-adjust: 100%;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      body {
-        min-height: 100vh;
-        line-height: 1.5;
-      }
-
-      #root {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Prevent layout shift for images */
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      /* Critical header/hero styles */
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        background-color: var(--theme-bg-card);
-        border-bottom: 1px solid var(--theme-border);
-      }
-
-      /* Loading state to prevent flash */
-      .loading-skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s ease-in-out infinite;
-      }
-
-      @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-      }
-
-      /* 2. Google Font - Loaded via link tag in head for better performance */
+      /* 2. Import the Google Font */
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
       /* 3. Global Body Styling */
       body {
