@@ -3,9 +3,6 @@ import App from "./App.tsx";
 import "./index.css";
 import { initPerformanceMonitoring } from "./lib/performanceMonitoring";
 
-// Initialize Core Web Vitals monitoring
-initPerformanceMonitoring();
-
 // Register service worker for offline caching and performance
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -66,3 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+// Initialize Core Web Vitals monitoring after React mounts
+setTimeout(() => {
+  initPerformanceMonitoring();
+}, 0);
