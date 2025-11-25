@@ -45,6 +45,7 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
             src={celebrity.profile_image_url}
             alt={celebrity.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            loading="lazy"
           />
           
           {/* Age Badge */}
