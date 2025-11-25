@@ -238,7 +238,10 @@
 
     <!-- Global Design Theme v1 -->
     <style>
-      /* 1. Root Variables (Our Color & Font Palette) */
+      /* 1. Import the Google Font - MUST be first */
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+      /* 2. Root Variables (Our Color & Font Palette) */
       :root {
         --theme-primary: #A78BFA;      /* A modern, soft purple */
         --theme-primary-dark: #5B21B6; /* A darker purple for active states */
@@ -249,9 +252,6 @@
         --theme-border: #E5E7EB;       /* Light border for inputs */
         --font-primary: 'Plus Jakarta Sans', sans-serif; /* Modern, clean font */
       }
-
-      /* 2. Import the Google Font */
-      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
       /* 3. Global Body Styling */
       body {
