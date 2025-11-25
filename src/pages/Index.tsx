@@ -154,8 +154,8 @@ const Index = () => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // Create 12 particles
-    const particleCount = 12;
+    // Create 6 particles (reduced for performance)
+    const particleCount = 6;
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle';
@@ -183,37 +183,6 @@ const Index = () => {
     }
   };
 
-  // Cursor trail effect function
-  const createTrail = (event: MouseEvent) => {
-    const trail = document.createElement('div');
-    trail.className = 'cursor-trail';
-    trail.style.left = `${event.clientX}px`;
-    trail.style.top = `${event.clientY}px`;
-    document.body.appendChild(trail);
-
-    // Remove trail after animation
-    setTimeout(() => {
-      trail.remove();
-    }, 600);
-  };
-
-  // Set up global cursor trail effect
-  useEffect(() => {
-    let lastTrailTime = 0;
-    const throttleDelay = 30; // milliseconds between trail creation
-
-    const handleMouseMove = (event: MouseEvent) => {
-      const now = Date.now();
-      if (now - lastTrailTime >= throttleDelay) {
-        createTrail(event);
-        lastTrailTime = now;
-      }
-    };
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
 
   // Generate birthday card function
   const handleGenerateBirthdayCard = async () => {
@@ -432,7 +401,7 @@ const Index = () => {
       });
     };
     updateLiveAge();
-    const interval = setInterval(updateLiveAge, 1000);
+    const interval = setInterval(updateLiveAge, 5000); // Update every 5 seconds for performance
     return () => clearInterval(interval);
   }, [birthDay, birthMonth, birthYear, result]);
   const months = [{
@@ -1851,7 +1820,7 @@ const Index = () => {
                       <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
                       <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                         <div className="absolute inset-0 w-full h-full animate-planet-rotate">
-                          <img src={planet.imageURL} alt={`Image of ${planet.name}`} className="w-full h-full object-cover" />
+                          <img src={planet.imageURL} alt={`Image of ${planet.name}`} className="w-full h-full object-cover" loading="lazy" />
                         </div>
                       </div>
                     </div>
@@ -1895,7 +1864,7 @@ const Index = () => {
                         <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl animate-pulse" />
                         <div className="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-2 border-primary/30">
                           <div className="absolute inset-0 w-full h-full animate-planet-rotate">
-                            <img src={planet.imageURL} alt={`Image of ${planet.name}`} className="w-full h-full object-cover" />
+                            <img src={planet.imageURL} alt={`Image of ${planet.name}`} className="w-full h-full object-cover" loading="lazy" />
                           </div>
                         </div>
                       </div>
@@ -1924,7 +1893,7 @@ const Index = () => {
               <h2 className="text-xl md:text-2xl font-semibold mb-1">
                 Your Current Age (Live)
               </h2>
-              <p className="text-sm opacity-90">Updating in real-time every second</p>
+              <p className="text-sm opacity-90">Updating every 5 seconds</p>
             </div>
             
             <div className="grid grid-cols-3 gap-3 md:gap-4">
