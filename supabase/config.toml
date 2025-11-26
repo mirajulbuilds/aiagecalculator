@@ -96,3 +96,6 @@ verify_jwt = true
 [functions.fix-blog-links]
 verify_jwt = true
 
+[functions.bulk-regenerate-seo]
+verify_jwt = true
+
