@@ -28,6 +28,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import RichTextEditor from "@/components/RichTextEditor";
+import { BulkSEORegenerator } from "@/components/BulkSEORegenerator";
 
 const celebritySchema = z.object({
   name: z.string().min(1, "Celebrity name is required").max(100),
@@ -416,6 +417,9 @@ const CelebrityProfilesManager = () => {
             <div className="text-xs text-muted-foreground">Total Profiles</div>
           </div>
         </div>
+
+        {/* Bulk SEO Regeneration Tool */}
+        <BulkSEORegenerator />
 
         {/* ALL PROFILES DATA TABLE */}
         <div className="p-6 border-2 border-primary/20 rounded-lg bg-card/50 space-y-4 mb-8">
