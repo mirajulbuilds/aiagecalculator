@@ -423,8 +423,8 @@ Please generate a comprehensive celebrity profile with the following structure (
     "age_rank": number between 1-10000,
     "name_rank": number between 1-10000
   },
-  "meta_title": "SEO title max 60 chars with name and achievement",
-  "meta_description": "CRITICAL: max 160 chars, compelling and informative",
+  "meta_title": "CRITICAL SEO: Answer search intent directly. Use patterns like: 'How Old is [Name]? Exact Age, Birthday & Bio (2025)' OR '[Name] Age: Birthday, Zodiac Sign & Height | AiAgeCalc' OR '[Name] Bio: Age, Height, Family & Facts (Updated)'. Max 60 chars.",
+  "meta_description": "CRITICAL SEO: Write a click-worthy hook under 160 chars. Use patterns like: 'Curious about [Name]'s real age? Find out exactly how old they are today, their birthday, zodiac sign, and fun facts. Click to see!' OR 'Discover [Name]'s age, net worth, and career highlights. Is [Name] older than you think? Calculate your age difference here!'",
   "profile_slug": "url-friendly-slug-lowercase-hyphenated",
   "known_for_data": [
     {"title": "Work title", "year": "Year", "imageURL": ""}
@@ -482,8 +482,8 @@ Required content:
 4. Place of birth (city, state/region, country)
 5. Zodiac sign
 6. Popularity rankings (generate realistic numbers between 1-10000)
-7. SEO-optimized meta title (max 60 chars, include name and key achievement)
-8. SEO-optimized meta description (CRITICAL: max 160 chars, compelling and informative)
+7. SEO-optimized meta title: CRITICAL - Answer search intent directly. Use patterns like: 'How Old is [Name]? Exact Age, Birthday & Bio (2025)' OR '[Name] Age: Birthday, Zodiac Sign & Height | AiAgeCalc' OR '[Name] Bio: Age, Height, Family & Facts (Updated)'. Max 60 chars.
+8. SEO-optimized meta description: CRITICAL - Write a click-worthy hook under 160 chars that encourages clicks. Use patterns like: 'Curious about [Name]'s real age? Find out exactly how old they are today, their birthday, zodiac sign, and fun facts. Click to see!' OR 'Discover [Name]'s age, net worth, and career highlights. Is [Name] older than you think? Calculate your age difference here!'
 9. URL-friendly slug (lowercase, hyphenated)
 10. "Known For" data: Extract the most famous works, movies, TV shows, or achievements (3-6 items) as a JSON array with:
     - "title": The name of the work/achievement
