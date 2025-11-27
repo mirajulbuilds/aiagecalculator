@@ -67,6 +67,12 @@ const CelebrityRedirect = () => {
   return <Navigate to={`/people/${slug}`} replace />;
 };
 
+// Redirect old famous-birthdays person URLs to new people URLs
+const FamousBirthdaysRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/people/${slug}`} replace />;
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
 
@@ -79,6 +85,7 @@ const AnimatedRoutes = () => {
         <Route path="/about" element={<About />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/famous-birthdays" element={<FamousBirthdays />} />
+        <Route path="/famous-birthdays/:slug" element={<FamousBirthdaysRedirect />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/profession/:professionSlug" element={<ProfessionPage />} />
         <Route path="/birth-month/:monthName" element={<BirthMonthPage />} />

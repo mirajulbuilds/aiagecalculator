@@ -34,6 +34,23 @@ serve(async (req) => {
       });
     }
 
+    // Handle /famous-birthdays/* redirects (person pages only, not the main directory)
+    if (pathname.startsWith('/famous-birthdays/') && pathname !== '/famous-birthdays' && pathname !== '/famous-birthdays/') {
+      const slug = pathname.replace('/famous-birthdays/', '');
+      const newUrl = `${url.origin}/people/${slug}`;
+      
+      console.log('Redirecting from:', pathname, 'to:', newUrl);
+      
+      return new Response(null, {
+        status: 301,
+        headers: {
+          ...corsHeaders,
+          'Location': newUrl,
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    }
+
     // No redirect needed
     return new Response(
       JSON.stringify({ message: 'No redirect needed' }),
