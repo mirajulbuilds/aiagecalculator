@@ -71,7 +71,7 @@ export const AutocompleteSearch: React.FC<AutocompleteSearchProps> = ({
       case 'Enter':
         e.preventDefault();
         if (focusedIndex >= 0 && suggestions[focusedIndex]) {
-          window.location.href = `/celebrity/${suggestions[focusedIndex].slug}`;
+          window.location.href = `/people/${suggestions[focusedIndex].slug}`;
         }
         break;
       case 'Escape':
@@ -115,7 +115,7 @@ export const AutocompleteSearch: React.FC<AutocompleteSearchProps> = ({
           {suggestions.map((celebrity, index) => (
             <Link
               key={celebrity.id}
-              to={`/celebrity/${celebrity.slug}`}
+              to={`/people/${celebrity.slug}`}
               className={`flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors border-b border-border last:border-b-0 ${
                 index === focusedIndex ? 'bg-accent/50' : ''
               }`}

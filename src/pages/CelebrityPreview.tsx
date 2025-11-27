@@ -126,7 +126,7 @@ const CelebrityPreview = () => {
               {previewData.metaDescription}
             </p>
             <p className="text-sm">
-              <span className="font-semibold">URL:</span> /celebrity/
+              <span className="font-semibold">URL:</span> /people/
               {previewData.profileSlug}
             </p>
           </div>

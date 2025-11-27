@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
@@ -60,6 +60,12 @@ const CelebrityProfilesManager = lazy(() => import("./pages/admin/CelebrityProfi
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+// Redirect old celebrity URLs to new people URLs
+const CelebrityRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/people/${slug}`} replace />;
+};
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -158,6 +164,7 @@ const AnimatedRoutes = () => {
         } />
         <Route path="/batch-embedding-generator-z7y8x9" element={<BatchEmbeddingGenerator />} />
         <Route path="/celebrity/preview" element={<CelebrityPreview />} />
+        <Route path="/celebrity/:slug" element={<CelebrityRedirect />} />
         <Route path="/people/:profileSlug" element={<CelebrityProfile />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
