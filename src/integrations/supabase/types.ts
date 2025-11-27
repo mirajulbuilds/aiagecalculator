@@ -268,6 +268,36 @@ export type Database = {
           },
         ]
       }
+      redirect_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          new_url: string
+          old_url: string
+          redirect_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          new_url: string
+          old_url: string
+          redirect_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          new_url?: string
+          old_url?: string
+          redirect_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       security_logs: {
         Row: {
           created_at: string
