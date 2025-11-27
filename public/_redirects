@@ -1,0 +1,4 @@
+# Redirect old celebrity URLs to new people URLs (301 Permanent)
+# This file is used by many hosting providers (Netlify, Vercel, Cloudflare Pages)
+
+/celebrity/:slug  /people/:slug  301
