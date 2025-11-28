@@ -56,6 +56,7 @@ const SecurityMonitoring = lazy(() => import("./pages/SecurityMonitoring"));
 const TwoFactorEnrollment = lazy(() => import("./pages/TwoFactorEnrollment"));
 const TwoFactorVerification = lazy(() => import("./pages/TwoFactorVerification"));
 const BlogManagement = lazy(() => import("./pages/admin/BlogManagement"));
+const GSCManagement = lazy(() => import("./pages/admin/GSCManagement"));
 const CelebrityProfilesManager = lazy(() => import("./pages/admin/CelebrityProfilesManager"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -147,6 +148,11 @@ const AnimatedRoutes = () => {
         <Route path="/admin/blog-management" element={
           <DomainGuard>
             <ProtectedAdminRoute><BlogManagement /></ProtectedAdminRoute>
+          </DomainGuard>
+        } />
+        <Route path="/admin/gsc-management" element={
+          <DomainGuard>
+            <ProtectedAdminRoute><GSCManagement /></ProtectedAdminRoute>
           </DomainGuard>
         } />
         <Route path="/admin/security-monitoring" element={
