@@ -79,6 +79,21 @@ serve(async (req) => {
 
     console.log('Blog sitemap generated successfully');
     
+    // Submit to Google Search Console in the background
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const sitemapUrl = `${baseUrl}/sitemap-blog.xml`;
+    
+    if (supabaseUrl && supabaseAnonKey) {
+      fetch(`${supabaseUrl}/functions/v1/submit-sitemap-to-gsc`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({ sitemapUrls: [sitemapUrl] }),
+      }).catch(err => console.error('Failed to submit sitemap to GSC:', err));
+    }
+    
     return new Response(sitemap, {
       headers: corsHeaders,
       status: 200,

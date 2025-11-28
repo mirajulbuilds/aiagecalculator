@@ -99,3 +99,6 @@ verify_jwt = true
 [functions.bulk-regenerate-seo]
 verify_jwt = true
 
+[functions.submit-sitemap-to-gsc]
+verify_jwt = false
+

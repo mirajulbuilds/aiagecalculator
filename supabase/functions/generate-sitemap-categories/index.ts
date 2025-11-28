@@ -65,6 +65,22 @@ serve(async (req) => {
 
     console.log('Categories sitemap generated successfully');
     
+    // Submit to Google Search Console in the background
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const sitemapUrl = `${baseUrl}/sitemap-categories.xml`;
+    
+    if (supabaseUrl && supabaseAnonKey) {
+      fetch(`${supabaseUrl}/functions/v1/submit-sitemap-to-gsc`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({ sitemapUrls: [sitemapUrl] }),
+      }).catch(err => console.error('Failed to submit sitemap to GSC:', err));
+    }
+    
     return new Response(sitemap, {
       headers: corsHeaders,
       status: 200,

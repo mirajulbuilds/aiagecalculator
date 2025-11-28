@@ -39,6 +39,30 @@ serve(async (req) => {
 
     console.log('Sitemap index generated successfully');
     
+    // Submit to Google Search Console in the background
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const sitemapUrl = `${baseUrl}/sitemap-index.xml`;
+    
+    if (supabaseUrl && supabaseAnonKey) {
+      fetch(`${supabaseUrl}/functions/v1/submit-sitemap-to-gsc`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({ 
+          sitemapUrls: [
+            sitemapUrl,
+            `${baseUrl}/sitemap-static.xml`,
+            `${baseUrl}/sitemap-celebrities.xml`,
+            `${baseUrl}/sitemap-categories.xml`,
+            `${baseUrl}/sitemap-blog.xml`
+          ] 
+        }),
+      }).catch(err => console.error('Failed to submit sitemaps to GSC:', err));
+    }
+    
     return new Response(sitemapIndex, {
       headers: corsHeaders,
       status: 200,
