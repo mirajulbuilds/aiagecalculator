@@ -163,6 +163,12 @@ const AdminDashboard = () => {
       link: "/admin/blog-management",
     },
     {
+      title: "SEO & Redirects",
+      description: "Manage Google Search Console submissions and redirect analytics",
+      icon: <TrendingUp className="h-8 w-8 text-primary" />,
+      link: "/admin/gsc-management",
+    },
+    {
       title: "Usage Statistics",
       description: "View application usage and API consumption",
       icon: <BarChart3 className="h-8 w-8 text-primary" />,

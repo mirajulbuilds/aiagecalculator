@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -129,7 +130,12 @@ serve(async (req) => {
   }
 
   try {
-    const { sitemapUrls } = await req.json();
+    const { sitemapUrls, submittedBy } = await req.json();
+    
+    // Initialize Supabase client for logging
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
     
     if (!sitemapUrls || !Array.isArray(sitemapUrls)) {
       return new Response(
@@ -157,10 +163,27 @@ serve(async (req) => {
         await submitSitemap(siteUrl, sitemapUrl, accessToken);
         results.push({ sitemapUrl, success: true });
         console.log(`Successfully submitted sitemap: ${sitemapUrl}`);
+        
+        // Log successful submission
+        await supabase.from('gsc_submission_logs').insert({
+          sitemap_url: sitemapUrl,
+          submission_status: 'success',
+          submitted_by: submittedBy || null,
+          response_data: { siteUrl }
+        });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         results.push({ sitemapUrl, success: false, error: errorMessage });
         console.error(`Failed to submit sitemap ${sitemapUrl}:`, errorMessage);
+        
+        // Log failed submission
+        await supabase.from('gsc_submission_logs').insert({
+          sitemap_url: sitemapUrl,
+          submission_status: 'failed',
+          error_message: errorMessage,
+          submitted_by: submittedBy || null,
+          response_data: { siteUrl }
+        });
       }
     }
 

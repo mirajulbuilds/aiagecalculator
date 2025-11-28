@@ -224,6 +224,36 @@ export type Database = {
         }
         Relationships: []
       }
+      gsc_submission_logs: {
+        Row: {
+          error_message: string | null
+          id: string
+          response_data: Json | null
+          sitemap_url: string
+          submission_status: string
+          submitted_at: string
+          submitted_by: string | null
+        }
+        Insert: {
+          error_message?: string | null
+          id?: string
+          response_data?: Json | null
+          sitemap_url: string
+          submission_status: string
+          submitted_at?: string
+          submitted_by?: string | null
+        }
+        Update: {
+          error_message?: string | null
+          id?: string
+          response_data?: Json | null
+          sitemap_url?: string
+          submission_status?: string
+          submitted_at?: string
+          submitted_by?: string | null
+        }
+        Relationships: []
+      }
       profile_generations: {
         Row: {
           celebrity_id: string | null
