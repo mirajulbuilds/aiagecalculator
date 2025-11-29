@@ -107,6 +107,9 @@ async function submitSitemap(siteUrl: string, sitemapUrl: string, accessToken: s
   const encodedSitemapUrl = encodeURIComponent(sitemapUrl);
   
   const url = `https://www.googleapis.com/webmasters/v3/sites/${encodedSiteUrl}/sitemaps/${encodedSitemapUrl}`;
+  
+  console.log(`Submitting to GSC API: ${url}`);
+  console.log(`Site URL format: ${siteUrl}`);
 
   const response = await fetch(url, {
     method: 'PUT',
@@ -155,7 +158,8 @@ serve(async (req) => {
     const credentials: GoogleServiceAccount = JSON.parse(credentialsJson);
     const accessToken = await getAccessToken(credentials);
     
-    const siteUrl = 'https://aiagecalc.com';
+    const siteUrl = 'sc-domain:aiagecalc.com';
+    const propertyType = 'Domain';
     const results = [];
 
     for (const sitemapUrl of sitemapUrls) {
@@ -169,7 +173,7 @@ serve(async (req) => {
           sitemap_url: sitemapUrl,
           submission_status: 'success',
           submitted_by: submittedBy || null,
-          response_data: { siteUrl }
+          response_data: { siteUrl, propertyType }
         });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -182,7 +186,7 @@ serve(async (req) => {
           submission_status: 'failed',
           error_message: errorMessage,
           submitted_by: submittedBy || null,
-          response_data: { siteUrl }
+          response_data: { siteUrl, propertyType }
         });
       }
     }
