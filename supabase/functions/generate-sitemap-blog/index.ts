@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const baseUrl = 'https://aiagecalc.com';
+    const baseUrl = Deno.env.get('SITE_BASE_URL') || 'https://aiagecalc.com';
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;

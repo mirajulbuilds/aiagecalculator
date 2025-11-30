@@ -5,13 +5,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { SITE_CONFIG } from '@/lib/config';
 
 const SITEMAP_URLS = [
-  { id: 'index', label: 'Sitemap Index', url: 'https://aiagecalc.com/sitemap-index.xml' },
-  { id: 'static', label: 'Static Pages', url: 'https://aiagecalc.com/sitemap-static.xml' },
-  { id: 'celebrities', label: 'Celebrity Profiles', url: 'https://aiagecalc.com/sitemap-celebrities.xml' },
-  { id: 'categories', label: 'Categories', url: 'https://aiagecalc.com/sitemap-categories.xml' },
-  { id: 'blog', label: 'Blog Posts', url: 'https://aiagecalc.com/sitemap-blog.xml' },
+  { id: 'index', label: 'Sitemap Index', url: `${SITE_CONFIG.canonicalUrl}/sitemap-index.xml` },
+  { id: 'static', label: 'Static Pages', url: `${SITE_CONFIG.canonicalUrl}/sitemap-static.xml` },
+  { id: 'celebrities', label: 'Celebrity Profiles', url: `${SITE_CONFIG.canonicalUrl}/sitemap-celebrities.xml` },
+  { id: 'categories', label: 'Categories', url: `${SITE_CONFIG.canonicalUrl}/sitemap-categories.xml` },
+  { id: 'blog', label: 'Blog Posts', url: `${SITE_CONFIG.canonicalUrl}/sitemap-blog.xml` },
 ];
 
 export const GSCSitemapSubmitter = () => {
