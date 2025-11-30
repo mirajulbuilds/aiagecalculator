@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const baseUrl = 'https://aiagecalc.com';
+    const baseUrl = Deno.env.get('SITE_BASE_URL') || 'https://aiagecalc.com';
     const currentDate = new Date().toISOString().split('T')[0];
 
     // Generate sitemap index XML

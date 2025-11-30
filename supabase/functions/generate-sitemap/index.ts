@@ -28,37 +28,38 @@ serve(async (req) => {
       throw error;
     }
 
+    const baseUrl = Deno.env.get('SITE_BASE_URL') || 'https://aiagecalc.com';
     const currentDate = new Date().toISOString().split('T')[0];
 
     // Static pages with their priorities and change frequencies
     const staticPages = [
-      { loc: 'https://aiagecalc.com/', priority: '1.0', changefreq: 'weekly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/famous-birthdays', priority: '0.9', changefreq: 'daily', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/explore-famous-birthdays', priority: '0.9', changefreq: 'weekly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/blog', priority: '0.8', changefreq: 'weekly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/blog/unique-birthday-traditions-around-world', priority: '0.7', changefreq: 'monthly', lastmod: '2025-01-15' },
-      { loc: 'https://aiagecalc.com/blog/zodiac-personality-beyond-horoscope', priority: '0.7', changefreq: 'monthly', lastmod: '2025-01-10' },
-      { loc: 'https://aiagecalc.com/blog/science-of-age-on-mars', priority: '0.7', changefreq: 'monthly', lastmod: '2025-01-05' },
-      { loc: 'https://aiagecalc.com/about', priority: '0.6', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/privacy-policy', priority: '0.5', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/search', priority: '0.7', changefreq: 'weekly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/ai-face-age', priority: '0.8', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/look-alike-finder', priority: '0.8', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/due-date-calculator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/compatibility-calculator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/past-life-generator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/life-expectancy-calculator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/retirement-calculator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/health-score-calculator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/compare', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/compare-life-expectancy', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
-      { loc: 'https://aiagecalc.com/pet-age-calculator', priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/`, priority: '1.0', changefreq: 'weekly', lastmod: currentDate },
+      { loc: `${baseUrl}/famous-birthdays`, priority: '0.9', changefreq: 'daily', lastmod: currentDate },
+      { loc: `${baseUrl}/explore-famous-birthdays`, priority: '0.9', changefreq: 'weekly', lastmod: currentDate },
+      { loc: `${baseUrl}/blog`, priority: '0.8', changefreq: 'weekly', lastmod: currentDate },
+      { loc: `${baseUrl}/blog/unique-birthday-traditions-around-world`, priority: '0.7', changefreq: 'monthly', lastmod: '2025-01-15' },
+      { loc: `${baseUrl}/blog/zodiac-personality-beyond-horoscope`, priority: '0.7', changefreq: 'monthly', lastmod: '2025-01-10' },
+      { loc: `${baseUrl}/blog/science-of-age-on-mars`, priority: '0.7', changefreq: 'monthly', lastmod: '2025-01-05' },
+      { loc: `${baseUrl}/about`, priority: '0.6', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/privacy-policy`, priority: '0.5', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/search`, priority: '0.7', changefreq: 'weekly', lastmod: currentDate },
+      { loc: `${baseUrl}/ai-face-age`, priority: '0.8', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/look-alike-finder`, priority: '0.8', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/due-date-calculator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/compatibility-calculator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/past-life-generator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/life-expectancy-calculator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/retirement-calculator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/health-score-calculator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/compare`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/compare-life-expectancy`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
+      { loc: `${baseUrl}/pet-age-calculator`, priority: '0.7', changefreq: 'monthly', lastmod: currentDate },
     ];
 
     // Zodiac sign pages
     const zodiacSigns = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
     const zodiacPages = zodiacSigns.map(sign => ({
-      loc: `https://aiagecalc.com/zodiac/${sign}`,
+      loc: `${baseUrl}/zodiac/${sign}`,
       priority: '0.7',
       changefreq: 'weekly',
       lastmod: currentDate
@@ -67,7 +68,7 @@ serve(async (req) => {
     // Birth month pages
     const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     const monthPages = months.map(month => ({
-      loc: `https://aiagecalc.com/birth-month/${month}`,
+      loc: `${baseUrl}/birth-month/${month}`,
       priority: '0.7',
       changefreq: 'weekly',
       lastmod: currentDate
@@ -76,7 +77,7 @@ serve(async (req) => {
     // Profession pages (sample - add more as needed)
     const professions = ['actor', 'actress', 'musician', 'athlete', 'politician', 'entrepreneur', 'director', 'producer'];
     const professionPages = professions.map(profession => ({
-      loc: `https://aiagecalc.com/profession/${profession}`,
+      loc: `${baseUrl}/profession/${profession}`,
       priority: '0.7',
       changefreq: 'weekly',
       lastmod: currentDate
@@ -84,7 +85,7 @@ serve(async (req) => {
 
     // Celebrity profile pages
     const celebrityPages = celebrities?.map(celebrity => ({
-      loc: `https://aiagecalc.com/people/${celebrity.profile_slug}`,
+      loc: `${baseUrl}/people/${celebrity.profile_slug}`,
       priority: '0.8',
       changefreq: 'monthly',
       lastmod: celebrity.updated_at ? new Date(celebrity.updated_at).toISOString().split('T')[0] : currentDate

@@ -22,7 +22,7 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const baseUrl = 'https://aiagecalc.com';
+    const baseUrl = Deno.env.get('SITE_BASE_URL') || 'https://aiagecalc.com';
 
     console.log('Fetching celebrities from database...');
     
