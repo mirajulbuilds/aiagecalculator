@@ -1,5 +1,5 @@
 # robots.txt for AiAgeCalc.com
-# Updated: 2025-11-15
+# Updated: 2025-11-30
 
 # Allow all major search engines full access
 User-agent: Googlebot
