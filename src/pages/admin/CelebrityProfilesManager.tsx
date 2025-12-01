@@ -14,6 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -89,11 +97,14 @@ const CelebrityProfilesManager = () => {
   
   // Delete confirmation state
   const [profileToDelete, setProfileToDelete] = useState<{ id: string; name: string } | null>(null);
+  
+  // Unsaved changes dialog state
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     setValue,
     watch,
     reset,
@@ -393,14 +404,44 @@ const CelebrityProfilesManager = () => {
     }
   };
 
+  const handleBackClick = () => {
+    if (isDirty) {
+      setShowUnsavedDialog(true);
+    } else {
+      navigate("/celebrity-content-engine");
+    }
+  };
+
+  const handleConfirmNavigation = () => {
+    setShowUnsavedDialog(false);
+    navigate("/celebrity-content-engine");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 px-4">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/system-control-panel-x4y5z6">Admin Panel</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/celebrity-content-engine">Content Engine</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Manage Profiles</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate("/celebrity-content-engine")}
+              onClick={handleBackClick}
               variant="outline"
               size="sm"
             >
@@ -789,6 +830,25 @@ const CelebrityProfilesManager = () => {
               ) : (
                 "Delete"
               )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog open={showUnsavedDialog} onOpenChange={setShowUnsavedDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes in the form. Are you sure you want to leave this page? 
+              All unsaved changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Stay on Page</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmNavigation}>
+              Leave Page
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
