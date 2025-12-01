@@ -53,7 +53,7 @@ serve(async (req) => {
 
     const validation = validateInput(requestSchema, { birthDate });
     if (!validation.success) {
-      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors, corsHeaders);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

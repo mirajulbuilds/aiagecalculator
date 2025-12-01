@@ -79,22 +79,22 @@ serve(async (req) => {
       bmi
     });
 
-    // Validate input with Zod
+    // Validate input with Zod - custom schema to match frontend values
     const requestSchema = z.object({
-      age: ageSchema,
+      age: z.coerce.number().int().min(0).max(120),
       gender: genderEnum,
-      bmi: bmiSchema,
-      smoking: smokingHabitsEnum,
-      exercise: exerciseFrequencyEnum,
+      bmi: z.coerce.number().min(10).max(100),
+      smoking: z.enum(["never", "former", "occasional", "regular", "light", "heavy"]),
+      exercise: z.enum(["none", "rare", "moderate", "frequent", "light", "intense"]),
       alcohol: alcoholConsumptionEnum,
-      sleep: sleepQualityEnum,
+      sleep: z.number().int().min(3).max(12),
       diet: dietQualityEnum,
-      stress: stressLevelEnum
+      stress: z.enum(["low", "moderate", "high", "very-high"])
     });
 
     const validation = validateInput(requestSchema, { age, gender, smoking, exercise, alcohol, sleep, diet, stress, bmi });
     if (!validation.success) {
-      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors, corsHeaders);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
