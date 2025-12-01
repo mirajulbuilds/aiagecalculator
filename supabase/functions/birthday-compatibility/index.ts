@@ -122,7 +122,7 @@ serve(async (req) => {
 
     const validation = validateInput(requestSchema, { date1, date2 });
     if (!validation.success) {
-      return createValidationErrorResponse(validation.errors, validation.fieldErrors);
+      return createValidationErrorResponse(validation.errors, validation.fieldErrors, corsHeaders);
     }
 
     const d1 = new Date(date1);

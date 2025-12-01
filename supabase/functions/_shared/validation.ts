@@ -122,7 +122,11 @@ export function validateInput<T>(
 }
 
 // Helper to create consistent error responses
-export function createValidationErrorResponse(errors: string[], fieldErrors: Record<string, string>) {
+export function createValidationErrorResponse(
+  errors: string[], 
+  fieldErrors: Record<string, string>,
+  corsHeaders?: Record<string, string>
+) {
   return new Response(
     JSON.stringify({
       error: "Validation failed",
@@ -131,7 +135,10 @@ export function createValidationErrorResponse(errors: string[], fieldErrors: Rec
     }),
     {
       status: 400,
-      headers: { "Content-Type": "application/json" }
+      headers: { 
+        "Content-Type": "application/json",
+        ...(corsHeaders || {})
+      }
     }
   );
 }
