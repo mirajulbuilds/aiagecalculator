@@ -400,12 +400,12 @@ const CelebrityProfilesManager = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Button
-              onClick={() => navigate("/system-control-panel-x4y5z6")}
+              onClick={() => navigate("/celebrity-content-engine")}
               variant="outline"
               size="sm"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Admin Panel
+              Back to Content Engine
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-foreground">Manage All Celebrity Profiles</h1>
