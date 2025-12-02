@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useCallback, ReactNode } from "react";
 
 interface ParallaxSectionProps {
   children: ReactNode;
@@ -7,34 +7,54 @@ interface ParallaxSectionProps {
 }
 
 const ParallaxSection = ({ children, speed = 0.5, className = "" }: ParallaxSectionProps) => {
-  const [offsetY, setOffsetY] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const rafId = useRef<number | null>(null);
+  const elementTopRef = useRef<number>(0);
+
+  const updateTransform = useCallback(() => {
+    if (innerRef.current) {
+      const scrolled = window.scrollY;
+      const offset = (scrolled - elementTopRef.current) * speed;
+      innerRef.current.style.transform = `translateY(${offset}px)`;
+    }
+  }, [speed]);
 
   useEffect(() => {
-    const handleScroll = () => {
+    // Calculate element top position once on mount/resize
+    const calculatePosition = () => {
       if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        const scrolled = window.scrollY;
-        const elementTop = rect.top + scrolled;
-        const offset = (scrolled - elementTop) * speed;
-        setOffsetY(offset);
+        elementTopRef.current = sectionRef.current.offsetTop;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initialize on mount
+    const handleScroll = () => {
+      if (rafId.current === null) {
+        rafId.current = requestAnimationFrame(() => {
+          updateTransform();
+          rafId.current = null;
+        });
+      }
+    };
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [speed]);
+    calculatePosition();
+    updateTransform();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", calculatePosition, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", calculatePosition);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
+    };
+  }, [updateTransform]);
 
   return (
     <div ref={sectionRef} className={className}>
-      <div
-        style={{
-          transform: `translateY(${offsetY}px)`,
-          willChange: "transform",
-        }}
-      >
+      <div ref={innerRef} style={{ willChange: "transform" }}>
         {children}
       </div>
     </div>
