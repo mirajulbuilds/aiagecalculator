@@ -32,7 +32,7 @@ const ParallaxSection = ({ children, speed = 0.5, className = "" }: ParallaxSect
       <div
         style={{
           transform: `translateY(${offsetY}px)`,
-          transition: "transform 0.1s ease-out",
+          willChange: "transform",
         }}
       >
         {children}
