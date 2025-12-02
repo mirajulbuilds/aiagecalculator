@@ -526,7 +526,7 @@ const AdminPanel = () => {
         <div className="flex flex-col gap-4 mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate('/dashboard-admin-x7y8z9')}
+            onClick={() => navigate('/system-control-panel-x4y5z6')}
             className="self-start"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
