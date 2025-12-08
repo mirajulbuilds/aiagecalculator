@@ -22,6 +22,32 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" /></noscript>
 
+    <!-- Critical CSS for LCP - Hero Section -->
+    <style>
+      /* Critical CSS inlined for faster LCP */
+      :root {
+        --background: 222 47% 11%;
+        --foreground: 210 40% 98%;
+        --primary: 217 91% 60%;
+        --muted-foreground: 215 20% 65%;
+      }
+      body {
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        margin: 0;
+      }
+      /* Hero section critical styles */
+      .text-primary { color: hsl(var(--primary)); }
+      .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+      .text-center { text-align: center; }
+      .font-bold { font-weight: 700; }
+      .mb-4 { margin-bottom: 1rem; }
+      .mb-8 { margin-bottom: 2rem; }
+      .min-h-screen { min-height: 100vh; }
+      .bg-background { background-color: hsl(var(--background)); }
+    </style>
+
     <!-- Google tag (gtag.js) - Google Tag & GA4 - Deferred for performance -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
     <script>

@@ -783,7 +783,7 @@ const Index = () => {
         {/* <AdSenseBanner format="large-horizontal" className="mb-6" /> */}
         
         {/* Header */}
-        <ParallaxSection speed={0.3}>
+        {/* Hero section without ParallaxSection for better LCP */}
           <header className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 py-[5px] my-[5px] lg:text-6xl">
               Unlock the Secrets of Your Birthday
@@ -814,7 +814,7 @@ const Index = () => {
               </Link>
             </div>
           </header>
-        </ParallaxSection>
+        {/* End of hero header */}
 
         {/* Timezone Section */}
         {timezone && <div className="text-center mb-4">
