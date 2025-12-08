@@ -22,15 +22,24 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" /></noscript>
 
-    <!-- Google tag (gtag.js) - Google Tag & GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
+    <!-- Google tag (gtag.js) - Google Tag & GA4 - Deferred for performance -->
+    <script defer src="https://www.googletagmanager.com/gtag/js?id=GT-TXZP837S"></script>
     <script>
+      // Initialize dataLayer early but defer gtag execution
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'GT-TXZP837S');
-      gtag('config', 'G-W03ZKHKH45');
+      // Defer gtag config to after page load
+      if (document.readyState === 'complete') {
+        gtag('js', new Date());
+        gtag('config', 'GT-TXZP837S');
+        gtag('config', 'G-W03ZKHKH45');
+      } else {
+        window.addEventListener('load', function() {
+          gtag('js', new Date());
+          gtag('config', 'GT-TXZP837S');
+          gtag('config', 'G-W03ZKHKH45');
+        });
+      }
     </script>
 
     <!-- Primary Meta Tags -->
@@ -229,22 +238,21 @@
       Reference: https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
     -->
 
-    <!-- Google tag (gtag.js) -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-W03ZKHKH45"></script>
+    <!-- Google tag (gtag.js) - Already loaded above, this duplicate removed -->
+    
+    <!-- Google AdSense - Deferred to improve initial load performance -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-W03ZKHKH45');
+      // Load AdSense after page becomes interactive
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var script = document.createElement('script');
+          script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7563901271542265';
+          script.crossOrigin = 'anonymous';
+          script.async = true;
+          document.head.appendChild(script);
+        }, 2000); // 2 second delay for better LCP
+      });
     </script>
-
-    <!-- Google AdSense -->
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7563901271542265"
-      crossorigin="anonymous"
-    ></script>
 
     <!-- Global Design Theme v1 -->
     <style>

@@ -1309,7 +1309,7 @@ const Index = () => {
 
                 {watermarkedGreeting && !isGeneratingGreeting && <div className="space-y-4 animate-fade-in">
                     <div className="relative rounded-lg overflow-hidden border-2 border-primary/20 bg-muted">
-                      <img src={watermarkedGreeting} alt="Generated greeting with watermark" className="w-full h-auto" />
+                      <img src={watermarkedGreeting} alt="Generated greeting with watermark" className="w-full h-auto" loading="lazy" />
                     </div>
                     <Button onClick={handleShareImage} className="w-full h-12 text-lg">
                       <Share2 className="mr-2 h-5 w-5" />
