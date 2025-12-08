@@ -37,6 +37,7 @@ export const FloatingCompareBar = () => {
                       src={celebrity.profile_image_url}
                       alt={celebrity.name}
                       className="w-10 h-10 rounded-full object-cover border-2 border-border"
+                      loading="lazy"
                     />
                     <button
                       onClick={() => removeFromComparison(celebrity.id)}
