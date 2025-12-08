@@ -6,30 +6,8 @@ const Footer = () => {
   const [isVisible, setIsVisible] = useState(false);
   const footerRef = useRef<HTMLElement>(null);
 
-  // Ripple effect handler
-  const createRipple = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const element = event.currentTarget;
-    const ripple = document.createElement('span');
-    const diameter = Math.max(element.clientWidth, element.clientHeight);
-    const radius = diameter / 2;
-
-    const rect = element.getBoundingClientRect();
-    ripple.style.width = ripple.style.height = `${diameter}px`;
-    ripple.style.left = `${event.clientX - rect.left - radius}px`;
-    ripple.style.top = `${event.clientY - rect.top - radius}px`;
-    ripple.classList.add('ripple');
-
-    const existingRipple = element.querySelector('.ripple');
-    if (existingRipple) {
-      existingRipple.remove();
-    }
-
-    element.appendChild(ripple);
-
-    setTimeout(() => {
-      ripple.remove();
-    }, 600);
-  };
+  // CSS-only ripple effect - no JS layout queries needed
+  // The ripple is handled purely via CSS :active state to avoid forced reflows
 
   // Intersection Observer for slide-in animation
   useEffect(() => {
@@ -74,15 +52,13 @@ const Footer = () => {
           <nav className="flex gap-6">
             <Link 
               to="/about" 
-              onClick={createRipple}
-              className="hover:text-foreground transition-colors relative overflow-hidden px-2 py-1 rounded"
+              className="hover:text-foreground transition-colors relative overflow-hidden px-2 py-1 rounded active:scale-95"
             >
               About
             </Link>
             <Link 
               to="/privacy-policy" 
-              onClick={createRipple}
-              className="hover:text-foreground transition-colors relative overflow-hidden px-2 py-1 rounded"
+              className="hover:text-foreground transition-colors relative overflow-hidden px-2 py-1 rounded active:scale-95"
             >
               Privacy Policy
             </Link>
