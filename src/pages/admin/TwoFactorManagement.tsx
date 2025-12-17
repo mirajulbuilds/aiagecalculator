@@ -81,8 +81,8 @@ const TwoFactorManagement = () => {
       const usersPromises = adminUserIds.map(async (userId) => {
         const { data: { user } } = await supabase.auth.admin.getUserById(userId);
         const { data: twofa } = await supabase
-          .from("admin_2fa")
-          .select("*")
+          .from("admin_2fa_safe")
+          .select("is_enrolled, enrolled_at, created_at")
           .eq("user_id", userId)
           .maybeSingle();
 
