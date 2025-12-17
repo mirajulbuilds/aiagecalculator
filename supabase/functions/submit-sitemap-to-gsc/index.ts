@@ -102,6 +102,15 @@ async function getAccessToken(credentials: GoogleServiceAccount): Promise<string
   return tokenData.access_token;
 }
 
+// Sanitize response data to only include safe metadata (no tokens, keys, or sensitive info)
+function sanitizeResponseMetadata(siteUrl: string, propertyType: string): Record<string, string> {
+  return {
+    siteUrl: siteUrl,
+    propertyType: propertyType,
+    timestamp: new Date().toISOString()
+  };
+}
+
 async function submitSitemap(siteUrl: string, sitemapUrl: string, accessToken: string) {
   const encodedSiteUrl = encodeURIComponent(siteUrl);
   const encodedSitemapUrl = encodeURIComponent(sitemapUrl);
@@ -168,25 +177,25 @@ serve(async (req) => {
         results.push({ sitemapUrl, success: true });
         console.log(`Successfully submitted sitemap: ${sitemapUrl}`);
         
-        // Log successful submission
+        // Log successful submission with sanitized metadata only (no raw API response data)
         await supabase.from('gsc_submission_logs').insert({
           sitemap_url: sitemapUrl,
           submission_status: 'success',
           submitted_by: submittedBy || null,
-          response_data: { siteUrl, propertyType }
+          response_data: sanitizeResponseMetadata(siteUrl, propertyType)
         });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         results.push({ sitemapUrl, success: false, error: errorMessage });
         console.error(`Failed to submit sitemap ${sitemapUrl}:`, errorMessage);
         
-        // Log failed submission
+        // Log failed submission with sanitized metadata only (no raw API response data)
         await supabase.from('gsc_submission_logs').insert({
           sitemap_url: sitemapUrl,
           submission_status: 'failed',
           error_message: errorMessage,
           submitted_by: submittedBy || null,
-          response_data: { siteUrl, propertyType }
+          response_data: sanitizeResponseMetadata(siteUrl, propertyType)
         });
       }
     }
