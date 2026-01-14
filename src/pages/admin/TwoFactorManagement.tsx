@@ -116,7 +116,7 @@ const TwoFactorManagement = () => {
       
       // Call the reset function
       const { error } = await supabase.rpc("reset_user_2fa", {
-        target_user_id: resetUserId,
+        p_user_id: resetUserId,
       });
 
       if (error) {

@@ -466,7 +466,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      reset_user_2fa: { Args: { target_user_id: string }; Returns: boolean }
+      reset_user_2fa: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "super_admin"
