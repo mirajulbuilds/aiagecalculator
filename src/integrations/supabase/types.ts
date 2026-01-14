@@ -384,36 +384,7 @@ export type Database = {
       }
     }
     Views: {
-      admin_2fa_safe: {
-        Row: {
-          created_at: string | null
-          enrolled_at: string | null
-          id: string | null
-          is_enrolled: boolean | null
-          last_verified_at: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          enrolled_at?: string | null
-          id?: string | null
-          is_enrolled?: boolean | null
-          last_verified_at?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          enrolled_at?: string | null
-          id?: string | null
-          is_enrolled?: boolean | null
-          last_verified_at?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       cleanup_expired_ip_blocks: { Args: never; Returns: undefined }
