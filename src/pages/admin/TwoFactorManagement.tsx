@@ -80,19 +80,24 @@ const TwoFactorManagement = () => {
       // For each admin user, get their auth info and 2FA status
       const usersPromises = adminUserIds.map(async (userId) => {
         const { data: { user } } = await supabase.auth.admin.getUserById(userId);
+        
+        // Use the admin_2fa table directly since we're already checking admin status
         const { data: twofa } = await supabase
-          .from("admin_2fa_safe")
-          .select("is_enrolled, enrolled_at, created_at")
+          .from("admin_2fa")
+          .select("secret, created_at, updated_at")
           .eq("user_id", userId)
           .maybeSingle();
+
+        // If there's a secret, the user is enrolled
+        const isEnrolled = !!twofa?.secret;
 
         return {
           id: userId,
           email: user?.email || "Unknown",
           user_created_at: user?.created_at || "",
           last_sign_in_at: user?.last_sign_in_at || null,
-          twofa_enrolled: twofa?.is_enrolled || false,
-          twofa_enrolled_at: twofa?.enrolled_at || null,
+          twofa_enrolled: isEnrolled,
+          twofa_enrolled_at: isEnrolled ? twofa?.created_at : null,
           twofa_created_at: twofa?.created_at || null,
         };
       });
