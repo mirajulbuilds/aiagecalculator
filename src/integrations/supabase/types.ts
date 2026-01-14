@@ -452,6 +452,25 @@ export type Database = {
         }
         Returns: boolean
       }
+      insert_gsc_submission_log: {
+        Args: {
+          p_error_message?: string
+          p_response_data?: Json
+          p_sitemap_url: string
+          p_submission_status: string
+        }
+        Returns: string
+      }
+      insert_redirect_log: {
+        Args: {
+          p_ip_address?: string
+          p_new_url: string
+          p_old_url: string
+          p_redirect_type: string
+          p_user_agent?: string
+        }
+        Returns: string
+      }
       is_admin: { Args: never; Returns: boolean }
       is_ip_blocked: { Args: { ip_addr: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }

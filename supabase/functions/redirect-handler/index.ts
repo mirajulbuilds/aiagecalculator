@@ -9,7 +9,7 @@ const corsHeaders = {
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-// Helper function to log redirect for analytics
+// Helper function to log redirect for analytics using secure function
 async function logRedirect(
   oldUrl: string,
   newUrl: string,
@@ -19,12 +19,12 @@ async function logRedirect(
 ) {
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
-    await supabase.from('redirect_logs').insert({
-      old_url: oldUrl,
-      new_url: newUrl,
-      redirect_type: redirectType,
-      user_agent: userAgent,
-      ip_address: ipAddress,
+    await supabase.rpc('insert_redirect_log', {
+      p_old_url: oldUrl,
+      p_new_url: newUrl,
+      p_redirect_type: redirectType,
+      p_ip_address: ipAddress,
+      p_user_agent: userAgent
     });
     console.log('Redirect logged:', { oldUrl, newUrl, redirectType });
   } catch (error) {

@@ -177,25 +177,24 @@ serve(async (req) => {
         results.push({ sitemapUrl, success: true });
         console.log(`Successfully submitted sitemap: ${sitemapUrl}`);
         
-        // Log successful submission with sanitized metadata only (no raw API response data)
-        await supabase.from('gsc_submission_logs').insert({
-          sitemap_url: sitemapUrl,
-          submission_status: 'success',
-          submitted_by: submittedBy || null,
-          response_data: sanitizeResponseMetadata(siteUrl, propertyType)
+        // Log successful submission using secure function
+        await supabase.rpc('insert_gsc_submission_log', {
+          p_sitemap_url: sitemapUrl,
+          p_submission_status: 'success',
+          p_response_data: sanitizeResponseMetadata(siteUrl, propertyType),
+          p_error_message: null
         });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         results.push({ sitemapUrl, success: false, error: errorMessage });
         console.error(`Failed to submit sitemap ${sitemapUrl}:`, errorMessage);
         
-        // Log failed submission with sanitized metadata only (no raw API response data)
-        await supabase.from('gsc_submission_logs').insert({
-          sitemap_url: sitemapUrl,
-          submission_status: 'failed',
-          error_message: errorMessage,
-          submitted_by: submittedBy || null,
-          response_data: sanitizeResponseMetadata(siteUrl, propertyType)
+        // Log failed submission using secure function
+        await supabase.rpc('insert_gsc_submission_log', {
+          p_sitemap_url: sitemapUrl,
+          p_submission_status: 'failed',
+          p_response_data: sanitizeResponseMetadata(siteUrl, propertyType),
+          p_error_message: errorMessage
         });
       }
     }
