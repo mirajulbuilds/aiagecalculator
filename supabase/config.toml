@@ -102,3 +102,9 @@ verify_jwt = true
 [functions.submit-sitemap-to-gsc]
 verify_jwt = false
 
+[functions.regenerate-all-sitemaps]
+verify_jwt = true
+
+[functions.redirect-handler]
+verify_jwt = false
+

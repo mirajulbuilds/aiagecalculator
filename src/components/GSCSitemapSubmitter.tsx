@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { SITE_CONFIG } from '@/lib/config';
 
@@ -18,6 +18,7 @@ const SITEMAP_URLS = [
 export const GSCSitemapSubmitter = () => {
   const [selectedSitemaps, setSelectedSitemaps] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   const { toast } = useToast();
 
   const toggleSitemap = (sitemapId: string) => {
@@ -92,19 +93,84 @@ export const GSCSitemapSubmitter = () => {
     }
   };
 
+  const handleRegenerate = async () => {
+    setIsRegenerating(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('regenerate-all-sitemaps', {
+        body: {},
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast({
+          title: 'Sitemaps Regenerated',
+          description: data.message,
+        });
+      } else {
+        toast({
+          title: 'Partial Success',
+          description: data.message,
+          variant: 'default',
+        });
+      }
+    } catch (error) {
+      console.error('Error regenerating sitemaps:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to regenerate sitemaps',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          Submit Sitemaps to Google Search Console
+          Sitemap Management
         </CardTitle>
         <CardDescription>
-          Manually trigger sitemap submissions for testing or troubleshooting
+          Regenerate sitemaps from database and submit to Google Search Console
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
+        {/* Regenerate Sitemaps Section */}
+        <div className="p-4 border rounded-lg bg-muted/30">
+          <h4 className="font-medium mb-2 flex items-center gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Regenerate All Sitemaps
+          </h4>
+          <p className="text-sm text-muted-foreground mb-3">
+            Regenerate all sitemaps from the database to include all 1,338+ celebrities, blog posts, and categories.
+          </p>
+          <Button
+            onClick={handleRegenerate}
+            disabled={isRegenerating}
+            variant="secondary"
+            className="w-full"
+          >
+            {isRegenerating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Regenerating...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Regenerate All Sitemaps
+              </>
+            )}
+          </Button>
+        </div>
+
+        {/* Submit to GSC Section */}
         <div className="space-y-2">
+          <h4 className="font-medium">Submit to Google Search Console</h4>
           <div className="flex gap-2 mb-3">
             <Button onClick={selectAll} variant="outline" size="sm">
               Select All

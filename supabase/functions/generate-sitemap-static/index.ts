@@ -16,6 +16,7 @@ serve(async (req) => {
     const baseUrl = Deno.env.get('SITE_BASE_URL') || 'https://aiagecalc.com';
     const currentDate = new Date().toISOString().split('T')[0];
 
+    // Note: /search is excluded as it's a utility page that should not be indexed
     const staticPages = [
       { url: '/', priority: '1.0', changefreq: 'daily' },
       { url: '/about', priority: '0.8', changefreq: 'monthly' },
@@ -31,7 +32,6 @@ serve(async (req) => {
       { url: '/pet-age-calculator', priority: '0.8', changefreq: 'weekly' },
       { url: '/past-life-generator', priority: '0.8', changefreq: 'weekly' },
       { url: '/famous-birthdays', priority: '0.9', changefreq: 'daily' },
-      { url: '/search', priority: '0.7', changefreq: 'weekly' },
     ];
 
     let urlEntries = '';

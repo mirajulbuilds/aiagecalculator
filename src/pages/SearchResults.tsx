@@ -69,11 +69,13 @@ const SearchResults = () => {
     <PageTransition>
     <>
       <Helmet>
-        <title>Search Results for "{query}" - Famous Birthdays</title>
+        <title>{query ? `Search Results for "${query}"` : 'Search'} - Famous Birthdays</title>
         <meta
           name="description"
-          content={`Search results for ${query}. Find celebrities, their ages, and birthdays.`}
+          content={query ? `Search results for ${query}. Find celebrities, their ages, and birthdays.` : 'Search for celebrities and their birthdays.'}
         />
+        {/* Prevent empty search pages from being indexed - fixes soft 404 errors */}
+        {!query && <meta name="robots" content="noindex, nofollow" />}
       </Helmet>
 
       <div className="min-h-screen bg-background">
