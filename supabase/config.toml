@@ -105,6 +105,9 @@ verify_jwt = false
 [functions.regenerate-all-sitemaps]
 verify_jwt = true
 
+[functions.scheduled-sitemap-refresh]
+verify_jwt = false
+
 [functions.redirect-handler]
 verify_jwt = false
 
