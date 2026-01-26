@@ -1,6 +1,7 @@
 import { GSCSitemapSubmitter } from '@/components/GSCSitemapSubmitter';
 import { GSCSubmissionLogs } from '@/components/GSCSubmissionLogs';
 import { RedirectAnalytics } from '@/components/RedirectAnalytics';
+import CronJobMonitor from '@/components/CronJobMonitor';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +29,7 @@ const GSCManagement = () => {
       </header>
 
       <div className="container mx-auto px-6 py-8 space-y-8">
+        <CronJobMonitor />
         <GSCSitemapSubmitter />
         <GSCSubmissionLogs />
         <RedirectAnalytics />
