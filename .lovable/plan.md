@@ -1,67 +1,52 @@
 
-Goal: fix the dark-mode readability bug (not light mode) shown in your screenshot, where several headings and FAQ rows are too dim/near-invisible.
 
-What I found from inspection
-- The unreadable areas are concentrated in text elements that do not have explicit color classes:
-  - Card titles (e.g., “Upload Your Photo”, “AI Age Estimation”)
-  - “How It Works” section title and step headings
-  - FAQ accordion question rows
-- Text with explicit semantic classes (like `text-muted-foreground` or gradient headings) remains readable, which indicates this is a component-level inheritance/contrast issue rather than a full theme failure.
-- The previous change edited light-mode tokens only (`--primary`, `--secondary`, `--ring`, `--gradient-primary`) and did not address this dark-mode bug.
+## Fix "Crawled - Currently Not Indexed" Issues
 
-Implementation plan
-1) Revert the unintended light-mode token edits
-- File: `src/index.css`
-- Revert these variables to their pre-change values so brand/light palette is not altered while fixing dark mode:
-  - `--primary` back to `250 75% 77%`
-  - `--secondary` back to `250 75% 67%`
-  - `--ring` back to `250 75% 77%`
-  - `--gradient-primary` back to `linear-gradient(135deg, hsl(250 75% 77%), hsl(250 75% 67%))`
+### Problem Summary
 
-2) Make shared heading primitives dark-safe by default
-- File: `src/components/ui/card.tsx`
-  - Update `CardTitle` base class to include explicit semantic text color:
-  - add `text-card-foreground`
-  - This ensures card titles are always readable on card backgrounds in both themes, independent of inheritance issues.
-- File: `src/components/ui/accordion.tsx`
-  - Update `AccordionTrigger` base class to include:
-  - `text-foreground`
-  - This fixes FAQ row question text contrast in dark mode globally.
+Google is crawling 59 pages but choosing not to index them. The root cause is that `index.html` contains hardcoded SEO signals that tell Google every page is a duplicate of the homepage.
 
-3) Patch local heading classes in Ai Face Age page for guaranteed contrast
-- File: `src/pages/AiFaceAge.tsx`
-- Add explicit semantic color where headings currently rely on implicit inheritance:
-  - “How It Works” card title: add `text-card-foreground`
-  - Step labels (“Upload Photo”, “AI Analysis”, “Get Results”): add `text-foreground`
-- Keep existing muted and primary styling as-is so visual hierarchy remains intact.
+### Issues Found
 
-4) Optional hardening for FAQ wrapper (small safeguard)
-- File: `src/components/SEOFaqSection.tsx`
-- Add `text-foreground` on the section container wrapper so any unstyled descendants remain readable in dark mode.
-- Keep `text-muted-foreground` where intentionally used for secondary copy.
+1. **Hardcoded canonical URL (Critical):** Line 8 of `index.html` has `<link rel="canonical" href="https://aiagecalc.com/" />`. This tells Google that every single page on the site is a copy of the homepage, so it ignores them all.
 
-Why this approach
-- It targets the actual failing text nodes from your screenshot.
-- It avoids broad dark palette shifts that can cause regressions.
-- It fixes the problem at shared component level (`CardTitle`, `AccordionTrigger`) so other pages benefit too.
-- It restores the earlier unintended light-mode token changes.
+2. **Homepage-specific meta tags on every page:** The `<title>`, `<meta name="description">`, and all Open Graph / Twitter tags in `index.html` describe only the homepage. When Googlebot crawls `/blog/some-post`, it initially sees homepage metadata before React hydrates and `react-helmet-async` overrides them -- but Googlebot may not wait.
 
-Validation checklist (end-to-end)
-- Test `/ai-face-age` in dark mode:
-  - “Upload Your Photo” and “AI Age Estimation” headings readable
-  - “How It Works” title + step headings readable
-  - FAQ accordion question text readable in collapsed and expanded states
-- Test `/ai-face-age` in light mode to confirm no regression.
-- Spot-check other pages using card titles/accordion:
-  - `/about` (card titles)
-  - any page with `SEOFaqSection` (FAQ triggers)
-- Verify contrast hierarchy is preserved:
-  - primary accents remain primary
-  - muted helper text remains secondary, not too bright
+3. **Thin Suspense fallback:** The loading state is just `"Loading..."` text (line 203 of `App.tsx`). If Googlebot renders the page before JS finishes, it sees near-empty content.
 
-Files to update
-- `src/index.css`
-- `src/components/ui/card.tsx`
-- `src/components/ui/accordion.tsx`
-- `src/pages/AiFaceAge.tsx`
-- `src/components/SEOFaqSection.tsx`
+4. **Client-side redirects:** Old `/celebrity/:slug` and `/famous-birthdays/:slug` URLs use React `<Navigate>` (client-side), which Googlebot may not follow reliably. The `_redirects` file only works on specific hosts (Netlify/Cloudflare).
+
+### Fix Plan
+
+**1. Remove hardcoded canonical from `index.html`** (highest impact)
+- Delete line 8: `<link rel="canonical" href="https://aiagecalc.com/" />`
+- Each page already sets its own canonical via the `SEOHead` component, so this duplicate is unnecessary and harmful.
+
+**2. Make `index.html` meta tags generic**
+- Change the `<title>` to a short generic fallback: `"AiAgeCalc.com"`
+- Change `<meta name="description">` to a brief generic description
+- Remove or genericize OG/Twitter tags that are homepage-specific (the `SEOHead` component on each page provides proper per-page values)
+
+**3. Improve Suspense fallback for SEO**
+- Replace the bare `"Loading..."` text in `App.tsx` with a skeleton layout that includes the site name and a proper structure so Googlebot sees meaningful content even before hydration.
+
+**4. Add server-side redirect meta tags**
+- For the `CelebrityRedirect` and `FamousBirthdaysRedirect` components, add a `<meta http-equiv="refresh" content="0;url=/people/...">` via Helmet so that even non-JS crawlers follow the redirect, and set a `<link rel="canonical">` pointing to the new URL.
+
+### Files to Modify
+
+| File | Change |
+|------|--------|
+| `index.html` | Remove hardcoded canonical; genericize title, description, and OG/Twitter meta tags |
+| `src/App.tsx` | Improve Suspense fallback; enhance redirect components with meta refresh + canonical |
+
+### Expected Outcome
+
+After these changes, Google will:
+- No longer see every page as a duplicate of the homepage
+- See unique, page-specific metadata on each route
+- Follow old URL redirects reliably
+- Find meaningful content even during the brief loading state
+
+Re-indexing typically takes 1-4 weeks after the fix is deployed. You can speed it up by requesting re-indexing of key pages in Google Search Console.
+
