@@ -143,11 +143,11 @@ All colors MUST be HSL.
     --popover-foreground: 250 35% 30%;
 
     /* Primary brand color - soft purple */
-    --primary: 250 75% 77%;
+    --primary: 250 75% 55%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary brand color - brighter purple */
-    --secondary: 250 75% 67%;
+    --secondary: 250 75% 50%;
     --secondary-foreground: 0 0% 100%;
 
     /* Muted backgrounds and text */
@@ -165,12 +165,12 @@ All colors MUST be HSL.
     /* Borders and inputs */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 250 75% 77%;
+    --ring: 250 75% 55%;
 
     --radius: 0.75rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(250 75% 77%), hsl(250 75% 67%));
+    --gradient-primary: linear-gradient(135deg, hsl(250 75% 55%), hsl(250 75% 50%));
     
     /* Shadows */
     --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1);
