@@ -58,6 +58,8 @@ const TwoFactorVerification = lazy(() => import("./pages/TwoFactorVerification")
 const BlogManagement = lazy(() => import("./pages/admin/BlogManagement"));
 const GSCManagement = lazy(() => import("./pages/admin/GSCManagement"));
 const CelebrityProfilesManager = lazy(() => import("./pages/admin/CelebrityProfilesManager"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -103,6 +105,8 @@ const AnimatedRoutes = () => {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/about" element={<About />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/famous-birthdays" element={<FamousBirthdays />} />
         <Route path="/famous-birthdays/:slug" element={<FamousBirthdaysRedirect />} />
         <Route path="/search" element={<SearchResults />} />

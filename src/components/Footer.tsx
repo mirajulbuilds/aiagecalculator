@@ -49,18 +49,21 @@ const Footer = () => {
           <div className="text-center md:text-left">
             © {currentYear} aiagecalc.com. All rights reserved.
           </div>
-          <nav className="flex gap-6">
-            <Link 
-              to="/about" 
-              className="hover:text-foreground transition-colors relative overflow-hidden px-2 py-1 rounded active:scale-95"
-            >
+          <nav className="flex flex-wrap justify-center gap-4 md:gap-6">
+            <Link to="/about" className="hover:text-foreground transition-colors px-2 py-1 rounded active:scale-95">
               About
             </Link>
-            <Link 
-              to="/privacy-policy" 
-              className="hover:text-foreground transition-colors relative overflow-hidden px-2 py-1 rounded active:scale-95"
-            >
+            <Link to="/blog" className="hover:text-foreground transition-colors px-2 py-1 rounded active:scale-95">
+              Blog
+            </Link>
+            <Link to="/privacy-policy" className="hover:text-foreground transition-colors px-2 py-1 rounded active:scale-95">
               Privacy Policy
+            </Link>
+            <Link to="/terms-of-service" className="hover:text-foreground transition-colors px-2 py-1 rounded active:scale-95">
+              Terms of Service
+            </Link>
+            <Link to="/contact" className="hover:text-foreground transition-colors px-2 py-1 rounded active:scale-95">
+              Contact
             </Link>
           </nav>
         </div>

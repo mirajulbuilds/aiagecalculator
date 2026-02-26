@@ -69,7 +69,7 @@ export const AdSenseBanner = ({
           data-ad-slot={adSlot}
           data-ad-format="auto"
           data-full-width-responsive="true"
-          data-adtest="on"
+          
         />
       </div>
     </div>

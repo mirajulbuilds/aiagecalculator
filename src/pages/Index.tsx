@@ -780,7 +780,7 @@ const Index = () => {
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
         {/* Top Banner Ad */}
-        {/* <AdSenseBanner format="large-horizontal" className="mb-6" /> */}
+        <AdSenseBanner format="large-horizontal" className="mb-6" />
         
         {/* Header */}
         {/* Hero section without ParallaxSection for better LCP */}
@@ -2088,9 +2088,9 @@ const Index = () => {
 
 
         {/* Bottom Ad Banner */}
-        {/* {result && activeTab === "calculator" && (
+        {result && activeTab === "calculator" && (
           <AdSenseBanner format="horizontal" className="mt-6" />
-         )} */}
+         )}
         </div>
 
         {/* Right Sidebar Ads - Hidden on mobile/tablet */}
