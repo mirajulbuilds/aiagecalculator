@@ -9,6 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
 import { triggerNativeShare } from "@/lib/shareUtils";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const PastLifeGenerator = () => {
   const [day, setDay] = useState<string>("");
@@ -98,14 +99,14 @@ const PastLifeGenerator = () => {
     <PageTransition>
     <>
       <Helmet>
-        <title>What Was I in My Past Life? | AI Past Life Generator</title>
+        <title>Who Was I in My Past Life? | Past Life Calculator & Reading</title>
         <meta
           name="description"
-          content="Discover your past life! Enter your date of birth, and our AI will generate a unique and surprising story based on your birthday and Zodiac sign."
+          content="Discover who you were in a past life! Our AI past life calculator generates a unique reincarnation story based on your birthday, zodiac sign, and life path number. Free past life reading and astrology chart."
         />
         <meta
           name="keywords"
-          content="past life, past life generator, reincarnation, zodiac, numerology, past life story"
+          content="who was i in my past life, what was i in a past life, past life reading, past life calculator, reincarnation photo match, past life astrology chart, previous birth calculator, past life generator"
         />
       </Helmet>
 
@@ -276,6 +277,43 @@ const PastLifeGenerator = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* SEO FAQ Section */}
+          <SEOFaqSection
+            title="Past Life Calculator & Reincarnation FAQ"
+            description="Explore the mysteries of reincarnation with our AI past life generator. Based on your birthday, zodiac sign, and numerology, discover who you were in a past life and what your previous birth reveals about your present."
+            faqs={[
+              {
+                question: "Who was I in my past life?",
+                answer: "Our AI past life calculator uses your date of birth, zodiac sign, and life path number to generate a unique past life story. It considers astrological alignments, numerological patterns, and historical periods to craft a vivid narrative of who you might have been in a previous incarnation."
+              },
+              {
+                question: "What was I in a past life?",
+                answer: "Based on your birth date and astrological profile, our AI generates a detailed story about your past life — including your occupation, era, personality, and life purpose. Each story is unique and based on the cosmic patterns of your birthday."
+              },
+              {
+                question: "How does a past life calculator work?",
+                answer: "A past life calculator uses your date of birth to analyze zodiac signs, life path numbers, and astrological charts. These cosmic patterns are then used by our AI to generate a personalized reincarnation story that connects your past life to your present personality."
+              },
+              {
+                question: "What is a past life astrology chart?",
+                answer: "A past life astrology chart examines planetary positions at the time of your birth to infer karmic lessons and past life themes. Our AI incorporates zodiac sign analysis and numerology to create a comprehensive past life reading based on your birth chart patterns."
+              },
+              {
+                question: "Can I find my reincarnation photo match?",
+                answer: "While our past life generator focuses on narrative stories based on your birth date, you can explore visual connections through our Celebrity Look-Alike Finder, which matches your face with famous people — some of whom might have lived in eras matching your past life!"
+              },
+              {
+                question: "What is a previous birth calculator?",
+                answer: "A previous birth calculator (also called a past life calculator) estimates details about your previous incarnation based on your current birth date. It uses ancient numerology and zodiac systems to determine themes, traits, and stories from your past lives."
+              }
+            ]}
+            relatedTools={[
+              { name: "Compatibility Calculator", path: "/compatibility-calculator" },
+              { name: "Celebrity Look-Alike Finder", path: "/look-alike-finder" },
+              { name: "Famous Birthdays", path: "/famous-birthdays" },
+            ]}
+          />
         </div>
       </div>
     </>

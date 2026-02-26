@@ -16,6 +16,7 @@ import { SavedPetCard } from "@/components/SavedPetCard";
 import { PetComparison } from "@/components/PetComparison";
 import { PetTimeline } from "@/components/PetTimeline";
 import { SavedPetWithAge, PetAgeResult } from "@/types/pet";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const PetAgeCalculator = () => {
   const [petType, setPetType] = useState<string>("");
@@ -221,8 +222,9 @@ const PetAgeCalculator = () => {
   return (
     <>
       <Helmet>
-        <title>Pet Age Calculator (Dog & Cat) | AiAgeCalc.com</title>
-        <meta name="description" content="Find out your pet's real age in human years. Our AI uses modern veterinary formulas to give you an accurate result for your dog or cat." />
+        <title>Dog Age Calculator & Cat Age Calculator - Pet Years to Human Years</title>
+        <meta name="description" content="Free dog age calculator and cat age calculator. Convert your pet's age to human years using modern veterinary science formulas. Accurate dog years and cat years converter." />
+        <meta name="keywords" content="dog age calculator, cat age calculator, pet age calculator, dog years to human years, cat years to human years, how old is my dog in human years, how old is my cat" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
@@ -496,6 +498,39 @@ const PetAgeCalculator = () => {
               />
             </div>
           )}
+
+          {/* SEO FAQ Section */}
+          <SEOFaqSection
+            title="Dog Age Calculator & Cat Age Calculator FAQ"
+            description="Understanding your pet's real age in human years is important for providing the right care at every life stage. Our dog age calculator and cat age calculator use modern veterinary science — not the outdated '7 years' rule."
+            faqs={[
+              {
+                question: "How does the dog age calculator work?",
+                answer: "Our dog age calculator uses modern veterinary formulas that account for breed size (small, medium, large). Small dogs age differently than large dogs — a small dog may live 15-20 years while a large breed typically lives 8-12 years. The first two years of a dog's life equal roughly 24 human years, then each subsequent year varies by size."
+              },
+              {
+                question: "How accurate is the cat age calculator?",
+                answer: "Our cat age calculator follows veterinary guidelines: the first year of a cat's life equals about 15 human years, the second year adds about 9 more, and each year after that is roughly 4 human years. Indoor cats tend to live longer than outdoor cats."
+              },
+              {
+                question: "Is the '7 dog years = 1 human year' rule accurate?",
+                answer: "No, the 7:1 ratio is a myth. Dogs age much faster in their first two years and then slow down. A 1-year-old dog is more like a 15-year-old human. Our calculator uses the scientifically accurate formula."
+              },
+              {
+                question: "At what age is a dog considered a senior?",
+                answer: "It depends on size: small dogs are seniors around 10-12 years, medium dogs around 8-10 years, and large/giant breeds around 6-8 years. Our calculator shows your dog's life stage along with their human age equivalent."
+              },
+              {
+                question: "How old is my cat in human years?",
+                answer: "Use our cat age calculator above! As a quick guide: a 1-year-old cat ≈ 15 human years, a 2-year-old cat ≈ 24 human years, and each year after adds about 4 human years. A 10-year-old cat is roughly 56 in human years."
+              }
+            ]}
+            relatedTools={[
+              { name: "Age Calculator", path: "/" },
+              { name: "Life Expectancy Calculator", path: "/life-expectancy-calculator" },
+              { name: "Health Score Calculator", path: "/health-score-calculator" },
+            ]}
+          />
         </div>
       </div>
     </>

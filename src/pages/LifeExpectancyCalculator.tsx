@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { SEOHead } from "@/components/SEOHead";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 import { Calendar, Heart, Activity, Wine, Cigarette, MapPin, Share2, TrendingUp, Plus, Lightbulb, AlertCircle, CheckCircle } from "lucide-react";
 import { useLifeExpectancyComparison } from "@/contexts/LifeExpectancyComparisonContext";
 import { Button } from "@/components/ui/button";
@@ -218,9 +219,9 @@ const LifeExpectancyCalculator = () => {
   };
   return <>
       <SEOHead
-        title="Life Expectancy Calculator - How Long Will I Live?"
-        description="Calculate your estimated life expectancy based on lifestyle factors using AI-powered predictions. Get personalized insights about your potential longevity and health recommendations."
-        keywords="life expectancy calculator, how long will i live, longevity calculator, lifespan calculator, life expectancy prediction"
+        title="Life Expectancy Calculator - When Will I Die? Longevity Test"
+        description="Free life expectancy calculator and longevity test. Find out how long you will live based on lifestyle factors. Realistic life expectancy calculator, date of death estimator, and life span calculator powered by AI."
+        keywords="when will i die test, longevity calculator, how long will i live calculator, realistic life expectancy calculator, date of death calculator, life span calculator, calculate how many days you've been alive, life expectancy calculator"
         type="website"
       />
 
@@ -554,6 +555,43 @@ const LifeExpectancyCalculator = () => {
               </p>
             </div>
           </div>}
+
+        {/* SEO FAQ Section */}
+        <SEOFaqSection
+          title="Life Expectancy & Longevity Calculator FAQ"
+          description="Our AI-powered life expectancy calculator provides a realistic estimate of how long you may live based on your lifestyle, location, and health habits. Whether you're curious about your life span or want to improve your longevity, this tool gives you personalized insights."
+          faqs={[
+            {
+              question: "How does the 'when will I die' test work?",
+              answer: "Our life expectancy calculator analyzes your age, gender, country, smoking habits, exercise frequency, and alcohol consumption to estimate your potential lifespan. It uses AI combined with actuarial data and health research to provide a realistic life expectancy estimate."
+            },
+            {
+              question: "How accurate is this longevity calculator?",
+              answer: "This is a realistic life expectancy calculator based on population health data and lifestyle factors. While no tool can predict an exact date of death, it provides a science-based estimate. Genetics, unforeseen events, and medical advances also play important roles in actual lifespan."
+            },
+            {
+              question: "How long will I live based on my lifestyle?",
+              answer: "Your lifestyle significantly impacts life expectancy. Non-smokers who exercise regularly and drink moderately can add 10-15 years compared to those with unhealthy habits. Our calculator shows exactly how your current habits affect your estimated lifespan."
+            },
+            {
+              question: "What is a date of death calculator?",
+              answer: "A date of death calculator (or death clock) estimates when you might die based on statistical data. Our life expectancy calculator provides a more positive approach — showing your estimated total lifespan and recommendations to extend it."
+            },
+            {
+              question: "Can I calculate how many days I've been alive?",
+              answer: "Yes! While this tool focuses on life expectancy, our main Age Calculator on the homepage shows exactly how many days, hours, minutes, and seconds you've been alive. Use both tools together for a complete picture of your life timeline."
+            },
+            {
+              question: "How can I increase my life span?",
+              answer: "Based on research, the most impactful changes are: quit smoking (adds 10+ years), exercise regularly (adds 3-7 years), maintain a healthy diet, limit alcohol, manage stress, and get 7-9 hours of sleep. Our calculator shows personalized recommendations based on your inputs."
+            }
+          ]}
+          relatedTools={[
+            { name: "Health Score Calculator", path: "/health-score-calculator" },
+            { name: "Age Calculator", path: "/" },
+            { name: "Retirement Calculator", path: "/retirement-calculator" },
+          ]}
+        />
       </div>
     </>;
 };

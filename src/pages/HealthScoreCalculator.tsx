@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { triggerNativeShare } from "@/lib/shareUtils";
 import PageTransition from "@/components/PageTransition";
 import { Helmet } from "react-helmet-async";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 const HealthScoreCalculator = () => {
@@ -94,8 +95,9 @@ const HealthScoreCalculator = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Health Score Calculator - Comprehensive Wellness Rating | AiAgeCalc</title>
-        <meta name="description" content="Calculate your comprehensive health score based on lifestyle factors. Get personalized wellness recommendations and track your health metrics." />
+        <title>Health Score, Heart Age & Metabolic Age Calculator | AiAgeCalc</title>
+        <meta name="description" content="Calculate your heart age, metabolic age, and biological age with our comprehensive health score calculator. Get personalized wellness recommendations based on your lifestyle factors." />
+        <meta name="keywords" content="heart age calculator, metabolic age calculator, biological age calculator, health score calculator, wellness rating, health assessment" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
@@ -384,6 +386,43 @@ const HealthScoreCalculator = () => {
                 </Card>
               </motion.div>
             )}
+
+            {/* SEO FAQ Section */}
+            <SEOFaqSection
+              title="Heart Age, Metabolic Age & Biological Age Calculator FAQ"
+              description="Understand your body's real age beyond the calendar. Our health score calculator estimates your heart age, metabolic age, and biological age based on lifestyle factors, giving you actionable insights to improve your overall wellness."
+              faqs={[
+                {
+                  question: "What is a heart age calculator?",
+                  answer: "A heart age calculator estimates the 'age' of your cardiovascular system based on risk factors like BMI, exercise habits, smoking, blood pressure, and cholesterol levels. Your heart age can be higher or lower than your actual age. Our health score includes cardiovascular health as a key component."
+                },
+                {
+                  question: "What is metabolic age?",
+                  answer: "Metabolic age compares your basal metabolic rate (BMR) to the average BMR of people at different ages. If your metabolic age is lower than your actual age, it means your body burns calories more efficiently. Factors like muscle mass, exercise, diet, and sleep all affect metabolic age."
+                },
+                {
+                  question: "How is biological age different from chronological age?",
+                  answer: "Chronological age is simply how many years you've been alive. Biological age reflects how well your body is aging based on lifestyle, genetics, and health markers. Someone who exercises regularly, eats well, and doesn't smoke may have a biological age 5-10 years younger than their chronological age."
+                },
+                {
+                  question: "How can I lower my heart age?",
+                  answer: "You can lower your heart age by: exercising 150+ minutes per week, eating a heart-healthy diet (low sodium, high fiber), quitting smoking, maintaining a healthy BMI, managing stress, and limiting alcohol. Even small changes can reduce your heart age by several years."
+                },
+                {
+                  question: "What factors affect metabolic age?",
+                  answer: "Key factors include: muscle mass (more muscle = higher metabolism), exercise frequency, sleep quality, diet quality, hydration, stress levels, and hormonal balance. Regular strength training and adequate protein intake are particularly effective at improving metabolic age."
+                },
+                {
+                  question: "Is this health score medically accurate?",
+                  answer: "Our health score provides a general wellness assessment based on established health guidelines and lifestyle factors. It's designed for educational and motivational purposes. For medical advice, clinical heart age testing, or biological age biomarker analysis, please consult your healthcare provider."
+                }
+              ]}
+              relatedTools={[
+                { name: "Life Expectancy Calculator", path: "/life-expectancy-calculator" },
+                { name: "Age Calculator", path: "/" },
+                { name: "Retirement Calculator", path: "/retirement-calculator" },
+              ]}
+            />
           </motion.div>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
 import { triggerNativeShare } from "@/lib/shareUtils";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 interface CompatibilityResult {
   total_score: number;
@@ -121,9 +122,9 @@ const CompatibilityCalculator = () => {
     <PageTransition>
     <>
       <SEOHead
-        title="Birthday Compatibility Calculator - Zodiac, Numerology & More"
-        description="Discover how compatible you are with your partner, friend, or crush based on Zodiac signs, Numerology, and Chinese Zodiac. Free AI-powered compatibility calculator!"
-        keywords="birthday compatibility, zodiac compatibility, numerology compatibility, relationship compatibility, love calculator, zodiac love match"
+        title="Love Calculator & Compatibility Test - Zodiac, Synastry & Life Path"
+        description="Free love calculator and compatibility test! Check zodiac compatibility, Chinese love zodiac matches, synastry calculator, life path calculator, and name number calculator. AI-powered astrology compatibility."
+        keywords="love calculator, compatibility test, astrology compatibility, zodiac compatibility test, chinese love zodiac, chinese zodiac sign matches, synastry calculator, life path calculator, name number calculator"
         type="website"
       />
 
@@ -369,6 +370,43 @@ const CompatibilityCalculator = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* SEO FAQ Section */}
+          <SEOFaqSection
+            title="Love Calculator & Astrology Compatibility FAQ"
+            description="Our love calculator combines Western zodiac compatibility, Chinese love zodiac, synastry analysis, life path numbers, and name numerology into one comprehensive compatibility test. Discover your cosmic connection!"
+            faqs={[
+              {
+                question: "How does the love calculator work?",
+                answer: "Our love calculator analyzes multiple compatibility factors: Western zodiac sign compatibility, Chinese zodiac sign matches, life path number compatibility (from numerology), and overall cosmic alignment. The AI combines these factors into a single compatibility score with a detailed breakdown."
+              },
+              {
+                question: "What is a synastry calculator?",
+                answer: "A synastry calculator compares the astrological charts of two people to determine their compatibility. Our tool performs synastry analysis by comparing zodiac signs, life path numbers, and Chinese zodiac animals to give you a comprehensive compatibility picture."
+              },
+              {
+                question: "How does Chinese love zodiac compatibility work?",
+                answer: "The Chinese zodiac assigns one of 12 animals based on your birth year. Certain Chinese zodiac sign matches are considered more compatible than others. For example, Rat and Dragon are highly compatible, while Rat and Horse may face challenges. Our calculator includes this analysis automatically."
+              },
+              {
+                question: "What is a life path calculator?",
+                answer: "A life path calculator determines your life path number by adding all digits of your birthdate until you get a single digit (1-9) or a master number (11, 22, 33). This number reveals your core personality traits and is used in numerology compatibility analysis."
+              },
+              {
+                question: "What is a name number calculator?",
+                answer: "A name number calculator converts letters in your name to numbers using numerology (A=1, B=2, etc.) and reduces them to a single digit. This number reveals personality aspects and can be compared for compatibility. Our tool calculates life path numbers from birthdates for similar insights."
+              },
+              {
+                question: "Is this compatibility test accurate?",
+                answer: "Our compatibility test uses traditional astrology and numerology systems that have been used for centuries. While no compatibility test can predict relationship outcomes with certainty, it provides fun and insightful analysis based on time-tested astrological principles."
+              }
+            ]}
+            relatedTools={[
+              { name: "Past Life Generator", path: "/past-life-generator" },
+              { name: "Famous Birthdays", path: "/famous-birthdays" },
+              { name: "Age Calculator", path: "/" },
+            ]}
+          />
         </div>
       </div>
     </>

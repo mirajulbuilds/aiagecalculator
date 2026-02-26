@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const RetirementCalculator = () => {
   const [currentAge, setCurrentAge] = useState<string>("");
@@ -98,12 +99,12 @@ const RetirementCalculator = () => {
   return (
     <>
       <Helmet>
-        <title>Retirement Age Calculator | When Can I Retire?</title>
+        <title>Retirement Calculator - Income, Withdrawal & Early Retirement Planner</title>
         <meta
           name="description"
-          content="Calculate when you can retire based on your savings, income, and lifestyle preferences. Get AI-powered retirement planning insights."
+          content="Free retirement income calculator and early retirement planner. Calculate how long your retirement savings will last, plan withdrawals, and factor in social security. AI-powered retirement plan calculator."
         />
-        <meta name="keywords" content="retirement calculator, retirement age, financial planning, retirement savings, when can i retire" />
+        <meta name="keywords" content="retirement income calculator, retirement withdrawal calculator, how long will retirement savings last calculator, retirement plan calculator, retirement calculator with social security, early retirement calculator, when can i retire" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-b from-background to-background/95 py-12 px-4">
@@ -285,6 +286,43 @@ const RetirementCalculator = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* SEO FAQ Section */}
+          <SEOFaqSection
+            title="Retirement Calculator & Financial Planning FAQ"
+            description="Plan your retirement with our AI-powered retirement income calculator. Whether you're considering early retirement or want to know how long your savings will last, get personalized estimates and planning insights."
+            faqs={[
+              {
+                question: "How does the retirement income calculator work?",
+                answer: "Our retirement income calculator analyzes your current age, savings, monthly income, expenses, desired retirement lifestyle, and expected investment returns to estimate when you can retire. The AI provides a personalized retirement age estimate and financial summary."
+              },
+              {
+                question: "How long will my retirement savings last?",
+                answer: "This depends on your total savings, withdrawal rate, investment returns, and expenses. A common rule of thumb is the 4% rule — withdrawing 4% of savings annually. Our calculator factors in your specific financial situation to estimate how long your retirement savings will last."
+              },
+              {
+                question: "What is a retirement withdrawal calculator?",
+                answer: "A retirement withdrawal calculator helps you plan how much money you can safely withdraw from your retirement accounts each year without running out. It considers factors like inflation, investment returns, and life expectancy to determine a sustainable withdrawal rate."
+              },
+              {
+                question: "Can I plan for early retirement?",
+                answer: "Yes! Our early retirement calculator shows you the financial path to retiring before the traditional age of 65. By adjusting your savings rate, investment returns, and desired lifestyle, you can see exactly what it takes to retire early."
+              },
+              {
+                question: "Does this calculator include social security?",
+                answer: "Our calculator currently focuses on personal savings and investments. For a complete picture, consider that social security typically provides $1,500-$3,500/month depending on your earnings history. We recommend factoring this into your desired retirement income accordingly."
+              },
+              {
+                question: "What is a good retirement plan?",
+                answer: "A good retirement plan typically includes: saving 15-20% of income, diversified investments, an emergency fund, health insurance planning, and Social Security optimization. Our retirement plan calculator gives you a starting point based on your specific financial situation."
+              }
+            ]}
+            relatedTools={[
+              { name: "Life Expectancy Calculator", path: "/life-expectancy-calculator" },
+              { name: "Health Score Calculator", path: "/health-score-calculator" },
+              { name: "Age Calculator", path: "/" },
+            ]}
+          />
         </div>
       </div>
     </>
