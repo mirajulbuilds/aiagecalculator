@@ -6,3 +6,6 @@ http://aiagecalc.com/*       https://aiagecalc.com/:splat  301!
 # Redirect old celebrity URLs to new people URLs (301 Permanent)
 /celebrity/:slug         /people/:slug  301
 /famous-birthdays/:slug  /people/:slug  301
+
+# SPA fallback (serves static files first, then falls back to index.html)
+/*  /index.html  200
