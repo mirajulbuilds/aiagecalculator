@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Calendar, Baby, Heart, Share2, Sparkles } from "lucide-react";
+import { Calendar, Baby, Heart, Share2, Sparkles, Dog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,7 @@ const DueDateCalculator = () => {
     weeksPregnant: string;
     currentTrimester: string;
     babyZodiacSign: string;
+    isDogPregnancy?: boolean;
   } | null>(null);
 
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -41,10 +42,17 @@ const DueDateCalculator = () => {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 2 }, (_, i) => currentYear - i);
 
+  const isDogMethod = calculationMethod === "DogMating";
+
   const getDateLabel = () => {
-    if (calculationMethod === "LMP") return "Date of Last Menstrual Period (LMP)";
-    if (calculationMethod === "Conception") return "Date of Conception";
-    return "Select Date";
+    switch (calculationMethod) {
+      case "LMP": return "Date of Last Menstrual Period (LMP)";
+      case "Conception": return "Date of Conception";
+      case "IVF_Day3": return "IVF Transfer Date (Day 3 Embryo)";
+      case "IVF_Day5": return "FET/IVF Transfer Date (Day 5 Blastocyst)";
+      case "DogMating": return "Dog Mating Date";
+      default: return "Select Date";
+    }
   };
 
   const handleCalculate = async () => {
@@ -73,7 +81,8 @@ const DueDateCalculator = () => {
           estimatedDueDate: data.estimatedDueDate,
           weeksPregnant: data.weeksPregnant,
           currentTrimester: data.currentTrimester,
-          babyZodiacSign: data.babyZodiacSign
+          babyZodiacSign: data.babyZodiacSign,
+          isDogPregnancy: data.isDogPregnancy || false,
         });
       } else {
         throw new Error("Invalid response from server");
@@ -89,7 +98,8 @@ const DueDateCalculator = () => {
   const handleShare = async () => {
     if (!result) return;
 
-    const shareText = `My estimated due date is ${result.estimatedDueDate}! Find out yours at ${window.location.origin}/due-date-calculator`;
+    const subject = isDogMethod ? "puppy" : "baby";
+    const shareText = `My estimated ${subject} due date is ${result.estimatedDueDate}! Find out yours at ${window.location.origin}/due-date-calculator`;
 
     if (navigator.share) {
       try {
@@ -113,8 +123,8 @@ const DueDateCalculator = () => {
   return (
     <>
       <Helmet>
-        <title>Baby Due Date Calculator - By IVF, Conception & LMP | AiAgeCalc</title>
-        <meta name="description" content="Free baby due date calculator. Calculate your due date from conception, by IVF transfer date, or last menstrual period. Also includes dog due date calculator and canine pregnancy calculator." />
+        <title>Baby Due Date Calculator - By IVF, FET, Conception & LMP | AiAgeCalc</title>
+        <meta name="description" content="Free baby due date calculator. Calculate your due date from conception, by IVF transfer date, FET, or last menstrual period. Also includes dog due date calculator and canine pregnancy calculator." />
         <meta name="keywords" content="due date calculator by ivf, calculate my due date from conception, baby due date calculator, conception to due date calculator, dog due date calculator, canine due date calculator, fet due date calculator" />
       </Helmet>
 
@@ -122,13 +132,13 @@ const DueDateCalculator = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
-            Pregnancy Due Date Calculator
+            Due Date Calculator
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Find out your baby's estimated due date, how far along you are, and your baby's zodiac sign.
+            Calculate your estimated due date using LMP, conception date, IVF/FET transfer date, or find your dog's due date.
           </p>
           <p className="text-sm text-muted-foreground mt-2 italic">
-            *This is an estimate and not medical advice. Always consult with your healthcare provider.*
+            *This is an estimate and not medical or veterinary advice. Always consult with your healthcare provider or veterinarian.*
           </p>
         </div>
 
@@ -148,6 +158,9 @@ const DueDateCalculator = () => {
                 <SelectContent>
                   <SelectItem value="LMP">Last Menstrual Period (LMP)</SelectItem>
                   <SelectItem value="Conception">Conception Date</SelectItem>
+                  <SelectItem value="IVF_Day3">IVF Transfer Date (Day 3 Embryo)</SelectItem>
+                  <SelectItem value="IVF_Day5">FET / IVF Transfer Date (Day 5 Blastocyst)</SelectItem>
+                  <SelectItem value="DogMating">🐕 Dog / Canine Mating Date</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -155,7 +168,7 @@ const DueDateCalculator = () => {
             {/* Date Input */}
             <div>
               <label className="flex items-center gap-2 text-sm font-medium mb-3">
-                <Calendar className="w-4 h-4 text-primary" />
+                {isDogMethod ? <Dog className="w-4 h-4 text-primary" /> : <Calendar className="w-4 h-4 text-primary" />}
                 {getDateLabel()}
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -207,7 +220,7 @@ const DueDateCalculator = () => {
               className="main-action-button w-full" 
               size="lg"
             >
-              {isLoading ? "Calculating..." : "Calculate My Due Date"}
+              {isLoading ? "Calculating..." : isDogMethod ? "Calculate Puppy Due Date" : "Calculate My Due Date"}
             </Button>
           </CardContent>
         </Card>
@@ -220,8 +233,10 @@ const DueDateCalculator = () => {
                 {/* Due Date */}
                 <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Baby className="w-6 h-6 text-primary" />
-                    <p className="text-sm font-medium text-muted-foreground">Your Estimated Due Date</p>
+                    {result.isDogPregnancy ? <Dog className="w-6 h-6 text-primary" /> : <Baby className="w-6 h-6 text-primary" />}
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {result.isDogPregnancy ? "Estimated Puppy Due Date" : "Your Estimated Due Date"}
+                    </p>
                   </div>
                   <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                     {result.estimatedDueDate}
@@ -229,15 +244,17 @@ const DueDateCalculator = () => {
                 </div>
 
                 {/* Progress Info */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`grid grid-cols-1 ${result.isDogPregnancy ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-4`}>
                   <Card className="border-2 border-primary/20">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <Calendar className="w-5 h-5 text-primary" />
-                        <p className="text-xs font-medium text-muted-foreground uppercase">You Are</p>
+                        <p className="text-xs font-medium text-muted-foreground uppercase">
+                          {result.isDogPregnancy ? "Progress" : "You Are"}
+                        </p>
                       </div>
                       <p className="text-xl font-bold text-foreground">{result.weeksPregnant}</p>
-                      <p className="text-sm text-muted-foreground">Pregnant</p>
+                      <p className="text-sm text-muted-foreground">{result.isDogPregnancy ? "Along" : "Pregnant"}</p>
                     </CardContent>
                   </Card>
 
@@ -245,23 +262,27 @@ const DueDateCalculator = () => {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <Heart className="w-5 h-5 text-primary" />
-                        <p className="text-xs font-medium text-muted-foreground uppercase">Trimester</p>
+                        <p className="text-xs font-medium text-muted-foreground uppercase">
+                          {result.isDogPregnancy ? "Stage" : "Trimester"}
+                        </p>
                       </div>
                       <p className="text-xl font-bold text-foreground">{result.currentTrimester}</p>
-                      <p className="text-sm text-muted-foreground">Trimester</p>
+                      <p className="text-sm text-muted-foreground">{result.isDogPregnancy ? "of Pregnancy" : "Trimester"}</p>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-2 border-primary/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <Sparkles className="w-5 h-5 text-primary" />
-                        <p className="text-xs font-medium text-muted-foreground uppercase">Zodiac Sign</p>
-                      </div>
-                      <p className="text-xl font-bold text-foreground">{result.babyZodiacSign}</p>
-                      <p className="text-sm text-muted-foreground">Baby's Sign</p>
-                    </CardContent>
-                  </Card>
+                  {!result.isDogPregnancy && (
+                    <Card className="border-2 border-primary/20">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <Sparkles className="w-5 h-5 text-primary" />
+                          <p className="text-xs font-medium text-muted-foreground uppercase">Zodiac Sign</p>
+                        </div>
+                        <p className="text-xl font-bold text-foreground">{result.babyZodiacSign}</p>
+                        <p className="text-sm text-muted-foreground">Baby's Sign</p>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
 
                 {/* Share Button */}
@@ -291,7 +312,7 @@ const DueDateCalculator = () => {
         {/* SEO FAQ Section */}
         <SEOFaqSection
           title="Baby Due Date Calculator FAQ"
-          description="Our baby due date calculator helps you estimate when your baby will arrive using multiple calculation methods including last menstrual period (LMP), conception date, and IVF transfer date."
+          description="Our baby due date calculator helps you estimate when your baby will arrive using multiple calculation methods including last menstrual period (LMP), conception date, IVF transfer date, FET, and dog/canine pregnancy."
           faqs={[
             {
               question: "How do I calculate my due date from conception?",
@@ -299,15 +320,15 @@ const DueDateCalculator = () => {
             },
             {
               question: "How does the due date calculator by IVF work?",
-              answer: "For IVF pregnancies, the due date is calculated differently based on the embryo transfer date. For a Day 3 transfer, add 263 days; for a Day 5 (blastocyst/FET) transfer, add 261 days. Select the IVF Transfer Date method in our calculator for accurate results."
+              answer: "For IVF pregnancies, the due date is calculated based on the embryo transfer date. For a Day 3 embryo transfer, we add 263 days. For a Day 5 blastocyst or FET transfer, we add 261 days. Simply select the appropriate IVF method in our calculator for accurate results."
             },
             {
               question: "What is a FET due date calculator?",
-              answer: "A FET (Frozen Embryo Transfer) due date calculator estimates your due date based on when the frozen embryo was transferred. Since the embryo is typically a Day 5 blastocyst, you add 261 days to the transfer date. Our calculator includes this method."
+              answer: "A FET (Frozen Embryo Transfer) due date calculator estimates your due date based on when the frozen embryo was transferred. Since the embryo is typically a Day 5 blastocyst, you add 261 days to the transfer date. Select 'FET / IVF Transfer Date (Day 5 Blastocyst)' in our calculator."
             },
             {
-              question: "Can I use this as a dog due date calculator?",
-              answer: "Dog pregnancy (gestation) typically lasts about 63 days from conception. While our current calculator focuses on human pregnancies, canine due dates can be estimated by adding 63 days to the mating date. We're working on adding a dedicated dog due date calculator feature."
+              question: "How does the dog due date calculator work?",
+              answer: "Dog pregnancy (gestation) typically lasts about 63 days (approximately 9 weeks) from the mating date. Select 'Dog / Canine Mating Date' as the calculation method, enter the mating date, and our calculator will estimate when the puppies will arrive, along with the current stage of pregnancy."
             },
             {
               question: "How accurate is the baby due date calculator?",
