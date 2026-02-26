@@ -1,40 +1,67 @@
 
+Goal: fix the dark-mode readability bug (not light mode) shown in your screenshot, where several headings and FAQ rows are too dim/near-invisible.
 
-## Text Color Fix Plan
+What I found from inspection
+- The unreadable areas are concentrated in text elements that do not have explicit color classes:
+  - Card titles (e.g., “Upload Your Photo”, “AI Age Estimation”)
+  - “How It Works” section title and step headings
+  - FAQ accordion question rows
+- Text with explicit semantic classes (like `text-muted-foreground` or gradient headings) remains readable, which indicates this is a component-level inheritance/contrast issue rather than a full theme failure.
+- The previous change edited light-mode tokens only (`--primary`, `--secondary`, `--ring`, `--gradient-primary`) and did not address this dark-mode bug.
 
-### Problem Identified
+Implementation plan
+1) Revert the unintended light-mode token edits
+- File: `src/index.css`
+- Revert these variables to their pre-change values so brand/light palette is not altered while fixing dark mode:
+  - `--primary` back to `250 75% 77%`
+  - `--secondary` back to `250 75% 67%`
+  - `--ring` back to `250 75% 77%`
+  - `--gradient-primary` back to `linear-gradient(135deg, hsl(250 75% 77%), hsl(250 75% 67%))`
 
-The site's **light mode** has a critical text visibility issue: the primary color (`--primary: 250 75% 77%`) is a very light lavender purple (HSL 250, 75%, 77% = approx #b8a0f5). When used in gradient text (`bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent`), headings become extremely faint and hard to read against the light background.
+2) Make shared heading primitives dark-safe by default
+- File: `src/components/ui/card.tsx`
+  - Update `CardTitle` base class to include explicit semantic text color:
+  - add `text-card-foreground`
+  - This ensures card titles are always readable on card backgrounds in both themes, independent of inheritance issues.
+- File: `src/components/ui/accordion.tsx`
+  - Update `AccordionTrigger` base class to include:
+  - `text-foreground`
+  - This fixes FAQ row question text contrast in dark mode globally.
 
-**Affected areas:**
-1. **Logo** in the Header ("Ai Age Calculator") - barely visible
-2. **H1 headings** across 15+ pages/components using gradient text
-3. **Result values** (age numbers, scores, dates) using the same gradient pattern
+3) Patch local heading classes in Ai Face Age page for guaranteed contrast
+- File: `src/pages/AiFaceAge.tsx`
+- Add explicit semantic color where headings currently rely on implicit inheritance:
+  - “How It Works” card title: add `text-card-foreground`
+  - Step labels (“Upload Photo”, “AI Analysis”, “Get Results”): add `text-foreground`
+- Keep existing muted and primary styling as-is so visual hierarchy remains intact.
 
-### Root Cause
+4) Optional hardening for FAQ wrapper (small safeguard)
+- File: `src/components/SEOFaqSection.tsx`
+- Add `text-foreground` on the section container wrapper so any unstyled descendants remain readable in dark mode.
+- Keep `text-muted-foreground` where intentionally used for secondary copy.
 
-The light mode `--primary` at 77% lightness is too light for use as text color. In dark mode it works fine because the background is dark. The fix should darken the light mode primary color so gradient text is readable, without changing the dark mode appearance.
+Why this approach
+- It targets the actual failing text nodes from your screenshot.
+- It avoids broad dark palette shifts that can cause regressions.
+- It fixes the problem at shared component level (`CardTitle`, `AccordionTrigger`) so other pages benefit too.
+- It restores the earlier unintended light-mode token changes.
 
-### Fix Strategy
+Validation checklist (end-to-end)
+- Test `/ai-face-age` in dark mode:
+  - “Upload Your Photo” and “AI Age Estimation” headings readable
+  - “How It Works” title + step headings readable
+  - FAQ accordion question text readable in collapsed and expanded states
+- Test `/ai-face-age` in light mode to confirm no regression.
+- Spot-check other pages using card titles/accordion:
+  - `/about` (card titles)
+  - any page with `SEOFaqSection` (FAQ triggers)
+- Verify contrast hierarchy is preserved:
+  - primary accents remain primary
+  - muted helper text remains secondary, not too bright
 
-**Single CSS change in `src/index.css`**: Darken the light mode `--primary` value from `250 75% 77%` to `250 75% 55%` (a more saturated, darker purple). This single change will fix all gradient text across the entire site because every heading uses the CSS variable.
-
-Also update `--ring` to match, and slightly darken `--secondary` for consistent contrast.
-
-### Files to Modify
-
-**`src/index.css`** (lines 146-150 in `:root`):
-- `--primary`: `250 75% 77%` -> `250 75% 55%` (darker, more readable purple)
-- `--secondary`: `250 75% 67%` -> `250 75% 50%` (slightly darker for consistency)
-- `--ring`: `250 75% 77%` -> `250 75% 55%` (match primary)
-
-This single change fixes all 20+ instances of gradient text headings, logo text, and result values across every page without touching any component files.
-
-### Technical Details
-
-The gradient pattern `from-primary to-primary/60` means:
-- Light mode current: from ~#b8a0f5 to ~#b8a0f5/60% opacity = nearly invisible
-- Light mode fixed: from ~#6b3ce6 to ~#6b3ce6/60% opacity = strong, readable purple
-
-All pages using `text-primary`, `bg-primary`, or gradient text will benefit from this change. The dark mode colors remain untouched.
-
+Files to update
+- `src/index.css`
+- `src/components/ui/card.tsx`
+- `src/components/ui/accordion.tsx`
+- `src/pages/AiFaceAge.tsx`
+- `src/components/SEOFaqSection.tsx`
