@@ -401,14 +401,14 @@ const AiFaceAge = () => {
           {/* How It Works */}
           <Card className="mt-8 bg-gradient-to-br from-primary/5 to-purple-600/5">
             <CardHeader>
-              <CardTitle>How It Works</CardTitle>
+              <CardTitle className="text-card-foreground">How It Works</CardTitle>
             </CardHeader>
             <CardContent className="grid md:grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-xl font-bold text-primary">1</span>
                 </div>
-                <h4 className="font-semibold mb-2">Upload Photo</h4>
+                <h4 className="font-semibold mb-2 text-foreground">Upload Photo</h4>
                 <p className="text-sm text-muted-foreground">
                   Upload a clear photo with your face visible
                 </p>
@@ -417,7 +417,7 @@ const AiFaceAge = () => {
                 <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-xl font-bold text-primary">2</span>
                 </div>
-                <h4 className="font-semibold mb-2">AI Analysis</h4>
+                <h4 className="font-semibold mb-2 text-foreground">AI Analysis</h4>
                 <p className="text-sm text-muted-foreground">
                   Our AI analyzes facial features using advanced vision
                 </p>
@@ -426,7 +426,7 @@ const AiFaceAge = () => {
                 <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-xl font-bold text-primary">3</span>
                 </div>
-                <h4 className="font-semibold mb-2">Get Results</h4>
+                <h4 className="font-semibold mb-2 text-foreground">Get Results</h4>
                 <p className="text-sm text-muted-foreground">
                   Discover your AI-estimated age instantly!
                 </p>

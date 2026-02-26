@@ -34,7 +34,7 @@ export const SEOFaqSection = ({ title, description, faqs, relatedTools, jsonLd =
   };
 
   return (
-    <section className="mt-12 mb-8">
+    <section className="mt-12 mb-8 text-foreground">
       {jsonLd && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       )}
