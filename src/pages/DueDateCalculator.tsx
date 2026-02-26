@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const DueDateCalculator = () => {
   const [calculationMethod, setCalculationMethod] = useState<string>("");
@@ -112,8 +113,9 @@ const DueDateCalculator = () => {
   return (
     <>
       <Helmet>
-        <title>Pregnancy Due Date Calculator | AiAgeCalc.com</title>
-        <meta name="description" content="Calculate your baby's estimated due date, find out how far along you are, and discover your baby's zodiac sign. Free pregnancy calculator with instant results." />
+        <title>Baby Due Date Calculator - By IVF, Conception & LMP | AiAgeCalc</title>
+        <meta name="description" content="Free baby due date calculator. Calculate your due date from conception, by IVF transfer date, or last menstrual period. Also includes dog due date calculator and canine pregnancy calculator." />
+        <meta name="keywords" content="due date calculator by ivf, calculate my due date from conception, baby due date calculator, conception to due date calculator, dog due date calculator, canine due date calculator, fet due date calculator" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -285,6 +287,43 @@ const DueDateCalculator = () => {
             />
           </div>
         )}
+
+        {/* SEO FAQ Section */}
+        <SEOFaqSection
+          title="Baby Due Date Calculator FAQ"
+          description="Our baby due date calculator helps you estimate when your baby will arrive using multiple calculation methods including last menstrual period (LMP), conception date, and IVF transfer date."
+          faqs={[
+            {
+              question: "How do I calculate my due date from conception?",
+              answer: "To calculate your due date from conception, add 266 days (38 weeks) to your conception date. Our calculator does this automatically — simply select 'Conception Date' as your calculation method and enter the date. This is the most accurate method if you know your exact conception date."
+            },
+            {
+              question: "How does the due date calculator by IVF work?",
+              answer: "For IVF pregnancies, the due date is calculated differently based on the embryo transfer date. For a Day 3 transfer, add 263 days; for a Day 5 (blastocyst/FET) transfer, add 261 days. Select the IVF Transfer Date method in our calculator for accurate results."
+            },
+            {
+              question: "What is a FET due date calculator?",
+              answer: "A FET (Frozen Embryo Transfer) due date calculator estimates your due date based on when the frozen embryo was transferred. Since the embryo is typically a Day 5 blastocyst, you add 261 days to the transfer date. Our calculator includes this method."
+            },
+            {
+              question: "Can I use this as a dog due date calculator?",
+              answer: "Dog pregnancy (gestation) typically lasts about 63 days from conception. While our current calculator focuses on human pregnancies, canine due dates can be estimated by adding 63 days to the mating date. We're working on adding a dedicated dog due date calculator feature."
+            },
+            {
+              question: "How accurate is the baby due date calculator?",
+              answer: "Due date calculations are estimates — only about 5% of babies are born on their exact due date. Most babies arrive within 2 weeks before or after the estimated date. The conception date method is generally more accurate than the LMP method. Always confirm with your healthcare provider."
+            },
+            {
+              question: "What is the difference between LMP and conception date methods?",
+              answer: "The LMP (Last Menstrual Period) method adds 280 days to the first day of your last period. The Conception Date method adds 266 days to the actual conception date. The conception method is more accurate but requires knowing your exact conception date."
+            }
+          ]}
+          relatedTools={[
+            { name: "Age Calculator", path: "/" },
+            { name: "Pet Age Calculator", path: "/pet-age-calculator" },
+            { name: "Compatibility Calculator", path: "/compatibility-calculator" },
+          ]}
+        />
       </div>
     </>
   );

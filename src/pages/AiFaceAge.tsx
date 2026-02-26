@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
 import { triggerNativeShare } from "@/lib/shareUtils";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const AiFaceAge = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -219,9 +220,9 @@ const AiFaceAge = () => {
     <PageTransition>
     <>
       <SEOHead
-        title="How Old Do I Look? AI Face Age Calculator"
-        description="Upload a photo and let our AI-powered face age calculator estimate your age! Fun, free, and accurate age detection using advanced computer vision technology."
-        keywords="face age calculator, how old do i look, AI age detector, face age estimation, age from photo, age guesser"
+        title="How Old Do I Look? AI Face Age Calculator & Face Check ID"
+        description="Upload a photo and let our AI face age calculator estimate your age. Works as a face check ID and reverse face search tool. Free, fun, and accurate age detection from any photo."
+        keywords="face check id, reverse face search, face age calculator, how old do i look, AI age detector, face age estimation, age from photo, age guesser"
         type="website"
       />
 
@@ -443,6 +444,39 @@ const AiFaceAge = () => {
               </p>
             </CardContent>
           </Card>
+
+          {/* SEO FAQ Section */}
+          <SEOFaqSection
+            title="AI Face Age Calculator & Face Check FAQ"
+            description="Our AI face age calculator uses advanced computer vision to analyze facial features and estimate age from a photo. It also works as a face check ID tool, connecting your estimated age with celebrities of the same age."
+            faqs={[
+              {
+                question: "How does the AI face age calculator work?",
+                answer: "Our AI analyzes facial features like skin texture, facial structure, wrinkles, and other visual cues using Google's Gemini Vision AI. It then estimates your apparent age based on these features. The tool also performs a reverse face search to find celebrities who share your estimated age."
+              },
+              {
+                question: "What is face check ID?",
+                answer: "Face check ID refers to using facial analysis technology to identify or verify characteristics about a person from their photo. Our tool estimates your age and connects you with celebrities of the same age, creating a fun face check experience."
+              },
+              {
+                question: "Can I use this as a reverse face search?",
+                answer: "While our primary feature is age estimation, the tool also performs a type of reverse face search by finding celebrities who are the same estimated age as you. For celebrity look-alike matching, try our dedicated Look-Alike Finder tool."
+              },
+              {
+                question: "How accurate is AI face age estimation?",
+                answer: "AI face age estimation is typically accurate within 3-5 years for most people. Factors like lighting, makeup, photo quality, and facial expressions can affect accuracy. The AI works best with clear, front-facing photos in good lighting."
+              },
+              {
+                question: "Is my photo stored or shared?",
+                answer: "No, your photo is processed in real-time for age estimation and is not stored on our servers. Your privacy is our priority — the image is only used temporarily to generate the age estimate."
+              }
+            ]}
+            relatedTools={[
+              { name: "Celebrity Look-Alike Finder", path: "/look-alike-finder" },
+              { name: "Age Calculator", path: "/" },
+              { name: "Life Expectancy Calculator", path: "/life-expectancy-calculator" },
+            ]}
+          />
         </div>
       </div>
     </>

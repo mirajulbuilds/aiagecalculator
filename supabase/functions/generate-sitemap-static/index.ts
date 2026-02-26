@@ -32,6 +32,8 @@ serve(async (req) => {
       { url: '/pet-age-calculator', priority: '0.8', changefreq: 'weekly' },
       { url: '/past-life-generator', priority: '0.8', changefreq: 'weekly' },
       { url: '/famous-birthdays', priority: '0.9', changefreq: 'daily' },
+      { url: '/compare', priority: '0.7', changefreq: 'weekly' },
+      { url: '/compare-life-expectancy', priority: '0.7', changefreq: 'weekly' },
     ];
 
     let urlEntries = '';

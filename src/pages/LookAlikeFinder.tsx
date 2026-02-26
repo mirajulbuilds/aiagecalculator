@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SITE_CONFIG } from "@/lib/config";
 import PageTransition from "@/components/PageTransition";
 import { triggerNativeShare } from "@/lib/shareUtils";
+import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 interface CelebrityMatch {
   id: string;
@@ -239,9 +240,9 @@ const LookAlikeFinder = () => {
     <PageTransition>
     <>
       <SEOHead
-        title="Find Your Celebrity Look-Alike - AI Face Match Tool"
-        description="Upload your photo and discover which celebrity you look like! Our AI-powered face matching technology compares your features with thousands of celebrities to find your twin."
-        keywords="celebrity look-alike, face match, AI face recognition, celebrity twin, who do I look like, celebrity doppelganger"
+        title="Find Your Celebrity Look-Alike - Doppelganger Finder & Star by Face"
+        description="Find your famous look alike! Upload your photo and discover what celebrity you look like. Our AI doppelganger finder compares your face with thousands of celebrities. Free star by face tool."
+        keywords="find famous look alike, celebrities who look like me, doppelganger finder, star by face, find my doppelganger, what celebrity do i look like, celebrity look-alike, face match"
         type="website"
       />
 
@@ -445,6 +446,39 @@ const LookAlikeFinder = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* SEO FAQ Section */}
+          <SEOFaqSection
+            title="Celebrity Look-Alike & Doppelganger Finder FAQ"
+            description="Our AI-powered celebrity look-alike finder uses advanced facial recognition to find your famous doppelganger. Upload a photo and discover which celebrity you resemble most — it's like having a star by face scanner in your pocket."
+            faqs={[
+              {
+                question: "How does the celebrity look-alike finder work?",
+                answer: "Our tool uses AI facial recognition technology to analyze your facial features — including face shape, eye spacing, nose structure, and more. It then compares your face embedding against thousands of celebrity face embeddings in our database to find your closest matches."
+              },
+              {
+                question: "What is a doppelganger finder?",
+                answer: "A doppelganger finder is a tool that helps you find someone who looks remarkably similar to you. Our AI doppelganger finder specifically matches you with celebrities and famous people who share similar facial features."
+              },
+              {
+                question: "Is this the same as 'star by face'?",
+                answer: "Yes! Our tool works similarly to star by face apps. You upload a photo, our AI scans your facial features, and it returns the celebrities who look most like you with a similarity percentage score."
+              },
+              {
+                question: "How accurate is the celebrity face match?",
+                answer: "Our AI analyzes over 100 facial feature points and compares them against our celebrity database. Results typically show 60-95% similarity matches. For best results, use a clear, front-facing photo with good lighting."
+              },
+              {
+                question: "Can I find my doppelganger for free?",
+                answer: "Yes! Our find my doppelganger tool is completely free. Simply upload a clear photo of your face, and our AI will instantly compare it against thousands of celebrities to find your closest match."
+              }
+            ]}
+            relatedTools={[
+              { name: "AI Face Age Estimator", path: "/ai-face-age" },
+              { name: "Famous Birthdays", path: "/famous-birthdays" },
+              { name: "Compatibility Calculator", path: "/compatibility-calculator" },
+            ]}
+          />
         </div>
       </div>
     </>
