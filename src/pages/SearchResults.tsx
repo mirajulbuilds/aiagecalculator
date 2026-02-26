@@ -75,7 +75,7 @@ const SearchResults = () => {
           content={query ? `Search results for ${query}. Find celebrities, their ages, and birthdays.` : 'Search for celebrities and their birthdays.'}
         />
         {/* Prevent empty search pages from being indexed - fixes soft 404 errors */}
-        {!query && <meta name="robots" content="noindex, nofollow" />}
+        {(!query || celebrities.length === 0) && <meta name="robots" content="noindex, nofollow" />}
       </Helmet>
 
       <div className="min-h-screen bg-background">

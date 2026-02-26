@@ -1,5 +1,8 @@
-# Redirect old celebrity URLs to new people URLs (301 Permanent)
-# This file is used by many hosting providers (Netlify, Vercel, Cloudflare Pages)
+# Domain canonicalization (www -> non-www)
+https://www.aiagecalc.com/*  https://aiagecalc.com/:splat  301!
+http://www.aiagecalc.com/*   https://aiagecalc.com/:splat  301!
+http://aiagecalc.com/*       https://aiagecalc.com/:splat  301!
 
+# Redirect old celebrity URLs to new people URLs (301 Permanent)
 /celebrity/:slug         /people/:slug  301
 /famous-birthdays/:slug  /people/:slug  301

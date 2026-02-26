@@ -230,15 +230,20 @@ const CelebrityProfile = () => {
 
   if (!celebrity) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Celebrity Not Found</h1>
-          <Link to="/famous-birthdays" className="text-primary hover:underline flex items-center justify-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Directory
-          </Link>
+      <>
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Celebrity Not Found</h1>
+            <Link to="/famous-birthdays" className="text-primary hover:underline flex items-center justify-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Directory
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
