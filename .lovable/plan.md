@@ -1,112 +1,44 @@
 
 
-## Fix AdSense "Low Value Content" Rejection
+## Fix Ads.txt "Not Found" and AdSense Re-review
 
-Google AdSense rejected the site for "Low value content." This requires both content improvements and technical fixes to pass review.
+### Problem
+1. **Ads.txt Not Found**: Google cannot find `ads.txt` because SPA routing may intercept the request
+2. **Low Value Content**: Still showing the old Dec 2025 rejection -- needs re-review after our recent content improvements
 
----
+### Fix: Update `_redirects` for SPA Fallback
 
-### 1. Remove Test Mode from AdSense
+**File:** `public/_redirects`
 
-**File:** `src/components/AdSenseBanner.tsx`
+Add a SPA catch-all redirect at the bottom that sends unknown routes to `index.html`, but configure it so static files (like `ads.txt`, `robots.txt`, `sitemap.xml`) are served directly. Hosting platforms like Netlify/Lovable use `_redirects` rules -- we need to ensure the fallback does NOT intercept static files.
 
-Remove `data-adtest="on"` from the `<ins>` tag. This flag tells Google your ads are in test mode and signals that the site isn't production-ready.
+Add this line at the end of `_redirects`:
+```
+/*  /index.html  200
+```
 
----
+This is a "rewrite" (200 status) that only applies when no matching file exists. Static files in `public/` (like `ads.txt`, `robots.txt`, sitemaps) are served first because they exist as real files. The catch-all only fires for client-side routes that don't match a file.
 
-### 2. Expand the About Page
+### Verify After Publishing
 
-**File:** `src/pages/About.tsx`
+After publishing, confirm these URLs return correct content:
+- `https://aiagecalc.com/ads.txt` -- should show plain text with the publisher ID
+- `https://aiagecalc.com/robots.txt` -- should show robots file
+- `https://aiagecalc.com/sitemap.xml` -- should show sitemap XML
 
-The current About page has only ~50 words of content. AdSense requires substantial, original content on every page. Expand it to include:
-- A detailed description of what AiAgeCalc offers (each tool explained)
-- The mission/purpose of the site
-- Information about the team or creator
-- Links to all major tools on the site
-- At least 300-500 words of unique content
+### Re-request AdSense Review
 
----
+The "Low value content" status is from Dec 2025 -- before all the content improvements we made (expanded About page, Terms of Service, Contact page). After publishing:
 
-### 3. Add a Terms of Service Page
+1. Go to your AdSense dashboard
+2. Click on the site `aiagecalc.com`
+3. Check "I have fixed the issues"
+4. Click **Request review**
+5. Google typically responds within 1-2 weeks
 
-**New file:** `src/pages/TermsOfService.tsx`
-
-Create a proper Terms of Service page covering:
-- Usage terms for the site and tools
-- Intellectual property rights
-- Disclaimers (AI-generated content, health calculators, etc.)
-- Limitation of liability
-- User conduct rules
-
-Add a route for `/terms-of-service` in `App.tsx`.
-
----
-
-### 4. Add a Contact Page
-
-**New file:** `src/pages/Contact.tsx`
-
-Create a Contact page with:
-- A contact form (name, email, message)
-- Contact email address
-- Purpose/categories for inquiries
-
-Add a route for `/contact` in `App.tsx`.
-
----
-
-### 5. Update Footer with Required Links
-
-**File:** `src/components/Footer.tsx`
-
-Ensure the footer includes visible links to:
-- About
-- Privacy Policy
-- Terms of Service
-- Contact
-- Blog
-
-These are standard pages AdSense reviewers look for.
-
----
-
-### 6. Enable Ad Placements on Key Pages
-
-**File:** `src/pages/Index.tsx`
-
-Uncomment at least 1-2 AdSense banner placements on the homepage so Google can verify ads are properly integrated. Currently ALL ad placements on the homepage are commented out.
-
-Also uncomment sidebar ads on `CelebrityProfile.tsx` pages since those have substantial content.
-
----
-
-### 7. Update Sitemaps
-
-**File:** `public/sitemap-static.xml`
-
-Add the new pages (`/terms-of-service`, `/contact`) to the static sitemap so Google discovers and indexes them.
-
----
-
-### Summary of Changes
+### Summary
 
 | File | Change |
 |------|--------|
-| `src/components/AdSenseBanner.tsx` | Remove `data-adtest="on"` |
-| `src/pages/About.tsx` | Expand content to 300-500 words |
-| `src/pages/TermsOfService.tsx` | New page with full terms |
-| `src/pages/Contact.tsx` | New page with contact form |
-| `src/App.tsx` | Add routes for new pages |
-| `src/components/Footer.tsx` | Add links to Terms, Contact |
-| `src/pages/Index.tsx` | Uncomment 1-2 ad placements |
-| `public/sitemap-static.xml` | Add new page URLs |
-
-### After Deployment
-
-Once these changes are live:
-1. Wait 2-3 days for Google to re-crawl
-2. Go to AdSense dashboard
-3. Check "I confirm I have fixed the issues"
-4. Click "Request review"
-5. Google typically responds within 1-2 weeks
+| `public/_redirects` | Add SPA fallback `/* /index.html 200` |
 
