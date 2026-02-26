@@ -56,22 +56,16 @@ export const AdSenseBanner = ({
   };
 
   return (
-    <div className={`flex items-center justify-center w-full ${className}`} aria-label="Advertisement">
-      <div className={`${getContainerClass()} relative`}>
-        <div className="absolute top-2 left-2 text-[10px] text-muted-foreground bg-background px-2 py-0.5 rounded z-10">
-          Advertisement
-        </div>
-        <ins
-          ref={adRef}
-          className="adsbygoogle"
-          style={getAdStyle()}
-          data-ad-client="ca-pub-5207285694789831"
-          data-ad-slot={adSlot}
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-          
-        />
-      </div>
+    <div className={className} style={{ overflow: 'hidden', height: 0, width: 0, opacity: 0, position: 'absolute', pointerEvents: 'none' }} aria-hidden="true">
+      <ins
+        ref={adRef}
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-5207285694789831"
+        data-ad-slot={adSlot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 };
