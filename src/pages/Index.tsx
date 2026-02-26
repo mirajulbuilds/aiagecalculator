@@ -753,24 +753,28 @@ const Index = () => {
       description="Free chronological age calculator. Calculate your exact age by date of birth in years, months, days, hours, and seconds. Age difference calculator, age gap calculator, and how many days you've been alive."
       keywords="chronological age calculator, age calculator by date of birth, calculate how many days you've been alive, age difference calculator, age gap calculator, age calculator, birthday calculator, age in days, age in seconds"
       type="website"
+      isHomePage={true}
     />
     <main className="min-h-screen bg-background px-3 sm:px-6 md:px-8 py-4 sm:py-8">
-      {/* Structured Data for SEO */}
+      {/* WebApplication Structured Data */}
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "AI Age Calculator",
-          "description": "Calculate your exact age in years, months, days, hours, minutes, and seconds with our free AI age calculator tool",
-          "url": "https://aiagecalculator.lovable.app/",
-          "mainEntity": {
-            "@type": "SoftwareApplication",
-            "name": "AI Age Calculator",
-            "applicationCategory": "UtilityApplication",
-            "offers": {
-              "@type": "Offer",
-              "price": "0"
-            }
+          "@type": "WebApplication",
+          "name": "AiAgeCalc - AI Age Calculator",
+          "description": "Calculate your exact age in years, months, days, hours, minutes, and seconds. Compare ages, discover your planetary age, and find celebrity birthday matches.",
+          "url": "https://aiagecalc.com/",
+          "applicationCategory": "UtilityApplication",
+          "operatingSystem": "Any",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "AiAgeCalc",
+            "url": "https://aiagecalc.com"
           }
         })}
       </script>
@@ -2150,3 +2154,5 @@ const Index = () => {
     </PageTransition>;
 };
 export default Index;
+
+// WebApplication JSON-LD is added via SEOHead isHomePage prop

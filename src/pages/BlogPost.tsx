@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { blogPosts } from "@/data/blogPosts";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -143,14 +144,47 @@ const BlogPost = () => {
     <PageTransition>
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <ScrollProgress />
+      <SEOHead
+        title={`${post.title} | Birthday & Age Calculator Blog`}
+        description={post.metaDescription}
+        type="article"
+        author={post.author}
+        publishedTime={post.publishedDate}
+        image={post.featuredImage}
+        breadcrumbs={[
+          { name: "Home", url: "https://aiagecalc.com/" },
+          { name: "Blog", url: "https://aiagecalc.com/blog" },
+          { name: post.title, url: `https://aiagecalc.com/blog/${post.slug}` }
+        ]}
+      />
+
+      {/* Article JSON-LD */}
       <Helmet>
-        <title>{post.title} | Birthday & Age Calculator Blog</title>
-        <meta name="description" content={post.metaDescription} />
-        <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.summary} />
-        <meta property="og:type" content="article" />
-        <meta property="article:published_time" content={post.publishedDate} />
-        <meta property="article:author" content={post.author} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": post.metaDescription,
+          "image": post.featuredImage.startsWith('http') ? post.featuredImage : `https://aiagecalc.com${post.featuredImage}`,
+          "datePublished": post.publishedDate,
+          "dateModified": post.publishedDate,
+          "author": {
+            "@type": "Person",
+            "name": post.author
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "AiAgeCalc",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://aiagecalc.com/favicon.png"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://aiagecalc.com/blog/${post.slug}`
+          }
+        })}</script>
       </Helmet>
 
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
