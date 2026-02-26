@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, CalendarIcon, Share2, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Heart, CalendarIcon, Share2, Sparkles, Hash } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
@@ -22,7 +23,26 @@ interface CompatibilityResult {
     their_chinese_zodiac: string;
     your_life_path: number;
     their_life_path: number;
+    your_name_number?: number;
+    their_name_number?: number;
   };
+}
+
+// Calculate name number from a name using Pythagorean numerology
+function calculateNameNumber(name: string): number {
+  const charMap: Record<string, number> = {
+    a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9,
+    j: 1, k: 2, l: 3, m: 4, n: 5, o: 6, p: 7, q: 8, r: 9,
+    s: 1, t: 2, u: 3, v: 4, w: 5, x: 6, y: 7, z: 8,
+  };
+  let sum = 0;
+  for (const char of name.toLowerCase()) {
+    if (charMap[char]) sum += charMap[char];
+  }
+  while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+    sum = sum.toString().split("").map(Number).reduce((a, b) => a + b, 0);
+  }
+  return sum;
 }
 
 const CompatibilityCalculator = () => {
@@ -32,6 +52,8 @@ const CompatibilityCalculator = () => {
   const [day2, setDay2] = useState<string>("");
   const [month2, setMonth2] = useState<string>("");
   const [year2, setYear2] = useState<string>("");
+  const [name1, setName1] = useState<string>("");
+  const [name2, setName2] = useState<string>("");
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CompatibilityResult | null>(null);
 
@@ -60,7 +82,6 @@ const CompatibilityCalculator = () => {
       return;
     }
 
-    // Combine dropdown values into date objects for validation
     const birthDate1 = new Date(parseInt(year1), parseInt(month1) - 1, parseInt(day1));
     const birthDate2 = new Date(parseInt(year2), parseInt(month2) - 1, parseInt(day2));
 
@@ -78,7 +99,6 @@ const CompatibilityCalculator = () => {
     setResult(null);
 
     try {
-      // Format dates as YYYY-MM-DD strings for backend
       const date1String = `${year1}-${month1.padStart(2, '0')}-${day1.padStart(2, '0')}`;
       const date2String = `${year2}-${month2.padStart(2, '0')}-${day2.padStart(2, '0')}`;
 
@@ -86,6 +106,8 @@ const CompatibilityCalculator = () => {
         body: {
           date1: date1String,
           date2: date2String,
+          name1: name1.trim() || undefined,
+          name2: name2.trim() || undefined,
         },
       });
 
@@ -96,6 +118,12 @@ const CompatibilityCalculator = () => {
 
       if (data.error) {
         throw new Error(data.error);
+      }
+
+      // Add name numbers client-side if names provided
+      if (name1.trim() && name2.trim()) {
+        data.breakdown.your_name_number = calculateNameNumber(name1.trim());
+        data.breakdown.their_name_number = calculateNameNumber(name2.trim());
       }
 
       setResult(data);
@@ -139,7 +167,7 @@ const CompatibilityCalculator = () => {
               </h1>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover how compatible you are with your partner, friend, or crush based on Zodiac signs, Numerology, and more!
+              Discover how compatible you are based on Zodiac signs, Numerology, Name Numbers, and more!
             </p>
           </div>
 
@@ -149,9 +177,9 @@ const CompatibilityCalculator = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CalendarIcon className="w-5 h-5 text-primary" />
-                  Select Birthdays
+                  Select Birthdays & Names
                 </CardTitle>
-                <CardDescription>Choose both birthdays to calculate compatibility</CardDescription>
+                <CardDescription>Enter birthdays and optionally names for name number analysis</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Your Birthday */}
@@ -164,9 +192,7 @@ const CompatibilityCalculator = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {days.map((day) => (
-                          <SelectItem key={day} value={day}>
-                            {day}
-                          </SelectItem>
+                          <SelectItem key={day} value={day}>{day}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -176,9 +202,7 @@ const CompatibilityCalculator = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {months.map((month) => (
-                          <SelectItem key={month.value} value={month.value}>
-                            {month.label}
-                          </SelectItem>
+                          <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -188,13 +212,17 @@ const CompatibilityCalculator = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {years.map((year) => (
-                          <SelectItem key={year} value={year}>
-                            {year}
-                          </SelectItem>
+                          <SelectItem key={year} value={year}>{year}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                  <Input
+                    placeholder="Your name (optional, for name number)"
+                    value={name1}
+                    onChange={(e) => setName1(e.target.value)}
+                    maxLength={100}
+                  />
                 </div>
 
                 {/* Their Birthday */}
@@ -207,9 +235,7 @@ const CompatibilityCalculator = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {days.map((day) => (
-                          <SelectItem key={day} value={day}>
-                            {day}
-                          </SelectItem>
+                          <SelectItem key={day} value={day}>{day}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -219,9 +245,7 @@ const CompatibilityCalculator = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {months.map((month) => (
-                          <SelectItem key={month.value} value={month.value}>
-                            {month.label}
-                          </SelectItem>
+                          <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -231,13 +255,17 @@ const CompatibilityCalculator = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {years.map((year) => (
-                          <SelectItem key={year} value={year}>
-                            {year}
-                          </SelectItem>
+                          <SelectItem key={year} value={year}>{year}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                  <Input
+                    placeholder="Their name (optional, for name number)"
+                    value={name2}
+                    onChange={(e) => setName2(e.target.value)}
+                    maxLength={100}
+                  />
                 </div>
 
                 <Button
@@ -289,21 +317,30 @@ const CompatibilityCalculator = () => {
                     </div>
 
                     {/* Breakdown */}
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-3 text-sm">
+                      <h4 className="font-semibold text-foreground flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-primary" /> Zodiac & Numerology Breakdown
+                      </h4>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Your Signs:</span>
-                        <span className="font-medium">
-                          {result.breakdown.your_zodiac} • {result.breakdown.your_chinese_zodiac} • Life Path{" "}
-                          {result.breakdown.your_life_path}
-                        </span>
+                        <span className="text-muted-foreground">Western Zodiac:</span>
+                        <span className="font-medium">{result.breakdown.your_zodiac} × {result.breakdown.their_zodiac}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Their Signs:</span>
-                        <span className="font-medium">
-                          {result.breakdown.their_zodiac} • {result.breakdown.their_chinese_zodiac} • Life Path{" "}
-                          {result.breakdown.their_life_path}
-                        </span>
+                        <span className="text-muted-foreground">Chinese Zodiac:</span>
+                        <span className="font-medium">{result.breakdown.your_chinese_zodiac} × {result.breakdown.their_chinese_zodiac}</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Life Path Numbers:</span>
+                        <span className="font-medium">{result.breakdown.your_life_path} × {result.breakdown.their_life_path}</span>
+                      </div>
+                      {result.breakdown.your_name_number && result.breakdown.their_name_number && (
+                        <div className="flex justify-between border-t border-primary/10 pt-2">
+                          <span className="text-muted-foreground flex items-center gap-1">
+                            <Hash className="w-3 h-3" /> Name Numbers:
+                          </span>
+                          <span className="font-medium">{result.breakdown.your_name_number} × {result.breakdown.their_name_number}</span>
+                        </div>
+                      )}
                     </div>
 
                     <Button variant="outline" className="w-full" onClick={handleShare}>
@@ -316,12 +353,9 @@ const CompatibilityCalculator = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          setDay1("");
-                          setMonth1("");
-                          setYear1("");
-                          setDay2("");
-                          setMonth2("");
-                          setYear2("");
+                          setDay1(""); setMonth1(""); setYear1("");
+                          setDay2(""); setMonth2(""); setYear2("");
+                          setName1(""); setName2("");
                           setResult(null);
                         }}
                       >
@@ -349,8 +383,8 @@ const CompatibilityCalculator = () => {
                 <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-xl font-bold text-primary">1</span>
                 </div>
-                <h4 className="font-semibold mb-2">Enter Birthdays</h4>
-                <p className="text-sm text-muted-foreground">Select your birthday and their birthday</p>
+                <h4 className="font-semibold mb-2">Enter Birthdays & Names</h4>
+                <p className="text-sm text-muted-foreground">Select birthdays and optionally enter names for name number analysis</p>
               </div>
               <div className="text-center">
                 <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -358,7 +392,7 @@ const CompatibilityCalculator = () => {
                 </div>
                 <h4 className="font-semibold mb-2">AI Analysis</h4>
                 <p className="text-sm text-muted-foreground">
-                  Our AI analyzes Zodiac, Chinese Zodiac, and Numerology
+                  Our AI analyzes Zodiac, Chinese Zodiac, Life Path & Name Numbers
                 </p>
               </div>
               <div className="text-center">
@@ -378,7 +412,7 @@ const CompatibilityCalculator = () => {
             faqs={[
               {
                 question: "How does the love calculator work?",
-                answer: "Our love calculator analyzes multiple compatibility factors: Western zodiac sign compatibility, Chinese zodiac sign matches, life path number compatibility (from numerology), and overall cosmic alignment. The AI combines these factors into a single compatibility score with a detailed breakdown."
+                answer: "Our love calculator analyzes multiple compatibility factors: Western zodiac sign compatibility, Chinese zodiac sign matches, life path number compatibility (from numerology), and name number analysis. The AI combines these factors into a single compatibility score with a detailed breakdown."
               },
               {
                 question: "What is a synastry calculator?",
@@ -394,7 +428,7 @@ const CompatibilityCalculator = () => {
               },
               {
                 question: "What is a name number calculator?",
-                answer: "A name number calculator converts letters in your name to numbers using numerology (A=1, B=2, etc.) and reduces them to a single digit. This number reveals personality aspects and can be compared for compatibility. Our tool calculates life path numbers from birthdates for similar insights."
+                answer: "A name number calculator converts letters in your name to numbers using Pythagorean numerology (A=1, B=2, ..., I=9, J=1, etc.) and reduces them to a single digit or master number. Enter your names in our calculator to see your name numbers and how they interact for compatibility."
               },
               {
                 question: "Is this compatibility test accurate?",

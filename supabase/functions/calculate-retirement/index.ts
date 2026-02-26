@@ -7,10 +7,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Rate limiting storage (in-memory, resets on function cold start)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT = 60; // requests per window
-const RATE_WINDOW = 60000; // 1 minute in milliseconds
+const RATE_LIMIT = 60;
+const RATE_WINDOW = 60000;
 
 function checkRateLimit(identifier: string): boolean {
   const now = Date.now();
@@ -35,7 +34,6 @@ serve(async (req) => {
   }
 
   try {
-    // Rate limiting check
     const identifier = req.headers.get('x-forwarded-for') || 'unknown';
     if (!checkRateLimit(identifier)) {
       return new Response(
@@ -44,11 +42,10 @@ serve(async (req) => {
       );
     }
 
-    const { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference } = await req.json();
+    const { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference, includeSocialSecurity, estimatedSSMonthly } = await req.json();
 
-    console.log('Calculating retirement with params:', { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference });
+    console.log('Calculating retirement with params:', { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference, includeSocialSecurity, estimatedSSMonthly });
 
-    // Validate input with Zod
     const requestSchema = z.object({
       currentAge: ageSchema,
       currentSavings: moneySchema,
@@ -58,10 +55,12 @@ serve(async (req) => {
       investmentReturn: percentageSchema.refine(val => val >= -20 && val <= 30, "Investment return must be between -20% and 30%"),
       lifestylePreference: z.enum(["modest", "comfortable", "luxurious"], {
         errorMap: () => ({ message: "Lifestyle preference must be one of: modest, comfortable, luxurious" })
-      })
+      }),
+      includeSocialSecurity: z.boolean().optional().default(false),
+      estimatedSSMonthly: moneySchema.optional().default(0),
     });
 
-    const validation = validateInput(requestSchema, { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference });
+    const validation = validateInput(requestSchema, { currentAge, currentSavings, monthlyIncome, monthlyExpenses, desiredRetirementIncome, investmentReturn, lifestylePreference, includeSocialSecurity: includeSocialSecurity || false, estimatedSSMonthly: estimatedSSMonthly || 0 });
     if (!validation.success) {
       return createValidationErrorResponse(validation.errors, validation.fieldErrors, corsHeaders);
     }
@@ -71,6 +70,10 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
+    const ssSection = includeSocialSecurity 
+      ? `\nExpected Monthly Social Security Benefit: $${estimatedSSMonthly} (starting at age 62-67)`
+      : `\nSocial Security: Not included in this analysis`;
+
     const prompt = `Based on the following financial data, act as a financial advisor and calculate when this person can retire:
 
 Current Age: ${currentAge}
@@ -79,19 +82,22 @@ Monthly Income: $${monthlyIncome}
 Monthly Expenses: $${monthlyExpenses}
 Desired Monthly Retirement Income: $${desiredRetirementIncome}
 Expected Annual Investment Return: ${investmentReturn}%
-Desired Retirement Lifestyle: ${lifestylePreference}
+Desired Retirement Lifestyle: ${lifestylePreference}${ssSection}
 
 Please analyze this data and provide:
 1. The estimated retirement age (as a whole number)
-2. A short (3-4 sentences), encouraging summary that explains:
-   - Whether their retirement goals are realistic
-   - Key factors affecting their retirement timeline
-   - One actionable tip to improve their retirement outlook
+2. A short (3-4 sentences), encouraging summary explaining whether their retirement goals are realistic, key factors, and one actionable tip
+3. The safe monthly withdrawal amount at retirement (using the 4% rule on projected savings)
+4. How many years their savings will last at their desired withdrawal rate
+5. If social security is included, a brief note on how it affects the plan
 
 Return your response in this exact JSON format:
 {
   "retirement_age": <number>,
-  "summary_text": "<your summary here>"
+  "summary_text": "<your summary here>",
+  "monthly_withdrawal": "<formatted dollar amount, e.g. $3,200>",
+  "savings_last_years": <number>,
+  "social_security_note": "<brief note about social security impact, or null if not included>"
 }`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -101,13 +107,8 @@ Return your response in this exact JSON format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-pro',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
+        model: 'google/gemini-2.5-flash',
+        messages: [{ role: 'user', content: prompt }],
       }),
     });
 
@@ -122,7 +123,6 @@ Return your response in this exact JSON format:
 
     const content = aiData.choices[0].message.content;
     
-    // Extract JSON from the response (handling markdown code blocks)
     let jsonStr = content;
     if (content.includes('```json')) {
       jsonStr = content.split('```json')[1].split('```')[0].trim();
@@ -139,19 +139,17 @@ Return your response in this exact JSON format:
         retirement_age: retirementAge,
         years_to_retirement: yearsToRetirement,
         summary_text: parsedResult.summary_text,
+        monthly_withdrawal: parsedResult.monthly_withdrawal || null,
+        savings_last_years: parsedResult.savings_last_years || null,
+        social_security_note: parsedResult.social_security_note || null,
       }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('Error in calculate-retirement function:', error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
