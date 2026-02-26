@@ -1,99 +1,113 @@
 
 
-## Add Daily Scheduled Sitemap Regeneration and GSC Submission
+## Keyword Integration Plan for AiAgeCalc.com
 
-### Overview
-Create an automated daily job that regenerates all sitemaps from the database and submits them to Google Search Console without manual intervention.
+### Analysis Summary
 
-### Phase 1: Enable pg_cron Extension
+After reviewing all existing pages, routes, SEO metadata, and navigation, here's how the researched keywords map to the site:
 
-Create a database migration to enable the pg_cron extension:
+### Keyword Mapping
 
-```sql
--- Enable pg_cron for scheduled jobs
-CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA extensions;
-```
+#### Already Covered (SEO optimization needed only)
 
-### Phase 2: Create Combined Edge Function
+These pages exist but need keyword-enriched titles, descriptions, and on-page content:
 
-Create a new edge function `scheduled-sitemap-refresh` that:
-1. Regenerates all sitemaps (calls existing sitemap generators)
-2. Submits all sitemaps to Google Search Console
-3. Logs the results
+| Keyword Group | Existing Page | Current Route |
+|---|---|---|
+| chronological age calculator, age calculator by date of birth | Index (/) | `/` |
+| dog age calculator, cat age calculator | PetAgeCalculator | `/pet-age-calculator` |
+| age difference calculator, age gap calculator | AgeDifferenceCalculator component | `/` (tab) |
+| find famous look alike, celebrities who look like me, doppelganger finder, star by face, what celebrity do i look like | LookAlikeFinder | `/look-alike-finder` |
+| face check id, reverse face search | AiFaceAge | `/ai-face-age` |
+| love calculator, compatibility test, astrology compatibility, zodiac compatibility test | CompatibilityCalculator | `/compatibility-calculator` |
+| who was i in my past life, what was i in a past life, past life reading, past life calculator | PastLifeGenerator | `/past-life-generator` |
+| when will i die test, longevity calculator, how long will i live calculator, life span calculator, realistic life expectancy calculator, date of death calculator | LifeExpectancyCalculator | `/life-expectancy-calculator` |
+| due date calculator by ivf, calculate my due date from conception, conception to due date calculator, baby due date calculator | DueDateCalculator | `/due-date-calculator` |
+| retirement income calculator, retirement plan calculator, early retirement calculator | RetirementCalculator | `/retirement-calculator` |
+| heart age calculator, metabolic age calculator | HealthScoreCalculator | `/health-score-calculator` |
 
-**File:** `supabase/functions/scheduled-sitemap-refresh/index.ts`
+#### NOT Yet Covered (Need new pages or features)
 
-```typescript
-// Core logic:
-// 1. Call each sitemap generator function
-// 2. Collect the sitemap URLs
-// 3. Submit all to GSC using the existing submit-sitemap-to-gsc logic
-// 4. Log results to gsc_submission_logs table
-```
+| Keywords | Action Needed |
+|---|---|
+| biological age calculator, adjusted age calculator, mental age test | New pages or sections |
+| find my doppelganger | Redirect alias to look-alike-finder |
+| reincarnation photo match | New feature on past-life page |
+| past life astrology chart, previous birth calculator | Enrich past-life-generator content |
+| chinese love zodiac, chinese zodiac sign matches, synastry calculator, life path calculator, name number calculator | Enrich compatibility-calculator or add sub-tools |
+| calculate how many days you've been alive | Already exists in Index but needs SEO keyword targeting |
+| dog due date calculator, canine due date calculator, fet due date calculator | Add as calculation methods in DueDateCalculator |
+| retirement withdrawal calculator, how long will retirement savings last calculator, retirement calculator with social security | Enrich RetirementCalculator page content |
 
-**Update:** `supabase/config.toml`
+---
 
-```toml
-[functions.scheduled-sitemap-refresh]
-verify_jwt = false  # Allows cron to call it
-```
+### Implementation Plan
 
-### Phase 3: Schedule the Cron Job
+### Phase 1: SEO Metadata Updates (All Existing Pages)
 
-Run SQL (via Lovable Cloud) to create the daily schedule:
+Update `SEOHead` keywords, titles, and descriptions on every existing page to include the target keywords naturally:
 
-```sql
--- Schedule daily sitemap refresh at 2:00 AM UTC
-SELECT cron.schedule(
-  'daily-sitemap-refresh',
-  '0 2 * * *',  -- Every day at 2:00 AM UTC
-  $$
-  SELECT net.http_post(
-    url := 'https://ryetajignnzczcybyggr.supabase.co/functions/v1/scheduled-sitemap-refresh',
-    headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5ZXRhamlnbm56Y3pjeWJ5Z2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NzAxODEsImV4cCI6MjA3NTM0NjE4MX0.YTMZ8c-1I3AdiLFCz6dB8WffxNneu6rsp8bgtamhJwI"}'::jsonb,
-    body := '{}'::jsonb
-  ) AS request_id;
-  $$
-);
-```
+**Pages to update:**
+1. **Index.tsx** - Add keywords: "chronological age calculator", "age calculator by date of birth", "calculate how many days you've been alive", "age difference calculator", "age gap calculator"
+2. **PetAgeCalculator.tsx** - Add keywords: "dog age calculator", "cat age calculator"
+3. **LookAlikeFinder.tsx** - Add keywords: "find famous look alike", "celebrities who look like me", "doppelganger finder", "star by face", "find my doppelganger", "what celebrity do i look like"
+4. **AiFaceAge.tsx** - Add keywords: "face check id", "reverse face search"
+5. **CompatibilityCalculator.tsx** - Add keywords: "love calculator", "compatibility test", "astrology compatibility", "zodiac compatibility test", "chinese love zodiac", "synastry calculator", "life path calculator", "name number calculator"
+6. **PastLifeGenerator.tsx** - Add keywords: "who was i in my past life", "what was i in a past life", "past life reading", "past life calculator", "reincarnation photo match", "past life astrology chart", "previous birth calculator"
+7. **LifeExpectancyCalculator.tsx** - Add keywords: "when will i die test", "longevity calculator", "how long will i live calculator", "date of death calculator", "life span calculator", "realistic life expectancy calculator", "calculate how many days you've been alive"
+8. **DueDateCalculator.tsx** - Add keywords: "due date calculator by ivf", "calculate my due date from conception", "conception to due date calculator", "baby due date calculator", "dog due date calculator", "canine due date calculator", "fet due date calculator"
+9. **RetirementCalculator.tsx** - Add keywords: "retirement income calculator", "retirement withdrawal calculator", "how long will retirement savings last calculator", "retirement plan calculator", "retirement calculator with social security", "early retirement calculator"
+10. **HealthScoreCalculator.tsx** - Add keywords: "heart age calculator", "metabolic age calculator", "biological age calculator"
 
-### Phase 4: Add Monitoring (Optional)
+### Phase 2: On-Page SEO Content Sections
 
-Add a view in the admin dashboard to show:
-- Last scheduled run time
-- Success/failure status
-- Next scheduled run
+Add keyword-rich FAQ or informational content sections at the bottom of each page (similar to the existing SEO article on the Index page). These serve dual purpose: help users and signal relevance to search engines.
 
-### Files to Create/Modify
+Each page will get an SEO content block with:
+- H2/H3 headings using target keywords naturally
+- FAQ-style Q&A blocks (good for featured snippets)
+- Internal links to related tools on the site
+- Structured around 300-500 words per page
 
-| File | Action | Description |
-|------|--------|-------------|
-| `supabase/functions/scheduled-sitemap-refresh/index.ts` | Create | Combined regenerate + submit function |
-| `supabase/config.toml` | Modify | Add function config |
-| Database migration | Create | Enable pg_cron and schedule the job |
+### Phase 3: Add Missing Calculation Methods
 
-### Sitemap URLs to Submit Daily
+**DueDateCalculator** - Add new calculation method options:
+- "IVF Transfer Date" (for IVF/FET keywords)
+- Keep existing LMP and Conception methods
+- Add "Dog/Canine Due Date" as a separate pet pregnancy option
 
-```
-https://aiagecalc.com/sitemap-index.xml
-https://aiagecalc.com/sitemap-celebrities.xml
-https://aiagecalc.com/sitemap-blog.xml
-https://aiagecalc.com/sitemap-categories.xml
-https://aiagecalc.com/sitemap-static.xml
-```
+**RetirementCalculator** - Add additional result fields:
+- Retirement withdrawal projections
+- "How long savings will last" estimate
+- Social security consideration toggle
 
-### Expected Behavior
+**CompatibilityCalculator** - Enrich results to prominently display:
+- Chinese zodiac compatibility (already computed but needs keyword-targeted headings)
+- Life path number details
+- Name number calculator as an additional input
 
-- Every day at 2:00 AM UTC, the cron job triggers
-- All 5 sitemaps are regenerated from current database content
-- All 5 sitemaps are submitted to Google Search Console
-- Results are logged to `gsc_submission_logs` table
-- If any sitemap fails, others still proceed
+### Phase 4: Static Sitemap Update
 
-### Verification
+Update `supabase/functions/generate-sitemap-static/index.ts` to ensure all tool pages are included in the sitemap with proper priority and change frequency values.
 
-After implementation, you can verify by:
-1. Checking `gsc_submission_logs` table for daily entries
-2. Running `SELECT * FROM cron.job` to see scheduled jobs
-3. Viewing the GSC Submission Logs in the admin panel
+---
+
+### Files to Modify
+
+| File | Changes |
+|---|---|
+| `src/pages/Index.tsx` | Update SEOHead keywords + add FAQ section |
+| `src/pages/PetAgeCalculator.tsx` | Update SEOHead keywords + add FAQ |
+| `src/pages/LookAlikeFinder.tsx` | Update SEOHead keywords + add FAQ |
+| `src/pages/AiFaceAge.tsx` | Update SEOHead keywords + add FAQ |
+| `src/pages/CompatibilityCalculator.tsx` | Update SEOHead keywords + add FAQ + name number input |
+| `src/pages/PastLifeGenerator.tsx` | Update SEOHead keywords + add FAQ |
+| `src/pages/LifeExpectancyCalculator.tsx` | Update SEOHead keywords + add FAQ |
+| `src/pages/DueDateCalculator.tsx` | Update SEOHead keywords + add IVF/FET/dog methods + FAQ |
+| `src/pages/RetirementCalculator.tsx` | Update SEOHead keywords + add withdrawal/social security sections + FAQ |
+| `src/pages/HealthScoreCalculator.tsx` | Update SEOHead keywords + add FAQ |
+
+### No New Routes Needed
+
+All keywords can be effectively targeted through the existing page structure with enriched SEO metadata and on-page content. This is the most SEO-efficient approach since established pages with existing authority will rank faster than brand new pages.
 
