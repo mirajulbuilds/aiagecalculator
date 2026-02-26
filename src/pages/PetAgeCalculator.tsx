@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
 import { PawPrint, Share2, Sparkles, Save, Heart, BarChart3, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,6 +16,7 @@ import { PetComparison } from "@/components/PetComparison";
 import { PetTimeline } from "@/components/PetTimeline";
 import { SavedPetWithAge, PetAgeResult } from "@/types/pet";
 import { SEOFaqSection } from "@/components/SEOFaqSection";
+import { SEOHead } from "@/components/SEOHead";
 
 const PetAgeCalculator = () => {
   const [petType, setPetType] = useState<string>("");
@@ -221,11 +221,12 @@ const PetAgeCalculator = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Dog Age Calculator & Cat Age Calculator - Pet Years to Human Years</title>
-        <meta name="description" content="Free dog age calculator and cat age calculator. Convert your pet's age to human years using modern veterinary science formulas. Accurate dog years and cat years converter." />
-        <meta name="keywords" content="dog age calculator, cat age calculator, pet age calculator, dog years to human years, cat years to human years, how old is my dog in human years, how old is my cat" />
-      </Helmet>
+      <SEOHead
+        title="Dog Age Calculator & Cat Age Calculator - Pet Years to Human Years"
+        description="Free dog age calculator and cat age calculator. Convert your pet's age to human years using modern veterinary science formulas. Accurate dog years and cat years converter."
+        keywords="dog age calculator, cat age calculator, pet age calculator, dog years to human years, cat years to human years, how old is my dog in human years, how old is my cat"
+        url="https://aiagecalc.com/pet-age-calculator"
+      />
 
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4">
         <div className="container mx-auto max-w-6xl">

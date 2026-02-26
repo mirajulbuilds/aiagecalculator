@@ -127,6 +127,11 @@ const ProfessionPage = () => {
         url={currentUrl}
         type="website"
       />
+      {!loading && totalCount === 0 && (
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+      )}
       
       <Helmet>
         <script type="application/ld+json">
