@@ -2,18 +2,27 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SEOHead } from "@/components/SEOHead";
-import { ArrowLeft, MapPin, Calendar, Star, TrendingUp, Share2 } from "lucide-react";
+import { MapPin, Calendar, Star, TrendingUp, Share2, Heart, Calculator, Copy, ChevronRight } from "lucide-react";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdSenseBanner } from "@/components/AdSenseBanner";
-import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, addYears } from "date-fns";
+import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, addYears, format } from "date-fns";
 import PageTransition from "@/components/PageTransition";
 import { BackToTop } from "@/components/BackToTop";
-import { triggerNativeShare } from "@/lib/shareUtils";
 import { SITE_CONFIG } from "@/lib/config";
+import { toast } from "sonner";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
+// CelebrityData interface
 interface CelebrityData {
   name: string;
   date_of_birth: string;
@@ -29,6 +38,23 @@ interface CelebrityData {
   known_for_data?: any;
 }
 
+// Helper: get generation name from birth year
+const getGenerationName = (year: number): string => {
+  if (year >= 2013) return "Gen Alpha";
+  if (year >= 1997) return "Gen Z";
+  if (year >= 1981) return "Millennial";
+  if (year >= 1965) return "Gen X";
+  if (year >= 1946) return "Baby Boomer";
+  if (year >= 1928) return "Silent Generation";
+  return "Greatest Generation";
+};
+
+// Helper: get Chinese zodiac animal from birth year
+const getChineseZodiac = (year: number): string => {
+  const animals = ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"];
+  return animals[(year - 4) % 12];
+};
+
 const CelebrityProfile = () => {
   const { profileSlug } = useParams<{ profileSlug: string }>();
   const [celebrity, setCelebrity] = useState<CelebrityData | null>(null);
@@ -42,19 +68,14 @@ const CelebrityProfile = () => {
 
   useEffect(() => {
     const loadCelebrity = async () => {
-      // STEP 1: Check for preview data first (App State via sessionStorage)
       const tempPreview = sessionStorage.getItem("temp_profile_preview");
       
       if (tempPreview) {
         try {
           const parsed = JSON.parse(tempPreview);
-          
-          // Verify this is valid preview data
           if (parsed.is_preview === true) {
             console.log("Loading preview data:", parsed.name);
             setCelebrity(parsed as CelebrityData);
-            
-            // Clear preview data after loading (prevents stale previews)
             sessionStorage.removeItem("temp_profile_preview");
             setLoading(false);
             return;
@@ -65,7 +86,6 @@ const CelebrityProfile = () => {
         }
       }
 
-      // STEP 2: If no preview data, load from database (live user flow)
       if (!profileSlug) {
         setLoading(false);
         return;
@@ -87,21 +107,18 @@ const CelebrityProfile = () => {
         console.log("Loading from database:", data.name);
         setCelebrity(data as CelebrityData);
         
-        // Load related celebrities (same profession) - "Fans Also Viewed" with random results
         const { data: related } = await supabase
           .from("celebrities")
           .select("*")
           .eq("profession", data.profession)
           .neq("id", data.id)
-          .limit(20); // Fetch more for randomization
+          .limit(20);
         
         if (related && related.length > 0) {
-          // Randomly select 4 celebrities
           const shuffled = [...related].sort(() => Math.random() - 0.5);
           setRelatedCelebrities(shuffled.slice(0, 4) as CelebrityData[]);
         }
 
-        // Load celebrities with same birthday (month and day)
         const birthDate = new Date(data.date_of_birth);
         const birthMonth = birthDate.getMonth() + 1;
         const birthDay = birthDate.getDate();
@@ -115,7 +132,6 @@ const CelebrityProfile = () => {
           setSameBirthdayCelebrities((sameBirthday as CelebrityData[]).filter(c => c.profile_slug !== profileSlug).slice(0, 3));
         }
 
-        // Load celebrities with same zodiac sign
         if (data.zodiac_sign) {
           const { data: sameZodiac } = await supabase
             .from("celebrities")
@@ -135,7 +151,6 @@ const CelebrityProfile = () => {
     loadCelebrity();
   }, [profileSlug]);
 
-  // Intersection Observer for active section highlighting
   useEffect(() => {
     if (!celebrity) return;
 
@@ -238,7 +253,6 @@ const CelebrityProfile = () => {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Celebrity Not Found</h1>
             <Link to="/famous-birthdays" className="text-primary hover:underline flex items-center justify-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
               Back to Directory
             </Link>
           </div>
@@ -248,15 +262,37 @@ const CelebrityProfile = () => {
   }
 
   const popularityRanks = celebrity.popularity_ranks || {};
+  const shareUrl = `${SITE_CONFIG.canonicalUrl}/people/${celebrity.profile_slug}`;
+  const shareText = `Check out ${celebrity.name}'s profile on AiAgeCalc!`;
 
-  const handleShare = async () => {
-    const shareUrl = `${SITE_CONFIG.canonicalUrl}/people/${celebrity.profile_slug}`;
-    await triggerNativeShare({
-      title: `${celebrity.name} Profile`,
-      text: `Check out this profile for ${celebrity.name} on Ai Age Calculator.`,
-      url: shareUrl,
-    });
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied to clipboard!");
+    } catch {
+      toast.error("Failed to copy link");
+    }
   };
+
+  const handleShareTwitter = () => {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const handleShareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const handleShareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, '_blank');
+  };
+
+  // Fun facts calculations
+  const birthDate = new Date(celebrity.date_of_birth);
+  const birthYear = birthDate.getFullYear();
+  const dayOfWeekBorn = format(birthDate, "EEEE");
+  const generationName = getGenerationName(birthYear);
+  const chineseZodiac = getChineseZodiac(birthYear);
+  const estimatedHeartbeats = ageData ? Math.round(ageData.totalMinutes * 72) : 0;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -267,6 +303,16 @@ const CelebrityProfile = () => {
     jobTitle: celebrity.profession,
     image: celebrity.profile_image_url,
     description: celebrity.meta_description,
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_CONFIG.canonicalUrl },
+      { "@type": "ListItem", "position": 2, "name": "Famous Birthdays", "item": `${SITE_CONFIG.canonicalUrl}/famous-birthdays` },
+      { "@type": "ListItem", "position": 3, "name": celebrity.name, "item": `${SITE_CONFIG.canonicalUrl}/people/${celebrity.profile_slug}` },
+    ]
   };
 
   return (
@@ -282,19 +328,32 @@ const CelebrityProfile = () => {
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        {/* Header */}
+        {/* Breadcrumb Header */}
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-4 py-4">
-            <Link 
-              to="/famous-birthdays" 
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Directory
-            </Link>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/">Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/famous-birthdays">Famous Birthdays</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{celebrity.name}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
         </header>
 
@@ -343,18 +402,11 @@ const CelebrityProfile = () => {
                   <CardContent>
                     <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-2 px-2">
                       {celebrity.known_for_data.map((item: any, index: number) => (
-                        <div
-                          key={index}
-                          className="flex-none w-[220px] group cursor-pointer"
-                        >
+                        <div key={index} className="flex-none w-[220px] group cursor-pointer">
                           <div className="bg-card rounded-xl shadow-card overflow-hidden border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
                             <div className="aspect-[2/3] overflow-hidden bg-muted relative">
                               {item.imageURL ? (
-                                <img
-                                  src={item.imageURL}
-                                  alt={item.title || 'Known for item'}
-                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
+                                <img src={item.imageURL} alt={item.title || 'Known for item'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10">
                                   <Star className="w-16 h-16 text-primary/60" />
@@ -366,9 +418,7 @@ const CelebrityProfile = () => {
                               <h3 className="font-bold text-foreground text-base mb-1 group-hover:text-primary transition-colors line-clamp-2 min-h-[3rem]">
                                 {item.title || 'Untitled'}
                               </h3>
-                              {item.year && (
-                                <p className="text-sm text-muted-foreground font-medium">{item.year}</p>
-                              )}
+                              {item.year && <p className="text-sm text-muted-foreground font-medium">{item.year}</p>}
                             </div>
                           </div>
                         </div>
@@ -380,10 +430,7 @@ const CelebrityProfile = () => {
 
               {/* AdSense Banner */}
               <div className="my-8">
-                <AdSenseBanner 
-                  adSlot="in-article"
-                  format="horizontal"
-                />
+                <AdSenseBanner adSlot="in-article" format="horizontal" />
               </div>
 
               {/* More Birthdays Section */}
@@ -397,21 +444,11 @@ const CelebrityProfile = () => {
                   <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {sameBirthdayCelebrities.map((celeb) => (
-                        <Link
-                          key={celeb.profile_slug}
-                          to={`/people/${celeb.profile_slug}`}
-                          className="group"
-                        >
+                        <Link key={celeb.profile_slug} to={`/people/${celeb.profile_slug}`} className="group">
                           <div className="aspect-square overflow-hidden rounded-full mb-2">
-                            <img 
-                              src={celeb.profile_image_url} 
-                              alt={celeb.name}
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                            />
+                            <img src={celeb.profile_image_url} alt={celeb.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                           </div>
-                          <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">
-                            {celeb.name}
-                          </h3>
+                          <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">{celeb.name}</h3>
                           <p className="text-xs text-muted-foreground text-center">{celeb.profession}</p>
                         </Link>
                       ))}
@@ -433,21 +470,11 @@ const CelebrityProfile = () => {
                   <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {sameZodiacCelebrities.map((celeb) => (
-                        <Link
-                          key={celeb.profile_slug}
-                          to={`/people/${celeb.profile_slug}`}
-                          className="group"
-                        >
+                        <Link key={celeb.profile_slug} to={`/people/${celeb.profile_slug}`} className="group">
                           <div className="aspect-square overflow-hidden rounded-full mb-2">
-                            <img 
-                              src={celeb.profile_image_url} 
-                              alt={celeb.name}
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                            />
+                            <img src={celeb.profile_image_url} alt={celeb.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                           </div>
-                          <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">
-                            {celeb.name}
-                          </h3>
+                          <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">{celeb.name}</h3>
                           <p className="text-xs text-muted-foreground text-center">{celeb.profession}</p>
                         </Link>
                       ))}
@@ -475,16 +502,10 @@ const CelebrityProfile = () => {
                           className="group bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border"
                         >
                           <div className="aspect-square overflow-hidden">
-                            <img 
-                              src={celeb.profile_image_url} 
-                              alt={celeb.name}
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                            />
+                            <img src={celeb.profile_image_url} alt={celeb.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                           </div>
                           <div className="p-4">
-                            <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
-                              {celeb.name}
-                            </h3>
+                            <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">{celeb.name}</h3>
                             <p className="text-sm text-muted-foreground">{celeb.profession}</p>
                           </div>
                         </Link>
@@ -500,18 +521,7 @@ const CelebrityProfile = () => {
               {/* Fact Sheet */}
               <Card>
                 <CardHeader>
-                  <div className="flex items-start justify-between gap-3">
-                    <CardTitle className="text-3xl flex-1">{celebrity.name}</CardTitle>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleShare}
-                      className="flex-shrink-0"
-                      aria-label="Share profile"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  <CardTitle className="text-3xl">{celebrity.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3 text-muted-foreground">
@@ -528,11 +538,7 @@ const CelebrityProfile = () => {
                     <div>
                       <div className="text-xs text-muted-foreground mb-1">🎂 Birthday</div>
                       <div className="font-medium text-foreground">
-                        {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
+                        {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </div>
                     </div>
                   </div>
@@ -562,13 +568,41 @@ const CelebrityProfile = () => {
                   {ageData && (
                     <div className="pt-4 border-t border-border">
                       <div className="text-center">
-                        <div className="text-4xl font-bold text-primary mb-1">
-                          {ageData.years}
-                        </div>
+                        <div className="text-4xl font-bold text-primary mb-1">{ageData.years}</div>
                         <div className="text-sm text-muted-foreground">Years Old</div>
                       </div>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+
+              {/* Social Share Bar */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Share2 className="w-5 h-5 text-primary" />
+                    Share This Profile
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" onClick={handleShareTwitter} className="gap-2">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                      Twitter/X
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleShareFacebook} className="gap-2">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                      Facebook
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleShareWhatsApp} className="gap-2">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                      WhatsApp
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-2">
+                      <Copy className="w-4 h-4" />
+                      Copy Link
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -587,6 +621,72 @@ const CelebrityProfile = () => {
                 </Card>
               )}
 
+              {/* Did You Know? Fun Facts */}
+              {ageData && (
+                <Card className="bg-gradient-to-br from-accent/30 to-primary/5">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Heart className="w-5 h-5 text-primary" />
+                      Did You Know?
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg">📅</span>
+                      <p className="text-sm text-foreground">
+                        {celebrity.name} was born on a <span className="font-semibold text-primary">{dayOfWeekBorn}</span>
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg">💓</span>
+                      <p className="text-sm text-foreground">
+                        Estimated <span className="font-semibold text-primary">{estimatedHeartbeats.toLocaleString()}</span> heartbeats since birth
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg">👥</span>
+                      <p className="text-sm text-foreground">
+                        Part of the <span className="font-semibold text-primary">{generationName}</span> generation
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg">🐉</span>
+                      <p className="text-sm text-foreground">
+                        Chinese Zodiac: <span className="font-semibold text-primary">{chineseZodiac}</span>
+                      </p>
+                    </div>
+                    {sameBirthdayCelebrities.length > 0 && (
+                      <div className="flex items-start gap-3">
+                        <span className="text-lg">🎂</span>
+                        <p className="text-sm text-foreground">
+                          Shares a birthday with <span className="font-semibold text-primary">{sameBirthdayCelebrities[0]?.name}</span>
+                          {sameBirthdayCelebrities.length > 1 && ` and ${sameBirthdayCelebrities.length - 1} others`}
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Age Comparison CTA */}
+              <Card className="bg-gradient-to-br from-primary/10 to-accent/20 border-primary/20">
+                <CardContent className="p-6 text-center">
+                  <Calculator className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <h3 className="font-bold text-foreground mb-2">
+                    How old were you when {celebrity.name} was born?
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Compare your age with {celebrity.name} using our calculator
+                  </p>
+                  <Button asChild variant="default" size="sm">
+                    <Link to="/">
+                      Calculate Your Age
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
               {/* Live Age Counter */}
               {ageData && (
                 <Card>
@@ -594,7 +694,6 @@ const CelebrityProfile = () => {
                     <CardTitle className="text-lg">Live Age Counter</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Traditional Age Breakdown */}
                     <div className="grid grid-cols-3 gap-3">
                       <div className="bg-muted rounded-lg p-3 text-center">
                         <div className="text-2xl font-bold text-primary">{ageData.years}</div>
@@ -609,8 +708,6 @@ const CelebrityProfile = () => {
                         <div className="text-xs text-muted-foreground">Days</div>
                       </div>
                     </div>
-
-                    {/* Total Time Lived */}
                     <div className="space-y-2 pt-2 border-t border-border">
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Total Days:</span>
@@ -625,8 +722,6 @@ const CelebrityProfile = () => {
                         <span className="font-semibold text-foreground">{ageData.totalMinutes.toLocaleString()}</span>
                       </div>
                     </div>
-
-                    {/* Next Birthday */}
                     <div className="pt-2 border-t border-border">
                       <div className="bg-primary/10 rounded-lg p-3 text-center">
                         <div className="text-sm text-muted-foreground mb-1">Next Birthday</div>
@@ -648,42 +743,26 @@ const CelebrityProfile = () => {
                     <div className="grid grid-cols-2 gap-3">
                       {popularityRanks.age_rank && (
                         <div className="bg-muted rounded-lg p-4 text-center">
-                          <div className="text-2xl font-bold text-primary">
-                            #{popularityRanks.age_rank}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Age Rank
-                          </div>
+                          <div className="text-2xl font-bold text-primary">#{popularityRanks.age_rank}</div>
+                          <div className="text-xs text-muted-foreground mt-1">Age Rank</div>
                         </div>
                       )}
                       {popularityRanks.profession_rank && (
                         <div className="bg-muted rounded-lg p-4 text-center">
-                          <div className="text-2xl font-bold text-primary">
-                            #{popularityRanks.profession_rank}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {celebrity.profession}
-                          </div>
+                          <div className="text-2xl font-bold text-primary">#{popularityRanks.profession_rank}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{celebrity.profession}</div>
                         </div>
                       )}
                       {popularityRanks.birthplace_rank && (
                         <div className="bg-muted rounded-lg p-4 text-center">
-                          <div className="text-2xl font-bold text-primary">
-                            #{popularityRanks.birthplace_rank}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Birthplace
-                          </div>
+                          <div className="text-2xl font-bold text-primary">#{popularityRanks.birthplace_rank}</div>
+                          <div className="text-xs text-muted-foreground mt-1">Birthplace</div>
                         </div>
                       )}
                       {popularityRanks.zodiac_rank && (
                         <div className="bg-muted rounded-lg p-4 text-center">
-                          <div className="text-2xl font-bold text-primary">
-                            #{popularityRanks.zodiac_rank}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {celebrity.zodiac_sign}
-                          </div>
+                          <div className="text-2xl font-bold text-primary">#{popularityRanks.zodiac_rank}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{celebrity.zodiac_sign}</div>
                         </div>
                       )}
                     </div>
@@ -698,52 +777,19 @@ const CelebrityProfile = () => {
                 </CardHeader>
                 <CardContent>
                   <nav className="space-y-1">
-                    <a 
-                      href="#about-section" 
-                      className={`on-page-menu-link ${activeSection === 'about-section' ? 'active-section' : ''}`}
-                    >
-                      About
-                    </a>
-                    <a 
-                      href="#before-fame-section" 
-                      className={`on-page-menu-link ${activeSection === 'before-fame-section' ? 'active-section' : ''}`}
-                    >
-                      Before Fame
-                    </a>
-                    <a 
-                      href="#trivia-section" 
-                      className={`on-page-menu-link ${activeSection === 'trivia-section' ? 'active-section' : ''}`}
-                    >
-                      Trivia
-                    </a>
-                    <a 
-                      href="#family-life-section" 
-                      className={`on-page-menu-link ${activeSection === 'family-life-section' ? 'active-section' : ''}`}
-                    >
-                      Family Life
-                    </a>
-                    <a 
-                      href="#known-for-section" 
-                      className={`on-page-menu-link ${activeSection === 'known-for-section' ? 'active-section' : ''}`}
-                    >
-                      Known For
-                    </a>
-                    <a 
-                      href="#fans-viewed-section" 
-                      className={`on-page-menu-link ${activeSection === 'fans-viewed-section' ? 'active-section' : ''}`}
-                    >
-                      Fans Also Viewed
-                    </a>
+                    <a href="#about-section" className={`on-page-menu-link ${activeSection === 'about-section' ? 'active-section' : ''}`}>About</a>
+                    <a href="#before-fame-section" className={`on-page-menu-link ${activeSection === 'before-fame-section' ? 'active-section' : ''}`}>Before Fame</a>
+                    <a href="#trivia-section" className={`on-page-menu-link ${activeSection === 'trivia-section' ? 'active-section' : ''}`}>Trivia</a>
+                    <a href="#family-life-section" className={`on-page-menu-link ${activeSection === 'family-life-section' ? 'active-section' : ''}`}>Family Life</a>
+                    <a href="#known-for-section" className={`on-page-menu-link ${activeSection === 'known-for-section' ? 'active-section' : ''}`}>Known For</a>
+                    <a href="#fans-viewed-section" className={`on-page-menu-link ${activeSection === 'fans-viewed-section' ? 'active-section' : ''}`}>Fans Also Viewed</a>
                   </nav>
                 </CardContent>
               </Card>
 
               {/* AdSense Vertical Banner */}
               <div className="sticky top-4">
-                <AdSenseBanner 
-                  adSlot="sidebar"
-                  format="vertical"
-                />
+                <AdSenseBanner adSlot="sidebar" format="vertical" />
               </div>
             </div>
           </div>
