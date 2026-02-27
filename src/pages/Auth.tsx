@@ -23,11 +23,18 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const AppleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13.71 14.34c-.63.93-1.32 1.86-2.34 1.88-1.03.02-1.36-.61-2.53-.61-1.18 0-1.54.59-2.51.63-1.01.04-1.78-1.01-2.42-1.93C2.58 12.3 1.62 8.93 2.99 6.65c.68-1.13 1.9-1.85 3.22-1.87 1-.02 1.93.67 2.54.67.61 0 1.74-.83 2.94-.71.5.02 1.9.2 2.8 1.52-.07.05-1.67 .98-1.65 2.91.02 2.31 2.03 3.08 2.05 3.09-.02.05-.32 1.1-1.18 2.08ZM11.03 3.28c.53-.64.88-1.53.79-2.42-.76.03-1.68.51-2.22 1.14-.49.56-.92 1.47-.8 2.33.84.07 1.7-.43 2.23-1.05Z" fill="currentColor"/>
+  </svg>
+);
+
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
 
   // Sign In state
   const [signInEmail, setSignInEmail] = useState("");
@@ -54,6 +61,17 @@ const Auth = () => {
     if (error) {
       toast({ title: "Google sign-in failed", description: String(error), variant: "destructive" });
       setIsGoogleLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setIsAppleLoading(true);
+    const { error } = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (error) {
+      toast({ title: "Apple sign-in failed", description: String(error), variant: "destructive" });
+      setIsAppleLoading(false);
     }
   };
 
@@ -125,6 +143,19 @@ const Auth = () => {
     </Button>
   );
 
+  const AppleButton = ({ label = "Continue with Apple" }: { label?: string }) => (
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full h-12 text-base font-medium border-border/50 bg-background/50 hover:bg-accent/50 transition-all"
+      onClick={handleAppleSignIn}
+      disabled={isAppleLoading}
+    >
+      <AppleIcon />
+      {isAppleLoading ? "Redirecting..." : label}
+    </Button>
+  );
+
   const Divider = () => (
     <div className="relative my-6">
       <div className="absolute inset-0 flex items-center">
@@ -181,7 +212,10 @@ const Auth = () => {
 
                 <TabsContent value="signin">
                   <div className="mt-4 space-y-0">
-                    <GoogleButton />
+                    <div className="space-y-3">
+                      <GoogleButton />
+                      <AppleButton />
+                    </div>
                     <Divider />
                     <form onSubmit={handleSignIn} className="space-y-4">
                       <div className="space-y-2">
@@ -211,7 +245,10 @@ const Auth = () => {
 
                 <TabsContent value="signup">
                   <div className="mt-4 space-y-0">
-                    <GoogleButton label="Sign up with Google" />
+                    <div className="space-y-3">
+                      <GoogleButton label="Sign up with Google" />
+                      <AppleButton label="Sign up with Apple" />
+                    </div>
                     <Divider />
                     <form onSubmit={handleSignUp} className="space-y-4">
                       <div className="space-y-2">

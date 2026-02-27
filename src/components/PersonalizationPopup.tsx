@@ -20,11 +20,18 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const AppleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13.71 14.34c-.63.93-1.32 1.86-2.34 1.88-1.03.02-1.36-.61-2.53-.61-1.18 0-1.54.59-2.51.63-1.01.04-1.78-1.01-2.42-1.93C2.58 12.3 1.62 8.93 2.99 6.65c.68-1.13 1.9-1.85 3.22-1.87 1-.02 1.93.67 2.54.67.61 0 1.74-.83 2.94-.71.5.02 1.9.2 2.8 1.52-.07.05-1.67 .98-1.65 2.91.02 2.31 2.03 3.08 2.05 3.09-.02.05-.32 1.1-1.18 2.08ZM11.03 3.28c.53-.64.88-1.53.79-2.42-.76.03-1.68.51-2.22 1.14-.49.56-.92 1.47-.8 2.33.84.07 1.7-.43 2.23-1.05Z" fill="currentColor"/>
+  </svg>
+);
+
 const PersonalizationPopup = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
   const dismissedThisSession = useRef(false);
 
   useEffect(() => {
@@ -54,6 +61,17 @@ const PersonalizationPopup = () => {
     if (error) {
       toast({ title: "Google sign-in failed", description: String(error), variant: "destructive" });
       setIsGoogleLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setIsAppleLoading(true);
+    const { error } = await lovable.auth.signInWithOAuth("apple", {
+      redirect_uri: window.location.origin,
+    });
+    if (error) {
+      toast({ title: "Apple sign-in failed", description: String(error), variant: "destructive" });
+      setIsAppleLoading(false);
     }
   };
 
@@ -97,6 +115,16 @@ const PersonalizationPopup = () => {
                 >
                   <GoogleIcon />
                   {isGoogleLoading ? "Redirecting..." : "Continue with Google"}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full h-12 text-base font-medium bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-700"
+                  onClick={handleAppleSignIn}
+                  disabled={isAppleLoading}
+                >
+                  <AppleIcon />
+                  {isAppleLoading ? "Redirecting..." : "Continue with Apple"}
                 </Button>
 
                 <Button
