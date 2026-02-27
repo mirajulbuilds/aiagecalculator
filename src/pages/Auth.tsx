@@ -29,6 +29,8 @@ const AppleIcon = () => (
   </svg>
 );
 
+const SITE_URL = 'https://aiagecalculator.lovable.app';
+
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -99,7 +101,7 @@ const Auth = () => {
       email: signUpEmail,
       password: signUpPassword,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: SITE_URL,
         data: { display_name: signUpName },
       },
     });
@@ -116,7 +118,7 @@ const Auth = () => {
     e.preventDefault();
     setIsSubmitting(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${SITE_URL}/reset-password`,
     });
     setIsSubmitting(false);
 
