@@ -157,7 +157,7 @@ const Auth = () => {
   );
 
   const Divider = () => (
-    <div className="relative my-6">
+    <div className="relative my-2">
       <div className="absolute inset-0 flex items-center">
         <span className="w-full border-t border-border/40" />
       </div>
@@ -175,9 +175,9 @@ const Auth = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
-        <Card className="w-full max-w-md bg-white/10 dark:bg-gray-900/20 backdrop-blur-xl border border-white/20 shadow-2xl">
+        <Card className="w-full max-w-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-2xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
               {showForgotPassword ? "Reset Password" : "Welcome"}
             </CardTitle>
             <CardDescription>
@@ -192,7 +192,7 @@ const Auth = () => {
                 <div className="space-y-2">
                   <Label htmlFor="reset-email">Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input id="reset-email" type="email" placeholder="you@example.com" value={resetEmail} onChange={e => setResetEmail(e.target.value)} className="pl-10" required />
                   </div>
                 </div>
@@ -211,7 +211,7 @@ const Auth = () => {
                 </TabsList>
 
                 <TabsContent value="signin">
-                  <div className="mt-4 space-y-0">
+                  <div className="mt-4 space-y-4">
                     <div className="space-y-3">
                       <GoogleButton />
                       <AppleButton />
@@ -221,14 +221,14 @@ const Auth = () => {
                       <div className="space-y-2">
                         <Label htmlFor="signin-email">Email</Label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input id="signin-email" type="email" placeholder="you@example.com" value={signInEmail} onChange={e => setSignInEmail(e.target.value)} className="pl-10" required />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signin-password">Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input id="signin-password" type="password" placeholder="••••••••" value={signInPassword} onChange={e => setSignInPassword(e.target.value)} className="pl-10" required />
                         </div>
                       </div>
@@ -244,7 +244,7 @@ const Auth = () => {
                 </TabsContent>
 
                 <TabsContent value="signup">
-                  <div className="mt-4 space-y-0">
+                  <div className="mt-4 space-y-4">
                     <div className="space-y-3">
                       <GoogleButton label="Sign up with Google" />
                       <AppleButton label="Sign up with Apple" />
@@ -254,21 +254,21 @@ const Auth = () => {
                       <div className="space-y-2">
                         <Label htmlFor="signup-name">Display Name</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input id="signup-name" type="text" placeholder="Your name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="pl-10" />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signup-email">Email</Label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input id="signup-email" type="email" placeholder="you@example.com" value={signUpEmail} onChange={e => setSignUpEmail(e.target.value)} className="pl-10" required />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signup-password">Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input id="signup-password" type="password" placeholder="••••••••" value={signUpPassword} onChange={e => setSignUpPassword(e.target.value)} className="pl-10" required minLength={6} />
                         </div>
                       </div>
