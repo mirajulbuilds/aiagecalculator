@@ -192,8 +192,8 @@ const Auth = () => {
                 <div className="space-y-2">
                   <Label htmlFor="reset-email">Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="reset-email" type="email" placeholder="you@example.com" value={resetEmail} onChange={e => setResetEmail(e.target.value)} className="pl-10" required />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="reset-email" type="email" placeholder="you@example.com" value={resetEmail} onChange={e => setResetEmail(e.target.value)} className="!pl-11" required />
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -221,15 +221,15 @@ const Auth = () => {
                       <div className="space-y-2">
                         <Label htmlFor="signin-email">Email</Label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input id="signin-email" type="email" placeholder="you@example.com" value={signInEmail} onChange={e => setSignInEmail(e.target.value)} className="pl-10" required />
+                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input id="signin-email" type="email" placeholder="you@example.com" value={signInEmail} onChange={e => setSignInEmail(e.target.value)} className="!pl-11" required />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signin-password">Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input id="signin-password" type="password" placeholder="••••••••" value={signInPassword} onChange={e => setSignInPassword(e.target.value)} className="pl-10" required />
+                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input id="signin-password" type="password" placeholder="••••••••" value={signInPassword} onChange={e => setSignInPassword(e.target.value)} className="!pl-11" required />
                         </div>
                       </div>
                       <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -254,22 +254,22 @@ const Auth = () => {
                       <div className="space-y-2">
                         <Label htmlFor="signup-name">Display Name</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input id="signup-name" type="text" placeholder="Your name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="pl-10" />
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input id="signup-name" type="text" placeholder="Your name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="!pl-11" />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signup-email">Email</Label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input id="signup-email" type="email" placeholder="you@example.com" value={signUpEmail} onChange={e => setSignUpEmail(e.target.value)} className="pl-10" required />
+                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input id="signup-email" type="email" placeholder="you@example.com" value={signUpEmail} onChange={e => setSignUpEmail(e.target.value)} className="!pl-11" required />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="signup-password">Password</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input id="signup-password" type="password" placeholder="••••••••" value={signUpPassword} onChange={e => setSignUpPassword(e.target.value)} className="pl-10" required minLength={6} />
+                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input id="signup-password" type="password" placeholder="••••••••" value={signUpPassword} onChange={e => setSignUpPassword(e.target.value)} className="!pl-11" required minLength={6} />
                         </div>
                       </div>
                       <Button type="submit" className="w-full" disabled={isSubmitting}>
