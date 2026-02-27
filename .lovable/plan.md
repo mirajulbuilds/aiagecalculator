@@ -1,57 +1,44 @@
 
 
-## Add User Engagement Features to Celebrity Profile Pages
+## Fix Celebrity Profile: Birthday Links + Age Comparison Calculator
 
-### Current State
-The celebrity profile page already has:
-- Share button (single icon in sidebar)
-- "Fans Also Viewed" section (same profession)
-- Same birthday celebrities section
-- Same zodiac celebrities section
-- Live age counter
-- Popularity rankings
+### Change 1: Add Internal Links to "Shares a birthday with" Section (Lines 658-666)
 
-### What's Missing (High-Value Additions)
+Currently the "Did You Know?" card shows plain text like "Shares a birthday with Laura Marano and 2 others". This needs to link each celebrity name to their profile page.
 
-#### 1. Social Share Bar with Platform-Specific Buttons
-Replace the single generic share icon with a dedicated share card featuring buttons for Twitter/X, Facebook, WhatsApp, and copy link. This increases shareability and shows Google the page is designed for social engagement.
+**File:** `src/pages/CelebrityProfile.tsx` (lines 658-666)
 
-**File:** `src/pages/CelebrityProfile.tsx`
-- Add a new "Share This Profile" card in the sidebar (below the fact sheet)
-- Include buttons for: Twitter/X, Facebook, WhatsApp, Copy Link
-- Each button opens a pre-filled share URL with the celebrity's name and page URL
+Replace the plain text with `<Link>` components:
+- First celebrity name becomes a clickable link to `/people/{profile_slug}`
+- "and X others" text links to the same-birthday section or shows remaining names as links too
+- Uses existing `sameBirthdayCelebrities` array which already has `profile_slug` data
 
-#### 2. "Did You Know?" Fun Facts Card
-Add a dynamic fun facts section in the sidebar that calculates interesting stats from the celebrity's birth date -- things like "has been alive for X heartbeats", "born on a [day of week]", "shares a birthday with X other celebrities". This adds unique, programmatic content that Google values.
+### Change 2: Make "How Old Were You When X Was Born?" Functional (Lines 671-688)
 
-**File:** `src/pages/CelebrityProfile.tsx`
-- New card in the sidebar using existing `ageData`
-- Show: day of week born, estimated heartbeats, generation name (Gen Z, Millennial, etc.), Chinese zodiac year
+Currently this card is just a static CTA linking to the homepage. Instead, make it an interactive mini-calculator:
 
-#### 3. Quick Age Comparison CTA
-Add a call-to-action card encouraging users to compare their own age with the celebrity, linking to the main age calculator with the celebrity's birthdate pre-referenced.
+- Add a date input (day/month/year selects or a single date input) for the user's birthdate
+- On submit, calculate the age difference between the user's birthdate and the celebrity's birthdate
+- Show a result like "You were 5 years old when [Celebrity] was born" or "You were born 3 years after [Celebrity]"
+- All calculation is done client-side using `date-fns` (already imported)
+- Keep the card compact -- input + button + result in the same card
+- No backend call needed
 
-**File:** `src/pages/CelebrityProfile.tsx`
-- New card in sidebar: "How old were you when [Celebrity] was born?"
-- Links to the homepage calculator, boosting internal linking
+### Technical Details
 
-#### 4. Breadcrumb Navigation
-Add breadcrumb navigation at the top (Home > Famous Birthdays > [Celebrity Name]) which improves SEO structure and user navigation.
+**File modified:** `src/pages/CelebrityProfile.tsx`
 
-**File:** `src/pages/CelebrityProfile.tsx`
-- Replace the simple "Back to Directory" link with a proper breadcrumb trail
-- Add BreadcrumbList JSON-LD schema for this page
+**For birthday links:**
+- Use the existing `sameBirthdayCelebrities` state which contains `profile_slug` and `name`
+- Render up to 2-3 names as individual `<Link>` elements separated by commas
 
-### Summary of Changes
-
-| File | Change |
-|------|--------|
-| `src/pages/CelebrityProfile.tsx` | Add social share bar, "Did You Know?" facts card, age comparison CTA, breadcrumb navigation with JSON-LD |
-
-### Technical Notes
-- All new features use existing data (no new database queries needed)
-- Social share buttons use direct URL schemes (no third-party SDKs)
-- Fun facts are calculated client-side from `date_of_birth` and `ageData`
-- Breadcrumb JSON-LD merges with existing Person schema in the Helmet
-- No new dependencies required -- uses existing lucide-react icons and UI components
+**For age comparison calculator:**
+- Add local state: `userBirthDate`, `comparisonResult`
+- Add 3 `<Select>` dropdowns (day, month, year) inside the existing card
+- Calculate on button click:
+  - If user is older: "You were X years old when {name} was born"
+  - If user is younger: "You were born X years after {name}"
+  - If same date: "You share a birthday!"
+- Result appears below the button in the same card
+- No new components or files needed
 
