@@ -17,6 +17,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   isLoading: boolean;
+  isProfileComplete: boolean;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<Pick<Profile, "display_name" | "date_of_birth" | "gender" | "country">>) => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -104,8 +105,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await fetchProfile(user.id);
   };
 
+  const isProfileComplete = !!profile?.date_of_birth;
+
   return (
-    <AuthContext.Provider value={{ user, session, profile, isLoading, signOut, updateProfile, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, isLoading, isProfileComplete, signOut, updateProfile, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

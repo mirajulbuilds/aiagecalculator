@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
 import { useEffect } from "react";
 import PageTransition from "@/components/PageTransition";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -46,6 +50,7 @@ const Auth = () => {
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
   const [signUpName, setSignUpName] = useState("");
+  const [signUpDob, setSignUpDob] = useState<Date>();
 
   // Forgot password state
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -58,7 +63,7 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: SITE_URL,
     });
     if (error) {
       toast({ title: "Google sign-in failed", description: String(error), variant: "destructive" });
@@ -69,7 +74,7 @@ const Auth = () => {
   const handleAppleSignIn = async () => {
     setIsAppleLoading(true);
     const { error } = await lovable.auth.signInWithOAuth("apple", {
-      redirect_uri: window.location.origin,
+      redirect_uri: SITE_URL,
     });
     if (error) {
       toast({ title: "Apple sign-in failed", description: String(error), variant: "destructive" });
@@ -80,7 +85,7 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: signInEmail,
       password: signInPassword,
     });
@@ -90,7 +95,19 @@ const Auth = () => {
       toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Welcome back!" });
-      navigate("/");
+      // Check if profile is complete
+      if (data.user) {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("date_of_birth")
+          .eq("id", data.user.id)
+          .single();
+        if (!profileData?.date_of_birth) {
+          navigate("/profile");
+        } else {
+          navigate("/");
+        }
+      }
     }
   };
 
@@ -101,8 +118,11 @@ const Auth = () => {
       email: signUpEmail,
       password: signUpPassword,
       options: {
-        emailRedirectTo: SITE_URL,
-        data: { display_name: signUpName },
+        emailRedirectTo: `${SITE_URL}/profile`,
+        data: {
+          display_name: signUpName,
+          date_of_birth: signUpDob ? format(signUpDob, "yyyy-MM-dd") : undefined,
+        },
       },
     });
     setIsSubmitting(false);
@@ -253,13 +273,48 @@ const Auth = () => {
                     </div>
                     <Divider />
                     <form onSubmit={handleSignUp} className="space-y-4">
+                      {/* Full Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="signup-name">Display Name</Label>
+                        <Label htmlFor="signup-name">Full Name</Label>
                         <div className="relative">
                           <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input id="signup-name" type="text" placeholder="Your name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="!pl-11" />
+                          <Input id="signup-name" type="text" placeholder="Your full name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="!pl-11" required />
                         </div>
                       </div>
+
+                      {/* Date of Birth */}
+                      <div className="space-y-2">
+                        <Label>Date of Birth</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal h-10",
+                                !signUpDob && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {signUpDob ? format(signUpDob, "PPP") : <span>Pick your date of birth</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={signUpDob}
+                              onSelect={setSignUpDob}
+                              disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                              initialFocus
+                              className={cn("p-3 pointer-events-auto")}
+                              captionLayout="dropdown-buttons"
+                              fromYear={1900}
+                              toYear={new Date().getFullYear()}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* Email */}
                       <div className="space-y-2">
                         <Label htmlFor="signup-email">Email</Label>
                         <div className="relative">
@@ -267,6 +322,8 @@ const Auth = () => {
                           <Input id="signup-email" type="email" placeholder="you@example.com" value={signUpEmail} onChange={e => setSignUpEmail(e.target.value)} className="!pl-11" required />
                         </div>
                       </div>
+
+                      {/* Password */}
                       <div className="space-y-2">
                         <Label htmlFor="signup-password">Password</Label>
                         <div className="relative">
@@ -274,6 +331,7 @@ const Auth = () => {
                           <Input id="signup-password" type="password" placeholder="••••••••" value={signUpPassword} onChange={e => setSignUpPassword(e.target.value)} className="!pl-11" required minLength={6} />
                         </div>
                       </div>
+
                       <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? "Creating account..." : "Create Account"}
                         {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
