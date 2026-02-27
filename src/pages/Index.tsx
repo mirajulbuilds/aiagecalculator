@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { Globe, Calendar as CalendarIconComponent, Calendar, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star, Calculator, ArrowLeftRight, CalendarCheck, Gift, Cake, Flag, Lightbulb, PawPrint, Baby } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ interface AgeResult {
   zodiacSymbol: string;
 }
 const Index = () => {
+  const { profile } = useAuth();
   const [birthDay, setBirthDay] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -102,6 +104,16 @@ const Index = () => {
   const [giftInterests, setGiftInterests] = useState('');
   const [giftIdeas, setGiftIdeas] = useState<any[]>([]);
   const [isGeneratingGifts, setIsGeneratingGifts] = useState(false);
+
+  // Pre-fill from user profile
+  useEffect(() => {
+    if (profile?.date_of_birth && !birthDay && !birthMonth && !birthYear) {
+      const dob = new Date(profile.date_of_birth);
+      setBirthDay(dob.getDate().toString());
+      setBirthMonth((dob.getMonth() + 1).toString());
+      setBirthYear(dob.getFullYear().toString());
+    }
+  }, [profile]);
 
   // Watermark utility function
   const addWatermarkToImage = (imageUrl: string): Promise<string> => {

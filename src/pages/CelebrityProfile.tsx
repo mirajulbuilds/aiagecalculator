@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SEOHead } from "@/components/SEOHead";
@@ -56,6 +57,7 @@ const getChineseZodiac = (year: number): string => {
 };
 
 const CelebrityProfile = () => {
+  const { profile: authProfile } = useAuth();
   const { profileSlug } = useParams<{ profileSlug: string }>();
   const [celebrity, setCelebrity] = useState<CelebrityData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,30 @@ const CelebrityProfile = () => {
   const [userBirthMonth, setUserBirthMonth] = useState("");
   const [userBirthYear, setUserBirthYear] = useState("");
   const [comparisonResult, setComparisonResult] = useState("");
+
+  // Pre-fill age comparison from user profile
+  useEffect(() => {
+    if (authProfile?.date_of_birth && celebrity && !userBirthDay && !userBirthMonth && !userBirthYear) {
+      const dob = new Date(authProfile.date_of_birth);
+      const day = dob.getDate().toString();
+      const month = (dob.getMonth() + 1).toString();
+      const year = dob.getFullYear().toString();
+      setUserBirthDay(day);
+      setUserBirthMonth(month);
+      setUserBirthYear(year);
+      // Auto-calculate
+      const userDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const celebDate = new Date(celebrity.date_of_birth);
+      const diff = differenceInYears(celebDate, userDate);
+      if (diff > 0) {
+        setComparisonResult(`You were ${diff} year${diff !== 1 ? 's' : ''} old when ${celebrity.name} was born.`);
+      } else if (diff < 0) {
+        setComparisonResult(`You were born ${Math.abs(diff)} year${Math.abs(diff) !== 1 ? 's' : ''} after ${celebrity.name}.`);
+      } else {
+        setComparisonResult(`You and ${celebrity.name} were born in the same year!`);
+      }
+    }
+  }, [authProfile, celebrity]);
 
   useEffect(() => {
     const loadCelebrity = async () => {

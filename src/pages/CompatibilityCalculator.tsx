@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -46,6 +47,7 @@ function calculateNameNumber(name: string): number {
 }
 
 const CompatibilityCalculator = () => {
+  const { profile } = useAuth();
   const [day1, setDay1] = useState<string>("");
   const [month1, setMonth1] = useState<string>("");
   const [year1, setYear1] = useState<string>("");
@@ -56,6 +58,16 @@ const CompatibilityCalculator = () => {
   const [name2, setName2] = useState<string>("");
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CompatibilityResult | null>(null);
+
+  // Pre-fill "Your" birthdate from profile
+  useEffect(() => {
+    if (profile?.date_of_birth && !day1 && !month1 && !year1) {
+      const dob = new Date(profile.date_of_birth);
+      setDay1(dob.getDate().toString());
+      setMonth1((dob.getMonth() + 1).toString());
+      setYear1(dob.getFullYear().toString());
+    }
+  }, [profile]);
 
   const months = [
     { value: "1", label: "January" },

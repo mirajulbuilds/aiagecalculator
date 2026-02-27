@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedAdminRoute } from "@/components/ProtectedAdminRoute";
 import { BasicAdminRoute } from "@/components/BasicAdminRoute";
 import { DomainGuard } from "@/components/DomainGuard";
@@ -60,6 +61,9 @@ const GSCManagement = lazy(() => import("./pages/admin/GSCManagement"));
 const CelebrityProfilesManager = lazy(() => import("./pages/admin/CelebrityProfilesManager"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Profile = lazy(() => import("./pages/Profile"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -107,6 +111,9 @@ const AnimatedRoutes = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/famous-birthdays" element={<FamousBirthdays />} />
         <Route path="/famous-birthdays/:slug" element={<FamousBirthdaysRedirect />} />
         <Route path="/search" element={<SearchResults />} />
@@ -213,11 +220,12 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="ai-age-calc-theme">
         <TooltipProvider>
-          <ComparisonProvider>
+          <BrowserRouter>
+            <AuthProvider>
+            <ComparisonProvider>
             <LifeExpectancyComparisonProvider>
               <Toaster />
               <Sonner />
-              <BrowserRouter>
                 <ScrollProgress />
                 <div className="flex flex-col min-h-screen">
                   <Header />
@@ -243,9 +251,10 @@ const App = () => (
                   <FloatingLifeExpectancyCompareBar />
                   <BackToTop />
                 </div>
-              </BrowserRouter>
             </LifeExpectancyComparisonProvider>
-          </ComparisonProvider>
+            </ComparisonProvider>
+            </AuthProvider>
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet-async";
 import { PiggyBank, DollarSign, TrendingUp, Calendar, Share2, Wallet, Home, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const RetirementCalculator = () => {
+  const { profile } = useAuth();
   const [currentAge, setCurrentAge] = useState<string>("");
   const [currentSavings, setCurrentSavings] = useState<string>("");
   const [monthlyIncome, setMonthlyIncome] = useState<string>("");
@@ -30,6 +32,15 @@ const RetirementCalculator = () => {
     savings_last_years?: number;
     social_security_note?: string;
   } | null>(null);
+
+  // Pre-fill from user profile
+  useEffect(() => {
+    if (profile?.date_of_birth && !currentAge) {
+      const dob = new Date(profile.date_of_birth);
+      const years = Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      setCurrentAge(years.toString());
+    }
+  }, [profile]);
 
   const handleCalculate = async () => {
     if (!currentAge || !currentSavings || !monthlyIncome || !monthlyExpenses || !desiredRetirementIncome || !investmentReturn || !lifestylePreference) {
