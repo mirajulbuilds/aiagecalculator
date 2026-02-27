@@ -1,117 +1,70 @@
 
 
-## User Authentication & Personalization System
+## Email + Google Sign-In and Delayed Personalization Popup
 
-### Overview
+### Phase 1: Google Sign-In Setup
 
-Add Sign Up / Sign In functionality so logged-in users get a personalized experience across all calculators and tools. Their Date of Birth, name, and gender are saved once and automatically used everywhere -- no repeated input needed.
+**Configure Google OAuth** using Lovable Cloud's managed Google Auth (no API keys needed). This generates the `src/integrations/lovable/` module with the `lovable.auth.signInWithOAuth("google")` method.
 
-### Database Changes
+### Phase 2: Redesign Auth Page with Glassmorphism + Google Button
 
-**New `profiles` table:**
+**File:** `src/pages/Auth.tsx`
 
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid (PK) | References auth.users(id), ON DELETE CASCADE |
-| display_name | text | Optional |
-| date_of_birth | date | Core field for personalization |
-| gender | text | Used by Life Expectancy, Health Score, etc. |
-| country | text | Used by Life Expectancy, Retirement calculators |
-| created_at | timestamptz | Default now() |
-| updated_at | timestamptz | Default now() |
+- Restyle the existing card with glassmorphism: `bg-white/10 dark:bg-gray-900/20 backdrop-blur-xl border border-white/20 shadow-2xl`
+- Add a prominent "Continue with Google" button at the top of both Sign In and Sign Up tabs, using the official Google "G" SVG logo
+- Add a visual divider ("or continue with email") between Google and email forms
+- Google button calls `lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin })`
+- Keep existing email/password Sign In, Sign Up, and Forgot Password flows intact
 
-**RLS policies:**
-- Users can SELECT/UPDATE only their own row (`auth.uid() = id`)
-- INSERT restricted to own row
-- Admins can view all (for admin dashboard)
+### Phase 3: Personalization Popup Component
 
-**Trigger:** Auto-create a profile row on every new signup via a database trigger on `auth.users`.
+**New file:** `src/components/PersonalizationPopup.tsx`
 
-### Auth Flow
+A delayed modal that appears for guest users to encourage sign-up:
 
-**New files:**
-- `src/pages/Auth.tsx` -- Combined Sign Up / Sign In page with tabs
-- `src/hooks/useAuth.ts` -- Central hook providing `user`, `profile`, `isLoading`, `signOut`, and `updateProfile`
-- `src/contexts/AuthContext.tsx` -- Context provider wrapping the app, using `onAuthStateChange` listener + profile fetch
+- **Trigger logic:** `useEffect` checks if user is NOT logged in. If guest, sets a 7-second `setTimeout`. If user logs in before timer fires, the timer is cleared.
+- **localStorage flag:** `personalization_popup_dismissed` -- if set, popup never shows again (even across sessions). Cleared on sign-out so returning guests see it again.
+- **Session flag:** Also tracks dismissal per-session so navigating between pages doesn't re-trigger.
+- **Popup UI:**
+  - Glassmorphism modal with animated gradient background
+  - Headline: "Unlock Your Personalized AI Experience!"
+  - Rocket emoji accent
+  - Subtext explaining benefits (age gap with celebrities, astrological matches, saved results)
+  - "Continue with Google" button (same `lovable.auth.signInWithOAuth` call)
+  - "Sign up with Email" button (navigates to `/auth`)
+  - Subtle "Maybe Later" dismiss button
+  - Framer Motion entrance animation (scale + fade)
+- Uses the Radix `Dialog` component for accessibility (focus trap, escape to close)
 
-**Sign Up flow:**
-1. User signs up with email + password
-2. Email verification required (no auto-confirm)
-3. After verification and first login, user is prompted to complete their profile (DOB, gender, country) via a modal or onboarding step
-4. Profile saved to `profiles` table
+### Phase 4: Integration in App Layout
 
-**Sign In flow:**
-1. Email + password login
-2. Profile fetched from `profiles` table and stored in context
-3. All tools auto-populate from profile data
+**File:** `src/App.tsx`
 
-### Header Changes (`src/components/Header.tsx`)
+- Import and render `<PersonalizationPopup />` inside the `AuthProvider`, alongside other global components like `<BackToTop />` and `<FloatingCompareBar />`
 
-- Add a user avatar/icon button in the header
-- When logged out: shows "Sign In" link to `/auth`
-- When logged in: shows avatar dropdown with "My Profile", "Sign Out"
-- Keep it minimal -- no major redesign
+### Phase 5: State Management
 
-### Personalization Integration (Dynamic UI Rendering)
+The existing `AuthContext` already handles everything needed:
+- `user` state tracks authentication globally
+- `profile` state provides DOB, gender, country for personalization
+- `onAuthStateChange` listener automatically updates state when Google OAuth completes
+- When Google sign-in completes (redirect back to app), `AuthProvider` detects the new session, fetches the profile, and all `useAuth()` consumers re-render with personalized data
+- The popup checks `useAuth().user` -- once truthy, it auto-closes and never shows again
 
-The key pattern: each calculator checks `useAuth()` for a profile. If a DOB exists, pre-fill the fields and optionally auto-calculate on mount.
+### Summary of Changes
 
-**Pages to update:**
+| File | Change |
+|------|--------|
+| `src/pages/Auth.tsx` | Add Google Sign-In button, glassmorphism styling, "or" divider |
+| `src/components/PersonalizationPopup.tsx` | New -- delayed 7s popup for guests with Google + Email sign-up CTAs |
+| `src/App.tsx` | Add `<PersonalizationPopup />` to the layout |
+| `src/integrations/lovable/` | Auto-generated by configure-social-auth tool (Google OAuth) |
 
-| Page | What changes |
-|------|-------------|
-| `Index.tsx` (Age Calculator) | Auto-fill birth day/month/year from profile DOB; auto-calculate on load |
-| `CelebrityProfile.tsx` | Auto-fill the "How old were you when X was born?" calculator and show result immediately |
-| `LifeExpectancyCalculator.tsx` | Pre-fill DOB + gender + country from profile |
-| `RetirementCalculator.tsx` | Pre-fill DOB + gender + country |
-| `HealthScoreCalculator.tsx` | Pre-fill DOB + gender |
-| `CompatibilityCalculator.tsx` | Pre-fill "Your" birth date fields |
-| `DueDateCalculator.tsx` | Pre-fill date fields if applicable |
-| `PetAgeCalculator.tsx` | No DOB needed (pet's age), but show personalized greeting |
-| `PastLifeGenerator.tsx` | Pre-fill DOB |
+### Technical Notes
 
-**Pattern for each page (pseudocode):**
-```text
-const { profile } = useAuth();
-
-useEffect(() => {
-  if (profile?.date_of_birth) {
-    const dob = new Date(profile.date_of_birth);
-    setBirthDay(dob.getDate().toString());
-    setBirthMonth((dob.getMonth() + 1).toString());
-    setBirthYear(dob.getFullYear().toString());
-    // Auto-trigger calculation
-  }
-}, [profile]);
-```
-
-### Profile Page (`src/pages/Profile.tsx`)
-
-A simple page where users can:
-- View/edit their display name, DOB, gender, country
-- See a summary of their personalized stats (your age, your zodiac, your life path number)
-- Delete their account
-
-### Implementation Order
-
-1. **Create `profiles` table** with RLS + auto-create trigger (database migration)
-2. **Build AuthContext + useAuth hook** (session listener, profile fetch/cache)
-3. **Build Auth page** (Sign Up / Sign In with tabs)
-4. **Update Header** with user menu (Sign In / avatar dropdown)
-5. **Build Profile page** (view/edit profile data)
-6. **Integrate personalization into calculators** (auto-fill DOB from profile across all tools)
-7. **Auto-calculate on CelebrityProfile** (instant result for logged-in users on the "How old were you" card)
-
-### What This Does NOT Change
-
-- Anonymous users can still use every tool exactly as before (no login wall)
-- Admin auth flow remains completely separate (existing AuthGateway + 2FA)
-- No changes to the existing admin panel or security architecture
-
-### Engagement Benefits
-
-- **Reduced friction**: DOB entered once, used everywhere
-- **Instant results**: Celebrity profile pages show personalized age comparison automatically
-- **Return visits**: Users come back to see age updates, new celebrity comparisons
-- **Session depth**: Pre-filled calculators encourage trying multiple tools
+- Google OAuth uses Lovable Cloud's managed credentials -- no API keys needed
+- The `lovable.auth.signInWithOAuth("google")` function is used instead of `supabase.auth.signInWithOAuth()` per Lovable Cloud requirements
+- The popup uses `localStorage` for persistence so dismissed state survives page refreshes
+- Framer Motion (already installed) handles popup animations
+- No new dependencies required
 
