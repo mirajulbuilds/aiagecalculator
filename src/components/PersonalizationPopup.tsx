@@ -66,7 +66,7 @@ const PersonalizationPopup = () => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleDismiss(); }}>
-      <DialogContent className="sm:max-w-md bg-white/10 dark:bg-gray-900/20 backdrop-blur-xl border border-white/20 shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-gray-200 dark:border-slate-700 shadow-2xl rounded-2xl p-0 overflow-hidden">
         <AnimatePresence>
           {open && (
             <motion.div
@@ -80,10 +80,10 @@ const PersonalizationPopup = () => {
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-2">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
                   Unlock Your Personalized AI Experience! 🚀
                 </DialogTitle>
-                <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+                <DialogDescription className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                   Sign in to instantly see your age gap with celebrities, track your astrological matches, and save your results automatically.
                 </DialogDescription>
               </div>
@@ -91,7 +91,7 @@ const PersonalizationPopup = () => {
               <div className="space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full h-12 text-base font-medium border-border/50 bg-background/50 hover:bg-accent/50"
+                  className="w-full h-12 text-base font-medium bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-700"
                   onClick={handleGoogleSignIn}
                   disabled={isGoogleLoading}
                 >
@@ -100,8 +100,8 @@ const PersonalizationPopup = () => {
                 </Button>
 
                 <Button
-                  variant="secondary"
-                  className="w-full h-11"
+                  variant="default"
+                  className="w-full h-11 bg-primary text-white hover:bg-primary/90"
                   onClick={handleEmailSignUp}
                 >
                   <Mail className="mr-2 h-4 w-4" />
@@ -111,7 +111,7 @@ const PersonalizationPopup = () => {
 
               <button
                 onClick={handleDismiss}
-                className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors pt-1"
+                className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors pt-1"
               >
                 Maybe Later
               </button>
