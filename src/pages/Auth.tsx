@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,10 +14,20 @@ import { useEffect } from "react";
 import PageTransition from "@/components/PageTransition";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z" fill="#4285F4"/>
+    <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z" fill="#34A853"/>
+    <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z" fill="#FBBC05"/>
+    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 2.58 9 3.58Z" fill="#EA4335"/>
+  </svg>
+);
+
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   // Sign In state
   const [signInEmail, setSignInEmail] = useState("");
@@ -34,6 +45,17 @@ const Auth = () => {
   useEffect(() => {
     if (user) navigate("/profile", { replace: true });
   }, [user, navigate]);
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    const { error } = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (error) {
+      toast({ title: "Google sign-in failed", description: String(error), variant: "destructive" });
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +112,30 @@ const Auth = () => {
 
   if (user) return null;
 
+  const GoogleButton = ({ label = "Continue with Google" }: { label?: string }) => (
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full h-12 text-base font-medium border-border/50 bg-background/50 hover:bg-accent/50 transition-all"
+      onClick={handleGoogleSignIn}
+      disabled={isGoogleLoading}
+    >
+      <GoogleIcon />
+      {isGoogleLoading ? "Redirecting..." : label}
+    </Button>
+  );
+
+  const Divider = () => (
+    <div className="relative my-6">
+      <div className="absolute inset-0 flex items-center">
+        <span className="w-full border-t border-border/40" />
+      </div>
+      <div className="relative flex justify-center text-xs uppercase">
+        <span className="bg-background/80 px-3 text-muted-foreground backdrop-blur-sm">or continue with email</span>
+      </div>
+    </div>
+  );
+
   return (
     <PageTransition>
       <Helmet>
@@ -98,7 +144,7 @@ const Auth = () => {
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[70vh]">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md bg-white/10 dark:bg-gray-900/20 backdrop-blur-xl border border-white/20 shadow-2xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               {showForgotPassword ? "Reset Password" : "Welcome"}
@@ -134,59 +180,67 @@ const Auth = () => {
                 </TabsList>
 
                 <TabsContent value="signin">
-                  <form onSubmit={handleSignIn} className="space-y-4 mt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="signin-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="signin-email" type="email" placeholder="you@example.com" value={signInEmail} onChange={e => setSignInEmail(e.target.value)} className="pl-10" required />
+                  <div className="mt-4 space-y-0">
+                    <GoogleButton />
+                    <Divider />
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="signin-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input id="signin-email" type="email" placeholder="you@example.com" value={signInEmail} onChange={e => setSignInEmail(e.target.value)} className="pl-10" required />
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signin-password">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="signin-password" type="password" placeholder="••••••••" value={signInPassword} onChange={e => setSignInPassword(e.target.value)} className="pl-10" required />
+                      <div className="space-y-2">
+                        <Label htmlFor="signin-password">Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input id="signin-password" type="password" placeholder="••••••••" value={signInPassword} onChange={e => setSignInPassword(e.target.value)} className="pl-10" required />
+                        </div>
                       </div>
-                    </div>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                      {isSubmitting ? "Signing in..." : "Sign In"}
-                      {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
-                    </Button>
-                    <Button type="button" variant="link" className="w-full text-sm" onClick={() => setShowForgotPassword(true)}>
-                      Forgot your password?
-                    </Button>
-                  </form>
+                      <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? "Signing in..." : "Sign In"}
+                        {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+                      </Button>
+                      <Button type="button" variant="link" className="w-full text-sm" onClick={() => setShowForgotPassword(true)}>
+                        Forgot your password?
+                      </Button>
+                    </form>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="signup">
-                  <form onSubmit={handleSignUp} className="space-y-4 mt-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-name">Display Name</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="signup-name" type="text" placeholder="Your name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="pl-10" />
+                  <div className="mt-4 space-y-0">
+                    <GoogleButton label="Sign up with Google" />
+                    <Divider />
+                    <form onSubmit={handleSignUp} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-name">Display Name</Label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input id="signup-name" type="text" placeholder="Your name" value={signUpName} onChange={e => setSignUpName(e.target.value)} className="pl-10" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="signup-email" type="email" placeholder="you@example.com" value={signUpEmail} onChange={e => setSignUpEmail(e.target.value)} className="pl-10" required />
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input id="signup-email" type="email" placeholder="you@example.com" value={signUpEmail} onChange={e => setSignUpEmail(e.target.value)} className="pl-10" required />
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-password">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="signup-password" type="password" placeholder="••••••••" value={signUpPassword} onChange={e => setSignUpPassword(e.target.value)} className="pl-10" required minLength={6} />
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-password">Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input id="signup-password" type="password" placeholder="••••••••" value={signUpPassword} onChange={e => setSignUpPassword(e.target.value)} className="pl-10" required minLength={6} />
+                        </div>
                       </div>
-                    </div>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                      {isSubmitting ? "Creating account..." : "Create Account"}
-                      {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
-                    </Button>
-                  </form>
+                      <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? "Creating account..." : "Create Account"}
+                        {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+                      </Button>
+                    </form>
+                  </div>
                 </TabsContent>
               </Tabs>
             )}

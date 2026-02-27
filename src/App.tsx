@@ -19,6 +19,7 @@ import { LifeExpectancyComparisonProvider } from "./contexts/LifeExpectancyCompa
 import { FloatingLifeExpectancyCompareBar } from "./components/FloatingLifeExpectancyCompareBar";
 import { BackToTop } from "./components/BackToTop";
 import ScrollProgress from "./components/ScrollProgress";
+import PersonalizationPopup from "./components/PersonalizationPopup";
 
 // Lazy load route components for code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -250,6 +251,7 @@ const App = () => (
                   <FloatingCompareBar />
                   <FloatingLifeExpectancyCompareBar />
                   <BackToTop />
+                  <PersonalizationPopup />
                 </div>
             </LifeExpectancyComparisonProvider>
             </ComparisonProvider>
