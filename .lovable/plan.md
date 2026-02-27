@@ -1,43 +1,39 @@
 
+## Fix: Email Verification Redirects to "Access Denied" Page
 
-## Fix Auth Modal UI Overlapping Issues
+### Root Cause
 
-### Problem
-From the screenshots, three issues are visible:
-1. Input field icons overlap the typed text (icons use fixed `top-3` instead of vertical centering)
-2. Social buttons, divider, and form fields crash together (`space-y-0` removes all gaps)
-3. Card background is too transparent and headline uses invisible gradient-clip text
+In `src/pages/Auth.tsx` (line 102), the signup call uses `window.location.origin` as the email redirect URL:
 
-### Changes (single file: `src/pages/Auth.tsx`)
+```typescript
+emailRedirectTo: window.location.origin
+```
 
-**1. Fix icon vertical centering (6 locations)**
+When a user signs up from the **preview iframe** (e.g., `https://id-preview--b74e7838-...lovable.app`), that origin gets baked into the verification email link. Clicking "Verify Email" then redirects to the preview URL, which shows Lovable's "Access denied" page because the user isn't a project collaborator.
 
-All icon elements use `absolute left-3 top-3`. Change to `absolute left-3 top-1/2 -translate-y-1/2` so icons stay centered in the input. Affected lines: 195, 224, 231, 257, 264, 271.
+The same issue also affects the **password reset** flow (line 88), which uses `window.location.origin` for `redirectTo`.
 
-**2. Fix container spacing**
+### Fix
 
-- Line 214: `space-y-0` to `space-y-4` (sign-in tab)
-- Line 247: `space-y-0` to `space-y-4` (sign-up tab)
+**File:** `src/pages/Auth.tsx`
 
-**3. Reduce divider margin**
+1. **Define the canonical app URL** at the top of the component (or as a constant):
+   ```typescript
+   const SITE_URL = 'https://aiagecalculator.lovable.app';
+   ```
 
-Line 160: `my-6` to `my-2` (since parent now provides `space-y-4`, this prevents double spacing).
+2. **Line 102** -- Change signup redirect:
+   - Before: `emailRedirectTo: window.location.origin`
+   - After: `emailRedirectTo: SITE_URL`
 
-**4. Fix card background**
+3. **Line 88** -- Change password reset redirect:
+   - Before: `redirectTo: \`${window.location.origin}/reset-password\``
+   - After: `redirectTo: \`${SITE_URL}/reset-password\``
 
-Line 178: Replace `bg-white/10 dark:bg-gray-900/20 backdrop-blur-xl border border-white/20` with `bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-200 dark:border-gray-700` for a solid, readable card.
+### Result
 
-**5. Fix headline text**
+After this change, clicking "Verify Email" in the confirmation email will redirect users to `https://aiagecalculator.lovable.app` (the published app) instead of the Lovable editor preview, eliminating the "Access denied" error.
 
-Line 180: Replace `bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent` with `text-gray-900 dark:text-white` so the title is always visible.
+### Note
 
-### Summary
-
-| What | Fix |
-|------|-----|
-| Icon overlap on text | `top-3` to `top-1/2 -translate-y-1/2` on all 6 icons |
-| Elements crashing together | `space-y-0` to `space-y-4` on both tab wrappers |
-| Divider double-spacing | `my-6` to `my-2` |
-| Card too transparent | Solid `bg-white/95` background with visible border |
-| Headline invisible | Solid text color instead of gradient-clip |
-
+If you later connect a custom domain (e.g., `https://aiagecalc.com`), update `SITE_URL` to match. Alternatively, we could use an environment variable for this, but a hardcoded constant is simpler for now.
