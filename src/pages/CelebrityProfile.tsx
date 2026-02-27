@@ -65,6 +65,10 @@ const CelebrityProfile = () => {
   const [sameZodiacCelebrities, setSameZodiacCelebrities] = useState<CelebrityData[]>([]);
   const [activeSection, setActiveSection] = useState<string>("about-section");
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const [userBirthDay, setUserBirthDay] = useState("");
+  const [userBirthMonth, setUserBirthMonth] = useState("");
+  const [userBirthYear, setUserBirthYear] = useState("");
+  const [comparisonResult, setComparisonResult] = useState("");
 
   useEffect(() => {
     const loadCelebrity = async () => {
@@ -659,8 +663,16 @@ const CelebrityProfile = () => {
                       <div className="flex items-start gap-3">
                         <span className="text-lg">🎂</span>
                         <p className="text-sm text-foreground">
-                          Shares a birthday with <span className="font-semibold text-primary">{sameBirthdayCelebrities[0]?.name}</span>
-                          {sameBirthdayCelebrities.length > 1 && ` and ${sameBirthdayCelebrities.length - 1} others`}
+                          Shares a birthday with{" "}
+                          {sameBirthdayCelebrities.slice(0, 3).map((celeb, idx, arr) => (
+                            <span key={celeb.profile_slug}>
+                              <Link to={`/people/${celeb.profile_slug}`} className="font-semibold text-primary hover:underline">
+                                {celeb.name}
+                              </Link>
+                              {idx < arr.length - 1 && ", "}
+                            </span>
+                          ))}
+                          {sameBirthdayCelebrities.length > 3 && ` and ${sameBirthdayCelebrities.length - 3} others`}
                         </p>
                       </div>
                     )}
@@ -668,22 +680,76 @@ const CelebrityProfile = () => {
                 </Card>
               )}
 
-              {/* Age Comparison CTA */}
+              {/* Age Comparison Calculator */}
               <Card className="bg-gradient-to-br from-primary/10 to-accent/20 border-primary/20">
-                <CardContent className="p-6 text-center">
+                <CardContent className="p-6">
                   <Calculator className="w-8 h-8 text-primary mx-auto mb-3" />
-                  <h3 className="font-bold text-foreground mb-2">
+                  <h3 className="font-bold text-foreground mb-3 text-center">
                     How old were you when {celebrity.name} was born?
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Compare your age with {celebrity.name} using our calculator
-                  </p>
-                  <Button asChild variant="default" size="sm">
-                    <Link to="/">
-                      Calculate Your Age
-                      <ChevronRight className="w-4 h-4 ml-1" />
-                    </Link>
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    <select
+                      className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                      value={userBirthDay}
+                      onChange={(e) => { setUserBirthDay(e.target.value); setComparisonResult(""); }}
+                    >
+                      <option value="">Day</option>
+                      {Array.from({ length: 31 }, (_, i) => (
+                        <option key={i + 1} value={String(i + 1)}>{i + 1}</option>
+                      ))}
+                    </select>
+                    <select
+                      className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                      value={userBirthMonth}
+                      onChange={(e) => { setUserBirthMonth(e.target.value); setComparisonResult(""); }}
+                    >
+                      <option value="">Month</option>
+                      {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
+                        <option key={i} value={String(i + 1)}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                      value={userBirthYear}
+                      onChange={(e) => { setUserBirthYear(e.target.value); setComparisonResult(""); }}
+                    >
+                      <option value="">Year</option>
+                      {Array.from({ length: 130 }, (_, i) => {
+                        const y = new Date().getFullYear() - i;
+                        return <option key={y} value={String(y)}>{y}</option>;
+                      })}
+                    </select>
+                  </div>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      if (!userBirthDay || !userBirthMonth || !userBirthYear) {
+                        toast.error("Please select your full date of birth");
+                        return;
+                      }
+                      const userDob = new Date(parseInt(userBirthYear), parseInt(userBirthMonth) - 1, parseInt(userBirthDay));
+                      const celebDob = new Date(celebrity.date_of_birth);
+                      if (isNaN(userDob.getTime())) { toast.error("Invalid date"); return; }
+                      const diff = differenceInYears(celebDob, userDob);
+                      if (userDob.getTime() === celebDob.getTime()) {
+                        setComparisonResult(`🎉 You share a birthday with ${celebrity.name}!`);
+                      } else if (userDob < celebDob) {
+                        setComparisonResult(`You were ${diff} year${diff !== 1 ? "s" : ""} old when ${celebrity.name} was born`);
+                      } else {
+                        const absDiff = Math.abs(diff);
+                        setComparisonResult(`You were born ${absDiff} year${absDiff !== 1 ? "s" : ""} after ${celebrity.name}`);
+                      }
+                    }}
+                  >
+                    Calculate
                   </Button>
+                  {comparisonResult && (
+                    <p className="mt-3 text-sm font-medium text-center text-foreground bg-background/60 rounded-lg p-3 animate-fade-in">
+                      {comparisonResult}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 
