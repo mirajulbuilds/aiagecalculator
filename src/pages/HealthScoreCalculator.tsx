@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { SEOFaqSection } from "@/components/SEOFaqSection";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 const HealthScoreCalculator = () => {
+  const { profile } = useAuth();
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [smoking, setSmoking] = useState("");
@@ -27,6 +29,16 @@ const HealthScoreCalculator = () => {
   const [bmi, setBmi] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+
+  // Pre-fill from user profile
+  useEffect(() => {
+    if (profile?.date_of_birth && !age) {
+      const dob = new Date(profile.date_of_birth);
+      const years = Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      setAge(years.toString());
+    }
+    if (profile?.gender && !gender) setGender(profile.gender);
+  }, [profile]);
 
   const handleCalculate = async () => {
     if (!age || !gender || !smoking || !exercise || !alcohol || !diet || !stress || !bmi) {

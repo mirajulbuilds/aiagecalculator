@@ -1,19 +1,23 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Search, Menu, User, Calendar, Heart, Sparkles, Brain, Scale, Camera, Gift, Users, Moon, TrendingUp, Activity, Baby, Home, Star, BookOpen, PiggyBank, History, ChevronDown, X, PawPrint } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, Menu, User, Calendar, Heart, Sparkles, Brain, Scale, Camera, Gift, Users, Moon, TrendingUp, Activity, Baby, Home, Star, BookOpen, PiggyBank, History, ChevronDown, X, PawPrint, LogOut, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownLinksRef = useRef<HTMLAnchorElement[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const { user, profile, signOut } = useAuth();
 
   // Ripple effect handler for any element
   const createRipple = (event: React.MouseEvent<HTMLElement>) => {
@@ -315,6 +319,37 @@ const Header = () => {
                 </Link>
 
                 <ThemeToggle />
+
+                {/* User Auth Menu */}
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="relative">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                          <User className="h-4 w-4 text-primary" />
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => navigate("/profile")}>
+                        <UserCircle className="mr-2 h-4 w-4" />
+                        My Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={async () => { await signOut(); navigate("/"); }}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link to="/auth">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <User className="h-4 w-4" />
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
               </div>
 
               {/* Mobile Menu Button and Theme Toggle */}
@@ -363,6 +398,42 @@ const Header = () => {
           {/* Scrollable Navigation Content */}
           <nav className="mobile-nav-drawer-content">
             <div className="flex flex-col space-y-2">
+              {/* Auth link at top of mobile menu */}
+              {user ? (
+                <>
+                  <Link
+                    to="/profile"
+                    onClick={(e) => { createRipple(e); handleCloseMenu(); }}
+                    className={`mobile-nav-link ${isActive("/profile") ? "active" : ""}`}
+                    style={{ animationDelay: "0ms" }}
+                  >
+                    <div className="nav-icon"><UserCircle className="w-5 h-5" /></div>
+                    <span className="relative font-medium">My Profile</span>
+                  </Link>
+                  <button
+                    onClick={async (e) => { createRipple(e as any); await signOut(); handleCloseMenu(); navigate("/"); }}
+                    className="mobile-nav-link"
+                    style={{ animationDelay: "50ms" }}
+                  >
+                    <div className="nav-icon"><LogOut className="w-5 h-5" /></div>
+                    <span className="relative font-medium">Sign Out</span>
+                  </button>
+                  <div className="border-b border-border my-2" />
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/auth"
+                    onClick={(e) => { createRipple(e); handleCloseMenu(); }}
+                    className={`mobile-nav-link ${isActive("/auth") ? "active" : ""}`}
+                    style={{ animationDelay: "0ms" }}
+                  >
+                    <div className="nav-icon"><User className="w-5 h-5" /></div>
+                    <span className="relative font-medium">Sign In</span>
+                  </Link>
+                  <div className="border-b border-border my-2" />
+                </>
+              )}
               {mobileNavItems.map((item, index) => {
                 const isCurrentPage = isActive(item.path);
                 return (
@@ -375,7 +446,7 @@ const Header = () => {
                     }}
                     className={`mobile-nav-link ${isCurrentPage ? "active" : ""}`}
                     style={{
-                      animationDelay: `${index * 50}ms`,
+                      animationDelay: `${(index + (user ? 3 : 2)) * 50}ms`,
                     }}
                   >
                     <div className="nav-icon">

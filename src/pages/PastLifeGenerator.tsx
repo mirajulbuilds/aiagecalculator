@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,11 +13,22 @@ import { triggerNativeShare } from "@/lib/shareUtils";
 import { SEOFaqSection } from "@/components/SEOFaqSection";
 
 const PastLifeGenerator = () => {
+  const { profile } = useAuth();
   const [day, setDay] = useState<string>("");
   const [month, setMonth] = useState<string>("");
   const [year, setYear] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [pastLifeStory, setPastLifeStory] = useState<string>("");
+
+  // Pre-fill from user profile
+  useEffect(() => {
+    if (profile?.date_of_birth && !day && !month && !year) {
+      const dob = new Date(profile.date_of_birth);
+      setDay(dob.getDate().toString());
+      setMonth((dob.getMonth() + 1).toString());
+      setYear(dob.getFullYear().toString());
+    }
+  }, [profile]);
 
   const months = [
     { value: "1", label: "January" },

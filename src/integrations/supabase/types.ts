@@ -298,6 +298,36 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string
+          date_of_birth: string | null
+          display_name: string | null
+          gender: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          gender?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          gender?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       redirect_logs: {
         Row: {
           created_at: string | null

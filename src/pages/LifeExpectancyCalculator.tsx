@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet-async";
 import { SEOHead } from "@/components/SEOHead";
 import { SEOFaqSection } from "@/components/SEOFaqSection";
@@ -11,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 const LifeExpectancyCalculator = () => {
+  const { profile } = useAuth();
   const [birthDay, setBirthDay] = useState<string>("");
   const [birthMonth, setBirthMonth] = useState<string>("");
   const [birthYear, setBirthYear] = useState<string>("");
@@ -35,6 +37,19 @@ const LifeExpectancyCalculator = () => {
   const {
     addToComparison
   } = useLifeExpectancyComparison();
+
+  // Pre-fill from user profile
+  useEffect(() => {
+    if (profile?.date_of_birth && !birthDay && !birthMonth && !birthYear) {
+      const dob = new Date(profile.date_of_birth);
+      setBirthDay(dob.getDate().toString());
+      setBirthMonth((dob.getMonth() + 1).toString());
+      setBirthYear(dob.getFullYear().toString());
+    }
+    if (profile?.gender && !gender) setGender(profile.gender);
+    if (profile?.country && !country) setCountry(profile.country);
+  }, [profile]);
+
   const days = Array.from({
     length: 31
   }, (_, i) => i + 1);
