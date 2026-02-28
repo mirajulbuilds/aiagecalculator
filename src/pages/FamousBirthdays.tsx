@@ -162,7 +162,7 @@ const FamousBirthdays = () => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                      className="pl-12 pr-4 py-6 text-lg"
+                      className="!pl-12 pr-4 py-6 text-lg"
                     />
                   </div>
                   <Button 
