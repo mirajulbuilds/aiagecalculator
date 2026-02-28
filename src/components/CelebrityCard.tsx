@@ -52,6 +52,21 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
           <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
             <span className="text-xs font-semibold text-white">{age} years</span>
           </div>
+
+          {/* Compare Button */}
+          <Button
+            size="icon"
+            variant={inComparison ? "default" : "outline"}
+            className="absolute top-2 right-2 w-9 h-9 md:w-10 md:h-10 rounded-full shadow-lg backdrop-blur-sm bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 z-30 transition-all border-2"
+            onClick={handleCompareClick}
+            title={inComparison ? "Added to comparison" : "Add to comparison"}
+          >
+            {inComparison ? (
+              <Check className="w-4 h-4 md:w-5 md:h-5" />
+            ) : (
+              <Scale className="w-4 h-4 md:w-5 md:h-5" />
+            )}
+          </Button>
         </div>
         <div className="p-4 min-h-24 flex flex-col">
           <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors line-clamp-1">
@@ -60,21 +75,6 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
           <p className="text-sm text-muted-foreground line-clamp-2">{celebrity.profession}</p>
         </div>
       </Link>
-      
-      {/* Compare Button - Outside Link to prevent navigation conflict */}
-      <Button
-        size="icon"
-        variant={inComparison ? "default" : "outline"}
-        className="absolute top-2 right-2 w-9 h-9 md:w-10 md:h-10 rounded-full shadow-lg backdrop-blur-sm bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 z-30 transition-all border-2"
-        onClick={handleCompareClick}
-        title={inComparison ? "Added to comparison" : "Add to comparison"}
-      >
-        {inComparison ? (
-          <Check className="w-4 h-4 md:w-5 md:h-5" />
-        ) : (
-          <Scale className="w-4 h-4 md:w-5 md:h-5" />
-        )}
-      </Button>
     </div>
   );
 };
