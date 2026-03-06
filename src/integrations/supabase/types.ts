@@ -89,6 +89,45 @@ export type Database = {
         }
         Relationships: []
       }
+      biological_age_results: {
+        Row: {
+          age_difference: number
+          biological_age: number
+          category_scores: Json | null
+          chronological_age: number
+          created_at: string
+          detailed_breakdown: Json | null
+          face_age: number | null
+          id: string
+          summary: string | null
+          user_id: string
+        }
+        Insert: {
+          age_difference: number
+          biological_age: number
+          category_scores?: Json | null
+          chronological_age: number
+          created_at?: string
+          detailed_breakdown?: Json | null
+          face_age?: number | null
+          id?: string
+          summary?: string | null
+          user_id: string
+        }
+        Update: {
+          age_difference?: number
+          biological_age?: number
+          category_scores?: Json | null
+          chronological_age?: number
+          created_at?: string
+          detailed_breakdown?: Json | null
+          face_age?: number | null
+          id?: string
+          summary?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       blocked_ips: {
         Row: {
           blocked_at: string | null
