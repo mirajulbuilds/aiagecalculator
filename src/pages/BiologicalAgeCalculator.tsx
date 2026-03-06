@@ -579,7 +579,7 @@ const BiologicalAgeCalculator = () => {
               </motion.div>
             )}
 
-            <SEOFaqSection faqs={faqItems} title="Biological Age FAQ" />
+            <SEOFaqSection faqs={faqItems} title="Biological Age FAQ" description="Common questions about biological age and how it's calculated" />
           </motion.div>
         </div>
       </div>
