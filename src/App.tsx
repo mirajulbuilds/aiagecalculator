@@ -54,6 +54,7 @@ const Compare = lazy(() => import("./pages/Compare"));
 const CompareLifeExpectancy = lazy(() => import("./pages/CompareLifeExpectancy"));
 const DueDateCalculator = lazy(() => import("./pages/DueDateCalculator"));
 const PetAgeCalculator = lazy(() => import("./pages/PetAgeCalculator"));
+const BiologicalAgeCalculator = lazy(() => import("./pages/BiologicalAgeCalculator"));
 const SecurityMonitoring = lazy(() => import("./pages/SecurityMonitoring"));
 const TwoFactorEnrollment = lazy(() => import("./pages/TwoFactorEnrollment"));
 const TwoFactorVerification = lazy(() => import("./pages/TwoFactorVerification"));
@@ -132,6 +133,7 @@ const AnimatedRoutes = () => {
             <Route path="/compare-life-expectancy" element={<CompareLifeExpectancy />} />
             <Route path="/due-date-calculator" element={<DueDateCalculator />} />
             <Route path="/pet-age-calculator" element={<PetAgeCalculator />} />
+            <Route path="/biological-age-calculator" element={<BiologicalAgeCalculator />} />
         <Route path="/auth-gateway-key-a1b2c3" element={
           <DomainGuard><AuthGateway /></DomainGuard>
         } />
