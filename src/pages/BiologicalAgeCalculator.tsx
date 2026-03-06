@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Brain, Activity, Share2, TrendingUp, TrendingDown, ChevronDown, Camera, Upload, Heart, Loader2, CheckCircle2, Sparkles, ArrowDown, ArrowUp } from "lucide-react";
+import { Brain, Activity, Share2, TrendingUp, TrendingDown, ChevronDown, Camera, Upload, Heart, Loader2, CheckCircle2, Sparkles, ArrowDown, ArrowUp, History, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { triggerNativeShare } from "@/lib/shareUtils";
