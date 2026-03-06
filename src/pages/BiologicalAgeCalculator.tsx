@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,14 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Brain, Activity, Share2, TrendingUp, TrendingDown, ChevronDown, Camera, Upload, Heart, Loader2, CheckCircle2, Sparkles, ArrowDown, ArrowUp } from "lucide-react";
+import { Brain, Activity, Share2, TrendingUp, TrendingDown, ChevronDown, Camera, Upload, Heart, Loader2, CheckCircle2, Sparkles, ArrowDown, ArrowUp, History, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { triggerNativeShare } from "@/lib/shareUtils";
 import PageTransition from "@/components/PageTransition";
 import { Helmet } from "react-helmet-async";
 import { SEOFaqSection } from "@/components/SEOFaqSection";
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ReferenceLine } from "recharts";
+import { format } from "date-fns";
 
 const processingSteps = [
   { label: "Analyzing health data...", icon: Activity },
@@ -26,7 +27,7 @@ const processingSteps = [
 ];
 
 const BiologicalAgeCalculator = () => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [height, setHeight] = useState("");
@@ -49,6 +50,63 @@ const BiologicalAgeCalculator = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [result, setResult] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  const fetchHistory = useCallback(async () => {
+    if (!user) return;
+    setHistoryLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("biological_age_results" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      setHistory(data || []);
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  const saveResult = async (resultData: any) => {
+    if (!user) return;
+    try {
+      const { error } = await supabase.from("biological_age_results" as any).insert({
+        user_id: user.id,
+        chronological_age: resultData.chronological_age,
+        biological_age: resultData.biological_age,
+        age_difference: resultData.age_difference,
+        face_age: resultData.face_age || null,
+        category_scores: resultData.category_scores || null,
+        detailed_breakdown: resultData.detailed_breakdown || null,
+        summary: resultData.summary || null,
+      });
+      if (error) throw error;
+      toast.success("Result saved to your history!");
+      fetchHistory();
+    } catch (err: any) {
+      console.error("Failed to save result:", err);
+      // Don't show error toast for unauthenticated users
+    }
+  };
+
+  const deleteHistoryEntry = async (id: string) => {
+    try {
+      const { error } = await supabase.from("biological_age_results" as any).delete().eq("id", id);
+      if (error) throw error;
+      setHistory((prev) => prev.filter((h: any) => h.id !== id));
+      toast.success("Entry deleted");
+    } catch (err) {
+      toast.error("Failed to delete entry");
+    }
+  };
 
   const bmi = height && weight ? (parseFloat(weight) / ((parseFloat(height) / 100) ** 2)).toFixed(1) : "";
 
@@ -151,6 +209,10 @@ const BiologicalAgeCalculator = () => {
       await new Promise((r) => setTimeout(r, 600));
       setResult(data);
       toast.success("Biological age calculated!");
+      // Auto-save if logged in
+      if (user) {
+        await saveResult(data);
+      }
       setTimeout(() => {
         document.getElementById("bio-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 200);
@@ -577,6 +639,77 @@ const BiologicalAgeCalculator = () => {
                   </Card>
                 )}
               </motion.div>
+            )}
+
+            {/* History Chart */}
+            {user && history.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <History className="w-5 h-5" />
+                      Your Biological Age Over Time
+                    </CardTitle>
+                    <CardDescription>Track how your biological age changes with each assessment</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={history.map((h: any) => ({
+                        date: format(new Date(h.created_at), "MMM d"),
+                        fullDate: format(new Date(h.created_at), "PPP"),
+                        biological: Number(h.biological_age),
+                        chronological: h.chronological_age,
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="date" tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }} />
+                        <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} domain={["dataMin - 3", "dataMax + 3"]} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                          labelFormatter={(_, payload) => payload?.[0]?.payload?.fullDate || ""}
+                        />
+                        <Legend />
+                        <Line type="monotone" dataKey="chronological" stroke="hsl(var(--muted-foreground))" strokeWidth={2} name="Chronological Age" dot={{ r: 4 }} />
+                        <Line type="monotone" dataKey="biological" stroke="hsl(var(--primary))" strokeWidth={2} name="Biological Age" dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+
+                    {/* History Table */}
+                    <div className="mt-6 space-y-2">
+                      <h4 className="text-sm font-medium text-muted-foreground">Assessment History</h4>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {[...history].reverse().map((entry: any) => {
+                          const diff = Number(entry.age_difference);
+                          const younger = diff > 0;
+                          return (
+                            <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 text-sm">
+                              <div className="flex items-center gap-4">
+                                <span className="text-muted-foreground">{format(new Date(entry.created_at), "PPP")}</span>
+                                <span className="font-medium">Bio: {Number(entry.biological_age)}</span>
+                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${younger ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-amber-500/10 text-amber-600 dark:text-amber-400"}`}>
+                                  {younger ? "↓" : "↑"} {Math.abs(diff).toFixed(1)} yrs
+                                </span>
+                              </div>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => deleteHistoryEntry(entry.id)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {!user && result && (
+              <Card className="mt-6 border-dashed">
+                <CardContent className="pt-6 text-center">
+                  <History className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mb-3">Sign in to save your results and track your biological age over time</p>
+                  <Button variant="outline" size="sm" onClick={() => window.location.href = "/auth"}>Sign In to Track</Button>
+                </CardContent>
+              </Card>
             )}
 
             <SEOFaqSection faqs={faqItems} title="Biological Age FAQ" description="Common questions about biological age and how it's calculated" />
