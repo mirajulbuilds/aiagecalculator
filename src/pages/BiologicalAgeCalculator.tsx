@@ -50,6 +50,63 @@ const BiologicalAgeCalculator = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [result, setResult] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  const fetchHistory = useCallback(async () => {
+    if (!user) return;
+    setHistoryLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("biological_age_results" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      setHistory(data || []);
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  const saveResult = async (resultData: any) => {
+    if (!user) return;
+    try {
+      const { error } = await supabase.from("biological_age_results" as any).insert({
+        user_id: user.id,
+        chronological_age: resultData.chronological_age,
+        biological_age: resultData.biological_age,
+        age_difference: resultData.age_difference,
+        face_age: resultData.face_age || null,
+        category_scores: resultData.category_scores || null,
+        detailed_breakdown: resultData.detailed_breakdown || null,
+        summary: resultData.summary || null,
+      });
+      if (error) throw error;
+      toast.success("Result saved to your history!");
+      fetchHistory();
+    } catch (err: any) {
+      console.error("Failed to save result:", err);
+      // Don't show error toast for unauthenticated users
+    }
+  };
+
+  const deleteHistoryEntry = async (id: string) => {
+    try {
+      const { error } = await supabase.from("biological_age_results" as any).delete().eq("id", id);
+      if (error) throw error;
+      setHistory((prev) => prev.filter((h: any) => h.id !== id));
+      toast.success("Entry deleted");
+    } catch (err) {
+      toast.error("Failed to delete entry");
+    }
+  };
 
   const bmi = height && weight ? (parseFloat(weight) / ((parseFloat(height) / 100) ** 2)).toFixed(1) : "";
 
