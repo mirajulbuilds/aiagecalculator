@@ -1,23 +1,59 @@
+Biological Age Calculator
+
+### What it does (from the reference images)
+
+A comprehensive tool that calculates a user's **biological age** vs their **chronological age** based on lifestyle, health metrics, and optionally a face photo. Key features from the images:
+
+1. **Input Form** with sections:
+  - **Basic Info**: Age/DOB, Gender, Height, Weight (auto-calculates BMI)
+  - **Lifestyle Factors**: Exercise frequency, smoking, alcohol, sleep hours, diet quality, stress level, hydration
+  - **Advanced Metrics** (optional): Blood pressure, resting heart rate, chronic conditions checkboxes (diabetes, heart disease, family history), mental health indicators
+  - **Optional Face Age Analysis**: Upload a photo to get an estimated face age (reuse existing `estimate-face-age` edge function)
+2. **Results Display** (inspired by image 1 & 3):
+  - **Biological Age vs Chronological Age** comparison with large numbers
+  - **Age Difference** indicator (e.g., "3.0 years younger" in green, or "X years older" in red)
+  - **Visual comparison slider/bar** showing chronological age, face age, and holistic bio age on a range
+  - **Motivational banner** ("Great job! Your biological age is younger...")
+  - **Processing animation** with steps: "Analyzing health data...", "Calculating biological markers...", "Generating report..."
+  - **Category breakdown** (reuse radar chart pattern from Health Score)
+  - **Personalized recommendations** to lower biological age
+
+### Implementation
+
+**1. New Edge Function: `supabase/functions/calculate-biological-age/index.ts**`
+
+- Accepts: age, gender, height, weight, exercise, smoking, alcohol, sleep, diet, stress, hydration, blood_pressure, resting_heart_rate, chronic_conditions, optional face_age
+- Uses the Gemini API (gemini-2.5-flash) I gave you to calculate biological age with a detailed prompt
+- Returns: `biological_age`, `chronological_age`, `age_difference`, `face_age` (if provided), `summary`, `category_scores`, `recommendations`, `comparison_bar_data`
+- Add to `config.toml` with `verify_jwt = false`
+
+**2. New Page: `src/pages/BiologicalAgeCalculator.tsx**`
+
+- Multi-section form with collapsible "Advanced Metrics" section
+- Auto-fill age/gender from user profile (existing pattern)
+- Auto-calculate BMI from height + weight
+- Optional face photo upload section (reuse compress + base64 pattern from AiFaceAge)
+- Animated processing stepper on submit (4 steps with icons, like image 3)
+- Results section with:
+  - Two side-by-side cards: "Chronological Age" and "Biological Age"
+  - Age difference display with arrow icon and color coding
+  - Visual range bar showing all three ages (chronological, face, biological)
+  - Motivational banner (green if younger, amber if older)
+  - Radar chart for category breakdown
+  - Recommendation cards
+
+**3. Route & Navigation**
+
+- Add lazy import + route at `/biological-age-calculator` in `App.tsx`
+- Add to Header nav arrays with `Brain` icon and title "Biological Age"
+
+### Files
 
 
-## Fix: Search Bar Icon Overlap & Compare Button Positioning
-
-### Issue 1: Search Bar Icon/Text Overlap (FamousBirthdays.tsx, line 165)
-
-The Input component's base styles use `pl-3` which may not be reliably overridden by the `pl-12` class passed via className. The memory notes confirm this is a known pattern issue.
-
-**Fix:** Change `pl-12` to `!pl-12` (Tailwind important modifier) on line 165 to force the left padding override.
-
-### Issue 2: Compare Button Misalignment (CelebrityCard.tsx, line 65-77)
-
-The compare button is placed outside the `<Link>` element (line 62 closes it) but is still inside the card's relative container. With `absolute top-2 right-2`, it should overlay the top-right of the image. However, because it's after the Link in the DOM and the card layout uses flex-column flow, the button renders at the bottom instead.
-
-**Fix:** Move the compare Button inside the image container div (before the closing `</div>` of the aspect-square div, around line 55), keeping its absolute positioning. This ensures it overlays correctly on the top-right corner of the image, similar to the age badge on the bottom-left.
-
-### Files Changed
-
-| File | Change |
-|------|--------|
-| `src/pages/FamousBirthdays.tsx` | Line 165: `pl-12` to `!pl-12` |
-| `src/components/CelebrityCard.tsx` | Move compare button from lines 65-77 into the image container (after line 54), keeping same styling |
-
+| File                                                   | Change                  |
+| ------------------------------------------------------ | ----------------------- |
+| `supabase/functions/calculate-biological-age/index.ts` | New edge function       |
+| `supabase/config.toml`                                 | Add function config     |
+| `src/pages/BiologicalAgeCalculator.tsx`                | New page component      |
+| `src/App.tsx`                                          | Add lazy import + route |
+| `src/components/Header.tsx`                            | Add to nav menus        |
