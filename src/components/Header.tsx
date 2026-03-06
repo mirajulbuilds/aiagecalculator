@@ -187,6 +187,7 @@ const Header = () => {
     { title: "Health Score", path: "/health-score-calculator", icon: Heart },
     { title: "Due Date Calculator", path: "/due-date-calculator", icon: Baby },
     { title: "Pet Age Calculator", path: "/pet-age-calculator", icon: PawPrint },
+    { title: "Biological Age", path: "/biological-age-calculator", icon: Brain },
   ];
 
   const mobileNavItems = [
@@ -200,6 +201,7 @@ const Header = () => {
     { title: "Health Score", path: "/health-score-calculator", icon: Heart },
     { title: "Due Date Calculator", path: "/due-date-calculator", icon: Baby },
     { title: "Pet Age Calculator", path: "/pet-age-calculator", icon: PawPrint },
+    { title: "Biological Age", path: "/biological-age-calculator", icon: Brain },
     { title: "Famous Birthdays", path: "/famous-birthdays", icon: Star },
     { title: "Blog", path: "/blog", icon: BookOpen },
   ];
