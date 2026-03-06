@@ -27,7 +27,7 @@ const processingSteps = [
 ];
 
 const BiologicalAgeCalculator = () => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [height, setHeight] = useState("");
