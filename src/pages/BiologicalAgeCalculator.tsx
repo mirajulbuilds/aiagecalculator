@@ -16,7 +16,8 @@ import { triggerNativeShare } from "@/lib/shareUtils";
 import PageTransition from "@/components/PageTransition";
 import { Helmet } from "react-helmet-async";
 import { SEOFaqSection } from "@/components/SEOFaqSection";
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, ReferenceLine } from "recharts";
+import { format } from "date-fns";
 
 const processingSteps = [
   { label: "Analyzing health data...", icon: Activity },
