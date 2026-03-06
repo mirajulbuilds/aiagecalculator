@@ -209,6 +209,10 @@ const BiologicalAgeCalculator = () => {
       await new Promise((r) => setTimeout(r, 600));
       setResult(data);
       toast.success("Biological age calculated!");
+      // Auto-save if logged in
+      if (user) {
+        await saveResult(data);
+      }
       setTimeout(() => {
         document.getElementById("bio-result")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 200);
