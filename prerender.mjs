@@ -1,5 +1,5 @@
 /**
- * prerender.mjs — search engine-দের জন্য প্রতিটা পেজের ready HTML বানায়।
+ * prerender.mjs — fast version
  */
 import puppeteer from "puppeteer";
 import { createClient } from "@supabase/supabase-js";
@@ -10,6 +10,11 @@ import path from "path";
 
 const DIST = path.resolve("dist");
 const PORT = 4173;
+const CONCURRENCY = 4;
+const BLOCK_DOMAINS = [
+  "googlesyndication", "doubleclick", "google-analytics",
+  "googletagmanager", "adsbygoogle", "pagead2", "adtrafficquality",
+];
 
 function loadEnv() {
   const env = { ...process.env };
@@ -36,24 +41,19 @@ function staticRoutesFromSitemap() {
     return ["/"];
   }
 }
-
 async function celebrityRoutes() {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.warn("⚠  Supabase keys not found – skipping celebrity pages.");
+    console.warn("WARN: Supabase keys not found - skipping celebrity pages.");
     return [];
   }
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data, error } = await supabase
-    .from("celebrities")
-    .select("profile_slug")
-    .limit(5000);
+    .from("celebrities").select("profile_slug").limit(5000);
   if (error) {
-    console.error("⚠  Supabase error:", error.message);
+    console.error("WARN: Supabase error:", error.message);
     return [];
   }
-  return (data || [])
-    .filter((r) => r.profile_slug)
-    .map((r) => `/people/${r.profile_slug}`);
+  return (data || []).filter((r) => r.profile_slug).map((r) => `/people/${r.profile_slug}`);
 }
 
 const MIME = {
@@ -63,7 +63,6 @@ const MIME = {
   ".woff2": "font/woff2", ".webmanifest": "application/manifest+json",
   ".txt": "text/plain", ".xml": "application/xml",
 };
-
 function makeServer() {
   return http.createServer(async (req, res) => {
     try {
@@ -78,54 +77,69 @@ function makeServer() {
         res.setHeader("Content-Type", "text/html");
         res.end(await readFile(path.join(DIST, "index.html")));
       }
-    } catch (e) {
-      res.statusCode = 500;
-      res.end("Server error");
+    } catch {
+      res.statusCode = 500; res.end("Server error");
     }
   });
 }
 
-const routes = [
-  ...new Set([...staticRoutesFromSitemap(), ...(await celebrityRoutes())]),
-];
-console.log(`Prerendering ${routes.length} routes...`);
+async function renderRoute(browser, route, total, counter) {
+  const page = await browser.newPage();
+  try {
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const type = req.resourceType();
+      const url = req.url();
+      if (["image", "media", "font"].includes(type) ||
+          BLOCK_DOMAINS.some((d) => url.includes(d))) {
+        req.abort().catch(() => {});
+      } else {
+        req.continue().catch(() => {});
+      }
+    });
+    await page.goto(`http://localhost:${PORT}${route}`, {
+      waitUntil: "domcontentloaded", timeout: 20000,
+    });
+    await page.waitForFunction(() => {
+      const root = document.getElementById("root");
+      const txt = document.body.innerText || "";
+      return root && root.children.length > 0 && !txt.includes("Loading profile...");
+    }, { timeout: 12000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 400));
+    const html = await page.content();
+    const outDir = path.join(DIST, route === "/" ? "" : route);
+    await mkdir(outDir, { recursive: true });
+    await writeFile(path.join(outDir, "index.html"), html);
+    counter.done++;
+    console.log(`OK (${counter.done}/${total}) ${route}`);
+  } catch (e) {
+    console.error(`FAIL ${route}: ${e.message}`);
+  } finally {
+    await page.close();
+  }
+}
+
+const routes = [...new Set([...staticRoutesFromSitemap(), ...(await celebrityRoutes())])];
+console.log(`Prerendering ${routes.length} routes (concurrency ${CONCURRENCY})...`);
 
 const server = makeServer();
 await new Promise((r) => server.listen(PORT, r));
 
 const browser = await puppeteer.launch({
   headless: "new",
-  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
 });
 
-let done = 0;
-for (const route of routes) {
-  const page = await browser.newPage();
-  try {
-    await page.goto(`http://localhost:${PORT}${route}`, {
-      waitUntil: "networkidle0", timeout: 30000,
-    });
-    await page.waitForFunction(
-      () => {
-        const root = document.getElementById("root");
-        const txt = document.body.innerText || "";
-        return root && root.children.length > 0 && !txt.includes("Loading profile...");
-      },
-      { timeout: 15000 }
-    ).catch(() => {});
-    const html = await page.content();
-    const outDir = path.join(DIST, route === "/" ? "" : route);
-    await mkdir(outDir, { recursive: true });
-    await writeFile(path.join(outDir, "index.html"), html);
-    done++;
-    console.log(`✓ (${done}/${routes.length}) ${route}`);
-  } catch (e) {
-    console.error(`✗ ${route}: ${e.message}`);
-  } finally {
-    await page.close();
+const counter = { done: 0 };
+let idx = 0;
+async function worker() {
+  while (idx < routes.length) {
+    const route = routes[idx++];
+    await renderRoute(browser, route, routes.length, counter);
   }
 }
+await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
 await browser.close();
 server.close();
-console.log(`\nDone. Prerendered ${done}/${routes.length} pages into dist/.`);
+console.log(`\nDone. Prerendered ${counter.done}/${routes.length} pages into dist/.`);
