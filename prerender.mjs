@@ -1,5 +1,5 @@
 /**
- * prerender.mjs — fast + correct titles + auto sitemap
+ * prerender.mjs — final (DB-injected SEO tags + auto sitemap)
  */
 import puppeteer from "puppeteer";
 import { createClient } from "@supabase/supabase-js";
@@ -33,6 +33,11 @@ const env = loadEnv();
 const SUPABASE_URL = env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+function esc(s) {
+  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 function staticRoutesFromSitemap() {
   try {
     const xml = readFileSync("public/sitemap-static.xml", "utf8");
@@ -43,29 +48,62 @@ function staticRoutesFromSitemap() {
     return ["/"];
   }
 }
-async function celebritySlugs() {
+
+async function fetchCelebrities() {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     console.warn("WARN: Supabase keys not found - skipping celebrity pages.");
     return [];
   }
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data, error } = await supabase
-    .from("celebrities").select("profile_slug").limit(20000);
+    .from("celebrities")
+    .select("profile_slug, meta_title, meta_description")
+    .limit(20000);
   if (error) {
     console.error("WARN: Supabase error:", error.message);
     return [];
   }
-  return (data || []).map((r) => r.profile_slug).filter(Boolean);
+  return (data || []).filter((r) => r.profile_slug);
 }
 
-async function writeCelebritySitemap(slugs) {
+async function writeCelebritySitemap(rows) {
   const today = new Date().toISOString().slice(0, 10);
-  const urls = slugs.map((s) =>
-    `  <url>\n    <loc>${SITE}/people/${s}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`
+  const urls = rows.map((r) =>
+    `  <url>\n    <loc>${SITE}/people/${r.profile_slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`
   ).join("\n");
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
   await writeFile(path.join(DIST, "sitemap-celebrities.xml"), xml);
-  console.log(`Sitemap rebuilt with ${slugs.length} celebrities.`);
+  console.log(`Sitemap rebuilt with ${rows.length} celebrities.`);
+}
+
+function injectHead(html, { title, description, canonical }) {
+  let out = html;
+  if (title) {
+    const fullTitle = title.includes("AiAgeCalc") ? title : `${title} | AiAgeCalc`;
+    out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${esc(fullTitle)}</title>`);
+  }
+  if (description) {
+    out = out.replace(/<meta\s+name="description"[^>]*>/i,
+      `<meta name="description" content="${esc(description)}" />`);
+  }
+  const t = title ? (title.includes("AiAgeCalc") ? title : `${title} | AiAgeCalc`) : "";
+  const extra = [];
+  if (t) {
+    extra.push(`<meta property="og:title" content="${esc(t)}" />`);
+    extra.push(`<meta name="twitter:title" content="${esc(t)}" />`);
+  }
+  if (description) {
+    extra.push(`<meta property="og:description" content="${esc(description)}" />`);
+    extra.push(`<meta name="twitter:description" content="${esc(description)}" />`);
+  }
+  if (canonical) {
+    extra.push(`<link rel="canonical" href="${esc(canonical)}" />`);
+    extra.push(`<meta property="og:url" content="${esc(canonical)}" />`);
+  }
+  if (extra.length) {
+    out = out.replace(/<\/head>/i, `    ${extra.join("\n    ")}\n  </head>`);
+  }
+  return out;
 }
 
 const MIME = {
@@ -95,7 +133,7 @@ function makeServer() {
   });
 }
 
-async function renderRoute(browser, route, total, counter) {
+async function renderRoute(browser, route, meta, total, counter) {
   const page = await browser.newPage();
   try {
     await page.setRequestInterception(true);
@@ -117,12 +155,27 @@ async function renderRoute(browser, route, total, counter) {
       const txt = document.body.innerText || "";
       return root && root.children.length > 0 && !txt.includes("Loading profile...");
     }, { timeout: 12000 }).catch(() => {});
-    await page.waitForFunction((def) => {
-      const t = document.querySelector("title");
-      return t && t.textContent && t.textContent.trim() !== def;
-    }, { timeout: 4000 }, DEFAULT_TITLE).catch(() => {});
-    await new Promise((r) => setTimeout(r, 200));
-    const html = await page.content();
+    await new Promise((r) => setTimeout(r, 150));
+
+    let html = await page.content();
+    const canonical = SITE + (route === "/" ? "/" : route);
+
+    if (meta) {
+      html = injectHead(html, {
+        title: meta.meta_title,
+        description: meta.meta_description,
+        canonical,
+      });
+    } else {
+      const live = await page.evaluate(() => ({
+        title: document.title,
+        description: document.querySelector('meta[name="description"]')?.content || "",
+      }));
+      if (live.title && live.title.trim() !== DEFAULT_TITLE) {
+        html = injectHead(html, { title: live.title, description: live.description, canonical });
+      }
+    }
+
     const outDir = path.join(DIST, route === "/" ? "" : route);
     await mkdir(outDir, { recursive: true });
     await writeFile(path.join(outDir, "index.html"), html);
@@ -135,11 +188,13 @@ async function renderRoute(browser, route, total, counter) {
   }
 }
 
-const slugs = await celebritySlugs();
-const routes = [...new Set([
-  ...staticRoutesFromSitemap(),
-  ...slugs.map((s) => `/people/${s}`),
-])];
+const celebrities = await fetchCelebrities();
+const routeList = [];
+for (const r of staticRoutesFromSitemap()) routeList.push({ route: r, meta: null });
+for (const c of celebrities) routeList.push({ route: `/people/${c.profile_slug}`, meta: c });
+const seen = new Set();
+const routes = routeList.filter((x) => (seen.has(x.route) ? false : seen.add(x.route)));
+
 console.log(`Prerendering ${routes.length} routes (concurrency ${CONCURRENCY})...`);
 
 const server = makeServer();
@@ -154,8 +209,8 @@ const counter = { done: 0 };
 let idx = 0;
 async function worker() {
   while (idx < routes.length) {
-    const route = routes[idx++];
-    await renderRoute(browser, route, routes.length, counter);
+    const { route, meta } = routes[idx++];
+    await renderRoute(browser, route, meta, routes.length, counter);
   }
 }
 await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
@@ -163,6 +218,6 @@ await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 await browser.close();
 server.close();
 
-if (slugs.length) await writeCelebritySitemap(slugs);
+if (celebrities.length) await writeCelebritySitemap(celebrities);
 
 console.log(`\nDone. Prerendered ${counter.done}/${routes.length} pages into dist/.`);
