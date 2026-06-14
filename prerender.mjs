@@ -1,5 +1,5 @@
 /**
- * prerender.mjs — fast version
+ * prerender.mjs — fast + correct titles + auto sitemap
  */
 import puppeteer from "puppeteer";
 import { createClient } from "@supabase/supabase-js";
@@ -11,6 +11,8 @@ import path from "path";
 const DIST = path.resolve("dist");
 const PORT = 4173;
 const CONCURRENCY = 4;
+const SITE = "https://aiagecalc.com";
+const DEFAULT_TITLE = "AiAgeCalc.com";
 const BLOCK_DOMAINS = [
   "googlesyndication", "doubleclick", "google-analytics",
   "googletagmanager", "adsbygoogle", "pagead2", "adtrafficquality",
@@ -41,19 +43,29 @@ function staticRoutesFromSitemap() {
     return ["/"];
   }
 }
-async function celebrityRoutes() {
+async function celebritySlugs() {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     console.warn("WARN: Supabase keys not found - skipping celebrity pages.");
     return [];
   }
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data, error } = await supabase
-    .from("celebrities").select("profile_slug").limit(5000);
+    .from("celebrities").select("profile_slug").limit(20000);
   if (error) {
     console.error("WARN: Supabase error:", error.message);
     return [];
   }
-  return (data || []).filter((r) => r.profile_slug).map((r) => `/people/${r.profile_slug}`);
+  return (data || []).map((r) => r.profile_slug).filter(Boolean);
+}
+
+async function writeCelebritySitemap(slugs) {
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = slugs.map((s) =>
+    `  <url>\n    <loc>${SITE}/people/${s}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`
+  ).join("\n");
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  await writeFile(path.join(DIST, "sitemap-celebrities.xml"), xml);
+  console.log(`Sitemap rebuilt with ${slugs.length} celebrities.`);
 }
 
 const MIME = {
@@ -105,7 +117,11 @@ async function renderRoute(browser, route, total, counter) {
       const txt = document.body.innerText || "";
       return root && root.children.length > 0 && !txt.includes("Loading profile...");
     }, { timeout: 12000 }).catch(() => {});
-    await new Promise((r) => setTimeout(r, 400));
+    await page.waitForFunction((def) => {
+      const t = document.querySelector("title");
+      return t && t.textContent && t.textContent.trim() !== def;
+    }, { timeout: 4000 }, DEFAULT_TITLE).catch(() => {});
+    await new Promise((r) => setTimeout(r, 200));
     const html = await page.content();
     const outDir = path.join(DIST, route === "/" ? "" : route);
     await mkdir(outDir, { recursive: true });
@@ -119,7 +135,11 @@ async function renderRoute(browser, route, total, counter) {
   }
 }
 
-const routes = [...new Set([...staticRoutesFromSitemap(), ...(await celebrityRoutes())])];
+const slugs = await celebritySlugs();
+const routes = [...new Set([
+  ...staticRoutesFromSitemap(),
+  ...slugs.map((s) => `/people/${s}`),
+])];
 console.log(`Prerendering ${routes.length} routes (concurrency ${CONCURRENCY})...`);
 
 const server = makeServer();
@@ -142,4 +162,7 @@ await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
 await browser.close();
 server.close();
+
+if (slugs.length) await writeCelebritySitemap(slugs);
+
 console.log(`\nDone. Prerendered ${counter.done}/${routes.length} pages into dist/.`);
