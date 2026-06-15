@@ -129,12 +129,14 @@ const PastLifeGenerator = () => {
             <div className="flex items-center justify-center gap-3 mb-4">
               <History className="w-8 h-8 text-primary" />
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                What Was Your Past Life?
+                Who Was I in My Past Life?
               </h1>
             </div>
+            <p className="text-xl md:text-2xl font-semibold text-foreground/80 mb-4">
+              Free Past Life Calculator by Date of Birth
+            </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover your past life! Enter your date of birth, and our AI will generate a unique and surprising story
-              based on your birthday and Zodiac sign.
+              Ever felt an unexplained pull toward a certain place, era, or craft? Many believe it's an echo of a past life. Enter your date of birth below and our AI past life calculator will reveal who you may have been in a previous incarnation — your era, your role, and how that soul still shapes you today. It's free, instant, and based on your zodiac sign and life path number.
             </p>
           </div>
 
