@@ -80,7 +80,7 @@ serve(async (req) => {
     console.log(`Zodiac Sign: ${zodiacSign}, Life Path Number: ${lifePathNumber}`);
 
     // Generate past life story using Lovable AI
-    const prompt = `Create a captivating 'past life' story for someone whose Zodiac Sign is ${zodiacSign} and Life Path Number is ${lifePathNumber}. Write a vivid, engaging 2-3 paragraph narrative (150-200 words) about who they were in a past life — their era, profession, personality, and a memorable moment. Make it mystical yet believable, positive, and shareable. Write in second person ('You were...').`;
+    const prompt = `Create a captivating 'past life' story for someone whose Zodiac Sign is ${zodiacSign} and Life Path Number is ${lifePathNumber}. Write a vivid, engaging 2-3 paragraph narrative (150-200 words) about who they were in a past life — their era, profession, personality, and a memorable moment. Make it mystical yet believable, positive, and shareable. Write in second person ('You were...'). Do not use any markdown formatting, asterisks, or bold — return plain text only.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
