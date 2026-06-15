@@ -292,6 +292,74 @@ const PastLifeGenerator = () => {
             </CardContent>
           </Card>
 
+          {/* How to Find Out Who You Were */}
+          <Card className="mt-8 bg-card/50 backdrop-blur content-card">
+            <CardHeader>
+              <CardTitle>How to Find Out Who You Were in a Past Life</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>
+                Your date of birth holds two of the oldest keys to your soul's story: your <strong>zodiac sign</strong> and your <strong>life path number</strong>. A past life calculator reads these patterns the way an astrologer reads a birth chart — looking for the themes, talents, and lessons that tend to carry across lifetimes.
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Your zodiac sign</strong> points to the <em>temperament</em> of your past life — were you a fearless leader, a quiet healer, a restless wanderer?</li>
+                <li><strong>Your life path number</strong> (the sum of your birth date reduced to a single digit) points to your <em>soul's purpose</em> — building, teaching, protecting, creating.</li>
+              </ul>
+              <p>
+                When you enter your birthday above, our AI weaves these two signals into a single vivid story: a specific era, a profession, a place, and the way that life still lives inside you. Every story is unique to your exact date of birth.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Past Life by Zodiac Sign */}
+          <Card className="mt-8 bg-card/50 backdrop-blur content-card">
+            <CardHeader>
+              <CardTitle>What Your Zodiac Sign Reveals About Your Past Life</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-foreground/90 leading-relaxed">
+              <ul className="grid md:grid-cols-2 gap-x-6 gap-y-2 list-disc pl-6">
+                <li><strong>Aries:</strong> Often a warrior, pioneer, or firstcomer — someone who led from the front and feared nothing new.</li>
+                <li><strong>Taurus:</strong> Frequently a builder, farmer, or craftsperson who created lasting beauty and valued the land.</li>
+                <li><strong>Gemini:</strong> Commonly a messenger, scribe, or trader — a curious mind who carried ideas between worlds.</li>
+                <li><strong>Cancer:</strong> Often a caretaker, healer, or keeper of the home and hearth, devoted to protecting others.</li>
+                <li><strong>Leo:</strong> Frequently a ruler, performer, or leader whose warmth and courage drew people toward them.</li>
+                <li><strong>Virgo:</strong> Commonly a healer, scholar, or artisan devoted to service, detail, and quiet mastery.</li>
+                <li><strong>Libra:</strong> Often a diplomat, artist, or peacemaker who sought harmony and beauty in a divided world.</li>
+                <li><strong>Scorpio:</strong> Frequently a mystic, strategist, or guardian of secrets — intense, transformative, unforgettable.</li>
+                <li><strong>Sagittarius:</strong> Commonly an explorer, philosopher, or teacher who chased far horizons and bigger truths.</li>
+                <li><strong>Capricorn:</strong> Often a leader, architect, or elder who built structures and legacies meant to outlast them.</li>
+                <li><strong>Aquarius:</strong> Frequently an inventor, rebel, or visionary far ahead of their own time.</li>
+                <li><strong>Pisces:</strong> Commonly a dreamer, artist, or spiritual guide who lived between the seen and unseen worlds.</li>
+              </ul>
+              <p className="text-muted-foreground italic pt-2">
+                Enter your birthday above to get the full, personalized story for your sign.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Life Path Number */}
+          <Card className="mt-8 bg-card/50 backdrop-blur content-card">
+            <CardHeader>
+              <CardTitle>Your Life Path Number & Your Soul's Journey</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>Your life path number is your soul's recurring assignment across lifetimes:</p>
+              <ul className="grid md:grid-cols-2 gap-x-6 gap-y-2 list-disc pl-6">
+                <li><strong>1</strong> — the leader and trailblazer</li>
+                <li><strong>2</strong> — the peacemaker and partner</li>
+                <li><strong>3</strong> — the creator and communicator</li>
+                <li><strong>4</strong> — the builder and protector</li>
+                <li><strong>5</strong> — the adventurer and free spirit</li>
+                <li><strong>6</strong> — the nurturer and guardian</li>
+                <li><strong>7</strong> — the seeker and mystic</li>
+                <li><strong>8</strong> — the achiever and leader of others</li>
+                <li><strong>9</strong> — the humanitarian and old soul</li>
+                <li><strong>11, 22, 33</strong> — master numbers carrying rare spiritual purpose</li>
+              </ul>
+              <p>Our calculator blends your number with your zodiac sign to reveal the specific life your soul once lived.</p>
+            </CardContent>
+          </Card>
+
           {/* SEO FAQ Section */}
           <SEOFaqSection
             title="Past Life Calculator & Reincarnation FAQ"
