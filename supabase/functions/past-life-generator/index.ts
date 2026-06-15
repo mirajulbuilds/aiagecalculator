@@ -80,7 +80,18 @@ serve(async (req) => {
     console.log(`Zodiac Sign: ${zodiacSign}, Life Path Number: ${lifePathNumber}`);
 
     // Generate past life story using Lovable AI
-    const prompt = `Create a captivating 'past life' story for someone whose Zodiac Sign is ${zodiacSign} and Life Path Number is ${lifePathNumber}. Write 180-220 words in fluent, natural English ONLY. Never include words from any other language. Structure it: 1) Open with a vivid hook naming the era and place. 2) Reveal who they were - a specific profession and role. 3) Paint one short sensory scene. 4) Tie it to their ${zodiacSign} traits and Life Path ${lifePathNumber} qualities. 5) End with an uplifting line about how that past life shapes them today. Write in second person ('You were...'). Mystical yet believable, warm, shareable. Return one or two flowing paragraphs - no markdown or bullets.`;
+    const prompt = `You are a creative historian and storyteller with expertise in past lives and reincarnation. Based on the user's Zodiac Sign (${zodiacSign}) and Life Path Number (${lifePathNumber}), generate a short, fun, and engaging 'Past Life' story (approximately 100-150 words).
+
+Guidelines:
+- Make it positive, intriguing, and shareable
+- Start with an engaging hook that captures attention
+- Include specific details about who they were (profession, era, location)
+- Connect their past life to their current zodiac traits and life path
+- End with an uplifting message about how that past life influences them today
+- Keep the tone mystical yet fun and believable
+- Use vivid, sensory language
+
+Write the story in second person ("You were...") to make it personal and immersive.`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -93,15 +104,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a master storyteller specializing in vivid, believable past-life narratives that blend history, astrology, and numerology. You write EXCLUSIVELY in fluent, natural English and never use words from any other language. Your stories are positive, immersive, and highly shareable.",
+            content: "You are a creative storyteller specializing in past life narratives. You create engaging, positive, and mystical stories that connect astrological and numerological insights to historical characters and eras.",
           },
           {
             role: "user",
             content: prompt,
           },
         ],
-        temperature: 0.8,
-        max_tokens: 500,
+        temperature: 0.9,
       }),
     });
 
