@@ -388,6 +388,26 @@ const PastLifeGenerator = () => {
               {
                 question: "What is a previous birth calculator?",
                 answer: "A previous birth calculator (also called a past life calculator) estimates details about your previous incarnation based on your current birth date. It uses ancient numerology and zodiac systems to determine themes, traits, and stories from your past lives."
+              },
+              {
+                question: "How do I find out who I was in my past life by my date of birth?",
+                answer: "Enter your full date of birth into the calculator above. Our AI reads your zodiac sign and life path number — both determined by your birthday — and generates a personalized story describing your past life's era, profession, and personality, free and instantly."
+              },
+              {
+                question: "Is the past life calculator accurate?",
+                answer: "Our past life generator is designed for entertainment, self-reflection, and fun. It draws on real astrological and numerological traditions to craft a meaningful, personalized story, but it is not a scientific or medical tool."
+              },
+              {
+                question: "Can I get a different past life story?",
+                answer: "Each story is generated fresh, so you can tap 'Try Another Date' to explore past lives for family and friends, or revisit your own birthday to see a new telling."
+              },
+              {
+                question: "What is a past life regression vs. a past life calculator?",
+                answer: "Past life regression is a guided meditation technique used by practitioners to recover memories. A past life calculator, like ours, instantly generates a story from your birth date using astrology and numerology — no session required."
+              },
+              {
+                question: "Is the past life generator free?",
+                answer: "Yes. The past life calculator is completely free, with no sign-up required to get your story."
               }
             ]}
             relatedTools={[
