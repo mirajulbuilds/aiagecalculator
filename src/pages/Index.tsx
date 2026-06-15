@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { differenceInYears, differenceInMonths, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
-import { Globe, Calendar as CalendarIconComponent, Calendar, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star, Calculator, ArrowLeftRight, CalendarCheck, Gift, Cake, Flag, Lightbulb, PawPrint, Baby } from "lucide-react";
+import { Globe, Calendar as CalendarIconComponent, Calendar, Download, Sparkles, Share2, Rocket, Loader2, ChevronDown, ChevronUp, Star, Calculator, ArrowLeftRight, CalendarCheck, Gift, Cake, Flag, Lightbulb, PawPrint, Baby, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -822,10 +822,10 @@ const Index = () => {
                   <span className="block sm:inline">Pet Age Calculator</span>
                 </Button>
               </Link>
-              <Link to="/due-date-calculator" className="flex-1 sm:flex-initial">
+              <Link to="/past-life-generator" className="flex-1 sm:flex-initial">
                 <Button size="lg" variant="outline" className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
-                  <Baby className="w-5 h-5 flex-shrink-0" />
-                  <span className="block sm:inline">Due Date Calculator</span>
+                  <History className="w-5 h-5 flex-shrink-0" />
+                  <span className="block sm:inline">Past Life Generator</span>
                 </Button>
               </Link>
             </div>
