@@ -80,7 +80,7 @@ serve(async (req) => {
     console.log(`Zodiac Sign: ${zodiacSign}, Life Path Number: ${lifePathNumber}`);
 
     // Generate past life story using Lovable AI
-    const prompt = `Create a captivating 'past life' story for someone whose Zodiac Sign is ${zodiacSign} and Life Path Number is ${lifePathNumber}. Write 180-220 words in fluent, natural English ONLY. Never include words from any other language. Structure it: 1) Open with a vivid hook naming the era and place. 2) Reveal who they were - a specific profession and role. 3) Paint one short sensory scene. 4) Tie it to their ${zodiacSign} traits and Life Path ${lifePathNumber} qualities. 5) End with an uplifting line about how that past life shapes them today. Write in second person ('You were...'). Mystical yet believable, warm, shareable. Return one or two flowing paragraphs - no markdown or bullets.`;
+    const prompt = `Create a captivating 'past life' story for someone whose Zodiac Sign is ${zodiacSign} and Life Path Number is ${lifePathNumber}. Write a vivid, engaging 2-3 paragraph narrative (150-200 words) about who they were in a past life — their era, profession, personality, and a memorable moment. Make it mystical yet believable, positive, and shareable. Write in second person ('You were...').`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -93,15 +93,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a master storyteller specializing in vivid, believable past-life narratives that blend history, astrology, and numerology. You write EXCLUSIVELY in fluent, natural English and never use words from any other language. Your stories are positive, immersive, and highly shareable.",
+            content: "You are a mystical storyteller who creates engaging, imaginative past life narratives based on astrology and numerology. Your stories are vivid, positive, and shareable.",
           },
           {
             role: "user",
             content: prompt,
           },
         ],
-        temperature: 0.8,
-        max_tokens: 500,
+        temperature: 0.9,
       }),
     });
 

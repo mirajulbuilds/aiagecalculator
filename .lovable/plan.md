@@ -1,23 +1,23 @@
+## Goal
+Restore `supabase/functions/past-life-generator/index.ts` to its state before the recent system-message / prompt / temperature / max_tokens changes. Leave all UI (PastLifeGenerator.tsx SEO content) untouched.
 
+## Changes
 
-## Fix: Search Bar Icon Overlap & Compare Button Positioning
+**File: `supabase/functions/past-life-generator/index.ts`**
 
-### Issue 1: Search Bar Icon/Text Overlap (FamousBirthdays.tsx, line 165)
+1. System message → revert to previous:
+   `"You are a mystical storyteller who creates engaging, imaginative past life narratives based on astrology and numerology. Your stories are vivid, positive, and shareable."`
 
-The Input component's base styles use `pl-3` which may not be reliably overridden by the `pl-12` class passed via className. The memory notes confirm this is a known pattern issue.
+2. User prompt → revert to previous generic version:
+   `"Create a captivating 'past life' story for someone whose Zodiac Sign is ${zodiacSign} and Life Path Number is ${lifePathNumber}. Write a vivid, engaging 2-3 paragraph narrative (150-200 words) about who they were in a past life — their era, profession, personality, and a memorable moment. Make it mystical yet believable, positive, and shareable. Write in second person ('You were...')."`
 
-**Fix:** Change `pl-12` to `!pl-12` (Tailwind important modifier) on line 165 to force the left padding override.
+3. AI request body → remove `max_tokens: 500`, set `temperature` back to `0.9`.
 
-### Issue 2: Compare Button Misalignment (CelebrityCard.tsx, line 65-77)
+All other code (rate limiting, validation, zodiac calc, life-path calc, CORS, error handling) stays identical.
 
-The compare button is placed outside the `<Link>` element (line 62 closes it) but is still inside the card's relative container. With `absolute top-2 right-2`, it should overlay the top-right of the image. However, because it's after the Link in the DOM and the card layout uses flex-column flow, the button renders at the bottom instead.
+## Deploy
+Redeploy the `past-life-generator` edge function after the edit.
 
-**Fix:** Move the compare Button inside the image container div (before the closing `</div>` of the aspect-square div, around line 55), keeping its absolute positioning. This ensures it overlays correctly on the top-right corner of the image, similar to the age badge on the bottom-left.
-
-### Files Changed
-
-| File | Change |
-|------|--------|
-| `src/pages/FamousBirthdays.tsx` | Line 165: `pl-12` to `!pl-12` |
-| `src/components/CelebrityCard.tsx` | Move compare button from lines 65-77 into the image container (after line 54), keeping same styling |
-
+## Not touched
+- `src/pages/PastLifeGenerator.tsx` (SEO content stays)
+- Any other files
