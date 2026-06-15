@@ -111,14 +111,14 @@ const PastLifeGenerator = () => {
     <PageTransition>
     <>
       <Helmet>
-        <title>Who Was I in My Past Life? | Past Life Calculator & Reading</title>
+        <title>Who Was I in My Past Life? Free Past Life Calculator by Date of Birth</title>
         <meta
           name="description"
-          content="Discover who you were in a past life! Our AI past life calculator generates a unique reincarnation story based on your birthday, zodiac sign, and life path number. Free past life reading and astrology chart."
+          content="Find out who you were in a past life by your date of birth. Our free AI past life calculator reveals your previous incarnation using your zodiac sign and life path number. Get your past life story instantly."
         />
         <meta
           name="keywords"
-          content="who was i in my past life, what was i in a past life, past life reading, past life calculator, reincarnation photo match, past life astrology chart, previous birth calculator, past life generator"
+          content="who was i in my past life by date of birth, who was i in my past life, what was i in a past life, past life reading, past life calculator, past life astrology chart, previous birth calculator, past life generator, life path number past life"
         />
       </Helmet>
 
@@ -129,12 +129,14 @@ const PastLifeGenerator = () => {
             <div className="flex items-center justify-center gap-3 mb-4">
               <History className="w-8 h-8 text-primary" />
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                What Was Your Past Life?
+                Who Was I in My Past Life?
               </h1>
             </div>
+            <p className="text-xl md:text-2xl font-semibold text-foreground/80 mb-4">
+              Free Past Life Calculator by Date of Birth
+            </p>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover your past life! Enter your date of birth, and our AI will generate a unique and surprising story
-              based on your birthday and Zodiac sign.
+              Ever felt an unexplained pull toward a certain place, era, or craft? Many believe it's an echo of a past life. Enter your date of birth below and our AI past life calculator will reveal who you may have been in a previous incarnation — your era, your role, and how that soul still shapes you today. It's free, instant, and based on your zodiac sign and life path number.
             </p>
           </div>
 
@@ -290,6 +292,74 @@ const PastLifeGenerator = () => {
             </CardContent>
           </Card>
 
+          {/* How to Find Out Who You Were */}
+          <Card className="mt-8 bg-card/50 backdrop-blur content-card">
+            <CardHeader>
+              <CardTitle>How to Find Out Who You Were in a Past Life</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>
+                Your date of birth holds two of the oldest keys to your soul's story: your <strong>zodiac sign</strong> and your <strong>life path number</strong>. A past life calculator reads these patterns the way an astrologer reads a birth chart — looking for the themes, talents, and lessons that tend to carry across lifetimes.
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Your zodiac sign</strong> points to the <em>temperament</em> of your past life — were you a fearless leader, a quiet healer, a restless wanderer?</li>
+                <li><strong>Your life path number</strong> (the sum of your birth date reduced to a single digit) points to your <em>soul's purpose</em> — building, teaching, protecting, creating.</li>
+              </ul>
+              <p>
+                When you enter your birthday above, our AI weaves these two signals into a single vivid story: a specific era, a profession, a place, and the way that life still lives inside you. Every story is unique to your exact date of birth.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Past Life by Zodiac Sign */}
+          <Card className="mt-8 bg-card/50 backdrop-blur content-card">
+            <CardHeader>
+              <CardTitle>What Your Zodiac Sign Reveals About Your Past Life</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-foreground/90 leading-relaxed">
+              <ul className="grid md:grid-cols-2 gap-x-6 gap-y-2 list-disc pl-6">
+                <li><strong>Aries:</strong> Often a warrior, pioneer, or firstcomer — someone who led from the front and feared nothing new.</li>
+                <li><strong>Taurus:</strong> Frequently a builder, farmer, or craftsperson who created lasting beauty and valued the land.</li>
+                <li><strong>Gemini:</strong> Commonly a messenger, scribe, or trader — a curious mind who carried ideas between worlds.</li>
+                <li><strong>Cancer:</strong> Often a caretaker, healer, or keeper of the home and hearth, devoted to protecting others.</li>
+                <li><strong>Leo:</strong> Frequently a ruler, performer, or leader whose warmth and courage drew people toward them.</li>
+                <li><strong>Virgo:</strong> Commonly a healer, scholar, or artisan devoted to service, detail, and quiet mastery.</li>
+                <li><strong>Libra:</strong> Often a diplomat, artist, or peacemaker who sought harmony and beauty in a divided world.</li>
+                <li><strong>Scorpio:</strong> Frequently a mystic, strategist, or guardian of secrets — intense, transformative, unforgettable.</li>
+                <li><strong>Sagittarius:</strong> Commonly an explorer, philosopher, or teacher who chased far horizons and bigger truths.</li>
+                <li><strong>Capricorn:</strong> Often a leader, architect, or elder who built structures and legacies meant to outlast them.</li>
+                <li><strong>Aquarius:</strong> Frequently an inventor, rebel, or visionary far ahead of their own time.</li>
+                <li><strong>Pisces:</strong> Commonly a dreamer, artist, or spiritual guide who lived between the seen and unseen worlds.</li>
+              </ul>
+              <p className="text-muted-foreground italic pt-2">
+                Enter your birthday above to get the full, personalized story for your sign.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Life Path Number */}
+          <Card className="mt-8 bg-card/50 backdrop-blur content-card">
+            <CardHeader>
+              <CardTitle>Your Life Path Number & Your Soul's Journey</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-foreground/90 leading-relaxed">
+              <p>Your life path number is your soul's recurring assignment across lifetimes:</p>
+              <ul className="grid md:grid-cols-2 gap-x-6 gap-y-2 list-disc pl-6">
+                <li><strong>1</strong> — the leader and trailblazer</li>
+                <li><strong>2</strong> — the peacemaker and partner</li>
+                <li><strong>3</strong> — the creator and communicator</li>
+                <li><strong>4</strong> — the builder and protector</li>
+                <li><strong>5</strong> — the adventurer and free spirit</li>
+                <li><strong>6</strong> — the nurturer and guardian</li>
+                <li><strong>7</strong> — the seeker and mystic</li>
+                <li><strong>8</strong> — the achiever and leader of others</li>
+                <li><strong>9</strong> — the humanitarian and old soul</li>
+                <li><strong>11, 22, 33</strong> — master numbers carrying rare spiritual purpose</li>
+              </ul>
+              <p>Our calculator blends your number with your zodiac sign to reveal the specific life your soul once lived.</p>
+            </CardContent>
+          </Card>
+
           {/* SEO FAQ Section */}
           <SEOFaqSection
             title="Past Life Calculator & Reincarnation FAQ"
@@ -318,6 +388,26 @@ const PastLifeGenerator = () => {
               {
                 question: "What is a previous birth calculator?",
                 answer: "A previous birth calculator (also called a past life calculator) estimates details about your previous incarnation based on your current birth date. It uses ancient numerology and zodiac systems to determine themes, traits, and stories from your past lives."
+              },
+              {
+                question: "How do I find out who I was in my past life by my date of birth?",
+                answer: "Enter your full date of birth into the calculator above. Our AI reads your zodiac sign and life path number — both determined by your birthday — and generates a personalized story describing your past life's era, profession, and personality, free and instantly."
+              },
+              {
+                question: "Is the past life calculator accurate?",
+                answer: "Our past life generator is designed for entertainment, self-reflection, and fun. It draws on real astrological and numerological traditions to craft a meaningful, personalized story, but it is not a scientific or medical tool."
+              },
+              {
+                question: "Can I get a different past life story?",
+                answer: "Each story is generated fresh, so you can tap 'Try Another Date' to explore past lives for family and friends, or revisit your own birthday to see a new telling."
+              },
+              {
+                question: "What is a past life regression vs. a past life calculator?",
+                answer: "Past life regression is a guided meditation technique used by practitioners to recover memories. A past life calculator, like ours, instantly generates a story from your birth date using astrology and numerology — no session required."
+              },
+              {
+                question: "Is the past life generator free?",
+                answer: "Yes. The past life calculator is completely free, with no sign-up required to get your story."
               }
             ]}
             relatedTools={[
