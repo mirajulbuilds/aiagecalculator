@@ -111,14 +111,14 @@ const PastLifeGenerator = () => {
     <PageTransition>
     <>
       <Helmet>
-        <title>Who Was I in My Past Life? | Past Life Calculator & Reading</title>
+        <title>Who Was I in My Past Life? Free Past Life Calculator by Date of Birth</title>
         <meta
           name="description"
-          content="Discover who you were in a past life! Our AI past life calculator generates a unique reincarnation story based on your birthday, zodiac sign, and life path number. Free past life reading and astrology chart."
+          content="Find out who you were in a past life by your date of birth. Our free AI past life calculator reveals your previous incarnation using your zodiac sign and life path number. Get your past life story instantly."
         />
         <meta
           name="keywords"
-          content="who was i in my past life, what was i in a past life, past life reading, past life calculator, reincarnation photo match, past life astrology chart, previous birth calculator, past life generator"
+          content="who was i in my past life by date of birth, who was i in my past life, what was i in a past life, past life reading, past life calculator, past life astrology chart, previous birth calculator, past life generator, life path number past life"
         />
       </Helmet>
 
