@@ -316,6 +316,10 @@ const AdminPanel = () => {
           return;
         }
 
+        if (newProfile?.id) {
+          await saveEmbedding(newProfile.id);
+        }
+
         // Log the creation action
         await logAdminAction({
           action_type: 'create',
