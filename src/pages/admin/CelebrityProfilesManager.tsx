@@ -69,7 +69,7 @@ interface CelebrityData {
   zodiac_sign: string | null;
   popularity_ranks: any;
   known_for_data: any;
-  face_embedding: any;
+  face_embedding?: any;
 }
 
 const CelebrityProfilesManager = () => {
