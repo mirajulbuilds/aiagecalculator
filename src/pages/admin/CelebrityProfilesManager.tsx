@@ -342,8 +342,8 @@ const CelebrityProfilesManager = () => {
         zodiac_sign: zodiacSign || null,
         popularity_ranks: popularityRanks || null,
         known_for_data: knownForData ? JSON.parse(knownForData) : null,
-        face_embedding: faceEmbedding ? JSON.parse(faceEmbedding) : null,
       };
+      const parsedEmbedding = faceEmbedding ? JSON.parse(faceEmbedding) : null;
 
       if (editingProfileId) {
         // Update existing profile

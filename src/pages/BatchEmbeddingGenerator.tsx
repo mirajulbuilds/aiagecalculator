@@ -82,11 +82,10 @@ const BatchEmbeddingGenerator = () => {
             continue;
           }
 
-          // Update celebrity with face embedding
+          // Store face embedding in the admin-only biometrics table
           const { error: updateError } = await supabase
-            .from('celebrities')
-            .update({ face_embedding: embeddingData })
-            .eq('id', celebrity.id);
+            .from('celebrity_face_embeddings')
+            .upsert({ celebrity_id: celebrity.id, embedding: embeddingData }, { onConflict: 'celebrity_id' });
 
           if (updateError) {
             throw new Error(`Database update failed: ${updateError.message}`);
