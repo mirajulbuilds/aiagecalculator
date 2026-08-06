@@ -551,7 +551,9 @@ const CelebrityProfile = () => {
               {/* Fact Sheet */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-3xl">{celebrity.name}</CardTitle>
+                  <h1 className="text-3xl font-semibold leading-none tracking-tight">
+                    {celebrity.name} — Age, Birthday & Biography
+                  </h1>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3 text-muted-foreground">

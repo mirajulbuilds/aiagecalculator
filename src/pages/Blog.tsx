@@ -159,8 +159,8 @@ const Blog = () => {
                       {post.summary}
                     </p>
                     <div className="mt-4 flex items-center gap-2 text-primary font-medium group-hover:gap-3 transition-all">
-                      Read More
-                      <ArrowRight className="w-4 h-4" />
+                      <span className="line-clamp-1">Read more: {post.title}</span>
+                      <ArrowRight className="w-4 h-4 shrink-0" />
                     </div>
                   </CardContent>
                 </Card>
