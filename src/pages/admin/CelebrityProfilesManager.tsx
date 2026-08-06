@@ -121,7 +121,7 @@ const CelebrityProfilesManager = () => {
       // Get total count
       const { count, error: countError } = await supabase
         .from("celebrities")
-        .select("*", { count: 'exact', head: true });
+        .select("id", { count: 'exact', head: true });
 
       if (countError) {
         console.error("Error fetching count:", countError);

@@ -77,19 +77,18 @@ const TwoFactorManagement = () => {
 
       const adminUserIds = rolesData.map(r => r.user_id);
 
+      // Admin-only overview: never exposes 2FA secrets or recovery codes
+      const { data: overview } = await supabase.rpc("get_admin_2fa_overview");
+      const overviewByUser = new Map(
+        (overview || []).map((row: any) => [row.user_id, row])
+      );
+
       // For each admin user, get their auth info and 2FA status
       const usersPromises = adminUserIds.map(async (userId) => {
         const { data: { user } } = await supabase.auth.admin.getUserById(userId);
-        
-        // Use the admin_2fa table directly since we're already checking admin status
-        const { data: twofa } = await supabase
-          .from("admin_2fa")
-          .select("secret, created_at, updated_at")
-          .eq("user_id", userId)
-          .maybeSingle();
 
-        // If there's a secret, the user is enrolled
-        const isEnrolled = !!twofa?.secret;
+        const twofa: any = overviewByUser.get(userId);
+        const isEnrolled = !!twofa?.is_enrolled;
 
         return {
           id: userId,
@@ -97,7 +96,7 @@ const TwoFactorManagement = () => {
           user_created_at: user?.created_at || "",
           last_sign_in_at: user?.last_sign_in_at || null,
           twofa_enrolled: isEnrolled,
-          twofa_enrolled_at: isEnrolled ? twofa?.created_at : null,
+          twofa_enrolled_at: isEnrolled ? (twofa?.enrolled_at || twofa?.created_at) : null,
           twofa_created_at: twofa?.created_at || null,
         };
       });

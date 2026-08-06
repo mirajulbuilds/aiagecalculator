@@ -32,10 +32,8 @@ const BatchEmbeddingGenerator = () => {
     try {
       // Fetch all celebrities without face embeddings
       const { data: celebrities, error: fetchError } = await supabase
-        .from('celebrities')
-        .select('id, name, profile_image_url, face_embedding')
-        .is('face_embedding', null)
-        .limit(50); // Process in batches of 50
+        .rpc('get_celebrities_without_embeddings', { _limit: 50 }); // Admin-only, batches of 50
+
 
       if (fetchError) {
         console.error('Error fetching celebrities:', fetchError);
