@@ -138,7 +138,7 @@ const CelebrityProfilesManager = () => {
       // Fetch paginated data
       const { data, error } = await supabase
         .from("celebrities")
-        .select("*")
+        .select("id, name, profile_image_url, main_content, profession, date_of_birth, place_of_birth, zodiac_sign, popularity_ranks, meta_title, meta_description, profile_slug, created_at, updated_at, known_for_data")
         .order("name")
         .range(from, to);
 
