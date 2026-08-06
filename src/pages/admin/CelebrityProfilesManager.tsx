@@ -179,7 +179,7 @@ const CelebrityProfilesManager = () => {
     fetchAllProfiles();
   }, [currentPage]);
 
-  const handleLoadProfile = (profile: CelebrityData) => {
+  const handleLoadProfile = async (profile: CelebrityData) => {
     // Populate all form fields with the loaded profile data
     setValue("name", profile.name);
     setValue("profileSlug", profile.profile_slug);
@@ -197,7 +197,10 @@ const CelebrityProfilesManager = () => {
     setZodiacSign(profile.zodiac_sign || "");
     setPopularityRanks(profile.popularity_ranks || null);
     setKnownForData(profile.known_for_data ? JSON.stringify(profile.known_for_data, null, 2) : "");
-    setFaceEmbedding(profile.face_embedding ? JSON.stringify(profile.face_embedding, null, 2) : "");
+
+    // Biometric embedding is admin-only and fetched through a secured function
+    const { data: embedding } = await supabase.rpc("get_celebrity_face_embedding", { _id: profile.id });
+    setFaceEmbedding(embedding ? JSON.stringify(embedding, null, 2) : "");
     
     // Set editing profile ID
     setEditingProfileId(profile.id);
