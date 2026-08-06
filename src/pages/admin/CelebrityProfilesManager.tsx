@@ -345,6 +345,19 @@ const CelebrityProfilesManager = () => {
       };
       const parsedEmbedding = faceEmbedding ? JSON.parse(faceEmbedding) : null;
 
+      const saveEmbedding = async (celebrityId: string) => {
+        if (parsedEmbedding) {
+          await supabase
+            .from("celebrity_face_embeddings")
+            .upsert({ celebrity_id: celebrityId, embedding: parsedEmbedding }, { onConflict: "celebrity_id" });
+        } else {
+          await supabase
+            .from("celebrity_face_embeddings")
+            .delete()
+            .eq("celebrity_id", celebrityId);
+        }
+      };
+
       if (editingProfileId) {
         // Update existing profile
         const { error } = await supabase
@@ -358,6 +371,8 @@ const CelebrityProfilesManager = () => {
           return;
         }
 
+        await saveEmbedding(editingProfileId);
+
         await logAdminAction({
           action_type: "update",
           resource_type: "celebrity",
@@ -368,14 +383,20 @@ const CelebrityProfilesManager = () => {
         toast.success("Profile updated successfully!");
       } else {
         // Create new profile
-        const { error } = await supabase
+        const { data: created, error } = await supabase
           .from("celebrities")
-          .insert([profileData]);
+          .insert([profileData])
+          .select("id")
+          .single();
 
         if (error) {
           console.error("Insert error:", error);
           toast.error("Failed to save profile");
           return;
+        }
+
+        if (created?.id) {
+          await saveEmbedding(created.id);
         }
 
         await logAdminAction({
