@@ -350,6 +350,8 @@ const AdminPanel = () => {
           return;
         }
 
+        await saveEmbedding(existingProfile.id);
+
         // Log the update action with before/after changes
         await logAdminAction({
           action_type: 'update',
