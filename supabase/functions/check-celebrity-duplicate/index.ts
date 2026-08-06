@@ -88,14 +88,19 @@ serve(async (req) => {
 
     console.log("Checking for duplicates of:", name);
 
-    // Fetch all celebrities for comparison
-    const { data: celebrities, error } = await supabase
+    // Fetch all celebrities for comparison (embeddings come from the admin-only biometrics table)
+    const { data: rows, error } = await supabase
       .from("celebrities")
-      .select("id, name, profile_slug, face_embedding, profile_image_url");
+      .select("id, name, profile_slug, profile_image_url, celebrity_face_embeddings (embedding)");
 
     if (error) {
       throw error;
     }
+
+    const celebrities = (rows || []).map((c: any) => ({
+      ...c,
+      face_embedding: c.celebrity_face_embeddings?.embedding ?? c.celebrity_face_embeddings?.[0]?.embedding ?? null,
+    }));
 
     const duplicates = [];
 
