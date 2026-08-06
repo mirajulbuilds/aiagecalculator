@@ -210,7 +210,6 @@ export type Database = {
         Row: {
           created_at: string
           date_of_birth: string
-          face_embedding: Json | null
           id: string
           known_for_data: Json | null
           main_content: string
@@ -228,7 +227,6 @@ export type Database = {
         Insert: {
           created_at?: string
           date_of_birth: string
-          face_embedding?: Json | null
           id?: string
           known_for_data?: Json | null
           main_content: string
@@ -246,7 +244,6 @@ export type Database = {
         Update: {
           created_at?: string
           date_of_birth?: string
-          face_embedding?: Json | null
           id?: string
           known_for_data?: Json | null
           main_content?: string
@@ -262,6 +259,35 @@ export type Database = {
           zodiac_sign?: string | null
         }
         Relationships: []
+      }
+      celebrity_face_embeddings: {
+        Row: {
+          celebrity_id: string
+          created_at: string
+          embedding: Json
+          updated_at: string
+        }
+        Insert: {
+          celebrity_id: string
+          created_at?: string
+          embedding: Json
+          updated_at?: string
+        }
+        Update: {
+          celebrity_id?: string
+          created_at?: string
+          embedding?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "celebrity_face_embeddings_celebrity_id_fkey"
+            columns: ["celebrity_id"]
+            isOneToOne: true
+            referencedRelation: "celebrities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gsc_submission_logs: {
         Row: {
