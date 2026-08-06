@@ -23,9 +23,9 @@ const About = () => {
                   <Cake className="w-12 h-12 text-primary" />
                   <Sparkles className="w-12 h-12 text-primary" />
                 </div>
-                <CardTitle className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  About AiAgeCalc
-                </CardTitle>
+                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  About AiAgeCalc — Free Age, Birthday & AI Calculators
+                </h1>
               </CardHeader>
               <CardContent className="space-y-6 text-foreground/90 leading-relaxed">
                 <p className="text-lg">
