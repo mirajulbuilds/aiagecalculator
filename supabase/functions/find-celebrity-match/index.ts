@@ -93,11 +93,14 @@ serve(async (req) => {
 
     console.log('Fetching celebrities with face embeddings...');
 
-    // Fetch all celebrities that have face embeddings
-    const { data: celebrities, error: fetchError } = await supabase
-      .from('celebrities')
-      .select('id, name, profile_slug, profile_image_url, face_embedding, profession')
-      .not('face_embedding', 'is', null);
+    // Fetch all celebrities that have face embeddings (biometrics live in a separate admin-only table)
+    const { data: embeddingRows, error: fetchError } = await supabase
+      .from('celebrity_face_embeddings')
+      .select('embedding, celebrities:celebrity_id (id, name, profile_slug, profile_image_url, profession)');
+
+    const celebrities = (embeddingRows || [])
+      .filter((row: any) => row.celebrities)
+      .map((row: any) => ({ ...row.celebrities, face_embedding: row.embedding }));
 
     if (fetchError) {
       console.error('Database error:', fetchError);

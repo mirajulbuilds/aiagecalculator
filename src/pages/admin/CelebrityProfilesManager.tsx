@@ -69,7 +69,7 @@ interface CelebrityData {
   zodiac_sign: string | null;
   popularity_ranks: any;
   known_for_data: any;
-  face_embedding: any;
+  face_embedding?: any;
 }
 
 const CelebrityProfilesManager = () => {
@@ -121,7 +121,7 @@ const CelebrityProfilesManager = () => {
       // Get total count
       const { count, error: countError } = await supabase
         .from("celebrities")
-        .select("*", { count: 'exact', head: true });
+        .select("id", { count: 'exact', head: true });
 
       if (countError) {
         console.error("Error fetching count:", countError);
@@ -138,7 +138,7 @@ const CelebrityProfilesManager = () => {
       // Fetch paginated data
       const { data, error } = await supabase
         .from("celebrities")
-        .select("*")
+        .select("id, name, profile_image_url, main_content, profession, date_of_birth, place_of_birth, zodiac_sign, popularity_ranks, meta_title, meta_description, profile_slug, created_at, updated_at, known_for_data")
         .order("name")
         .range(from, to);
 
@@ -179,7 +179,7 @@ const CelebrityProfilesManager = () => {
     fetchAllProfiles();
   }, [currentPage]);
 
-  const handleLoadProfile = (profile: CelebrityData) => {
+  const handleLoadProfile = async (profile: CelebrityData) => {
     // Populate all form fields with the loaded profile data
     setValue("name", profile.name);
     setValue("profileSlug", profile.profile_slug);
@@ -197,7 +197,10 @@ const CelebrityProfilesManager = () => {
     setZodiacSign(profile.zodiac_sign || "");
     setPopularityRanks(profile.popularity_ranks || null);
     setKnownForData(profile.known_for_data ? JSON.stringify(profile.known_for_data, null, 2) : "");
-    setFaceEmbedding(profile.face_embedding ? JSON.stringify(profile.face_embedding, null, 2) : "");
+
+    // Biometric embedding is admin-only and fetched through a secured function
+    const { data: embedding } = await supabase.rpc("get_celebrity_face_embedding", { _id: profile.id });
+    setFaceEmbedding(embedding ? JSON.stringify(embedding, null, 2) : "");
     
     // Set editing profile ID
     setEditingProfileId(profile.id);
@@ -339,7 +342,20 @@ const CelebrityProfilesManager = () => {
         zodiac_sign: zodiacSign || null,
         popularity_ranks: popularityRanks || null,
         known_for_data: knownForData ? JSON.parse(knownForData) : null,
-        face_embedding: faceEmbedding ? JSON.parse(faceEmbedding) : null,
+      };
+      const parsedEmbedding = faceEmbedding ? JSON.parse(faceEmbedding) : null;
+
+      const saveEmbedding = async (celebrityId: string) => {
+        if (parsedEmbedding) {
+          await supabase
+            .from("celebrity_face_embeddings")
+            .upsert({ celebrity_id: celebrityId, embedding: parsedEmbedding }, { onConflict: "celebrity_id" });
+        } else {
+          await supabase
+            .from("celebrity_face_embeddings")
+            .delete()
+            .eq("celebrity_id", celebrityId);
+        }
       };
 
       if (editingProfileId) {
@@ -355,6 +371,8 @@ const CelebrityProfilesManager = () => {
           return;
         }
 
+        await saveEmbedding(editingProfileId);
+
         await logAdminAction({
           action_type: "update",
           resource_type: "celebrity",
@@ -365,14 +383,20 @@ const CelebrityProfilesManager = () => {
         toast.success("Profile updated successfully!");
       } else {
         // Create new profile
-        const { error } = await supabase
+        const { data: created, error } = await supabase
           .from("celebrities")
-          .insert([profileData]);
+          .insert([profileData])
+          .select("id")
+          .single();
 
         if (error) {
           console.error("Insert error:", error);
           toast.error("Failed to save profile");
           return;
+        }
+
+        if (created?.id) {
+          await saveEmbedding(created.id);
         }
 
         await logAdminAction({

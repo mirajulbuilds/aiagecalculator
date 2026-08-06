@@ -285,7 +285,20 @@ const AdminPanel = () => {
         zodiac_sign: zodiacSign || null,
         popularity_ranks: popularityRanks || null,
         known_for_data: parsedKnownForData,
-        face_embedding: parsedFaceEmbedding,
+      };
+
+      // Biometric embeddings live in a separate admin-only table
+      const saveEmbedding = async (celebrityId: string) => {
+        if (parsedFaceEmbedding) {
+          await supabase
+            .from("celebrity_face_embeddings")
+            .upsert({ celebrity_id: celebrityId, embedding: parsedFaceEmbedding }, { onConflict: "celebrity_id" });
+        } else {
+          await supabase
+            .from("celebrity_face_embeddings")
+            .delete()
+            .eq("celebrity_id", celebrityId);
+        }
       };
 
       // STEP 2: Conditional Logic - CREATE or UPDATE
@@ -301,6 +314,10 @@ const AdminPanel = () => {
           toast.error("Failed to create profile: " + insertError.message);
           setIsSaving(false);
           return;
+        }
+
+        if (newProfile?.id) {
+          await saveEmbedding(newProfile.id);
         }
 
         // Log the creation action
@@ -332,6 +349,8 @@ const AdminPanel = () => {
           setIsSaving(false);
           return;
         }
+
+        await saveEmbedding(existingProfile.id);
 
         // Log the update action with before/after changes
         await logAdminAction({

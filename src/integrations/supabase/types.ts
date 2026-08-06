@@ -210,7 +210,6 @@ export type Database = {
         Row: {
           created_at: string
           date_of_birth: string
-          face_embedding: Json | null
           id: string
           known_for_data: Json | null
           main_content: string
@@ -228,7 +227,6 @@ export type Database = {
         Insert: {
           created_at?: string
           date_of_birth: string
-          face_embedding?: Json | null
           id?: string
           known_for_data?: Json | null
           main_content: string
@@ -246,7 +244,6 @@ export type Database = {
         Update: {
           created_at?: string
           date_of_birth?: string
-          face_embedding?: Json | null
           id?: string
           known_for_data?: Json | null
           main_content?: string
@@ -262,6 +259,35 @@ export type Database = {
           zodiac_sign?: string | null
         }
         Relationships: []
+      }
+      celebrity_face_embeddings: {
+        Row: {
+          celebrity_id: string
+          created_at: string
+          embedding: Json
+          updated_at: string
+        }
+        Insert: {
+          celebrity_id: string
+          created_at?: string
+          embedding: Json
+          updated_at?: string
+        }
+        Update: {
+          celebrity_id?: string
+          created_at?: string
+          embedding?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "celebrity_face_embeddings_celebrity_id_fkey"
+            columns: ["celebrity_id"]
+            isOneToOne: true
+            referencedRelation: "celebrities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gsc_submission_logs: {
         Row: {
@@ -458,6 +484,17 @@ export type Database = {
     Functions: {
       cleanup_expired_ip_blocks: { Args: never; Returns: undefined }
       cleanup_old_security_logs: { Args: never; Returns: undefined }
+      get_admin_2fa_overview: {
+        Args: never
+        Returns: {
+          created_at: string
+          enrolled_at: string
+          is_enrolled: boolean
+          last_verified_at: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       get_celebrities_by_birthday: {
         Args: { birth_day: number; birth_month: number }
         Returns: {
@@ -477,6 +514,15 @@ export type Database = {
           zodiac_sign: string
         }[]
       }
+      get_celebrities_without_embeddings: {
+        Args: { _limit?: number }
+        Returns: {
+          id: string
+          name: string
+          profile_image_url: string
+        }[]
+      }
+      get_celebrity_face_embedding: { Args: { _id: string }; Returns: Json }
       get_my_2fa_status: {
         Args: never
         Returns: {
