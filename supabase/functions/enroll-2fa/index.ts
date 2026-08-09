@@ -58,6 +58,12 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
+    // Service-role client: admin_2fa is never reachable from the browser
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return new Response(
@@ -66,20 +72,20 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin
-    const { data: roleData } = await supabase
+    // Check if user is admin or super_admin
+    const { data: roleRows } = await admin
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .maybeSingle();
+      .in('role', ['admin', 'super_admin']);
 
-    if (!roleData) {
+    if (!roleRows || roleRows.length === 0) {
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
 
     // Generate TOTP secret
     const secret = new OTPAuth.Secret({ size: 20 });
