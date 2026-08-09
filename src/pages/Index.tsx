@@ -830,53 +830,16 @@ const Index = () => {
               planetary ages, and celebrity birthday twins.
             </p>
 
-            {/* ─── Inline Calculator ─── */}
-            <div className="mt-8 mx-auto max-w-lg">
-              <div className="bg-card border border-border rounded-2xl shadow-card p-5">
-                <label className="block text-sm font-medium text-foreground mb-3 text-left">
-                  Enter your date of birth
-                </label>
-                <div className="grid grid-cols-3 gap-2 mb-4">
-                  <Select value={birthDay} onValueChange={setBirthDay}>
-                    <SelectTrigger className="h-12 bg-muted">
-                      <SelectValue placeholder="Day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {days.map(day => (
-                        <SelectItem key={day} value={day}>{day}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={birthMonth} onValueChange={setBirthMonth}>
-                    <SelectTrigger className="h-12 bg-muted">
-                      <SelectValue placeholder="Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {months.map(month => (
-                        <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={birthYear} onValueChange={setBirthYear}>
-                    <SelectTrigger className="h-12 bg-muted">
-                      <SelectValue placeholder="Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {years.map(year => (
-                        <SelectItem key={year} value={year}>{year}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  onClick={calculateAge}
-                  className="w-full h-12 bg-gradient-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity"
-                  size="lg"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Calculate My Age
-                </Button>
-              </div>
+            {/* ─── CTA ─── */}
+            <div className="mt-8">
+              <Button
+                onClick={() => document.getElementById('age-tools')?.scrollIntoView({ behavior: 'smooth' })}
+                className="h-12 px-8 bg-gradient-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity"
+                size="lg"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Calculate My Age
+              </Button>
             </div>
 
             {/* ─── Stat Row ─── */}
@@ -941,7 +904,7 @@ const Index = () => {
 
 
         {/* Tabbed Calculator Interface */}
-        <section className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 hover-lift" aria-label="Age calculators">
+        <section id="age-tools" className="bg-card rounded-2xl shadow-card p-6 md:p-8 mb-6 hover-lift scroll-mt-20" aria-label="Age calculators">
           <Tabs defaultValue="calculator" value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile-Only Dropdown */}
             <div className="mobile-tool-dropdown mb-6 md:hidden">
