@@ -795,42 +795,141 @@ const Index = () => {
       <div className="max-w-5xl mx-auto flex flex-col xl:flex-row gap-4 xl:gap-6">
         {/* Main Content */}
         <div className="flex-1 w-full max-w-3xl mx-auto xl:mx-0">
-        {/* Top Banner Ad */}
+{/* Top Banner Ad */}
         <AdSenseBanner format="large-horizontal" className="mb-6" />
-        
-        {/* Header */}
-        {/* Hero section without ParallaxSection for better LCP */}
-          <header className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 py-[5px] my-[5px] lg:text-6xl">
-              Unlock the Secrets of Your Birthday
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
-              Find your Zodiac sign, countdown to your next birthday, and even discover your age on Mars—all right here.
+
+        {/* ═══ HERO — Celestial Almanac ═══ */}
+        <header className="relative mb-10 overflow-hidden">
+          {/* Decorative gold orb */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full opacity-[0.08] dark:opacity-[0.06]"
+            style={{ background: 'var(--gradient-gold)' }}
+          />
+
+          <div className="relative text-center pt-4 pb-2">
+            {/* Eyebrow */}
+            <p className="text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4">
+              Free &middot; No signup &middot; Instant
             </p>
-            
-            {/* Famous Birthdays CTA */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-stretch">
-              <Link to="/famous-birthdays" className="flex-1 sm:flex-initial">
-                <Button size="lg" className="interactive-element gap-2 bg-gradient-to-r from-primary to-primary/80 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
-                  <Star className="w-5 h-5 flex-shrink-0" />
-                  <span className="block sm:inline">Explore Famous Birthdays</span>
+
+            {/* H1 — Fraunces display */}
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-foreground leading-[1.1]">
+              How old are you,{' '}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{ backgroundImage: 'var(--gradient-gold)' }}
+              >
+                exactly
+              </span>
+              ?
+            </h1>
+
+            <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
+              Your age in years, months, days, hours — plus your zodiac,
+              planetary ages, and celebrity birthday twins.
+            </p>
+
+            {/* ─── Inline Calculator ─── */}
+            <div className="mt-8 mx-auto max-w-lg">
+              <div className="bg-card border border-border rounded-2xl shadow-card p-5">
+                <label className="block text-sm font-medium text-foreground mb-3 text-left">
+                  Enter your date of birth
+                </label>
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <Select value={birthDay} onValueChange={setBirthDay}>
+                    <SelectTrigger className="h-12 bg-muted">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {days.map(day => (
+                        <SelectItem key={day} value={day}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={birthMonth} onValueChange={setBirthMonth}>
+                    <SelectTrigger className="h-12 bg-muted">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map(month => (
+                        <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={birthYear} onValueChange={setBirthYear}>
+                    <SelectTrigger className="h-12 bg-muted">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map(year => (
+                        <SelectItem key={year} value={year}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  onClick={calculateAge}
+                  className="w-full h-12 bg-gradient-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity"
+                  size="lg"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Calculate My Age
                 </Button>
+              </div>
+            </div>
+
+            {/* ─── Stat Row ─── */}
+            <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3">
+              {[
+                { value: '9', label: 'Planets' },
+                { value: '12', label: 'Zodiacs' },
+                { value: '1,338', label: 'Celebrities' },
+              ].map(({ value, label }) => (
+                <div key={label} className="flex items-baseline gap-1.5">
+                  <span
+                    className="font-display text-2xl sm:text-3xl font-semibold bg-clip-text text-transparent"
+                    style={{ backgroundImage: 'var(--gradient-primary)' }}
+                  >
+                    {value}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* ─── Tool Cards ─── */}
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+              <Link
+                to="/famous-birthdays"
+                className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-md"
+              >
+                <Star className="w-6 h-6 text-primary transition-transform group-hover:scale-110" />
+                <span className="text-sm font-medium text-foreground">Famous Birthdays</span>
+                <span className="text-xs text-muted-foreground">Who shares your day?</span>
               </Link>
-              <Link to="/pet-age-calculator" className="flex-1 sm:flex-initial">
-                <Button size="lg" variant="outline" className="interactive-element gap-2 border-2 border-primary hover:bg-primary/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
-                  <PawPrint className="w-5 h-5 flex-shrink-0" />
-                  <span className="block sm:inline">Pet Age Calculator</span>
-                </Button>
+
+              <Link
+                to="/pet-age-calculator"
+                className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-md"
+              >
+                <PawPrint className="w-6 h-6 text-primary transition-transform group-hover:scale-110" />
+                <span className="text-sm font-medium text-foreground">Pet Age Calculator</span>
+                <span className="text-xs text-muted-foreground">Your pet in human years</span>
               </Link>
-              <Link to="/past-life-generator" className="flex-1 sm:flex-initial">
-                <Button size="lg" variant="outline" className="interactive-element gap-2 border-2 border-purple-600 hover:bg-purple-600/10 w-full sm:w-auto whitespace-normal sm:whitespace-nowrap text-center hover-scale">
-                  <History className="w-5 h-5 flex-shrink-0" />
-                  <span className="block sm:inline">Past Life Generator</span>
-                </Button>
+
+              <Link
+                to="/past-life-generator"
+                className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-md"
+              >
+                <History className="w-6 h-6 text-primary transition-transform group-hover:scale-110" />
+                <span className="text-sm font-medium text-foreground">Past Life Generator</span>
+                <span className="text-xs text-muted-foreground">Who were you before?</span>
               </Link>
             </div>
-          </header>
-        {/* End of hero header */}
+          </div>
+        </header>
+        {/* ═══ END HERO ═══ */}
 
         {/* Timezone Section */}
         {timezone && <div className="text-center mb-4">
