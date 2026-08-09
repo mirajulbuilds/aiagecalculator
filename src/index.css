@@ -650,3 +650,17 @@
     }
   }
 }
+
+/* Dark mode dropdown fix */
+.dark .ai-tools-dropdown-panel {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  box-shadow: 0 12px 40px hsl(0 0% 0% / 0.4);
+}
+
+/* Mobile nav active link subtle glow */
+@media (max-width: 1023px) {
+  .mobile-menu-toggle-button button {
+    color: hsl(var(--foreground));
+  }
+}
