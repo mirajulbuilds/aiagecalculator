@@ -381,9 +381,10 @@ const idx = buildIndexes(celebrities);
 const routeList = [];
 for (const r of routesFromSitemaps()) routeList.push({ route: r, meta: null, payload: null });
 
-const professions = [...new Set(celebrities.map((c) => professionSlug(c.profession)).filter(Boolean))];
-for (const p of professions) routeList.push({ route: `/profession/${p}`, meta: null, payload: null });
-console.log(`${professions.length} টা profession পেজ রুটে যোগ হলো।`);
+// profession পেজ prerender skip — thin list pages, build timeout ঘটায়
+// const professions = [...new Set(celebrities.map((c) => professionSlug(c.profession)).filter(Boolean))];
+// for (const p of professions) routeList.push({ route: `/profession/${p}`, meta: null, payload: null });
+console.log(`profession পেজ prerender skip করা হলো (thin content, timeout issue)।`);
 
 for (const c of celebrities) {
   routeList.push({
