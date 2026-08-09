@@ -17,22 +17,10 @@ serve(async (req) => {
 
   try {
     // SECURITY: Validate origin domain
-    const origin = req.headers.get('origin') || req.headers.get('referer') || '';
-    console.log('📍 Request origin:', origin);
-    
-    let originDomain = '';
-    try {
-      originDomain = new URL(origin).origin;
-    } catch (e) {
-      console.warn('Could not parse origin:', origin);
-      originDomain = '';
-    }
-    
+    const originDomain = parseOrigin(req);
     console.log('🔍 Parsed origin domain:', originDomain);
-    console.log('✓ Is allowed?', isAllowedOrigin(originDomain));
-    
-    // Only block if origin exists and doesn't match allowed domains
-    if (origin && originDomain && !isAllowedOrigin(originDomain)) {
+
+    if (originDomain && !isAllowedOrigin(originDomain)) {
       console.error('❌ Blocked request from unauthorized domain:', originDomain);
       return new Response(
         JSON.stringify({ error: 'Authentication not allowed from this domain' }),
@@ -53,6 +41,12 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
+    // Service-role client: admin_2fa is intentionally unreadable from the browser
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return new Response(
@@ -62,14 +56,13 @@ serve(async (req) => {
     }
 
     // Check if user is admin or super_admin
-    const { data: roleData } = await supabase
+    const { data: roleRows } = await admin
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
-      .in('role', ['admin', 'super_admin'])
-      .maybeSingle();
+      .in('role', ['admin', 'super_admin']);
 
-    if (!roleData) {
+    if (!roleRows || roleRows.length === 0) {
       console.log('ℹ️ User is not admin, returning non-admin status');
       return new Response(
         JSON.stringify({ 
@@ -81,12 +74,17 @@ serve(async (req) => {
       );
     }
 
-    // Get 2FA enrollment status
-    const { data: twoFAData } = await supabase
+    // Get 2FA enrollment status (service role - no secret is returned)
+    const { data: twoFAData, error: twoFAError } = await admin
       .from('admin_2fa')
       .select('is_enrolled, enrolled_at')
       .eq('user_id', user.id)
       .maybeSingle();
+
+    if (twoFAError) {
+      console.error('Error reading admin_2fa:', twoFAError);
+    }
+
 
     const isEnrolled = twoFAData?.is_enrolled || false;
 
