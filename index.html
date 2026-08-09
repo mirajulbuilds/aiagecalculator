@@ -143,37 +143,21 @@
     "
     />
 
-    <!-- Structured Data - SoftwareApplication -->
+   <!-- Structured Data - WebApplication (no fake ratings) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "AI Age Calculator & Greetings Tools",
+        "@type": "WebApplication",
+        "name": "AI Age Calculator",
         "operatingSystem": "Web",
-        "applicationCategory": "BrowserApplication",
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "ratingCount": "250"
-        },
+        "applicationCategory": "UtilitiesApplication",
         "offers": {
           "@type": "Offer",
           "price": "0",
           "priceCurrency": "USD"
         },
-        "description": "A free suite of online tools to calculate age, find age differences, discover your age on other planets, and generate custom AI greeting images for birthdays, anniversaries, and holidays.",
-        "url": "https://aiagecalc.com/",
-        "featureList": [
-          "Precise age calculator with real-time updates",
-          "Calculate age on Mars, Venus, Mercury, Jupiter, Saturn, and other planets",
-          "AI-powered birthday greeting image generator",
-          "Age difference calculator",
-          "Age at specific date calculator",
-          "Birthday countdown timer",
-          "Zodiac sign calculator",
-          "Celebrity birthday database",
-          "Birthday facts and historical events"
-        ]
+        "description": "Free online age calculator with celebrity birthday database, zodiac sign finder, and birthday facts.",
+        "url": "https://aiagecalc.com/"
       }
     </script>
 
@@ -191,48 +175,6 @@
           "contactType": "Customer Support",
           "availableLanguage": "English"
         }
-      }
-    </script>
-
-    <!-- Structured Data - FAQPage -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How accurate is the age calculator?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Our age calculator is extremely precise, calculating your age down to years, months, days, hours, minutes, and seconds. It uses the date-fns library for accurate date calculations and updates in real-time."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I calculate my age on other planets?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Simply enter your birth date in the age calculator, and we'll automatically calculate your age on Mars, Venus, Mercury, Jupiter, Saturn, Uranus, Neptune, Pluto, and even on the Moon. Each planet has a different orbital period, which affects how old you would be there."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I generate custom birthday images with AI?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes! Our AI Greetings tool allows you to generate custom birthday, anniversary, holiday, and graduation images. Simply select the occasion, enter a date, and provide a prompt describing the image you want."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is included in birthday facts?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Our birthday facts feature shows you the top songs, popular movies, historical events, and famous people born on your birth date. It's a fun way to discover what happened on the day you were born."
-            }
-          }
-        ]
       }
     </script>
 
