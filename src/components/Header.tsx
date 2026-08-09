@@ -195,15 +195,10 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="w-[85vw] max-w-[360px] p-0 flex flex-col bg-background"
+                className="w-[85vw] max-w-[360px] pt-12 bg-background"
               >
-                {/* Header inside sheet */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                  <span className="font-display text-lg text-foreground">aiagecalc</span>
-                </div>
-
                 {/* Scrollable nav list */}
-                <nav className="flex-1 overflow-y-auto px-3 py-4">
+                <nav className="overflow-y-auto px-1 py-2">
                   <div className="flex flex-col gap-1">
                     {user ? (
                       <>
@@ -213,7 +208,7 @@ const Header = () => {
                           className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
                             isActive("/profile")
                               ? "bg-secondary text-primary"
-                              : "text-foreground hover:bg-muted"
+                              : "text-foreground hover:bg-muted hover:translate-x-1"
                           }`}
                         >
                           <UserCircle className="w-5 h-5 text-muted-foreground" />
@@ -225,7 +220,7 @@ const Header = () => {
                             await signOut();
                             navigate("/");
                           }}
-                          className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors text-left"
+                          className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted hover:translate-x-1 transition-all duration-200 text-left"
                         >
                           <LogOut className="w-5 h-5 text-muted-foreground" />
                           Sign Out
@@ -240,7 +235,7 @@ const Header = () => {
                           className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
                             isActive("/auth")
                               ? "bg-secondary text-primary"
-                              : "text-foreground hover:bg-muted"
+                              : "text-foreground hover:bg-muted hover:translate-x-1"
                           }`}
                         >
                           <User className="w-5 h-5 text-muted-foreground" />
@@ -257,10 +252,10 @@ const Header = () => {
                           key={item.path}
                           to={item.path}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
+                          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200 ${
                             active
-                              ? "bg-secondary text-primary"
-                              : "text-foreground hover:bg-muted"
+                              ? "bg-primary/10 text-primary border border-primary/20"
+                              : "text-foreground hover:bg-muted hover:translate-x-1"
                           }`}
                         >
                           <item.icon
