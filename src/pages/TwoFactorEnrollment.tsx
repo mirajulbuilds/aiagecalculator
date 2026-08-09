@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Shield, Copy, Check, Download } from "lucide-react";
 import QRCode from "react-qr-code";
 
-import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 const TwoFactorEnrollment = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const TwoFactorEnrollment = () => {
     const currentDomain = window.location.origin;
     if (!isAllowedDomain(currentDomain)) {
       toast.error('2FA enrollment only available in development environment');
-      window.location.href = REDIRECT_DOMAIN;
+      redirectToAllowedDomain();
       return;
     }
     checkEnrollmentStatus();

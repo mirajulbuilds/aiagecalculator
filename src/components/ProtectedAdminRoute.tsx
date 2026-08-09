@@ -4,7 +4,7 @@ import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from 'lucide-react';
 
-import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 interface ProtectedAdminRouteProps {
   children: ReactNode;
@@ -24,7 +24,7 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
     const currentDomain = window.location.origin;
     if (!isAllowedDomain(currentDomain)) {
       console.error('Admin route accessed from unauthorized domain:', currentDomain);
-      window.location.href = REDIRECT_DOMAIN;
+      redirectToAllowedDomain();
     }
   }, [location.pathname]);
 

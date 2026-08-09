@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 interface DomainGuardProps {
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export const DomainGuard = ({ children, redirectToHome = false }: DomainGuardPro
       
       toast.error('Access denied: Admin access only available in development environment');
       
-      window.location.href = '/';
+      redirectToAllowedDomain();
     }
   }, [redirectToHome]);
   

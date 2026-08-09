@@ -9,7 +9,7 @@ import { logAuthFailure } from "@/lib/securityLogger";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 const AuthGateway = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const AuthGateway = () => {
       toast.error('Admin authentication only available in development environment');
       
       setTimeout(() => {
-        window.location.href = REDIRECT_DOMAIN;
+        redirectToAllowedDomain();
       }, 1000);
     }
   }, []);

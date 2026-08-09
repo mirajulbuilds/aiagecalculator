@@ -15,3 +15,9 @@ export const isAllowedDomain = (origin: string): boolean => {
 };
 
 export const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+
+// Loop-safe redirect: never navigate to the origin we are already on.
+export const redirectToAllowedDomain = () => {
+  if (window.location.origin === REDIRECT_DOMAIN) return;
+  window.location.href = REDIRECT_DOMAIN;
+};
