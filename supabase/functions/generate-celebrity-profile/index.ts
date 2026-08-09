@@ -86,11 +86,36 @@ async function scrapeWebsite(url: string) {
 function extractDataFromHTML(html: string, sourceType: string, baseUrl: string) {
   console.log("Extracting data for source type:", sourceType);
   
+  let cleanHtml = html;
+  
+  // Wikipedia: extract only the article body, skip sidebar/interlanguage links
+  if (sourceType === 'wikipedia') {
+    // Remove interlanguage links sidebar (contains Cyrillic, CJK, Arabic text)
+    cleanHtml = cleanHtml.replace(/<div[^>]*id=["']p-lang[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
+    cleanHtml = cleanHtml.replace(/<nav[^>]*id=["']p-lang[^"']*["'][^>]*>[\s\S]*?<\/nav>/gi, '');
+    // Remove navigation, footer, sidebar sections
+    cleanHtml = cleanHtml.replace(/<div[^>]*id=["']mw-navigation["'][^>]*>[\s\S]*?<\/div>/gi, '');
+    cleanHtml = cleanHtml.replace(/<div[^>]*id=["']mw-panel["'][^>]*>[\s\S]*?<\/div>/gi, '');
+    cleanHtml = cleanHtml.replace(/<div[^>]*id=["']catlinks["'][^>]*>[\s\S]*?<\/div>/gi, '');
+    cleanHtml = cleanHtml.replace(/<div[^>]*class=["'][^"']*interlanguage[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, '');
+    // Try to extract just the article content
+    const bodyMatch = cleanHtml.match(/<div[^>]*id=["']mw-content-text["'][^>]*>([\s\S]*?)(?=<div[^>]*id=["']mw-navigation|<div[^>]*id=["']catlinks|$)/i);
+    if (bodyMatch) {
+      cleanHtml = bodyMatch[1];
+    }
+  }
+  
   // Simple text extraction - remove HTML tags
-  const textContent = html
+  let textContent = cleanHtml
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
     .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  // Strip non-Latin characters (Cyrillic, CJK, Arabic, etc.) to prevent garbled output
+  // Keep: Basic Latin, Latin Extended, common punctuation, digits
+  textContent = textContent.replace(/[^\u0000-\u024F\u2000-\u206F\u2190-\u21FF\d\s.,;:!?'"()\-–—\/&@#$%^*+=\[\]{}|\\<>~`°±²³¹⁰]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -405,7 +430,9 @@ serve(async (req) => {
                 role: "user",
                 parts: [
                   {
-                    text: `You are a professional celebrity biographer and journalist. I've scraped content about ${celebrityName} from ${profileURL}. Here's the raw text:
+                    text: `You are a professional celebrity biographer and journalist. Write ONLY in English — never include any non-English text, foreign scripts, or transliterated words. If the source data contains non-English text, ignore it completely.
+
+I've scraped content about ${celebrityName} from ${profileURL}. Here's the raw text:
 
 ${rawText}
 
@@ -459,7 +486,7 @@ Return ONLY the JSON object, no other text.`
           messages: [
             {
               role: "system",
-              content: `You are a professional celebrity biographer and journalist. Write in an engaging, human-like style that reads like a well-researched magazine article or biography book. Use storytelling techniques, vivid descriptions, and maintain a professional yet personable tone. Format content with proper HTML tags: <h2> for section headings, <p> for paragraphs, <ul> and <li> for lists, <strong> for emphasis, and <em> for subtle emphasis.`,
+              content: `You are a professional celebrity biographer and journalist. Write ONLY in English — never include any non-English text, foreign scripts, or transliterated words. If the source data contains non-English text, ignore it completely and write based on what you know. Write in an engaging, human-like style that reads like a well-researched magazine article or biography book. Use storytelling techniques, vivid descriptions, and maintain a professional yet personable tone. Format content with proper HTML tags: <h2> for section headings, <p> for paragraphs, <ul> and <li> for lists, <strong> for emphasis, and <em> for subtle emphasis.`,
             },
             {
               role: "user",
