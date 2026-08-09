@@ -10,14 +10,7 @@ import { toast } from "sonner";
 import { Shield, Copy, Check, Download } from "lucide-react";
 import QRCode from "react-qr-code";
 
-const isAllowedDomain = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
 
 const TwoFactorEnrollment = () => {
   const navigate = useNavigate();

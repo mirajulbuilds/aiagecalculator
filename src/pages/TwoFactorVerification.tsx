@@ -9,14 +9,7 @@ import { toast } from "sonner";
 import { Shield, KeyRound } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const isAllowedDomain = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
 
 const TwoFactorVerification = () => {
   const navigate = useNavigate();

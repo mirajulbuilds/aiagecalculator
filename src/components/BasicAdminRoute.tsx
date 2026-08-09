@@ -3,13 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Loader2 } from 'lucide-react';
 
-const isAllowedDomain = (origin: string): boolean => {
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
 
 interface BasicAdminRouteProps {
   children: ReactNode;

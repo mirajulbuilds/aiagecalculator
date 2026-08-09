@@ -9,14 +9,7 @@ import { logAuthFailure } from "@/lib/securityLogger";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-const isAllowedDomain = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
 
 const AuthGateway = () => {
   const navigate = useNavigate();

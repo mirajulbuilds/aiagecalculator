@@ -1,14 +1,7 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-const isAllowedDomain = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, REDIRECT_DOMAIN } from '@/lib/allowedDomains';
 
 interface DomainGuardProps {
   children: React.ReactNode;
