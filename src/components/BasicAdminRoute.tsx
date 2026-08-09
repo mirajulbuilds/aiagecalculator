@@ -3,13 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Loader2 } from 'lucide-react';
 
-const isAllowedDomain = (origin: string): boolean => {
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 interface BasicAdminRouteProps {
   children: ReactNode;
@@ -29,7 +23,7 @@ export const BasicAdminRoute = ({ children }: BasicAdminRouteProps) => {
     const currentDomain = window.location.origin;
     if (!isAllowedDomain(currentDomain)) {
       console.error('Admin route accessed from unauthorized domain:', currentDomain);
-      window.location.href = REDIRECT_DOMAIN;
+      redirectToAllowedDomain();
     }
   }, [location.pathname]);
 

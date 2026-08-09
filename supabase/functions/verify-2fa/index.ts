@@ -1,13 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
 import * as OTPAuth from "https://esm.sh/otpauth@9.1.4";
-
-const isAllowedOrigin = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
+import { isAllowedOrigin, parseOrigin } from "../_shared/allowedOrigins.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,6 +10,7 @@ const corsHeaders = {
   'Access-Control-Allow-Credentials': 'true'
 };
 
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -23,13 +18,8 @@ serve(async (req) => {
 
   try {
     // SECURITY: Validate origin domain
-    const origin = req.headers.get('origin') || req.headers.get('referer') || '';
-    let originDomain = '';
-    try {
-      originDomain = new URL(origin).origin;
-    } catch {
-      originDomain = '';
-    }
+    const originDomain = parseOrigin(req);
+
     
     if (!isAllowedOrigin(originDomain)) {
       console.error('Blocked request from unauthorized domain:', originDomain);
@@ -61,6 +51,14 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
+    // Service-role client: TOTP secret / recovery codes stay server-side only
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return new Response(
@@ -70,7 +68,7 @@ serve(async (req) => {
     }
 
     // Get user's 2FA settings
-    const { data: twoFAData, error: twoFAError } = await supabase
+    const { data: twoFAData, error: twoFAError } = await admin
       .from('admin_2fa')
       .select('*')
       .eq('user_id', user.id)
@@ -93,7 +91,7 @@ serve(async (req) => {
       if (isValid) {
         // Remove used recovery code
         const updatedCodes = recoveryCodes.filter((c: string) => c !== recoveryCode);
-        await supabase
+        await admin
           .from('admin_2fa')
           .update({ 
             recovery_codes: updatedCodes,
@@ -118,7 +116,7 @@ serve(async (req) => {
       isValid = delta !== null;
 
       if (isValid) {
-        await supabase
+        await admin
           .from('admin_2fa')
           .update({ last_verified_at: new Date().toISOString() })
           .eq('user_id', user.id);
@@ -137,7 +135,7 @@ serve(async (req) => {
 
     // If this is enrollment verification, mark as enrolled
     if (isEnrollment) {
-      await supabase
+      await admin
         .from('admin_2fa')
         .update({ 
           is_enrolled: true,

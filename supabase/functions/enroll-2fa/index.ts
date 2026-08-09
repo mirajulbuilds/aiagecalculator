@@ -1,13 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
 import * as OTPAuth from "https://esm.sh/otpauth@9.1.4";
-
-const isAllowedOrigin = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
+import { isAllowedOrigin, parseOrigin } from "../_shared/allowedOrigins.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +9,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Credentials': 'true'
 };
+
 
 // Generate cryptographically secure random recovery codes
 function generateRecoveryCodes(count: number = 10): string[] {
@@ -39,13 +34,8 @@ serve(async (req) => {
 
   try {
     // SECURITY: Validate origin domain
-    const origin = req.headers.get('origin') || req.headers.get('referer') || '';
-    let originDomain = '';
-    try {
-      originDomain = new URL(origin).origin;
-    } catch {
-      originDomain = '';
-    }
+    const originDomain = parseOrigin(req);
+
     
     if (!isAllowedOrigin(originDomain)) {
       console.error('Blocked request from unauthorized domain:', originDomain);
@@ -68,6 +58,12 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
+    // Service-role client: admin_2fa is never reachable from the browser
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       return new Response(
@@ -76,20 +72,20 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin
-    const { data: roleData } = await supabase
+    // Check if user is admin or super_admin
+    const { data: roleRows } = await admin
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .maybeSingle();
+      .in('role', ['admin', 'super_admin']);
 
-    if (!roleData) {
+    if (!roleRows || roleRows.length === 0) {
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
 
     // Generate TOTP secret
     const secret = new OTPAuth.Secret({ size: 20 });
@@ -109,7 +105,7 @@ serve(async (req) => {
     const recoveryCodes = generateRecoveryCodes(10);
 
     // Store the secret (but don't mark as enrolled yet - that happens after verification)
-    const { error: insertError } = await supabase
+    const { error: insertError } = await admin
       .from('admin_2fa')
       .upsert({
         user_id: user.id,

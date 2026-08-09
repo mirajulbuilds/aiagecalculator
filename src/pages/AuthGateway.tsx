@@ -9,14 +9,7 @@ import { logAuthFailure } from "@/lib/securityLogger";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-const isAllowedDomain = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 const AuthGateway = () => {
   const navigate = useNavigate();
@@ -34,7 +27,7 @@ const AuthGateway = () => {
       toast.error('Admin authentication only available in development environment');
       
       setTimeout(() => {
-        window.location.href = REDIRECT_DOMAIN;
+        redirectToAllowedDomain();
       }, 1000);
     }
   }, []);

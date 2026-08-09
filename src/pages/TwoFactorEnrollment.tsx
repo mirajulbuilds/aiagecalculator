@@ -10,14 +10,7 @@ import { toast } from "sonner";
 import { Shield, Copy, Check, Download } from "lucide-react";
 import QRCode from "react-qr-code";
 
-const isAllowedDomain = (origin: string): boolean => {
-  // Allow any *.lovableproject.com or *.lovable.app subdomain
-  return origin.endsWith('.lovableproject.com') || 
-         origin.endsWith('.lovable.app') || 
-         origin === 'https://lovable.app';
-};
-
-const REDIRECT_DOMAIN = 'https://aiagecalc.com';
+import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
 const TwoFactorEnrollment = () => {
   const navigate = useNavigate();
@@ -36,7 +29,7 @@ const TwoFactorEnrollment = () => {
     const currentDomain = window.location.origin;
     if (!isAllowedDomain(currentDomain)) {
       toast.error('2FA enrollment only available in development environment');
-      window.location.href = REDIRECT_DOMAIN;
+      redirectToAllowedDomain();
       return;
     }
     checkEnrollmentStatus();
