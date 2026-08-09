@@ -60,7 +60,7 @@ serve(async (req) => {
     }
 
     // Get user's 2FA settings
-    const { data: twoFAData, error: twoFAError } = await supabase
+    const { data: twoFAData, error: twoFAError } = await admin
       .from('admin_2fa')
       .select('*')
       .eq('user_id', user.id)
@@ -83,7 +83,7 @@ serve(async (req) => {
       if (isValid) {
         // Remove used recovery code
         const updatedCodes = recoveryCodes.filter((c: string) => c !== recoveryCode);
-        await supabase
+        await admin
           .from('admin_2fa')
           .update({ 
             recovery_codes: updatedCodes,
@@ -108,7 +108,7 @@ serve(async (req) => {
       isValid = delta !== null;
 
       if (isValid) {
-        await supabase
+        await admin
           .from('admin_2fa')
           .update({ last_verified_at: new Date().toISOString() })
           .eq('user_id', user.id);
@@ -127,7 +127,7 @@ serve(async (req) => {
 
     // If this is enrollment verification, mark as enrolled
     if (isEnrollment) {
-      await supabase
+      await admin
         .from('admin_2fa')
         .update({ 
           is_enrolled: true,

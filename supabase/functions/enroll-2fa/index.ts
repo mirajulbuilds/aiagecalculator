@@ -99,7 +99,7 @@ serve(async (req) => {
     const recoveryCodes = generateRecoveryCodes(10);
 
     // Store the secret (but don't mark as enrolled yet - that happens after verification)
-    const { error: insertError } = await supabase
+    const { error: insertError } = await admin
       .from('admin_2fa')
       .upsert({
         user_id: user.id,
