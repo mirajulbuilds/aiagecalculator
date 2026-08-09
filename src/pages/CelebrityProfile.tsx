@@ -561,7 +561,7 @@ const CelebrityProfile = () => {
               {/* Fact Sheet */}
               <Card>
                 <CardHeader>
-                  <h1 className="text-3xl font-semibold leading-none tracking-tight">
+                  <h1 className="text-3xl font-semibold leading-none tracking-tight text-foreground">
                     {celebrity.name} — Age, Birthday & Biography
                   </h1>
                 </CardHeader>
