@@ -98,6 +98,16 @@ const CelebrityProfile = () => {
 
   useEffect(() => {
     const loadCelebrity = async () => {
+      // --- prerender ডেটা থাকলে সেটাই ব্যবহার করো, নেটওয়ার্ক কল নয় ---
+      const pre = (window as any).__PRERENDER_DATA__;
+      if (pre?.celebrity?.profile_slug && pre.celebrity.profile_slug === profileSlug) {
+        setCelebrity(pre.celebrity as CelebrityData);
+        setRelatedCelebrities((pre.related || []).slice(0, 8) as CelebrityData[]);
+        setSameBirthdayCelebrities((pre.sameBirthday || []).slice(0, 3) as CelebrityData[]);
+        setSameZodiacCelebrities((pre.sameZodiac || []).slice(0, 3) as CelebrityData[]);
+        setLoading(false);
+        return;
+      }
       const tempPreview = sessionStorage.getItem("temp_profile_preview");
       
       if (tempPreview) {
@@ -144,9 +154,9 @@ const CelebrityProfile = () => {
           .neq("id", data.id)
           .limit(20);
         
-        if (related && related.length > 0) {
-          const shuffled = [...related].sort(() => Math.random() - 0.5);
-          setRelatedCelebrities(shuffled.slice(0, 4) as CelebrityData[]);
+      if (related && related.length > 0) {
+          const sorted = [...related].sort((a, b) => a.name.localeCompare(b.name));
+          setRelatedCelebrities(sorted.slice(0, 4) as CelebrityData[]);
         }
 
         const birthDate = new Date(data.date_of_birth);
