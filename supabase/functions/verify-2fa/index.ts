@@ -18,13 +18,8 @@ serve(async (req) => {
 
   try {
     // SECURITY: Validate origin domain
-    const origin = req.headers.get('origin') || req.headers.get('referer') || '';
-    let originDomain = '';
-    try {
-      originDomain = new URL(origin).origin;
-    } catch {
-      originDomain = '';
-    }
+    const originDomain = parseOrigin(req);
+
     
     if (!isAllowedOrigin(originDomain)) {
       console.error('Blocked request from unauthorized domain:', originDomain);
