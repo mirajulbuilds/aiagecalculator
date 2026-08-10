@@ -33,7 +33,19 @@ export const SEOHead = ({
   isHomePage = false,
 }: SEOHeadProps) => {
   const fullTitle = title.includes('AiAgeCalc') ? title : `${title} | AiAgeCalc`;
-  const canonicalUrl = url || `https://aiagecalc.com${typeof window !== 'undefined' ? window.location.pathname : ''}`;
+
+  // Normalized canonical: lowercase, no trailing slash, no query/hash.
+  // Prevents /People/X, /people/x/, and /people/x?ref=y from self-canonicalizing
+  // as three separate URLs (duplicate-content signal to Google).
+  const normalizePath = (path: string): string => {
+    let p = path.split('?')[0].split('#')[0].toLowerCase();
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+    return p === '/' ? '' : p;
+  };
+
+  const canonicalUrl =
+    url ||
+    `https://aiagecalc.com${typeof window !== 'undefined' ? normalizePath(window.location.pathname) : ''}`;
   const imageUrl = image.startsWith('http') ? image : `https://aiagecalc.com${image}`;
 
   return (
