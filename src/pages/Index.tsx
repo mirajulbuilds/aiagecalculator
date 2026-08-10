@@ -808,26 +808,27 @@ const Index = () => {
           />
 
           <div className="relative text-center pt-4 pb-2">
-            {/* Eyebrow */}
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4">
-              Free &middot; No signup &middot; Instant
-            </p>
+            {/* Eyebrow pill */}
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary/[0.08] px-3 py-1.5 text-xs text-primary mb-5">
+              <Sparkles className="w-3.5 h-3.5" />
+              1,338 celebrities and counting
+            </div>
 
             {/* H1 — Fraunces display */}
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-foreground leading-[1.1]">
-              How old are you,{' '}
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-foreground leading-[1.08]">
+              How old are you,
+              <br />
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: 'var(--gradient-gold)' }}
               >
-                exactly
+                exactly?
               </span>
-              ?
             </h1>
 
-            <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
-              Your age in years, months, days, hours — plus your zodiac,
-              planetary ages, and celebrity birthday twins.
+            <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
+              Calculate your precise age down to the second, find your zodiac sign,
+              and see your age across every planet.
             </p>
 
             {/* ─── CTA ─── */}
@@ -843,51 +844,55 @@ const Index = () => {
             </div>
 
             {/* ─── Stat Row ─── */}
-            <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3">
+            <div className="mt-7 flex items-center justify-center gap-5 sm:gap-6 flex-wrap">
               {[
-                { value: '9', label: 'Planets' },
-                { value: '12', label: 'Zodiacs' },
-                { value: '1,338', label: 'Celebrities' },
-              ].map(({ value, label }) => (
-                <div key={label} className="flex items-baseline gap-1.5">
-                  <span
-                    className="font-display text-2xl sm:text-3xl font-semibold bg-clip-text text-transparent"
-                    style={{ backgroundImage: 'var(--gradient-primary)' }}
-                  >
-                    {value}
-                  </span>
-                  <span className="text-sm text-muted-foreground">{label}</span>
+                { value: '9', label: 'planet ages' },
+                { value: '12', label: 'zodiac signs' },
+                { value: '1,338', label: 'celebrities' },
+              ].map(({ value, label }, i) => (
+                <div key={label} className="flex items-center gap-5 sm:gap-6">
+                  {i > 0 && <span aria-hidden="true" className="h-7 w-px bg-border" />}
+                  <div className="text-center">
+                    <div className="font-display text-[22px] font-semibold text-foreground leading-tight">{value}</div>
+                    <div className="text-[11px] text-muted-foreground">{label}</div>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* ─── Tool Cards ─── */}
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            <div className="mt-9 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
               <Link
                 to="/famous-birthdays"
-                className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-md"
+                className="group rounded-xl border border-border bg-card p-3.5 transition-all hover:border-primary/25 hover:shadow-sm"
               >
-                <Star className="w-6 h-6 text-primary transition-transform group-hover:scale-110" />
-                <span className="text-sm font-medium text-foreground">Famous Birthdays</span>
-                <span className="text-xs text-muted-foreground">Who shares your day?</span>
-              </Link>
-
-              <Link
-                to="/pet-age-calculator"
-                className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-md"
-              >
-                <PawPrint className="w-6 h-6 text-primary transition-transform group-hover:scale-110" />
-                <span className="text-sm font-medium text-foreground">Pet Age Calculator</span>
-                <span className="text-xs text-muted-foreground">Your pet in human years</span>
+                <span className="flex w-8 h-8 rounded-lg bg-[hsl(var(--gold)/0.12)] items-center justify-center mb-2">
+                  <Star className="w-[17px] h-[17px] text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
+                </span>
+                <p className="text-[13px] font-medium text-foreground mb-0.5">Famous birthdays</p>
+                <p className="text-[11px] text-muted-foreground">Explore 1,338 stars</p>
               </Link>
 
               <Link
                 to="/past-life-generator"
-                className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/30 hover:shadow-md"
+                className="group rounded-xl border border-border bg-card p-3.5 transition-all hover:border-primary/25 hover:shadow-sm"
               >
-                <History className="w-6 h-6 text-primary transition-transform group-hover:scale-110" />
-                <span className="text-sm font-medium text-foreground">Past Life Generator</span>
-                <span className="text-xs text-muted-foreground">Who were you before?</span>
+                <span className="flex w-8 h-8 rounded-lg bg-primary/10 items-center justify-center mb-2">
+                  <History className="w-[17px] h-[17px] text-primary" />
+                </span>
+                <p className="text-[13px] font-medium text-foreground mb-0.5">Past life</p>
+                <p className="text-[11px] text-muted-foreground">Who were you?</p>
+              </Link>
+
+              <Link
+                to="/pet-age-calculator"
+                className="group rounded-xl border border-border bg-card p-3.5 transition-all hover:border-primary/25 hover:shadow-sm"
+              >
+                <span className="flex w-8 h-8 rounded-lg bg-emerald-500/10 items-center justify-center mb-2">
+                  <PawPrint className="w-[17px] h-[17px] text-emerald-700 dark:text-emerald-400" />
+                </span>
+                <p className="text-[13px] font-medium text-foreground mb-0.5">Pet age</p>
+                <p className="text-[11px] text-muted-foreground">In human years</p>
               </Link>
             </div>
           </div>

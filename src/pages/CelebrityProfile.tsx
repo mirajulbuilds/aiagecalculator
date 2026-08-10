@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SEOHead } from "@/components/SEOHead";
-import { MapPin, Calendar, Star, TrendingUp, Share2, Heart, Calculator, Copy, ChevronRight } from "lucide-react";
+import { MapPin, Calendar, Star, TrendingUp, Share2, Heart, Calculator, Copy, ChevronRight, Cake } from "lucide-react";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -560,61 +560,85 @@ const CelebrityProfile = () => {
             <div id="profile-sidebar-block" className="space-y-6">
               {/* Fact Sheet */}
               <Card>
-                <CardHeader>
-                  <h1 className="text-3xl font-semibold leading-none tracking-tight text-foreground">
-                    {celebrity.name} — Age, Birthday & Biography
+                <CardHeader className="pb-4">
+                  {/* Profession eyebrow — gold uppercase */}
+                  <Link
+                    to={`/profession/${celebrity.profession.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="text-xs font-medium uppercase tracking-[0.08em] text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))] hover:underline transition-colors"
+                  >
+                    {celebrity.profession}
+                  </Link>
+                  <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-foreground mt-1.5">
+                    {celebrity.name}
+                    <span className="sr-only"> — Age, Birthday &amp; Biography</span>
                   </h1>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <Star className="w-5 h-5 text-primary" />
-                    <Link 
-                      to={`/profession/${celebrity.profession.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="hover:text-primary hover:underline transition-colors"
+                  {/* Current age — gold tinted card */}
+                  {ageData && (
+                    <div
+                      className="rounded-2xl border p-4 sm:p-5"
+                      style={{
+                        background: 'linear-gradient(145deg, hsl(var(--gold) / 0.10), hsl(var(--gold) / 0.03))',
+                        borderColor: 'hsl(var(--gold) / 0.22)',
+                      }}
                     >
-                      {celebrity.profession}
-                    </Link>
-                  </div>
-                  <div className="flex items-center gap-3 text-muted-foreground">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">🎂 Birthday</div>
-                      <div className="font-medium text-foreground">
-                        {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      <p className="text-[11px] font-medium uppercase tracking-[0.05em] text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))] mb-1">
+                        Current age
+                      </p>
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className="font-display text-5xl sm:text-6xl font-semibold leading-none bg-clip-text text-transparent"
+                          style={{ backgroundImage: 'var(--gradient-gold)' }}
+                        >
+                          {ageData.years}
+                        </span>
+                        <span className="text-[15px] text-muted-foreground">years old</span>
                       </div>
-                    </div>
-                  </div>
-                  {celebrity.place_of_birth && (
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <MapPin className="w-5 h-5 text-primary" />
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">📍 Birthplace</div>
-                        <div className="font-medium text-foreground">{celebrity.place_of_birth}</div>
-                      </div>
+                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
+                        <Cake className="w-3.5 h-3.5 text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
+                        Next birthday in {ageData.nextBirthdayDays} days
+                      </p>
                     </div>
                   )}
-                  {celebrity.zodiac_sign && (
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <Star className="w-5 h-5 text-primary" />
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">✨ Birth Sign</div>
-                        <Link 
+
+                  {/* Info rows — label left, value right */}
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex items-center gap-2.5 text-[13px]">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Calendar className="w-[15px] h-[15px] text-primary" />
+                      </span>
+                      <span className="text-muted-foreground">Born</span>
+                      <span className="ml-auto text-right font-medium text-foreground">
+                        {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </span>
+                    </div>
+
+                    {celebrity.place_of_birth && (
+                      <div className="flex items-center gap-2.5 text-[13px]">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <MapPin className="w-[15px] h-[15px] text-primary" />
+                        </span>
+                        <span className="text-muted-foreground">Birthplace</span>
+                        <span className="ml-auto text-right font-medium text-foreground">{celebrity.place_of_birth}</span>
+                      </div>
+                    )}
+
+                    {celebrity.zodiac_sign && (
+                      <div className="flex items-center gap-2.5 text-[13px]">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Star className="w-[15px] h-[15px] text-primary" />
+                        </span>
+                        <span className="text-muted-foreground">Zodiac</span>
+                        <Link
                           to={`/zodiac/${celebrity.zodiac_sign.toLowerCase()}`}
-                          className="font-medium text-foreground hover:text-primary hover:underline transition-colors"
+                          className="ml-auto text-right font-medium text-foreground hover:text-primary hover:underline transition-colors"
                         >
                           {celebrity.zodiac_sign}
                         </Link>
                       </div>
-                    </div>
-                  )}
-                  {ageData && (
-                    <div className="pt-4 border-t border-border">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-primary mb-1">{ageData.years}</div>
-                        <div className="text-sm text-muted-foreground">Years Old</div>
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </CardContent>
               </Card>
 

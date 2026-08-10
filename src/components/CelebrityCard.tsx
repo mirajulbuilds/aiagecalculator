@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Scale, Check } from "lucide-react";
+import { Scale, Check, Flame } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 import { Button } from "@/components/ui/button";
 
@@ -37,20 +37,30 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
     addToComparison(celebrity);
   };
 
+  const isTrending = celebrity.popularity_ranks?.overall && celebrity.popularity_ranks.overall <= 100;
+
   return (
-    <div className="group relative bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-500 ease-out hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] hover:-translate-y-2 hover:scale-[1.02] border border-border interactive-element">
+    <div className="group relative bg-card rounded-2xl overflow-hidden border border-border transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1 hover:border-primary/20">
       <Link to={`/people/${celebrity.profile_slug}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={celebrity.profile_image_url}
             alt={celebrity.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
           />
-          
-          {/* Age Badge */}
-          <div className="absolute bottom-2 left-2 z-10 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
-            <span className="text-xs font-semibold text-white">{age} years</span>
+
+          {/* Trending badge — frosted, gold text */}
+          {isTrending && (
+            <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-background/85 backdrop-blur-md border border-[hsl(var(--gold)/0.25)]">
+              <Flame className="w-3 h-3 text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
+              <span className="text-[11px] font-medium text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]">Trending</span>
+            </div>
+          )}
+
+          {/* Age Badge — frosted */}
+          <div className="absolute bottom-2 left-2 z-10 px-2.5 py-1 rounded-full bg-background/85 backdrop-blur-md border border-border">
+            <span className="text-[11px] font-semibold text-foreground">{age} yrs</span>
           </div>
 
           {/* Compare Button */}
@@ -69,7 +79,7 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
           </Button>
         </div>
         <div className="p-4 min-h-24 flex flex-col">
-          <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors line-clamp-1">
+          <h3 className="font-semibold text-foreground text-base mb-1 group-hover:text-primary transition-colors line-clamp-1">
             {celebrity.name}
           </h3>
           <p className="text-sm text-muted-foreground line-clamp-2">{celebrity.profession}</p>
