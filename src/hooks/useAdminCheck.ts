@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 
 export const useAdminCheck = () => {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
+    let active = true;
+
     const checkAdminStatus = async () => {
+      if (active) setIsLoading(true);
       try {
-        // First check if user is authenticated
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // Revalidate with the auth server instead of trusting a cached session.
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        if (sessionError || !session) {
-          console.error('No active session');
+        if (userError || !user) {
+          if (!active) return;
+          setIsAuthenticated(false);
           setIsAdmin(false);
           setIsLoading(false);
-          navigate('/auth-gateway-key-a1b2c3');
           return;
         }
+
+        if (active) setIsAuthenticated(true);
 
         // Check if user has admin role using our security definer function
         const { data, error } = await supabase.rpc('is_admin');
@@ -31,38 +35,42 @@ export const useAdminCheck = () => {
             code: error.code,
             details: error.details,
             hint: error.hint,
-            userId: session?.user?.id
+            userId: user.id
           });
+          if (!active) return;
           setIsAdmin(false);
           setIsLoading(false);
-          navigate('/');
           return;
         }
 
         console.log('Admin check result:', { 
           data, 
           isAdmin: data === true,
-          userId: session?.user?.id 
+          userId: user.id 
         });
 
+        if (!active) return;
         setIsAdmin(data === true);
         setIsLoading(false);
-
-        // If not admin, redirect to home
-        if (data !== true) {
-          console.warn('Access denied: User is not an admin');
-          navigate('/');
-        }
       } catch (error) {
         console.error('Error in admin check:', error);
+        if (!active) return;
         setIsAdmin(false);
         setIsLoading(false);
-        navigate('/');
       }
     };
 
     checkAdminStatus();
-  }, [navigate]);
 
-  return { isAdmin, isLoading };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      window.setTimeout(checkAdminStatus, 0);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return { isAdmin, isAuthenticated, isLoading };
 };
