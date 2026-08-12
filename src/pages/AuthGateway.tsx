@@ -6,8 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { logAuthFailure } from "@/lib/securityLogger";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 
 import { isAllowedDomain, redirectToAllowedDomain } from '@/lib/allowedDomains';
 
@@ -69,6 +67,20 @@ const AuthGateway = () => {
       }
 
       if (data.session) {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          toast.error('Login session could not be verified');
+          await supabase.auth.signOut();
+          return;
+        }
+
+        const { data: isAdmin, error: roleError } = await supabase.rpc('is_admin');
+        if (roleError || isAdmin !== true) {
+          toast.error('This account does not have admin access');
+          await supabase.auth.signOut();
+          return;
+        }
+
         // Log successful login
         await supabase.functions.invoke('log-auth-attempt', {
           body: { email, success: true }
@@ -79,7 +91,8 @@ const AuthGateway = () => {
         // Check 2FA enrollment status
         console.log('✅ Login successful, checking 2FA status...');
         const { data: statusData, error: statusError } = await supabase.functions.invoke('check-2fa-status', {
-          method: 'POST'
+          method: 'POST',
+          headers: { Authorization: `Bearer ${data.session.access_token}` }
         });
         
         console.log('2FA Status Response:', {
@@ -96,14 +109,12 @@ const AuthGateway = () => {
             context: statusError.context
           });
           toast.error('Failed to verify admin status');
-          navigate("/system-control-panel-x4y5z6");
           return;
         }
 
         if (!statusData) {
           console.error('❌ No data returned from 2FA status check');
-          toast.error('Failed to verify admin status. Redirecting to dashboard...');
-          navigate("/system-control-panel-x4y5z6");
+          toast.error('Failed to verify admin status');
           return;
         }
 

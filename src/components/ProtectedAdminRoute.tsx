@@ -11,7 +11,7 @@ interface ProtectedAdminRouteProps {
 }
 
 export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
-  const { isAdmin, isLoading } = useAdminCheck();
+  const { isAdmin, isAuthenticated, isLoading } = useAdminCheck();
   const location = useLocation();
   const [twoFAStatus, setTwoFAStatus] = useState<{
     checked: boolean;
@@ -43,7 +43,6 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
             isAdmin,
             userId: session?.user?.id
           });
-          // SECURITY: On error, deny access and force re-authentication
           setTwoFAStatus({ checked: true, enrolled: false, verified: false });
           return;
         }
@@ -80,7 +79,7 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
     check2FAStatus();
   }, [isAdmin, isLoading]);
 
-  if (isLoading || !twoFAStatus.checked) {
+  if (isLoading || (isAuthenticated && isAdmin && !twoFAStatus.checked)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -91,15 +90,12 @@ export const ProtectedAdminRoute = ({ children }: ProtectedAdminRouteProps) => {
     );
   }
 
+  if (!isAuthenticated) {
+    return <Navigate to="/auth-gateway-key-a1b2c3" replace />;
+  }
+
   if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-          <p className="text-muted-foreground">Redirecting...</p>
-        </div>
-      </div>
-    );
+    return <Navigate to="/" replace />;
   }
 
   // Check if admin needs to enroll in 2FA
