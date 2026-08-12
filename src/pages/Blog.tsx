@@ -27,7 +27,7 @@ const Blog = () => {
   const [dbPosts, setDbPosts] = useState<CombinedBlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  useRenderState(loading);
+useRenderState(isLoading);
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
