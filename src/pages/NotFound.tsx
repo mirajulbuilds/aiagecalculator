@@ -4,9 +4,11 @@ import { Helmet } from "react-helmet-async";
 import { Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "@/components/PageTransition";
+import { useRenderState } from "@/lib/renderState";
 
 const NotFound = () => {
   const location = useLocation();
+  useRenderState(false, true);
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);

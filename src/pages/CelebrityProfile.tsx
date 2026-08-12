@@ -14,6 +14,7 @@ import PageTransition from "@/components/PageTransition";
 import { BackToTop } from "@/components/BackToTop";
 import { SITE_CONFIG } from "@/lib/config";
 import { toast } from "sonner";
+import { useRenderState } from "@/lib/renderState";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -149,8 +150,7 @@ const CelebrityProfile = () => {
         
         const { data: related } = await supabase
           .from("celebrities")
-          .select("*")
-          .eq("profession", data.profession)
+          .select("name,profession,profile_slug,profile_image_url,date_of_birth")          .eq("profession", data.profession)
           .neq("id", data.id)
           .limit(20);
         
@@ -175,7 +175,7 @@ const CelebrityProfile = () => {
         if (data.zodiac_sign) {
           const { data: sameZodiac } = await supabase
             .from("celebrities")
-            .select("*")
+            .select("name,profession,profile_slug,profile_image_url,date_of_birth,zodiac_sign")
             .eq("zodiac_sign", data.zodiac_sign)
             .neq("profile_slug", profileSlug)
             .limit(3);
@@ -192,6 +192,7 @@ const CelebrityProfile = () => {
   }, [profileSlug]);
 
   useEffect(() => {
+    useRenderState(loading, !loading && !celebrity);
     if (!celebrity) return;
 
     const sections = [

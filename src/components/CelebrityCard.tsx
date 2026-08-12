@@ -41,8 +41,10 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
 
   return (
     <div className="group relative bg-card rounded-2xl overflow-hidden border border-border transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1 hover:border-primary/20">
-      <Link to={`/people/${celebrity.profile_slug}`}>
-        <div className="relative aspect-square overflow-hidden bg-muted">
+<Link
+        to={`/people/${celebrity.profile_slug}`}
+        onMouseEnter={() => import("@/pages/CelebrityProfile")}
+      >        <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={celebrity.profile_image_url}
             alt={celebrity.name}

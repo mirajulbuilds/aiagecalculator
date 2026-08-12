@@ -18,6 +18,7 @@ import { FloatingCompareBar } from "./components/FloatingCompareBar";
 import { LifeExpectancyComparisonProvider } from "./contexts/LifeExpectancyComparisonContext";
 import { FloatingLifeExpectancyCompareBar } from "./components/FloatingLifeExpectancyCompareBar";
 import { BackToTop } from "./components/BackToTop";
+import { RenderStateTracker } from "@/lib/renderState";
 import ScrollProgress from "./components/ScrollProgress";
 import PersonalizationPopup from "./components/PersonalizationPopup";
 
@@ -104,8 +105,10 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <>
+      <RenderStateTracker />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
@@ -214,10 +217,10 @@ const AnimatedRoutes = () => {
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </AnimatePresence>
+</AnimatePresence>
+    </>
   );
-};
-
+  
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
@@ -233,19 +236,7 @@ const App = () => (
                 <div className="flex flex-col min-h-screen">
                   <Header />
                   <main className="flex-1">
-                    <Suspense fallback={
-                      <div className="flex flex-col min-h-screen bg-background">
-                        <div className="flex-1 flex flex-col items-center justify-center p-8">
-                          <h1 className="text-2xl font-bold text-foreground mb-2">AiAgeCalc.com</h1>
-                          <p className="text-muted-foreground mb-6">Free AI-powered age calculators &amp; birthday tools</p>
-                          <div className="w-full max-w-md space-y-4">
-                            <div className="h-4 bg-muted rounded animate-pulse" />
-                            <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
-                            <div className="h-32 bg-muted rounded animate-pulse" />
-                          </div>
-                        </div>
-                      </div>
-                    }>
+<Suspense fallback={<div className="min-h-screen" />}>
                       <AnimatedRoutes />
                     </Suspense>
                   </main>

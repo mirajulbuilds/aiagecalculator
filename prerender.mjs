@@ -24,7 +24,7 @@ const PORT = 4173;
 const CONCURRENCY = 4;
 const SITE = "https://aiagecalc.com";
 const DEFAULT_TITLE = "AiAgeCalc.com";
-const MIN_BODY_CHARS = 600;          // এর কম হলে রেন্ডার ব্যর্থ ধরা হয়
+
 const MAX_FAIL_RATIO = 0.03;         // ৩%-এর বেশি ফেল হলে বিল্ড ফেল
 
 const BLOCK_DOMAINS = [
@@ -299,24 +299,38 @@ async function renderOnce(browser, route, meta, payload) {
       waitUntil: "domcontentloaded", timeout: 30000,
     });
 
-    // ডেটা ইনজেক্ট করা আছে বলে এটা প্রায় সাথে সাথেই সত্যি হবে
-    await page.waitForFunction(() => {
-      const root = document.getElementById("root");
-      const txt = document.body.innerText || "";
-      return root && root.children.length > 0
-        && !txt.includes("Loading profile...")
-        && txt.trim().length > 400;
-    }, { timeout: 20000 });
+    // অ্যাপ নিজে signal দেয় সে কখন রেডি — char-count অনুমান নয়
+    await page.waitForFunction((want) => {
+      const b = document.body;
+      if (!b) return false;
+      const state = b.getAttribute("data-render-state");
+      const at = b.getAttribute("data-render-route");
+      if (state !== "ready" && state !== "error") return false;
+      const n = (s) => (s || "").replace(/\/+$/, "") || "/";
+      return n(at) === n(want);          // আগের route-এর বাসি signal ঠেকায়
+    }, { timeout: 30000, polling: 150 }, route);
 
-    await new Promise((r) => setTimeout(r, 100));
+    const info = await page.evaluate(() => {
+      const b = document.body;
+      const head = document.querySelector("header");
+      const foot = document.querySelector("footer");
+      const txt = (b.innerText || "").trim();
+      const shell = ((head?.innerText || "") + (foot?.innerText || "")).trim().length;
+      return { state: b.getAttribute("data-render-state"), content: txt.length - shell };
+    });
+
+    if (info.state === "error") {
+      throw new Error("পেজ error state-এ (ডেটা পাওয়া যায়নি / 404)");
+    }
+    if (info.content <= 0) {
+      throw new Error("কনটেন্ট একদম খালি");
+    }
+    if (info.content < 300) {
+      console.warn(`THIN ${route} — ${info.content} chars`);
+    }
 
     const bodyText = await page.evaluate(() => document.body.innerText || "");
-    if (bodyText.includes("Loading profile...")) {
-      throw new Error("এখনো 'Loading profile...' আছে");
-    }
-    if (bodyText.trim().length < MIN_BODY_CHARS) {
-      throw new Error(`কনটেন্ট খুব কম (${bodyText.trim().length} chars)`);
-    }
+    
     if (/Celebrity Not Found|Page Not Found|404/i.test(bodyText.slice(0, 400))) {
       throw new Error("Not-found পেজ রেন্ডার হয়েছে");
     }

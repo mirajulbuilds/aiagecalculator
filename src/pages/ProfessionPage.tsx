@@ -6,6 +6,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
+import { useRenderState } from "@/lib/renderState";
 import {
   Pagination,
   PaginationContent,
@@ -32,6 +33,7 @@ const ProfessionPage = () => {
   const [professionName, setProfessionName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  useRenderState(loading, !loading && celebrities.length === 0);
   const itemsPerPage = 24;
 
   // Convert slug to readable name (e.g., "tiktok-star" -> "TikTok Star")

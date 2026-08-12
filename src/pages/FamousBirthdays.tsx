@@ -11,6 +11,7 @@ import PageTransition from "@/components/PageTransition";
 import { CelebrityCard } from "@/components/CelebrityCard";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
 import ParallaxSection from "@/components/ParallaxSection";
+import { useRenderState } from "@/lib/renderState";
 
 interface Celebrity {
   id: string;
@@ -44,6 +45,7 @@ const FamousBirthdays = () => {
   const [bornTomorrow, setBornTomorrow] = useState<Celebrity[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  useRenderState(loading);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -58,6 +60,20 @@ const FamousBirthdays = () => {
 
   const loadCelebrities = async () => {
     setLoading(true);
+// ৫ মিনিটের ক্যাশ — একই সেশনে বারবার হিট করবে না
+    const cached = sessionStorage.getItem("fb_cache");
+    if (cached) {
+      try {
+        const c = JSON.parse(cached);
+        if (Date.now() - c.t < 5 * 60 * 1000 && c.day === new Date().getDate()) {
+          setTrendingCelebrities(c.trending || []);
+          setBornToday(c.today || []);
+          setBornTomorrow(c.tomorrow || []);
+          setLoading(false);
+          return;
+        }
+      } catch {}
+    }
 
     // Get visitor's local date
     const today = new Date();
@@ -71,12 +87,7 @@ const FamousBirthdays = () => {
 
     try {
       // Fetch trending celebrities (top 12 by popularity)
-      const { data: trending, error: trendingError } = await supabase
-        .from("celebrities")
-        .select("*")
-        .not("popularity_ranks", "is", null)
-        .order("popularity_ranks->most_popular", { ascending: true })
-        .limit(12);
+      .select("name,profession,profile_slug,profile_image_url,date_of_birth,zodiac_sign,popularity_ranks")
 
       if (trendingError) {
         console.error("Error fetching trending celebrities:", trendingError);
@@ -109,6 +120,10 @@ const FamousBirthdays = () => {
       } else {
         setBornTomorrow(tomorrowData || []);
       }
+      sessionStorage.setItem("fb_cache", JSON.stringify({
+        t: Date.now(), day: new Date().getDate(),
+        trending: trending || [], today: todayData || [], tomorrow: tomorrowData || [],
+      }));
     } catch (error) {
       console.error("Error loading celebrities:", error);
     } finally {

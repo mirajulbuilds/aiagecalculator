@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRenderState } from "@/lib/renderState";
 
 // Utility to fix any remaining bad URLs in content
 const fixInternalLinks = (html: string): string => {
@@ -41,6 +42,7 @@ const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPostData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  useRenderState(loading, !loading && !post);
 
   useEffect(() => {
     const fetchPost = async () => {

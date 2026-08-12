@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useRenderState } from "@/lib/renderState";
 
 interface CombinedBlogPost {
   id: string;
@@ -26,6 +27,7 @@ const Blog = () => {
   const [dbPosts, setDbPosts] = useState<CombinedBlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  useRenderState(loading);
 
   useEffect(() => {
     const fetchBlogPosts = async () => {

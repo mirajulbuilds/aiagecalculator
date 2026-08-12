@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CelebrityCard } from "@/components/CelebrityCard";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
+import { useRenderState } from "@/lib/renderState";
 import {
   Pagination,
   PaginationContent,
@@ -33,6 +34,7 @@ const ZodiacPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  useRenderState(loading, !loading && celebrities.length === 0);
   const itemsPerPage = 24;
 
   const capitalizeSign = (name: string) => {
