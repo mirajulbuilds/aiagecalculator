@@ -260,6 +260,24 @@ export type Database = {
         }
         Relationships: []
       }
+      celebrities_content_backup_20260810: {
+        Row: {
+          id: string | null
+          main_content: string | null
+          profile_slug: string | null
+        }
+        Insert: {
+          id?: string | null
+          main_content?: string | null
+          profile_slug?: string | null
+        }
+        Update: {
+          id?: string | null
+          main_content?: string | null
+          profile_slug?: string | null
+        }
+        Relationships: []
+      }
       celebrity_face_embeddings: {
         Row: {
           celebrity_id: string
