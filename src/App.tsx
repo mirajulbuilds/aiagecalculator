@@ -107,7 +107,8 @@ const AnimatedRoutes = () => {
   return (
     <>
       <RenderStateTracker />
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>}>
         <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
         <Route path="/blog" element={<Blog />} />
