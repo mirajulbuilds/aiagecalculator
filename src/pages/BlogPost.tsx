@@ -42,7 +42,7 @@ const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPostData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  useRenderState(loading, !loading && !post);
+  useRenderState(isLoading, !isLoading && !post);
 
   useEffect(() => {
     const fetchPost = async () => {

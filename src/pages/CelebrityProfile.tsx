@@ -190,9 +190,10 @@ const CelebrityProfile = () => {
 
     loadCelebrity();
   }, [profileSlug]);
+  useRenderState(loading, !loading && !celebrity);
 
   useEffect(() => {
-    useRenderState(loading, !loading && !celebrity);
+    
     if (!celebrity) return;
 
     const sections = [
