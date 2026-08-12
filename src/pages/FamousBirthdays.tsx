@@ -87,8 +87,12 @@ const FamousBirthdays = () => {
 
     try {
       // Fetch trending celebrities (top 12 by popularity)
-      .select("name,profession,profile_slug,profile_image_url,date_of_birth,zodiac_sign,popularity_ranks")
-
+    const { data: trending, error: trendingError } = await supabase
+        .from("celebrities")
+        .select("name,profession,profile_slug,profile_image_url,date_of_birth,zodiac_sign,popularity_ranks")
+        .not("popularity_ranks", "is", null)
+        .order("popularity_ranks->most_popular", { ascending: true })
+        .limit(12);
       if (trendingError) {
         console.error("Error fetching trending celebrities:", trendingError);
       } else {

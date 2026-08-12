@@ -220,7 +220,8 @@ const AnimatedRoutes = () => {
 </AnimatePresence>
     </>
   );
-  
+};
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
