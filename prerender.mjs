@@ -353,7 +353,15 @@ async function renderOnce(browser, route, meta, payload) {
         throw new Error("per-page title পাওয়া যায়নি (generic fallback)");
       }
     }
-
+// --- prerender ডেটা output HTML-এ বেক করা (আসল ইউজারের ব্রাউজারও পাবে) ---
+    if (payload) {
+      const json = JSON.stringify(payload).replace(/</g, "\\u003c");
+      html = html.replace(
+        /<\/body>/i,
+        `<script>window.__PRERENDER_DATA__=${json}</script>\n</body>`
+      );
+    }
+    
     return html;
   } finally {
     await page.close().catch(() => {});
