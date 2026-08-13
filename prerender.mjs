@@ -312,13 +312,10 @@ async function renderOnce(browser, route, meta, payload) {
 
     const info = await page.evaluate(() => {
       const b = document.body;
-      const main = document.querySelector("main") || document.querySelector("#root");
-      const head = document.querySelector("header");
-      const foot = document.querySelector("footer");
-      // header/footer বাদ দিয়ে শুধু main content measure করো
-      const exclude = ((head?.innerText || "") + (foot?.innerText || "")).length;
-      const full = (main?.innerText || b.innerText || "").trim().length;
-      const content = Math.max(full - exclude, 0);
+      // header/footer clone করে সরিয়ে দিয়ে বাকি text measure করো
+      const clone = b.cloneNode(true);
+      clone.querySelectorAll("header, footer, nav").forEach(el => el.remove());
+      const content = (clone.innerText || "").trim().length;
       return { state: b.getAttribute("data-render-state"), content };
     });
 
