@@ -1,0 +1,86 @@
+# .github/workflows/deploy.yml
+# ─────────────────────────────────────────────────────────────
+# aiagecalc.com — Prerender Pipeline + Cloudflare Pages Deploy
+# ─────────────────────────────────────────────────────────────
+# কী করে:
+#   1. npm install + vite build → dist/ তৈরি
+#   2. node prerender.mjs → dist/ ফোল্ডারে 1,000+ static HTML ইনজেক্ট
+#   3. wrangler pages deploy → Cloudflare Pages-এ পাঠায়
+#
+# ট্রিগার: main ব্রাঞ্চে push হলেই চলবে, + ম্যানুয়াল dispatch
+# ─────────────────────────────────────────────────────────────
+
+name: Build → Prerender → Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # ম্যানুয়াল "Run workflow" বাটন
+
+# একসাথে একাধিক deploy চলা ঠেকাও
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30       # prerender 1,000+ পেজ — সময় লাগে
+
+    env:
+      # Supabase — prerender.mjs এগুলো .env থেকে পড়ে,
+      # কিন্তু CI-তে .env থাকে না তাই env var হিসেবে দিতে হবে
+      VITE_SUPABASE_PROJECT_ID:       ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+      VITE_SUPABASE_PUBLISHABLE_KEY:  ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SUPABASE_URL:              ${{ secrets.VITE_SUPABASE_URL }}
+
+    steps:
+      # ──────── ১. কোড আনো ────────
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ──────── ২. Node.js সেটআপ ────────
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # ──────── ৩. Dependencies ইনস্টল ────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ──────── ৪. Vite Build (SPA) ────────
+      - name: Vite build
+        run: npm run build
+
+      # ──────── ৫. Prerender (Puppeteer) ────────
+      # ubuntu-latest-এ Chromium চলে — Netlify/Cloudflare-এ চলে না
+      - name: Prerender static HTML
+        run: node prerender.mjs
+
+      # ──────── ৬. Build Output চেক ────────
+      - name: Verify prerender output
+        run: |
+          echo "--- dist/ ফোল্ডারের সারসংক্ষেপ ---"
+          TOTAL_HTML=$(find dist -name "index.html" | wc -l)
+          echo "মোট index.html ফাইল: $TOTAL_HTML"
+
+          # ন্যূনতম পেজ চেক — ১,০০০+ expected
+          if [ "$TOTAL_HTML" -lt 500 ]; then
+            echo "ERROR: মাত্র $TOTAL_HTML পেজ পাওয়া গেছে — কিছু ভুল হয়েছে!"
+            exit 1
+          fi
+
+          echo "কয়েকটা sample:"
+          find dist/people -name "index.html" | head -5
+          echo "---"
+          ls -la dist/sitemap-*.xml 2>/dev/null || echo "WARN: sitemap ফাইল নেই"
+
+      # ──────── ৭. Cloudflare Pages Deploy (Wrangler) ────────
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=aiagecalculator --commit-dirty=true
