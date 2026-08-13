@@ -343,6 +343,13 @@ async function renderOnce(browser, route, meta, payload) {
         title: meta.meta_title, description: meta.meta_description, canonical,
       });
     } else {
+      // Helmet-এর title আপডেট হতে একটু সময় দাও
+      await page.waitForFunction(
+        (def) => document.title && document.title.trim() !== def,
+        { timeout: 5000, polling: 200 },
+        DEFAULT_TITLE
+      ).catch(() => {});
+
       const live = await page.evaluate(() => ({
         title: document.title,
         description: document.querySelector('meta[name="description"]')?.content || "",
