@@ -18,10 +18,21 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-tabs', '@radix-ui/react-select', '@radix-ui/react-dialog'],
-          'date-vendor': ['date-fns'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || id.includes('react-router'))
+              return 'react-vendor';
+            if (id.includes('lucide-react'))
+              return 'icons';
+            if (id.includes('@radix-ui'))
+              return 'ui-vendor';
+            if (id.includes('date-fns'))
+              return 'date-vendor';
+            if (id.includes('recharts') || id.includes('d3-'))
+              return 'chart-vendor';
+            if (id.includes('framer-motion'))
+              return 'motion';
+          }
         },
       },
     },
