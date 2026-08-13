@@ -60,8 +60,16 @@ const getChineseZodiac = (year: number): string => {
 const CelebrityProfile = () => {
   const { profile: authProfile } = useAuth();
   const { profileSlug } = useParams<{ profileSlug: string }>();
-  const [celebrity, setCelebrity] = useState<CelebrityData | null>(null);
-  const [loading, setLoading] = useState(true);
+// prerender ডেটা থাকলে সেটা দিয়েই শুরু করো — স্পিনার ফ্ল্যাশ হবে না
+  const prerendered =
+    typeof window !== "undefined" &&
+    (window as any).__PRERENDER_DATA__?.celebrity?.profile_slug === profileSlug
+      ? (window as any).__PRERENDER_DATA__
+      : null;
+  const [celebrity, setCelebrity] = useState<CelebrityData | null>(
+    (prerendered?.celebrity as CelebrityData) ?? null
+  );
+  const [loading, setLoading] = useState(!prerendered);
   const [ageData, setAgeData] = useState<any>(null);
   const [relatedCelebrities, setRelatedCelebrities] = useState<CelebrityData[]>([]);
   const [sameBirthdayCelebrities, setSameBirthdayCelebrities] = useState<CelebrityData[]>([]);
