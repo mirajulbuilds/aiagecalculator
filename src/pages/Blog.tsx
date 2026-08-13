@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SEOHead } from "@/components/SEOHead";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { blogPosts } from "@/data/blogPosts";
 import { Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "@/components/PageTransition";
@@ -34,7 +33,7 @@ useRenderState(isLoading);
       try {
         const { data, error } = await supabase
           .from('blog_posts')
-          .select('*')
+          .select('id, slug, title, meta_description, author, published_at, created_at, featured_image_url')
           .not('published_at', 'is', null)
           .order('published_at', { ascending: false });
 
@@ -61,20 +60,6 @@ useRenderState(isLoading);
 
     fetchBlogPosts();
   }, []);
-
-  const staticPosts: CombinedBlogPost[] = blogPosts.map(post => ({
-    id: post.id,
-    slug: post.slug,
-    title: post.title,
-    summary: post.summary,
-    author: post.author,
-    publishedDate: post.publishedDate,
-    featuredImage: post.featuredImage
-  }));
-
-  const allPosts = [...dbPosts, ...staticPosts].sort(
-    (a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime()
-  );
 
   return (
     <PageTransition>
@@ -132,7 +117,7 @@ useRenderState(isLoading);
           </div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {allPosts.map((post, index) => (
+            {dbPosts.map((post, index) => (
             <ScrollFadeIn key={post.id} delay={index * 100}>
               <Link to={`/blog/${post.slug}`} className="group block h-full">
                 <Card className="h-full transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border-2 hover:border-primary/50">
