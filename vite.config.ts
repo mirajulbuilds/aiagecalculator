@@ -20,22 +20,17 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('/react/') || id.includes('react-dom') || id.includes('react-router'))
+            if (
+              id.includes('/react/') ||
+              id.includes('/react-dom/') ||
+              id.includes('/react-router') ||
+              id.includes('/react-router-dom/') ||
+              id.includes('/scheduler/')
+            )
               return 'react-vendor';
-            if (id.includes('lucide-react'))
-              return 'icons';
-            if (id.includes('@radix-ui'))
-              return 'ui-vendor';
-            if (id.includes('date-fns'))
-              return 'date-vendor';
-            if (id.includes('recharts') || id.includes('d3-'))
-              return 'chart-vendor';
-            if (id.includes('framer-motion'))
-              return 'motion';
           }
         },
       },
     },
-    minify: 'esbuild', // Use default esbuild minifier (faster, no extra deps)
   },
 }));
