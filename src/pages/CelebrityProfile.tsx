@@ -198,7 +198,7 @@ const CelebrityProfile = () => {
 
     loadCelebrity();
   }, [profileSlug]);
-  useRenderState(loading, !loading && !celebrity);
+  useRenderState(loading || !celebrity?.main_content, !loading && !celebrity);
 
   useEffect(() => {
     
