@@ -7,5 +7,8 @@ http://aiagecalc.com/*       https://aiagecalc.com/:splat  301!
 /celebrity/:slug         /people/:slug  301
 /famous-birthdays/:slug  /people/:slug  301
 
-# SPA fallback (serves static files first, then falls back to index.html)
-/*  /index.html  200
+# NOTE: No `/* /index.html 200` catch-all on purpose.
+# Every indexable route is prerendered to its own static file (200). Any path with
+# no matching file falls through to dist/404.html, which Cloudflare Pages serves
+# with a real 404 status — the SPA still boots from it and renders the NotFound UI.
+# This avoids soft-404s (previously every unknown URL returned 200 + "not found").
