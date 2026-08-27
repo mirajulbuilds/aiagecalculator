@@ -57,6 +57,16 @@ const getChineseZodiac = (year: number): string => {
   return animals[(year - 4) % 12];
 };
 
+// Supabase Storage image → resized/optimized via the render/image transform endpoint.
+// Only rewrites Supabase public object URLs; leaves any other URL untouched.
+const supabaseImage = (url?: string, width = 400, quality = 75): string => {
+  if (!url || !url.includes("/storage/v1/object/public/")) return url ?? "";
+  return (
+    url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/") +
+    `?width=${width}&quality=${quality}`
+  );
+};
+
 const CelebrityProfile = () => {
   const { profile: authProfile } = useAuth();
   const { profileSlug } = useParams<{ profileSlug: string }>();
@@ -413,8 +423,13 @@ const CelebrityProfile = () => {
             {/* Profile Image Block */}
             <div id="profile-image-block" className="w-full">
               <img 
-                src={celebrity.profile_image_url} 
+                src={supabaseImage(celebrity.profile_image_url, 600, 80)} 
                 alt={celebrity.name}
+                width={600}
+                height={450}
+                fetchPriority="high"
+                loading="eager"
+                decoding="async"
                 className="w-full max-w-2xl max-h-[450px] mx-auto rounded-2xl shadow-lg object-cover"
               />
             </div>
@@ -456,7 +471,7 @@ const CelebrityProfile = () => {
                           <div className="bg-card rounded-xl shadow-card overflow-hidden border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
                             <div className="aspect-[2/3] overflow-hidden bg-muted relative">
                               {item.imageURL ? (
-                                <img src={item.imageURL} alt={item.title || 'Known for item'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <img src={item.imageURL} alt={item.title || 'Known for item'} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10">
                                   <Star className="w-16 h-16 text-primary/60" />
@@ -496,7 +511,7 @@ const CelebrityProfile = () => {
                       {sameBirthdayCelebrities.map((celeb) => (
                         <Link key={celeb.profile_slug} to={`/people/${celeb.profile_slug}`} className="group">
                           <div className="aspect-square overflow-hidden rounded-full mb-2">
-                            <img src={celeb.profile_image_url} alt={celeb.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                            <img src={supabaseImage(celeb.profile_image_url, 200)} alt={celeb.name} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                           </div>
                           <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">{celeb.name}</h3>
                           <p className="text-xs text-muted-foreground text-center">{celeb.profession}</p>
@@ -522,7 +537,7 @@ const CelebrityProfile = () => {
                       {sameZodiacCelebrities.map((celeb) => (
                         <Link key={celeb.profile_slug} to={`/people/${celeb.profile_slug}`} className="group">
                           <div className="aspect-square overflow-hidden rounded-full mb-2">
-                            <img src={celeb.profile_image_url} alt={celeb.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                            <img src={supabaseImage(celeb.profile_image_url, 200)} alt={celeb.name} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                           </div>
                           <h3 className="font-semibold text-sm text-center text-foreground group-hover:text-primary transition-colors">{celeb.name}</h3>
                           <p className="text-xs text-muted-foreground text-center">{celeb.profession}</p>
@@ -552,7 +567,7 @@ const CelebrityProfile = () => {
                           className="group bg-card rounded-2xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border border-border"
                         >
                           <div className="aspect-square overflow-hidden">
-                            <img src={celeb.profile_image_url} alt={celeb.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                            <img src={supabaseImage(celeb.profile_image_url, 300)} alt={celeb.name} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                           </div>
                           <div className="p-4">
                             <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">{celeb.name}</h3>
