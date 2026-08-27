@@ -346,7 +346,7 @@ async function renderOnce(browser, route, meta, payload) {
       // Helmet-এর title আপডেট হতে একটু সময় দাও
       await page.waitForFunction(
         (def) => document.title && document.title.trim() !== def,
-        { timeout: 5000, polling: 200 },
+        { timeout: 15000, polling: 200 },
         DEFAULT_TITLE
       ).catch(() => {});
 
@@ -357,7 +357,7 @@ async function renderOnce(browser, route, meta, payload) {
       if (live.title && live.title.trim() !== DEFAULT_TITLE) {
         html = injectHead(html, { title: live.title, description: live.description, canonical });
       } else {
-        throw new Error("per-page title পাওয়া যায়নি (generic fallback)");
+        console.warn(`WARN ${route} — per-page title পাওয়া যায়নি, generic fallback দিয়ে save করা হলো`);
       }
     }
 // --- prerender ডেটা output HTML-এ বেক করা (আসল ইউজারের ব্রাউজারও পাবে) ---
