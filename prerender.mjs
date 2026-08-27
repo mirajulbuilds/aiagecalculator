@@ -52,6 +52,15 @@ function esc(s) {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+/* hero image-এর transform URL — CelebrityProfile.tsx-এর supabaseImage(url,600,80)-এর হুবহু সমান
+   হতে হবে, নাহলে preload আর <img> আলাদা রিসোর্স ধরে ব্রাউজার ডাবল ডাউনলোড করবে */
+function heroImageUrl(url, width = 600, quality = 80) {
+  if (!url || !url.includes("/storage/v1/object/public/")) return url || "";
+  return url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/")
+    + `?width=${width}&quality=${quality}`;
+}
+
+
 /* ---------------- রুট সংগ্রহ ---------------- */
 
 function routesFromSitemaps() {
@@ -360,6 +369,16 @@ async function renderOnce(browser, route, meta, payload) {
         console.warn(`WARN ${route} — per-page title পাওয়া যায়নি, generic fallback দিয়ে save করা হলো`);
       }
     }
+// --- hero image preload — LCP element তাই ব্রাউজার যেন সবার আগে আনে ---
+    const heroSrc = payload?.celebrity?.profile_image_url;
+    if (heroSrc) {
+      const hero = esc(heroImageUrl(heroSrc, 600, 80));
+      html = html.replace(
+        /<\/head>/i,
+        `    <link rel="preload" as="image" href="${hero}" fetchpriority="high" />\n  </head>`
+      );
+    }
+
 // --- prerender ডেটা output HTML-এ বেক করা (আসল ইউজারের ব্রাউজারও পাবে) ---
     if (payload) {
       const json = JSON.stringify(payload).replace(/</g, "\\u003c");
@@ -368,8 +387,9 @@ async function renderOnce(browser, route, meta, payload) {
         `<script>window.__PRERENDER_DATA__=${json}</script>\n</body>`
       );
     }
-    
+
     return html;
+
   } finally {
     await page.close().catch(() => {});
   }
