@@ -448,7 +448,19 @@ const routes = routeList.filter((x) => (seen.has(x.route) ? false : seen.add(x.r
 
 console.log(`মোট ${routes.length} রুট prerender হবে (concurrency ${CONCURRENCY})...\n`);
 
+// dist/404.html — Cloudflare Pages না-থাকা path-এ এই ফাইলটা 404 status দিয়ে সার্ভ করে (soft-404 fix)।
+// এই মুহূর্তে dist/index.html এখনো vite shell (prerender "/" রুট এখনো লেখেনি), তাই শেল-টাই কপি হয়।
+try {
+  let shell404 = await readFile(path.join(DIST, "index.html"), "utf8");
+  shell404 = shell404.replace(/<meta\s+name="robots"[^>]*>/i, '<meta name="robots" content="noindex, follow" />');
+  await writeFile(path.join(DIST, "404.html"), shell404);
+  console.log("dist/404.html তৈরি হলো (soft-404 fix)।");
+} catch (e) {
+  console.warn("404.html লেখা গেল না — " + e.message);
+}
+
 const server = makeServer();
+
 await new Promise((r) => server.listen(PORT, r));
 
 const browser = await puppeteer.launch({
