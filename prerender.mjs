@@ -459,6 +459,8 @@ try {
   console.warn("404.html লেখা গেল না — " + e.message);
 }
 
+const server = makeServer();
+
 await new Promise((r) => server.listen(PORT, r));
 
 const browser = await puppeteer.launch({
