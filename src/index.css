@@ -664,3 +664,29 @@
     color: hsl(var(--foreground));
   }
 }
+
+/* Preserved from Global Design Theme v1 (index.html cleanup) */
+.content-card {
+  background-color: hsl(var(--card));
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.main-action-button {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(167, 139, 250, 0.2);
+}
+
+.main-action-button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+}
