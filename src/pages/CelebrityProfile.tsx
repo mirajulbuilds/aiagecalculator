@@ -328,6 +328,7 @@ const CelebrityProfile = () => {
     );
   }
 
+  const isDeceased = !!celebrity.date_of_death;
   const popularityRanks = celebrity.popularity_ranks || {};
   const shareUrl = `${SITE_CONFIG.canonicalUrl}/people/${celebrity.profile_slug}`;
   const shareText = `Check out ${celebrity.name}'s profile on AiAgeCalc!`;
