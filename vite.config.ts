@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => ({
               id.includes('/scheduler/')
             )
               return 'react-vendor';
+            if (id.includes('/lucide-react/')) return 'icons';
+            if (id.includes('/framer-motion/')) return 'animations';
+            if (id.includes('/@supabase/') || id.includes('/supabase-js/')) return 'supabase';
+            if (id.includes('/@radix-ui/')) return 'ui-primitives';
           }
         },
       },
