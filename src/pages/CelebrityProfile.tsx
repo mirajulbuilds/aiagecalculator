@@ -277,7 +277,22 @@ const CelebrityProfile = () => {
         }
         nextBirthdayDays = differenceInDays(nextBirthday, now);
       }
-...
+
+      setAgeData({
+        years,
+        months,
+        days,
+        hours,
+        minutes,
+        seconds,
+        totalDays,
+        totalHours: differenceInHours(now, birthDate),
+        totalMinutes: differenceInMinutes(now, birthDate),
+        totalSeconds: differenceInSeconds(now, birthDate),
+        nextBirthdayDays,
+      });
+    };
+
     calculateAge();
     if (deceased) return; // fixed age at death — no live interval needed
     const interval = setInterval(calculateAge, 1000);
