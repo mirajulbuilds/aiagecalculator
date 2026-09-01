@@ -367,6 +367,7 @@ const CelebrityProfile = () => {
     "@type": "Person",
     name: celebrity.name,
     birthDate: celebrity.date_of_birth,
+    ...(celebrity.date_of_death ? { deathDate: celebrity.date_of_death } : {}),
     birthPlace: celebrity.place_of_birth,
     jobTitle: celebrity.profession,
     image: celebrity.profile_image_url,
@@ -617,7 +618,7 @@ const CelebrityProfile = () => {
                       }}
                     >
                       <p className="text-[11px] font-medium uppercase tracking-[0.05em] text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))] mb-1">
-                        Current age
+                        {isDeceased ? "Age at death" : "Current age"}
                       </p>
                       <div className="flex items-baseline gap-2">
                         <span
