@@ -428,7 +428,10 @@ console.log(`${celebrities.length} জন পাওয়া গেল।`);
 const idx = buildIndexes(celebrities);
 
 const routeList = [];
-for (const r of routesFromSitemaps()) routeList.push({ route: r, meta: null, payload: null });
+for (const r of routesFromSitemaps()) {
+  if (r.startsWith('/profession/')) continue;
+  routeList.push({ route: r, meta: null, payload: null });
+}
 
 // profession পেজ prerender skip — thin list pages, build timeout ঘটায়
 // const professions = [...new Set(celebrities.map((c) => professionSlug(c.profession)).filter(Boolean))];
