@@ -269,28 +269,17 @@ const CelebrityProfile = () => {
       const minutes = differenceInMinutes(now, birthDate) % 60;
       const seconds = differenceInSeconds(now, birthDate) % 60;
 
-      const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-      if (nextBirthday < now) {
-        nextBirthday.setFullYear(now.getFullYear() + 1);
+      let nextBirthdayDays = 0;
+      if (!deceased) {
+        const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (nextBirthday < now) {
+          nextBirthday.setFullYear(now.getFullYear() + 1);
+        }
+        nextBirthdayDays = differenceInDays(nextBirthday, now);
       }
-      const nextBirthdayDays = differenceInDays(nextBirthday, now);
-
-      setAgeData({
-        years,
-        months,
-        days,
-        hours,
-        minutes,
-        seconds,
-        totalDays,
-        totalHours: differenceInHours(now, birthDate),
-        totalMinutes: differenceInMinutes(now, birthDate),
-        totalSeconds: differenceInSeconds(now, birthDate),
-        nextBirthdayDays,
-      });
-    };
-
+...
     calculateAge();
+    if (deceased) return; // fixed age at death — no live interval needed
     const interval = setInterval(calculateAge, 1000);
     return () => clearInterval(interval);
   }, [celebrity]);
