@@ -28,6 +28,7 @@ import {
 interface CelebrityData {
   name: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profession: string;
   place_of_birth: string;
   zodiac_sign: string;
@@ -254,9 +255,11 @@ const CelebrityProfile = () => {
   useEffect(() => {
     if (!celebrity?.date_of_birth) return;
 
+    const deceased = !!celebrity.date_of_death;
+
     const calculateAge = () => {
       const birthDate = new Date(celebrity.date_of_birth);
-      const now = new Date();
+      const now = deceased ? new Date(celebrity.date_of_death as string) : new Date();
 
       const years = differenceInYears(now, birthDate);
       const months = differenceInMonths(now, birthDate) % 12;
