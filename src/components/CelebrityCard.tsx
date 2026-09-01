@@ -9,6 +9,7 @@ interface Celebrity {
   profile_slug: string;
   profession: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profile_image_url: string;
   popularity_ranks: any;
   zodiac_sign?: string;
@@ -17,19 +18,20 @@ interface Celebrity {
 export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
   const { addToComparison, isInComparison } = useComparison();
   const inComparison = isInComparison(celebrity.id);
+  const isDeceased = !!celebrity.date_of_death;
 
-  const calculateAge = (dateOfBirth: string): number => {
+  const calculateAge = (dateOfBirth: string, dateOfDeath?: string | null): number => {
     const birthDate = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    const endDate = dateOfDeath ? new Date(dateOfDeath) : new Date();
+    let age = endDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = endDate.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && endDate.getDate() < birthDate.getDate())) {
       age--;
     }
     return age;
   };
 
-  const age = calculateAge(celebrity.date_of_birth);
+  const age = calculateAge(celebrity.date_of_birth, celebrity.date_of_death);
 
   const handleCompareClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,7 +64,9 @@ export const CelebrityCard = ({ celebrity }: { celebrity: Celebrity }) => {
 
           {/* Age Badge — frosted */}
           <div className="absolute bottom-2 left-2 z-10 px-2.5 py-1 rounded-full bg-background/85 backdrop-blur-md border border-border">
-            <span className="text-[11px] font-semibold text-foreground">{age} yrs</span>
+            <span className="text-[11px] font-semibold text-foreground">
+              {isDeceased ? "🕊 " : ""}{age} yrs{isDeceased ? " (deceased)" : ""}
+            </span>
           </div>
 
           {/* Compare Button */}

@@ -1,0 +1,1 @@
+ALTER TABLE public.celebrities ADD COLUMN IF NOT EXISTS date_of_death date;

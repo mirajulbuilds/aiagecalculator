@@ -210,6 +210,7 @@ export type Database = {
         Row: {
           created_at: string
           date_of_birth: string
+          date_of_death: string | null
           id: string
           known_for_data: Json | null
           main_content: string
@@ -227,6 +228,7 @@ export type Database = {
         Insert: {
           created_at?: string
           date_of_birth: string
+          date_of_death?: string | null
           id?: string
           known_for_data?: Json | null
           main_content: string
@@ -244,6 +246,7 @@ export type Database = {
         Update: {
           created_at?: string
           date_of_birth?: string
+          date_of_death?: string | null
           id?: string
           known_for_data?: Json | null
           main_content?: string
