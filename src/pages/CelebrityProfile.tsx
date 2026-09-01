@@ -629,10 +629,12 @@ const CelebrityProfile = () => {
                         </span>
                         <span className="text-[15px] text-muted-foreground">years old</span>
                       </div>
-                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
-                        <Cake className="w-3.5 h-3.5 text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
-                        Next birthday in {ageData.nextBirthdayDays} days
-                      </p>
+                      {!isDeceased && (
+                        <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
+                          <Cake className="w-3.5 h-3.5 text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
+                          Next birthday in {ageData.nextBirthdayDays} days
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -647,6 +649,18 @@ const CelebrityProfile = () => {
                         {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </span>
                     </div>
+
+                    {celebrity.date_of_death && (
+                      <div className="flex items-center gap-2.5 text-[13px]">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <span className="text-[13px]">🕊</span>
+                        </span>
+                        <span className="text-muted-foreground">Died</span>
+                        <span className="ml-auto text-right font-medium text-foreground">
+                          {new Date(celebrity.date_of_death).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </span>
+                      </div>
+                    )}
 
                     {celebrity.place_of_birth && (
                       <div className="flex items-center gap-2.5 text-[13px]">
