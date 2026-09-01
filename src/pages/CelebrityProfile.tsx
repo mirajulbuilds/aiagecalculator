@@ -28,6 +28,7 @@ import {
 interface CelebrityData {
   name: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profession: string;
   place_of_birth: string;
   zodiac_sign: string;
@@ -254,9 +255,11 @@ const CelebrityProfile = () => {
   useEffect(() => {
     if (!celebrity?.date_of_birth) return;
 
+    const deceased = !!celebrity.date_of_death;
+
     const calculateAge = () => {
       const birthDate = new Date(celebrity.date_of_birth);
-      const now = new Date();
+      const now = deceased ? new Date(celebrity.date_of_death as string) : new Date();
 
       const years = differenceInYears(now, birthDate);
       const months = differenceInMonths(now, birthDate) % 12;
@@ -266,11 +269,14 @@ const CelebrityProfile = () => {
       const minutes = differenceInMinutes(now, birthDate) % 60;
       const seconds = differenceInSeconds(now, birthDate) % 60;
 
-      const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-      if (nextBirthday < now) {
-        nextBirthday.setFullYear(now.getFullYear() + 1);
+      let nextBirthdayDays = 0;
+      if (!deceased) {
+        const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (nextBirthday < now) {
+          nextBirthday.setFullYear(now.getFullYear() + 1);
+        }
+        nextBirthdayDays = differenceInDays(nextBirthday, now);
       }
-      const nextBirthdayDays = differenceInDays(nextBirthday, now);
 
       setAgeData({
         years,
@@ -288,6 +294,7 @@ const CelebrityProfile = () => {
     };
 
     calculateAge();
+    if (deceased) return; // fixed age at death — no live interval needed
     const interval = setInterval(calculateAge, 1000);
     return () => clearInterval(interval);
   }, [celebrity]);
@@ -321,6 +328,7 @@ const CelebrityProfile = () => {
     );
   }
 
+  const isDeceased = !!celebrity.date_of_death;
   const popularityRanks = celebrity.popularity_ranks || {};
   const shareUrl = `${SITE_CONFIG.canonicalUrl}/people/${celebrity.profile_slug}`;
   const shareText = `Check out ${celebrity.name}'s profile on AiAgeCalc!`;
@@ -359,6 +367,7 @@ const CelebrityProfile = () => {
     "@type": "Person",
     name: celebrity.name,
     birthDate: celebrity.date_of_birth,
+    ...(celebrity.date_of_death ? { deathDate: celebrity.date_of_death } : {}),
     birthPlace: celebrity.place_of_birth,
     jobTitle: celebrity.profession,
     image: celebrity.profile_image_url,
@@ -609,7 +618,7 @@ const CelebrityProfile = () => {
                       }}
                     >
                       <p className="text-[11px] font-medium uppercase tracking-[0.05em] text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))] mb-1">
-                        Current age
+                        {isDeceased ? "Age at death" : "Current age"}
                       </p>
                       <div className="flex items-baseline gap-2">
                         <span
@@ -620,10 +629,12 @@ const CelebrityProfile = () => {
                         </span>
                         <span className="text-[15px] text-muted-foreground">years old</span>
                       </div>
-                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
-                        <Cake className="w-3.5 h-3.5 text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
-                        Next birthday in {ageData.nextBirthdayDays} days
-                      </p>
+                      {!isDeceased && (
+                        <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-2">
+                          <Cake className="w-3.5 h-3.5 text-[hsl(var(--gold-deep))] dark:text-[hsl(var(--gold))]" />
+                          Next birthday in {ageData.nextBirthdayDays} days
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -638,6 +649,18 @@ const CelebrityProfile = () => {
                         {new Date(celebrity.date_of_birth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </span>
                     </div>
+
+                    {celebrity.date_of_death && (
+                      <div className="flex items-center gap-2.5 text-[13px]">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <span className="text-[13px]">🕊</span>
+                        </span>
+                        <span className="text-muted-foreground">Died</span>
+                        <span className="ml-auto text-right font-medium text-foreground">
+                          {new Date(celebrity.date_of_death).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </span>
+                      </div>
+                    )}
 
                     {celebrity.place_of_birth && (
                       <div className="flex items-center gap-2.5 text-[13px]">
@@ -731,7 +754,7 @@ const CelebrityProfile = () => {
                     <div className="flex items-start gap-3">
                       <span className="text-lg">💓</span>
                       <p className="text-sm text-foreground">
-                        Estimated <span className="font-semibold text-primary">{estimatedHeartbeats.toLocaleString()}</span> heartbeats since birth
+                        Estimated <span className="font-semibold text-primary">{estimatedHeartbeats.toLocaleString()}</span> heartbeats {isDeceased ? "in their lifetime" : "since birth"}
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
@@ -875,13 +898,15 @@ const CelebrityProfile = () => {
                         <span className="font-semibold text-foreground">{ageData.totalMinutes.toLocaleString()}</span>
                       </div>
                     </div>
-                    <div className="pt-2 border-t border-border">
-                      <div className="bg-primary/10 rounded-lg p-3 text-center">
-                        <div className="text-sm text-muted-foreground mb-1">Next Birthday</div>
-                        <div className="text-2xl font-bold text-primary">{ageData.nextBirthdayDays}</div>
-                        <div className="text-xs text-muted-foreground">Days Away</div>
+                    {!isDeceased && (
+                      <div className="pt-2 border-t border-border">
+                        <div className="bg-primary/10 rounded-lg p-3 text-center">
+                          <div className="text-sm text-muted-foreground mb-1">Next Birthday</div>
+                          <div className="text-2xl font-bold text-primary">{ageData.nextBirthdayDays}</div>
+                          <div className="text-xs text-muted-foreground">Days Away</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               )}

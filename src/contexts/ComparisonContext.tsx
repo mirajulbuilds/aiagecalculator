@@ -7,6 +7,7 @@ interface Celebrity {
   profile_slug: string;
   profession: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profile_image_url: string;
   popularity_ranks: any;
   zodiac_sign?: string;

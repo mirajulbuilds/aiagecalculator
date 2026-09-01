@@ -26,13 +26,13 @@ const Compare = () => {
     }
   }, [comparisonList, navigate]);
 
-  const calculateAge = (dateOfBirth: string) => {
-    const today = new Date();
+  const calculateAge = (dateOfBirth: string, dateOfDeath?: string | null) => {
+    const endDate = dateOfDeath ? new Date(dateOfDeath) : new Date();
     const birthDate = new Date(dateOfBirth);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
+    let age = endDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = endDate.getMonth() - birthDate.getMonth();
     
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    if (monthDiff < 0 || (monthDiff === 0 && endDate.getDate() < birthDate.getDate())) {
       age--;
     }
     
@@ -166,7 +166,8 @@ const Compare = () => {
                       </TableCell>
                       {comparisonList.map((celebrity) => (
                         <TableCell key={celebrity.id} className="text-center">
-                          {calculateAge(celebrity.date_of_birth)} years old
+                          {calculateAge(celebrity.date_of_birth, celebrity.date_of_death)} years old
+                          {celebrity.date_of_death ? " (at death)" : ""}
                         </TableCell>
                       ))}
                     </TableRow>
