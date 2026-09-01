@@ -754,7 +754,7 @@ const CelebrityProfile = () => {
                     <div className="flex items-start gap-3">
                       <span className="text-lg">💓</span>
                       <p className="text-sm text-foreground">
-                        Estimated <span className="font-semibold text-primary">{estimatedHeartbeats.toLocaleString()}</span> heartbeats since birth
+                        Estimated <span className="font-semibold text-primary">{estimatedHeartbeats.toLocaleString()}</span> heartbeats {isDeceased ? "in their lifetime" : "since birth"}
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
@@ -898,13 +898,15 @@ const CelebrityProfile = () => {
                         <span className="font-semibold text-foreground">{ageData.totalMinutes.toLocaleString()}</span>
                       </div>
                     </div>
-                    <div className="pt-2 border-t border-border">
-                      <div className="bg-primary/10 rounded-lg p-3 text-center">
-                        <div className="text-sm text-muted-foreground mb-1">Next Birthday</div>
-                        <div className="text-2xl font-bold text-primary">{ageData.nextBirthdayDays}</div>
-                        <div className="text-xs text-muted-foreground">Days Away</div>
+                    {!isDeceased && (
+                      <div className="pt-2 border-t border-border">
+                        <div className="bg-primary/10 rounded-lg p-3 text-center">
+                          <div className="text-sm text-muted-foreground mb-1">Next Birthday</div>
+                          <div className="text-2xl font-bold text-primary">{ageData.nextBirthdayDays}</div>
+                          <div className="text-xs text-muted-foreground">Days Away</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               )}
