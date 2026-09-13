@@ -45,6 +45,7 @@ const celebritySchema = z.object({
     .min(1, "Profile slug is required")
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase with hyphens only"),
   dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+  dateOfDeath: z.date().optional().nullable(),
   profession: z.string().min(1, "Profession is required").max(100),
   placeOfBirth: z.string().max(200).optional(),
   aiHint: z.string().optional(),
@@ -60,6 +61,7 @@ interface CelebrityData {
   name: string;
   profile_slug: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profession: string;
   place_of_birth: string | null;
   main_content: string;
@@ -83,6 +85,7 @@ const CelebrityProfilesManager = () => {
   const [knownForData, setKnownForData] = useState<string>("");
   const [faceEmbedding, setFaceEmbedding] = useState<string>("");
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+  const [dateOfDeath, setDateOfDeath] = useState<Date | null>(null);
   
   // All Profiles Data Table state
   const [allProfiles, setAllProfiles] = useState<CelebrityData[]>([]);
@@ -138,7 +141,7 @@ const CelebrityProfilesManager = () => {
       // Fetch paginated data
       const { data, error } = await supabase
         .from("celebrities")
-        .select("id, name, profile_image_url, main_content, profession, date_of_birth, place_of_birth, zodiac_sign, popularity_ranks, meta_title, meta_description, profile_slug, created_at, updated_at, known_for_data")
+        .select("id, name, profile_image_url, main_content, profession, date_of_birth, date_of_death, place_of_birth, zodiac_sign, popularity_ranks, meta_title, meta_description, profile_slug, created_at, updated_at, known_for_data")
         .order("name")
         .range(from, to);
 
@@ -189,6 +192,7 @@ const CelebrityProfilesManager = () => {
     setValue("profession", profile.profession);
     setValue("placeOfBirth", profile.place_of_birth || "");
     setValue("dateOfBirth", new Date(profile.date_of_birth));
+    setDateOfDeath(profile.date_of_death ? new Date(profile.date_of_death) : null);
     
     // Set profile image
     setImagePreview(profile.profile_image_url);
@@ -253,6 +257,7 @@ const CelebrityProfilesManager = () => {
         setPopularityRanks(null);
         setKnownForData("");
         setFaceEmbedding("");
+        setDateOfDeath(null);
       }
     } catch (error) {
       console.error("Delete error:", error);
@@ -333,6 +338,7 @@ const CelebrityProfilesManager = () => {
         name: data.name,
         profile_slug: data.profileSlug,
         date_of_birth: data.dateOfBirth.toISOString().split('T')[0],
+        date_of_death: dateOfDeath ? dateOfDeath.toISOString().split('T')[0] : null,
         profession: data.profession,
         place_of_birth: data.placeOfBirth || null,
         main_content: sanitizedContent,
@@ -417,6 +423,7 @@ const CelebrityProfilesManager = () => {
       setPopularityRanks(null);
       setKnownForData("");
       setFaceEmbedding("");
+      setDateOfDeath(null);
       setCurrentPage(1);
       fetchAllProfiles();
 
@@ -550,6 +557,9 @@ const CelebrityProfilesManager = () => {
                         Date of Birth
                       </th>
                       <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Death Date
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                         Slug
                       </th>
                       <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
@@ -560,7 +570,7 @@ const CelebrityProfilesManager = () => {
                   <tbody>
                     {filteredProfiles.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="h-24 text-center text-muted-foreground">
+                        <td colSpan={7} className="h-24 text-center text-muted-foreground">
                           {tableSearchQuery ? "No profiles match your search." : "No profiles found."}
                         </td>
                       </tr>
@@ -582,6 +592,9 @@ const CelebrityProfilesManager = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">
                             {new Date(profile.date_of_birth).toLocaleDateString()}
+                          </td>
+                          <td className="p-4 align-middle text-muted-foreground">
+                            {profile.date_of_death ? new Date(profile.date_of_death).toLocaleDateString() : "-"}
                           </td>
                           <td className="p-4 align-middle text-sm text-muted-foreground">
                             {profile.profile_slug}
@@ -776,6 +789,48 @@ const CelebrityProfilesManager = () => {
                 {errors.dateOfBirth && (
                   <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
                 )}
+              </div>
+
+              {/* Date of Death */}
+              <div className="space-y-2">
+                <Label>Date of Death (if deceased)</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateOfDeath && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateOfDeath ? format(dateOfDeath, "PPP") : "Pick a date (optional)"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={dateOfDeath ?? undefined}
+                      onSelect={(date) => setDateOfDeath(date ?? null)}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {dateOfDeath && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDateOfDeath(null)}
+                  >
+                    Clear date
+                  </Button>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  Optional. Leave empty for living celebrities.
+                </p>
               </div>
 
               {/* Place of Birth */}

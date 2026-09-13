@@ -40,6 +40,7 @@ const celebritySchema = z.object({
     .min(1, "Profile slug is required")
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase with hyphens only"),
   dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+  dateOfDeath: z.date().optional().nullable(),
   profession: z.string().min(1, "Profession is required").max(100),
   placeOfBirth: z.string().max(200).optional(),
   aiHint: z.string().optional(),
@@ -55,6 +56,7 @@ interface CelebrityData {
   name: string;
   profile_slug: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profession: string;
   place_of_birth: string | null;
   main_content: string;
@@ -78,7 +80,8 @@ const AdminPanel = () => {
   const [popularityRanks, setPopularityRanks] = useState<any>(null);
   const [knownForData, setKnownForData] = useState<string>("");
   const [faceEmbedding, setFaceEmbedding] = useState<string>("");
-  
+  const [dateOfDeath, setDateOfDeath] = useState<Date | null>(null);
+
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("scrape");
   
@@ -162,6 +165,7 @@ const AdminPanel = () => {
     const previewData = {
       name: currentName,
       date_of_birth: watch("dateOfBirth")?.toISOString().split('T')[0] || "",
+      date_of_death: dateOfDeath ? dateOfDeath.toISOString().split('T')[0] : null,
       profession: watch("profession") || "Unknown",
       place_of_birth: watch("placeOfBirth") || "",
       zodiac_sign: zodiacSign || "",
@@ -276,6 +280,7 @@ const AdminPanel = () => {
         name: data.name,
         profile_slug: data.profileSlug,
         date_of_birth: format(data.dateOfBirth, "yyyy-MM-dd"),
+        date_of_death: dateOfDeath ? format(dateOfDeath, "yyyy-MM-dd") : null,
         profession: data.profession,
         place_of_birth: data.placeOfBirth || null,
         main_content: sanitizedMainContent,
@@ -376,6 +381,7 @@ const AdminPanel = () => {
       setValue("profession", "");
       setValue("placeOfBirth", "");
       setValue("dateOfBirth", undefined as any);
+      setDateOfDeath(null);
       setValue("aiHint", "");
       setProfileImage(null);
       setImagePreview("");
@@ -478,6 +484,9 @@ const AdminPanel = () => {
       setValue("profession", data.profession);
       setValue("placeOfBirth", data.place_of_birth);
       setValue("dateOfBirth", new Date(data.date_of_birth));
+      if (data.date_of_death) {
+        setDateOfDeath(new Date(data.date_of_death));
+      }
 
       // Set the profile image URL (null if no image found)
       if (data.profile_image_url) {
@@ -832,6 +841,48 @@ const AdminPanel = () => {
                   {errors.dateOfBirth && (
                     <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
                   )}
+                </div>
+
+                {/* Date of Death */}
+                <div className="space-y-2">
+                  <Label>Date of Death (if deceased)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dateOfDeath && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateOfDeath ? format(dateOfDeath, "PPP") : <span>Pick a date (optional)</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateOfDeath ?? undefined}
+                        onSelect={(date) => setDateOfDeath(date ?? null)}
+                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {dateOfDeath && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDateOfDeath(null)}
+                    >
+                      Clear date
+                    </Button>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Optional. Leave empty for living celebrities.
+                  </p>
                 </div>
 
                 {/* Profession */}
