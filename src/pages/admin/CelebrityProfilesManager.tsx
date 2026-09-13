@@ -45,6 +45,7 @@ const celebritySchema = z.object({
     .min(1, "Profile slug is required")
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase with hyphens only"),
   dateOfBirth: z.date({ required_error: "Date of birth is required" }),
+  dateOfDeath: z.date().optional().nullable(),
   profession: z.string().min(1, "Profession is required").max(100),
   placeOfBirth: z.string().max(200).optional(),
   aiHint: z.string().optional(),
@@ -60,6 +61,7 @@ interface CelebrityData {
   name: string;
   profile_slug: string;
   date_of_birth: string;
+  date_of_death?: string | null;
   profession: string;
   place_of_birth: string | null;
   main_content: string;
@@ -83,6 +85,7 @@ const CelebrityProfilesManager = () => {
   const [knownForData, setKnownForData] = useState<string>("");
   const [faceEmbedding, setFaceEmbedding] = useState<string>("");
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+  const [dateOfDeath, setDateOfDeath] = useState<Date | null>(null);
   
   // All Profiles Data Table state
   const [allProfiles, setAllProfiles] = useState<CelebrityData[]>([]);
@@ -138,7 +141,7 @@ const CelebrityProfilesManager = () => {
       // Fetch paginated data
       const { data, error } = await supabase
         .from("celebrities")
-        .select("id, name, profile_image_url, main_content, profession, date_of_birth, place_of_birth, zodiac_sign, popularity_ranks, meta_title, meta_description, profile_slug, created_at, updated_at, known_for_data")
+        .select("id, name, profile_image_url, main_content, profession, date_of_birth, date_of_death, place_of_birth, zodiac_sign, popularity_ranks, meta_title, meta_description, profile_slug, created_at, updated_at, known_for_data")
         .order("name")
         .range(from, to);
 
@@ -189,6 +192,7 @@ const CelebrityProfilesManager = () => {
     setValue("profession", profile.profession);
     setValue("placeOfBirth", profile.place_of_birth || "");
     setValue("dateOfBirth", new Date(profile.date_of_birth));
+    setDateOfDeath(profile.date_of_death ? new Date(profile.date_of_death) : null);
     
     // Set profile image
     setImagePreview(profile.profile_image_url);
@@ -253,6 +257,7 @@ const CelebrityProfilesManager = () => {
         setPopularityRanks(null);
         setKnownForData("");
         setFaceEmbedding("");
+        setDateOfDeath(null);
       }
     } catch (error) {
       console.error("Delete error:", error);
@@ -333,6 +338,7 @@ const CelebrityProfilesManager = () => {
         name: data.name,
         profile_slug: data.profileSlug,
         date_of_birth: data.dateOfBirth.toISOString().split('T')[0],
+        date_of_death: dateOfDeath ? dateOfDeath.toISOString().split('T')[0] : null,
         profession: data.profession,
         place_of_birth: data.placeOfBirth || null,
         main_content: sanitizedContent,
@@ -417,6 +423,7 @@ const CelebrityProfilesManager = () => {
       setPopularityRanks(null);
       setKnownForData("");
       setFaceEmbedding("");
+      setDateOfDeath(null);
       setCurrentPage(1);
       fetchAllProfiles();
 
