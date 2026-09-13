@@ -557,6 +557,9 @@ const CelebrityProfilesManager = () => {
                         Date of Birth
                       </th>
                       <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Death Date
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                         Slug
                       </th>
                       <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
@@ -567,7 +570,7 @@ const CelebrityProfilesManager = () => {
                   <tbody>
                     {filteredProfiles.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="h-24 text-center text-muted-foreground">
+                        <td colSpan={7} className="h-24 text-center text-muted-foreground">
                           {tableSearchQuery ? "No profiles match your search." : "No profiles found."}
                         </td>
                       </tr>
@@ -589,6 +592,9 @@ const CelebrityProfilesManager = () => {
                           </td>
                           <td className="p-4 align-middle text-muted-foreground">
                             {new Date(profile.date_of_birth).toLocaleDateString()}
+                          </td>
+                          <td className="p-4 align-middle text-muted-foreground">
+                            {profile.date_of_death ? new Date(profile.date_of_death).toLocaleDateString() : "-"}
                           </td>
                           <td className="p-4 align-middle text-sm text-muted-foreground">
                             {profile.profile_slug}
@@ -783,6 +789,48 @@ const CelebrityProfilesManager = () => {
                 {errors.dateOfBirth && (
                   <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
                 )}
+              </div>
+
+              {/* Date of Death */}
+              <div className="space-y-2">
+                <Label>Date of Death (if deceased)</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateOfDeath && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateOfDeath ? format(dateOfDeath, "PPP") : "Pick a date (optional)"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={dateOfDeath ?? undefined}
+                      onSelect={(date) => setDateOfDeath(date ?? null)}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                {dateOfDeath && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDateOfDeath(null)}
+                  >
+                    Clear date
+                  </Button>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  Optional. Leave empty for living celebrities.
+                </p>
               </div>
 
               {/* Place of Birth */}
